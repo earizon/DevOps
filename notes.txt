@@ -569,59 +569,57 @@
 [[}]]
 
 
-● ETHEREUM WALLET COMPARISON  [[{wallet.101,01_PM.WiP]]
+● ETHEREUM WALLET COMPARISON  [[{wallet.101,20_QA.UX.WALLET,00_PM.WiP]]
   ==========================
   Based on previous work from: https://github.com/shanefontaine/ethereum-wallet-comparison
-
-  Lecture: 1: yes/OK/supported, 0: no/KO/unsupported, p: In-progress
-
-           
-                                 ┌······································· https://authereum.org
-                                 · ┌····································· https://universallogin.io/
-                                 · · ┌··································· https://www.portis.io/
-                                 · · · ┌································· https://www.argent.xyz/
-                                 · · · · ┌······························· https://metamask.io/
-                                 · · · · · ┌····························· https://abridged.github.io/splash/
-                                 · · · · · · ┌··························· https://safe.gnosis.io/
-                                 · · · · · · · ┌························· https://magic.link/
-                                 · · · · · · · · ┌······················· https://tor.us
-                                 · · · · · · · · · ┌····················· https://www.dapperlabs.com/
-                                 · · · · · · · · · · ┌··················· https://wallet.coinbase.com/
-                                 · · · · · · · · · · · ┌················· https://status.im/
-                                 · · · · · · · · · · · · ┌··············· https://trustwallet.com/ 
-                                 · · · · · · · · · · · · · ┌············· https://www.ledger.com/
-                                 · · · · · · · · · · · · · · ┌··········· https://squarelink.com
-                                 · · · · · · · · · · · · · · · ┌········· https://ethvault.xyz
-                                 · · · · · · · · · · · · · · · · ┌······· https://github.com/poanetwork/nifty-wallet
-                                 · · · · · · · · · · · · · · · · · ┌····· https://bitski.com 
-                                 · · · · · · · · · · · · · · · · · · ┌··· http://breadapp.com
-                                 · · · · · · · · · · · · · · · · · · · ┌· https://token.im/
- ENS Integration                |1|1|0|1|1|1|0|0|0|0|0|1|1|0|0|1|1|0|0|1| users can natively create an ENS name
- Browser Extension Required     |1|1|1|1|0|1|1|1|1|0|1|1|1|1|1|1|0|1|1|1|
- Supports all Mobile Browsers   |1|1|1|1|0|1|1|1|1|0|1|1|1|0|1|1|0|1|1|1|
- Can Integrate with Native Apps |1|1|1|1|0|1|1|1|1|0|0|0|0|0|1|1|0|1|0|1|
- No Phone Number Required       |1|1|1|0|1|1|1|0|1|0|0|1|1|1|1|1|1|1|1|1|
- Account Recovery               |1|1|1|1|1|1|0|1|1|1|1|0|1|0|1|1|1|1|1|1|
- No Seed Phrase Backup          |1|1|0|1|0|1|0|1|1|0|0|1|1|0|1|1|0|1|0|0|
- Non-custodial                  |1|1|1|1|1|1|1|0|1|1|1|1|1|1|1|1|1|0|1|1| (no 3rd party needed)
- Exportable Wallet              |1|1|1|0|1|1|1|1|1|0|0|0|1|1|1|1|1|0|1|1|
- Testnet Availability           |1|1|1|0|1|1|1|1|1|0|1|1|0|1|1|1|1|1|0|0|
- SC-based(vs EOAs) Accounts     |1|1|0|1|0|1|1|0|0|1|0|0|0|0|0|0|0|0|0|0|
- Pay Gas in Tokens              |1|1|0|0|0|p|1|0|0|0|0|0|0|0|0|0|0|0|0|0| (not just ethers)
- Web2.0 Style Login             |1|0|1|1|0|1|0|1|1|1|0|1|0|0|1|1|0|1|0|0| (familiar username/password)
- Purchase ETH/Tokens In App     |1|0|1|1|p|1|0|0|0|1|1|0|1|0|1|0|1|0|1|1|
- Web3 Provider Available        |1|0|1|0|1|0|0|1|0|1|1|0|1|0|1|1|1|1|0|1|
- Software Token 2FA             |1|0|1|0|0|p|0|1|0|0|0|0|0|0|1|0|0|0|0|0|
- Hardware Token 2FA             |1|0|0|0|0|p|0|0|0|0|0|0|0|0|0|0|0|0|0|0|
- Hardware Wallet Integration    |1|0|0|0|1|p|0|0|0|1|0|0|0|1|0|0|1|0|0|1|
- Transaction Firewall           |1|0|0|1|0|p|0|0|0|0|0|0|0|0|0|0|0|0|0|0| TX check against "firewall" to prevent attacks
- Off-chain Login                |1|0|1|1|1|0|1|1|1|1|1|1|1|1|1|1|1|1|1|1| (no need for "TX-logins" in different devices)
- No Mobile App Required         |1|0|1|0|1|1|1|1|1|1|0|0|0|1|1|1|1|1|0|0|
- No Hardware Required           |1|1|1|1|1|1|1|1|1|1|1|1|1|0|1|1|1|1|1|1|
- Sandboxed Key Storage          |1|0|1|1|1|0|1|1|1|1|1|1|1|0|1|1|1|1|1|1|  (or iframes and not easily accessible)
- Upgradeable/Modular Contracts  |1|1|0|1|1|1|1|0|0|1|0|0|0|0|0|0|0|0|0|0| (SC-based User's contract is upgradeable/modular
- Batched Transactions           |1|0|0|0|0|1|1|1|0|0|0|0|0|0|0|0|0|0|0|0| Send N-TX atomically in single on-chain TX
- Open Sourced                   |1|1|1|1|1|1|1|0|1|1|1|1|1|1|1|1|1|1|1|1| 
+  LECTURE: 1: yes/OK/supported, 0: no/KO/unsupported, p: In-progress
+                              ┌--------------------------------------- https://authereum.org
+                              | ┌····································· https://universallogin.io/
+                              | · ┌----------------------------------- https://www.portis.io/
+                              | · | ┌································· https://www.argent.xyz/
+                              | · | · ┌------------------------------- https://metamask.io/
+                              | · | · | ┌····························· https://abridged.github.io/splash/
+                              | · | · | · ┌--------------------------- https://safe.gnosis.io/
+                              | · | · | · | ┌························· https://magic.link/
+                              | · | · | · | · ┌----------------------- https://tor.us
+                              | · | · | · | · | ┌····················· https://www.dapperlabs.com/
+                              | · | · | · | · | · ┌------------------- https://wallet.coinbase.com/
+                              | · | · | · | · | · | ┌················· https://status.im/
+                              | · | · | · | · | · | · ┌--------------- https://trustwallet.com/ 
+                              | · | · | · | · | · | · | ┌············· https://www.ledger.com/
+                              | · | · | · | · | · | · | · ┌----------- https://squarelink.com
+                              | · | · | · | · | · | · | · | ┌········· https://ethvault.xyz
+                              | · | · | · | · | · | · | · | · ┌------- https://github.com/poanetwork/nifty-wallet
+                              | · | · | · | · | · | · | · | · | ┌····· https://bitski.com 
+                              | · | · | · | · | · | · | · | · | · ┌--- http://breadapp.com
+                              | · | · | · | · | · | · | · | · | · | ┌· https://token.im/
+                              | · | · | · | · | · | · | · | · | · | · 
+ ENS Integration             |1|1|0|1|1|1|0|0|0|0|0|1|1|0|0|1|1|0|0|1|<- users can natively create an ENS name
+ Browser Extension Required  |1|1|1|1|0|1|1|1|1|0|1|1|1|1|1|1|0|1|1|1|
+ Supports all Mobile Browsers|1|1|1|1|0|1|1|1|1|0|1|1|1|0|1|1|0|1|1|1|
+ Integrates with Native Apps |1|1|1|1|0|1|1|1|1|0|0|0|0|0|1|1|0|1|0|1|
+ No Phone Number Required    |1|1|1|0|1|1|1|0|1|0|0|1|1|1|1|1|1|1|1|1|
+ Account Recovery            |1|1|1|1|1|1|0|1|1|1|1|0|1|0|1|1|1|1|1|1|
+ No Seed Phrase Backup       |1|1|0|1|0|1|0|1|1|0|0|1|1|0|1|1|0|1|0|0|
+ Non-custodial               |1|1|1|1|1|1|1|0|1|1|1|1|1|1|1|1|1|0|1|1|<- no 3rd party needed
+ Exportable Wallet           |1|1|1|0|1|1|1|1|1|0|0|0|1|1|1|1|1|0|1|1|
+ Testnet Availability        |1|1|1|0|1|1|1|1|1|0|1|1|0|1|1|1|1|1|0|0|
+ SC-based(vs EOAs) Accounts  |1|1|0|1|0|1|1|0|0|1|0|0|0|0|0|0|0|0|0|0|
+ Pay Gas in Tokens           |1|1|0|0|0|p|1|0|0|0|0|0|0|0|0|0|0|0|0|0|<- vs just ethers
+ Web2.0 Style Login          |1|0|1|1|0|1|0|1|1|1|0|1|0|0|1|1|0|1|0|0|<- familiar username/password [[{security.AAA}]]
+ Purchase ETH/Tokens In App  |1|0|1|1|p|1|0|0|0|1|1|0|1|0|1|0|1|0|1|1|
+ Web3 Provider Available     |1|0|1|0|1|0|0|1|0|1|1|0|1|0|1|1|1|1|0|1|
+ Software Token 2FA          |1|0|1|0|0|p|0|1|0|0|0|0|0|0|1|0|0|0|0|0|
+ Hardware Token 2FA          |1|0|0|0|0|p|0|0|0|0|0|0|0|0|0|0|0|0|0|0|
+ Hardware Wallet Integration |1|0|0|0|1|p|0|0|0|1|0|0|0|1|0|0|1|0|0|1|
+ Transaction Firewall        |1|0|0|1|0|p|0|0|0|0|0|0|0|0|0|0|0|0|0|0|<- TX check against "firewall" to prevent attacks [[{security}]]
+ Off-chain Login             |1|0|1|1|1|0|1|1|1|1|1|1|1|1|1|1|1|1|1|1|<- no need for "TX-logins" in different devices
+ No Mobile App Required      |1|0|1|0|1|1|1|1|1|1|0|0|0|1|1|1|1|1|0|0|
+ No Hardware Required        |1|1|1|1|1|1|1|1|1|1|1|1|1|0|1|1|1|1|1|1|
+ Sandboxed Key Storage       |1|0|1|1|1|0|1|1|1|1|1|1|1|0|1|1|1|1|1|1|<- or iframes and not easily accessible
+ Upgradeable/Modular S.C.    |1|1|0|1|1|1|1|0|0|1|0|0|0|0|0|0|0|0|0|0|<- SC-based User's contract is upgradeable/modular
+ Batched Transactions        |1|0|0|0|0|1|1|1|0|0|0|0|0|0|0|0|0|0|0|0|<- Send N TX as 1 (atomic) onchain TX [[{architecture.batch,scalability.offchain,transaction.signature}]]
+ Open Sourced                |1|1|1|1|1|1|1|0|1|1|1|1|1|1|1|1|1|1|1|1| 
 [[}]]
 
 
