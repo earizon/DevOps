@@ -321,8 +321,7 @@
   - 2019-02-22: scheduled upgrade at block number 7,280,000,  predicted on 2019-02-28
   @[https://blog.ethereum.org/2019/02/22/ethereum-constantinople-st-petersburg-upgrade-announcement/]
 
-<hr/>
-<span title>Chain IDs running EVMs Smart Contracts</span>
+● Chain IDs running EVMs Smart Contracts: #[public_chains] [[{101.public_chains]]
 • REFs:
   · @[https://chainid.network/]
   · @[https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#list-of-chain-ids]
@@ -332,234 +331,297 @@
        (TLDR: rollups: safer, side-chains: Easier/more centrilized).
 
                              ┌─ TheGraph Protocol Support
-  Chain Name/Chain ID  │Symb│││ notes
-  ─────────────────────│────│─│─────────────────────────────────────────────────────
-  ethereum             |    | |
-  └ mainnet/1          | ETH| |
-  └ testnet kovan/42   | KOV| |
-  └ testnet görli/5    | GOR| |
-  └ testnet ropsten/3  | ROP| |
-  └ testnet rinkeby/4  | RIN| |
-  ---------------------|----| |-----------------------------------------------------
-  expanse net/2        | EXP| |
-  ---------------------|----| |-----------------------------------------------------
-  thaichain/7          | TCH| | thaishield audits verify your
-  └ 2.0 thaifi/17      | TFI| | distributed systems work as intended.
-                       |    | | our engineers fully review system’s
-                       |    | | architecture and codebase, and then
-                       |    | | write a thorough report with
-                       |    | | actionable feedback for every issue.
-  --------------------------| |-----------------------------------------------------
-  ubiq/8               | UBQ| | built upon improved version of e.codebase,
-  └ testnet/9          |    | | it offers enterprise-stable pow.
-                       |    | | conservative upgrade schedule.
-  --------------------------|-|-----------------------------------------------------
-  arbitrum one/42161   |AETH|Y| optimistic rollup.
-  └ test.rinkeby/421611|aRETH | integrated with binance exchange
-                       |    | | (but withdrawals not yet enabled
-                       |    | |  as of 2021-11-26  )
-  └ on xdai/200        |XDAI| |  (research project)
-  --------------------------|-|-----------------------------------------------------
-  Optimistic Eth./10   |OETH|Y| type: l2 optimistic-rollup
-  └ testnet kova/69    | KOR| | millisec tx,10-100x cheaper.
-  └ testnet goerly/420 | GOR| | periodically submit l2 tx merkle root to
-                       |    | | mainnet, storing N L2 tx 1 tx mainnet.
-                       |    | | https://chainid.lin/?network=optimism
-                       |    | | node: https://mainnet.optimism.io
-                       |    | | expl: https://optimistic.etherscan.io
-                       |    | | supported by infura.
-  ---------------------|----|-|-----------------------------------------------------
-  xDAI Chain/100       |xDAI|Y|  Aims at creating Stable Payments Fees tied to USD
-  ---------------------|----|-|-----------------------------------------------------
-  NEAR/???             |????|Y| It runs in concert with Ether/Polka./Cosmos/
-                       |    | |
-  ---------------------|----|-|-----------------------------------------------------
-  CELO/???             |????|Y|• https://celo.org
-                       |    | |• PoS, mobile-1st platform for fin.dApps+crypto payments
-                       |    | |• KickStart anounced that its platform will change to
-                       |    | |  be based on the Celo blockchain in 2021-12.
-                       |    | |• CELO founders/inverstors include Jack Dorsey (Twitter
-                       |    | |  CEO), SocialCapital, CoinBase, Telekom, ...
-  ---------------------|----|-|-----------------------------------------------------
-  AVALANCHE/???        |????|Y|
-  ---------------------|----|-|-----------------------------------------------------
-  StarkNet             |????|?|• L2 stark rollup.
-                       |    | |• Used by SORASE (Paris based company providing
-                       |    | |  NFTs for "LaLiga", "Gerad Piqué", ...)
-                       |    | |• Alpha state as of 2022-02-22
-  ---------------------|----|-|-----------------------------------------------------
-  POA/???              |????|Y|
-  ---------------------|----|-|-----------------------------------------------------
-  MOONRIVER/???        |????|Y|
-  ---------------------|----|-|-----------------------------------------------------
-  Fuse Mainnet/122     |FUSE|Y|  "Open Source" Economy, create Branded wallets...
-  └ Sparknet/123       SPARK| |  47 validators, ...
-  ---------------------|----|-|-----------------------------------------------------
-  polygon Main./137    MATIC|Y| type: L2 zk-rollup
-  └ Test.Mumbai/80001  MATIC| | https://polygon.technology/
-                       |    | | polygon: protocol+framework to build+
-                       |    | | connect Ether. compatible Networks
-  ---------------------|----|-|-----------------------------------------------------
-  palm Main./*1        |PALM| | sidechain for selling&trading
-  └ Testnet/*2         |PALM| | real-world and digi. assets NFTs.
-  *1:11297108109       |    | | IBFT 2.0 poa consensus.
-  *2:11297108099       |    | | (pseudo-centralized/consortium net).
-                       |    | | automated mainnet bridge relay service.
-                       |    | | Connect payment tokens (DAI, NFTs) with
-                       |    | | bridging contracts deployed on both
-                       |    | | networks. Fees collected from this
-                       |    | | bridge are partially used to purchase
-                       |    | | carbon offsets.
-  ---------------------+----|-|-----------------------------------------------------
-  Metadium Main./11    |META| | Self Sov. Identity with 2 Factor Authentication
-  └ Testnet/12         | KAL| |
-  ---------------------|----| |-----------------------------------------------------
-  GoodData Main./32    |GooD| |  NFTs/"Metaverse"
-  └ Testnet/33         |GooD| |  AI and ML Optimize Rewards
-                       |    | |  Region-aware distributed storage
-  ---------------------|----| |-----------------------------------------------------
-  Telos EVM Main./40   |TLOS| |  "The most scalable E.platform available today"
-  └ Testnet/41         |TLOS| |  Fixed gas fee. Enviro.Friendly
-                       |    | |  ESG compliance
-  ---------------------|----| |-----------------------------------------------------
-  CoinEx SmartCh./52   | CET| |  PoS based. Permission-free, low fess.
-  └ Testnet/53         |CETT| |  Finance oriented
-  ---------------------|----| |-----------------------------------------------------
-  Ontology Main./58    | ONG| |  Focus:Decentralized IDentity. Customers include
-  └ Testnet/5851       | ONG| |  Daimler Benz Mobility.
-                       |    | |  App User base: 50% Asia, 7% USA.
-                       |    | |  partnered with rOCKI, next-gen music [NFT]
-                       |    | |  streaming service and NFT platform built on
-                       |    | |  Binance Smart Chain (BSC) to use its DID solution
-                       |    | |  to prevent badn actors impersonating artists.
-                       |    | |  Multi-Virtual Machine supports.
-                       |    | |  "Ont. has its own VM, and also supports Wasm, NeoVM.
-                       |    | |  and EVM....  Devs can now use Ont.Bridge to convert
-                       |    | |  Ont.Native OEP4 to ORC20 tokens, adding to MetaMask,
-                       |    | |  and deploying dApps.
-  ---------------------|----| |-----------------------------------------------------
-  GoChain Main./60     |  GO| |  Proof of Reputation (PoR) web3 based public+private
-  └ Testnet/31337      |  GO| |  1300 TX/sec.(10000x greener, 1000x cheaper)
-                       |    | |  Run by Lenovo, RMIT university, Nicosia University,
-                       |    | |  Pennsylvania State University, ...
-                       |    | |  Quite active as of 2021-11 according to:
-                       |    | |@[https://medium.com/gochain]
-                       |    | |  Clientes include Fortune 500 companies,
-                       |    | |  Compañía Nacional de Minería de Colombia,
-                       |    | |  Services include:
-                       |    | |  - Zeromint NFT Marketplace and Chainparency.
-  --------------------------| |-----------------------------------------------------
-  OKExChain Main./65   | OKT| |  Decentralized Exchange (DEX) oriented, running
-  └ Mainnet/66         | OKT| |  "on top" Cosmos + EVM.
-  ---------------------|----| |-----------------------------------------------------
-  POA Network Core/99  | POA| |
-  └ Sokol/77           | SKL| |
-  ---------------------|----| |-----------------------------------------------------
-  PrimusChain          |    | |
-  └ Main./78           |PETH| |
-  ---------------------|----| |-----------------------------------------------------
-  Meter Mainnet/82     | MTR| |  "High performance infra" allowing S.C. to
-  └ Testnet/83         | MTR| |  "travel" through heterogeneous blockchain networks.
-                       |    | |  Partneting with ChainLink, Harmony, Poligy,
-                       |    | |  Standard Tokenization Protocol, Oasis Foundation,
-                       |    | |  ...
-                       |    | |  100+ validators.
-  ---------------------|----| |-----------------------------------------------------
-  Lightstreams         |    | |
-  └ Mainnet/162        | PHT| |  Built on Tendermint consensus ("Cosmos"). According
-  └ Testnet/163        | PHT| |  to page: a $5.63 TX in E.MainNet becomes $0.0002 in
-                       |    | |  lightstreams. $42.30 Uniswap reduces to $0.0016.
-                       |    | |  x25 faster with install 3secs. settlement.
-                       |    | |  Doesn't look to be very active. 1/2 post per year.
-  ---------------------|----| |-----------------------------------------------------
-  BitTorrent Ch./199   | BTT| |  Blokchain tokenizing BitTorrent Decentralized
-  └ Testnet/1028       | BTT| |  file sharing protocol.
-  ---------------------|----| |-----------------------------------------------------
-  Freight Trust        |    | |  Focus on regulated/compliant SupplyChain.
-        Network/211    | 0xF| |  EID X12, EDINT AS2/AS4,
-                       |    | |  EDI EDIFACT, Custom/Imports,
-                       |    | |  Custom/Exports, Freight Forwarders
-  ---------------------|----| |-----------------------------------------------------
-  Energy Web Ch./246   | ???| |  https://energyweb.org/
-                       |    | |  "World’s first public, enterprise-grade
-                       |    | |   blockchain tailored to the energy sector"
-                       |    | |  46 projects in 21 countries
-                       |    | |  with 41 partners as of 2021-11
-                       |    | |  W3C DID is used as core Identity building block.
-                       |    | |  Identity is provided to any customer, asset,
-                       |    | |  utility or regulator.
-  ---------------------|----| |-----------------------------------------------------
-  Theta                |    | |  Specialized in peer-to-peer (real-time)video
-  └ Mainet    /361     TFUEL| |  streaming/transcoding.
-  └ Testnet   /365     TFUEL| |  streaming/transcoding.
-    Sap.Test. /363     TFUEL| |  Compat. with EVM Constantinople plus
-    Amber Test/364     TFUEL| |  a couple of key Istanbul features.
-                       |    | |  Global partners including Google, Samsung,
-                       |    | |  Binance, Blockchain.com, and Gumi.
-  ---------------------|----| |-----------------------------------------------------
-  Acala Network/787    | ACA| |  layer-1 with built-in liquidity and
-  └ Testnet/595        |mACA| |  ready-made fin.apps + trustless
-                       |    | |  exchange, decentralized stablecoin
-                       |    | |  (aUSD), DOT Liquid Staking (LDOT),
-                       |    | |  and EVM+. supported by Polkadot Substrate.
-  ---------------------|----| |-----------------------------------------------------
-  Ambros Chain         |AMBR| |  600+ PoA network designed for IoT.
-  └ MainNet/ 880       |AMBR| |  13.848 Holders.
-  └ Testnet/8888       |AMBR| |  Digital identities are given to devices,
-                       |    | |  with all data about their condition and
-                       |    | |  movement securely bundled and automatically
-                       |    | |  relayed to your blockchain.
-  ---------------------|----| |-----------------------------------------------------
-  Wanchain/888         | WAN| |  https://www.wanchain.org/
-  └ Testnet/999        | WAN| |  Finance oriented Public|Private-to-Public|Private
-  ---------------------|----| |-----------------------------------------------------
-  Clover Main./1023    | CLV| |  part of cross-blockhain (EVM, DOT/KSM+ parachains,
-  └ Testnet/1024       | CLV| |  Solana) project.
-  ---------------------|----| |-----------------------------------------------------
-  MathChain/1139       |MATH| |  https://mathchain.org/en/
-  └ Testnet/1140       |MATH| |  SmartWallet AppChain based on (Polkadot) Substrate
-                       |    | |  Features: DID, SecretStore, EVM, Off-chain Worker.
-  ---------------------|----| |-----------------------------------------------------
-  Ecoball Main./???    | ECO| |  Finance Oriented. Claims to support 100.000 TX/s
-  └ Test.Espuma/???    | ECO| |  using VPoS and smart-node selection with close-to-zero
-                       |    | |  trading fees.
-                       |    | |  25 validator pools and 245 delegators.
-  ---------------------|----| |-----------------------------------------------------
-  QuarkChain           |    | |  flexible, scalable, user-oriented
-  └ Mainnet            |    | |  blockchain infrastructure by using
-    └ Root/100000      | QKC| |  blockchain sharding technology.
-    └ Shards/*1        | QKC| |
-  └ Devnet
-    └ Root/110000      | QKC| |
-    └ Shards/*2        | QKC| |
-  *1:100001..8         |    | |
-  *2:100001..8         |    | |
-  ---------------------|----| |-----------------------------------------------------
-  Harmony              |    | |  2-second TX finality @ 1/1000 price.
-  └ Mainnet            |    | |  Open platform for assets, collectibles,
-    └ Shards/*1        |  ON| |E identity and governance.
-  └ Testnet            |    | |  secure bridges offer cross-chain asset
-    └ Shards/*2        |  ON| |E transfers with E.MainNet, Binance and
-    1666600000..3      |    | |  3 other chains.
-    1666600000..3      |    | |  daVinci NFT marketplace: April 2021.
-                       |    | |
-  ---------------------|----| |-----------------------------------------------------
-  IoTeX Network        |    | |@[https://iotex.io/]
-  └ Mainnet/4689       |IOTX| |  9K+     DEVICES       200K+   COMMUNITY
-  └ Testnet/4690       |IOTX| |  14,4M   TRANSACTIONS  39,000+ STAKERS
-                       |    | |  """IEEE Blockchain& IoT Standards
-                       |    | |   Working Group Appoints IoTeX Head of
-                       |    | |   Cryptography as Vice Chair """
-                       |    | |
-  ---------------------|----|-|-----------------------------------------------------
-  Binan.SmartCh./56    | BNB|Y|   PoSA = Proof of Stake + Proof of Authority.
-  └ Testnet/97         |tBNB| |   WARN: "Spam Chain". Very active <a href="https://www.techtimes.com/articles/268625/20211128/binance-smart-chain-becomes-most-followed-cryptocurrency-on-twitter.htm]">on Twitter an press</a>
+                             · ┌─ 0x Protocol Support
+                             · ·
+  Chain Name/Chain ID  │Symb│││││ notes
+  ─────────────────────│────│─│─│─────────────────────────────────────────────────────
+  ethereum             |    | | |
+  └ mainnet/1          | ETH| |y|
+  └ testnet kovan/42   | KOV| | |
+  └ testnet görli/5    | GOR| |y|
+  └ testnet ropsten/3  | ROP| | | Ropsten deprecated by Ethereum fundation
+  └ testnet rinkeby/4  | RIN| | |
+  ---------------------|----|-|-|-----------------------------------------------------
+  polygon Main./137    MATIC|Y|Y| type: L2 zk-rollup
+  └ Test.Mumbai/80001  MATIC| |Y| https://polygon.technology/
+                       |    | | | polygon: protocol+framework to build+
+                       |    | | | connect Ether. compatible Networks
+
+  ---------------------|----|-|-|-----------------------------------------------------
+  expanse net/2        | EXP| | |
+  ---------------------|----|-|-|-----------------------------------------------------
+  thaichain/7          | TCH| | | thaishield audits verify your
+  └ 2.0 thaifi/17      | TFI| | | distributed systems work as intended.
+                       |    | | | our engineers fully review system’s
+                       |    | | | architecture and codebase, and then
+                       |    | | | write a thorough report with
+                       |    | | | actionable feedback for every issue.
+  --------------------------|-|-|-----------------------------------------------------
+  ubiq/8               | UBQ| | | built upon improved version of e.codebase,
+  └ testnet/9          |    | | | it offers enterprise-stable pow.
+                       |    | | | conservative upgrade schedule.
+  --------------------------|-|-|-----------------------------------------------------
+  arbitrum one/42161   |AETH|Y| | optimistic rollup.
+  └ test.rinkeby/421611|aRETH | | integrated with binance exchange
+                       |    | | | (but withdrawals not yet enabled
+                       |    | | |  as of 2021-11-26  )
+  └ on xdai/200        |XDAI| | |  (research project)
+  --------------------------|-|-|-----------------------------------------------------
+  Optimistic Eth./10   |OETH|Y|Y| type: l2 optimistic-rollup
+  └ testnet kova/69    | KOR| | | millisec tx,10-100x cheaper.
+  └ testnet goerly/420 | GOR| | | periodically submit l2 tx merkle root to
+                       |    | | | mainnet, storing N L2 tx 1 tx mainnet.
+                       |    | | | https://chainid.lin/?network=optimism
+                       |    | | | node: https://mainnet.optimism.io
+                       |    | | | expl: https://optimistic.etherscan.io
+                       |    | | | supported by infura.
+  --------------------------|-|-|-----------------------------------------------------
+  Fantom/??            |??? |?|Y| 
+  └ ???                |    | | | 
+  ---------------------|----|-|-|-----------------------------------------------------
+  xDAI Chain/100       |xDAI|Y| |  Aims at creating Stable Payments Fees tied to USD
+  ---------------------|----|-|-|-----------------------------------------------------
+  NEAR/???             |????|Y| | It runs in concert with Ether/Polka./Cosmos/
+                       |    | | |
+  ---------------------|----|-|-|-----------------------------------------------------
+  CELO/???             |????|Y|Y|• https://celo.org
+                       |    | | |• PoS, mobile-1st platform for fin.dApps+crypto payments
+                       |    | | |• KickStart anounced that its platform will change to
+                       |    | | |  be based on the Celo blockchain in 2021-12.
+                       |    | | |• CELO founders/inverstors include Jack Dorsey (Twitter
+                       |    | | |  CEO), SocialCapital, CoinBase, Telekom, ...
+  ---------------------|----|-|-|-----------------------------------------------------
+  AVALANCHE/???        |????|Y|Y|
+  ---------------------|----|-|-|-----------------------------------------------------
+  StarkNet             |????|?| |• L2 stark rollup.
+                       |    | | |• Used by SORASE (Paris based company providing
+                       |    | | |  NFTs for "LaLiga", "Gerad Piqué", ...)
+                       |    | | |• Alpha state as of 2022-02-22
+  ---------------------|----|-|-|-----------------------------------------------------
+  POA/???              |????|Y| |
+  ---------------------|----|-|-|-----------------------------------------------------
+  MOONRIVER/???        |????|Y| |
+  ---------------------|----|-|-|-----------------------------------------------------
+  Fuse Mainnet/122     |FUSE|Y| |  "Open Source" Economy, create Branded wallets...
+  └ Sparknet/123       SPARK| | |  47 validators, ...
+  ---------------------|----|-|-|-----------------------------------------------------
+  palm Main./*1        |PALM| | | sidechain for selling&trading
+  └ Testnet/*2         |PALM| | | real-world and digi. assets NFTs.
+  *1:11297108109       |    | | | IBFT 2.0 poa consensus.
+  *2:11297108099       |    | | | (pseudo-centralized/consortium net).
+                       |    | | | automated mainnet bridge relay service.
+                       |    | | | Connect payment tokens (DAI, NFTs) with
+                       |    | | | bridging contracts deployed on both
+                       |    | | | networks. Fees collected from this
+                       |    | | | bridge are partially used to purchase
+                       |    | | | carbon offsets.
+  ---------------------+----|-|-|-----------------------------------------------------
+  Metadium Main./11    |META| | | Self Sov. Identity with 2 Factor Authentication
+  └ Testnet/12         | KAL| | |
+  ---------------------|----|-|-|-----------------------------------------------------
+  GoodData Main./32    |GooD| | |  NFTs/"Metaverse"
+  └ Testnet/33         |GooD| | |  AI and ML Optimize Rewards
+                       |    | | |  Region-aware distributed storage
+  ---------------------|----|-|-|-----------------------------------------------------
+  Telos EVM Main./40   |TLOS| | |  "The most scalable E.platform available today"
+  └ Testnet/41         |TLOS| | |  Fixed gas fee. Enviro.Friendly
+                       |    | | |  ESG compliance
+  ---------------------|----|-|-|-----------------------------------------------------
+  CoinEx SmartCh./52   | CET| | |  PoS based. Permission-free, low fess.
+  └ Testnet/53         |CETT| | |  Finance oriented
+  ---------------------|----|-|-|-----------------------------------------------------
+  Ontology Main./58    | ONG| | |  Focus:Decentralized IDentity. Customers include
+  └ Testnet/5851       | ONG| | |  Daimler Benz Mobility.
+                       |    | | |  App User base: 50% Asia, 7% USA.
+                       |    | | |  partnered with rOCKI, next-gen music [NFT]
+                       |    | | |  streaming service and NFT platform built on
+                       |    | | |  Binance Smart Chain (BSC) to use its DID solution
+                       |    | | |  to prevent badn actors impersonating artists.
+                       |    | | |  Multi-Virtual Machine supports.
+                       |    | | |  "Ont. has its own VM, and also supports Wasm, NeoVM.
+                       |    | | |  and EVM....  Devs can now use Ont.Bridge to convert
+                       |    | | |  Ont.Native OEP4 to ORC20 tokens, adding to MetaMask,
+                       |    | | |  and deploying dApps.
+  ---------------------|----|-|-|-----------------------------------------------------
+  GoChain Main./60     |  GO| | |  Proof of Reputation (PoR) web3 based public+private
+  └ Testnet/31337      |  GO| | |  1300 TX/sec.(10000x greener, 1000x cheaper)
+                       |    | | |  Run by Lenovo, RMIT university, Nicosia University,
+                       |    | | |  Pennsylvania State University, ...
+                       |    | | |  Quite active as of 2021-11 according to:
+                       |    | | |@[https://medium.com/gochain]
+                       |    | | |  Clientes include Fortune 500 companies,
+                       |    | | |  Compañía Nacional de Minería de Colombia,
+                       |    | | |  Services include:
+                       |    | | |  - Zeromint NFT Marketplace and Chainparency.
+  --------------------------|-|-|-----------------------------------------------------
+  OKExChain Main./65   | OKT| | |  Decentralized Exchange (DEX) oriented, running
+  └ Mainnet/66         | OKT| | |  "on top" Cosmos + EVM.
+  ---------------------|----|-|-|-----------------------------------------------------
+  POA Network Core/99  | POA| | |
+  └ Sokol/77           | SKL| | |
+  ---------------------|----|-|-|-----------------------------------------------------
+  PrimusChain          |    | | |
+  └ Main./78           |PETH| | |
+  ---------------------|----|-|-|-----------------------------------------------------
+  Meter Mainnet/82     | MTR| | |  "High performance infra" allowing S.C. to
+  └ Testnet/83         | MTR| | |  "travel" through heterogeneous blockchain networks.
+                       |    | | |  Partneting with ChainLink, Harmony, Poligy,
+                       |    | | |  Standard Tokenization Protocol, Oasis Foundation,
+                       |    | | |  ...
+                       |    | | |  100+ validators.
+  ---------------------|----|-|-|-----------------------------------------------------
+  Lightstreams         |    | | |
+  └ Mainnet/162        | PHT| | |  Built on Tendermint consensus ("Cosmos"). According
+  └ Testnet/163        | PHT| | |  to page: a $5.63 TX in E.MainNet becomes $0.0002 in
+                       |    | | |  lightstreams. $42.30 Uniswap reduces to $0.0016.
+                       |    | | |  x25 faster with install 3secs. settlement.
+                       |    | | |  Doesn't look to be very active. 1/2 post per year.
+  ---------------------|----|-|-|-----------------------------------------------------
+  BitTorrent Ch./199   | BTT| | |  Blokchain tokenizing BitTorrent Decentralized
+  └ Testnet/1028       | BTT| | |  file sharing protocol.
+  ---------------------|----|-|-|-----------------------------------------------------
+  Freight Trust        |    | | |  Focus on regulated/compliant SupplyChain.
+        Network/211    | 0xF| | |  EID X12, EDINT AS2/AS4,
+                       |    | | |  EDI EDIFACT, Custom/Imports,
+                       |    | | |  Custom/Exports, Freight Forwarders
+  ---------------------|----|-|-|-----------------------------------------------------
+  Energy Web Ch./246   | ???| | |  https://energyweb.org/
+                       |    | | |  "World’s first public, enterprise-grade
+                       |    | | |   blockchain tailored to the energy sector"
+                       |    | | |  46 projects in 21 countries
+                       |    | | |  with 41 partners as of 2021-11
+                       |    | | |  W3C DID is used as core Identity building block.
+                       |    | | |  Identity is provided to any customer, asset,
+                       |    | | |  utility or regulator.
+  ---------------------|----|-|-|-----------------------------------------------------
+  Theta                |    | | |  Specialized in peer-to-peer (real-time)video
+  └ Mainet    /361     TFUEL| | |  streaming/transcoding.
+  └ Testnet   /365     TFUEL| | |  streaming/transcoding.
+    Sap.Test. /363     TFUEL| | |  Compat. with EVM Constantinople plus
+    Amber Test/364     TFUEL| | |  a couple of key Istanbul features.
+                       |    | | |  Global partners including Google, Samsung,
+                       |    | | |  Binance, Blockchain.com, and Gumi.
+  ---------------------|----|-|-|-----------------------------------------------------
+  Acala Network/787    | ACA| | |  layer-1 with built-in liquidity and
+  └ Testnet/595        |mACA| | |  ready-made fin.apps + trustless
+                       |    | | |  exchange, decentralized stablecoin
+                       |    | | |  (aUSD), DOT Liquid Staking (LDOT),
+                       |    | | |  and EVM+. supported by Polkadot Substrate.
+  ---------------------|----|-|-|-----------------------------------------------------
+  Ambros Chain         |AMBR| | |  600+ PoA network designed for IoT.
+  └ MainNet/ 880       |AMBR| | |  13.848 Holders.
+  └ Testnet/8888       |AMBR| | |  Digital identities are given to devices,
+                       |    | | |  with all data about their condition and
+                       |    | | |  movement securely bundled and automatically
+                       |    | | |  relayed to your blockchain.
+  ---------------------|----|-|-|-----------------------------------------------------
+  Wanchain/888         | WAN| | |  https://www.wanchain.org/
+  └ Testnet/999        | WAN| | |  Finance oriented Public|Private-to-Public|Private
+  ---------------------|----|-|-|-----------------------------------------------------
+  Clover Main./1023    | CLV| | |  part of cross-blockhain (EVM, DOT/KSM+ parachains,
+  └ Testnet/1024       | CLV| | |  Solana) project.
+  ---------------------|----|-|-|-----------------------------------------------------
+  MathChain/1139       |MATH| | |  https://mathchain.org/en/
+  └ Testnet/1140       |MATH| | |  SmartWallet AppChain based on (Polkadot) Substrate
+                       |    | | |  Features: DID, SecretStore, EVM, Off-chain Worker.
+  ---------------------|----|-|-|-----------------------------------------------------
+  Ecoball Main./???    | ECO| | |  Finance Oriented. Claims to support 100.000 TX/s
+  └ Test.Espuma/???    | ECO| | |  using VPoS and smart-node selection with close-to-zero
+                       |    | | |  trading fees.
+                       |    | | |  25 validator pools and 245 delegators.
+  ---------------------|----|-|-|-----------------------------------------------------
+  QuarkChain           |    | | |  flexible, scalable, user-oriented
+  └ Mainnet            |    | | |  blockchain infrastructure by using
+    └ Root/100000      | QKC| | |  blockchain sharding technology.
+    └ Shards/*1        | QKC| | |
+  └ Devnet                       
+    └ Root/110000      | QKC| | |
+    └ Shards/*2        | QKC| | |
+  *1:100001..8         |    | | |
+  *2:100001..8         |    | | |
+  ---------------------|----|-|-|-----------------------------------------------------
+  Harmony              |    | | |  2-second TX finality @ 1/1000 price.
+  └ Mainnet            |    | | |  Open platform for assets, collectibles,
+    └ Shards/*1        |  ON| | |E identity and governance.
+  └ Testnet            |    | | |  secure bridges offer cross-chain asset
+    └ Shards/*2        |  ON| | |E transfers with E.MainNet, Binance and
+    1666600000..3      |    | | |  3 other chains.
+    1666600000..3      |    | | |  daVinci NFT marketplace: April 2021.
+                       |    | | |
+  ---------------------|----|-|-|-----------------------------------------------------
+  IoTeX Network        |    | | |@[https://iotex.io/]
+  └ Mainnet/4689       |IOTX| | |  9K+     DEVICES       200K+   COMMUNITY
+  └ Testnet/4690       |IOTX| | |  14,4M   TRANSACTIONS  39,000+ STAKERS
+                       |    | | |  """IEEE Blockchain& IoT Standards
+                       |    | | |   Working Group Appoints IoTeX Head of
+                       |    | | |   Cryptography as Vice Chair """
+                       |    | | |
+  ---------------------|----|-|-|-----------------------------------------------------
+  Binan.SmartCh./56    | BNB|Y|Y|   PoSA = Proof of Stake + Proof of Authority.
+  └ Testnet/97         |tBNB| | |   WARN: "Spam Chain". Very active <a href="https://www.techtimes.com/articles/268625/20211128/binance-smart-chain-becomes-most-followed-cryptocurrency-on-twitter.htm]">on Twitter an press</a>
                                              Completely broken in Real World:
                                            @[https://github.com/binance-chain/bsc/issues/553]
 
   OTHERS Networks: @[https://chainid.network/]
     Diode , Flare , ThunderCore, Callisto, ...
   -------------------------------------------------------------------------------------------------
+[[101.public_chains}]]
+[[}]]
+
+
+● ETHEREUM WALLET COMPARISON  [[{wallet.101,01_PM.WiP]]
+  ==========================
+  Based on previous work from: https://github.com/shanefontaine/ethereum-wallet-comparison
+
+  Lecture: 1: yes/OK, 0: yes/KO, p: In-progress
+
+           
+                                 ┌······································· https://authereum.org
+                                 · ┌····································· https://universallogin.io/
+                                 · · ┌··································· https://www.portis.io/
+                                 · · · ┌································· https://www.argent.xyz/
+                                 · · · · ┌······························· https://metamask.io/
+                                 · · · · · ┌····························· https://abridged.github.io/splash/
+                                 · · · · · · ┌··························· https://safe.gnosis.io/
+                                 · · · · · · · ┌························· https://magic.link/
+                                 · · · · · · · · ┌······················· https://tor.us
+                                 · · · · · · · · · ┌····················· https://www.dapperlabs.com/
+                                 · · · · · · · · · · ┌··················· https://wallet.coinbase.com/
+                                 · · · · · · · · · · · ┌················· https://status.im/
+                                 · · · · · · · · · · · · ┌··············· https://trustwallet.com/ 
+                                 · · · · · · · · · · · · · ┌············· https://www.ledger.com/
+                                 · · · · · · · · · · · · · · ┌··········· https://squarelink.com
+                                 · · · · · · · · · · · · · · · ┌········· https://ethvault.xyz
+                                 · · · · · · · · · · · · · · · · ┌······· https://github.com/poanetwork/nifty-wallet
+                                 · · · · · · · · · · · · · · · · · ┌····· https://bitski.com 
+                                 · · · · · · · · · · · · · · · · · · ┌··· http://breadapp.com
+                                 · · · · · · · · · · · · · · · · · · · ┌· https://token.im/
+ ENS Integration                |1|1|0|1|1|1|0|0|0|0|0|1|1|0|0|1|1|0|0|1| users can natively create an ENS name
+ Browser Extension Required     |1|1|1|1|0|1|1|1|1|0|1|1|1|1|1|1|0|1|1|1|
+ Supports all Mobile Browsers   |1|1|1|1|0|1|1|1|1|0|1|1|1|0|1|1|0|1|1|1|
+ Can Integrate with Native Apps |1|1|1|1|0|1|1|1|1|0|0|0|0|0|1|1|0|1|0|1|
+ No Phone Number Required       |1|1|1|0|1|1|1|0|1|0|0|1|1|1|1|1|1|1|1|1|
+ Account Recovery               |1|1|1|1|1|1|0|1|1|1|1|0|1|0|1|1|1|1|1|1|
+ No Seed Phrase Backup          |1|1|0|1|0|1|0|1|1|0|0|1|1|0|1|1|0|1|0|0|
+ Non-custodial                  |1|1|1|1|1|1|1|0|1|1|1|1|1|1|1|1|1|0|1|1| (no 3rd party needed)
+ Exportable Wallet              |1|1|1|0|1|1|1|1|1|0|0|0|1|1|1|1|1|0|1|1|
+ Testnet Availability           |1|1|1|0|1|1|1|1|1|0|1|1|0|1|1|1|1|1|0|0|
+ SC-based(vs EOAs) Accounts     |1|1|0|1|0|1|1|0|0|1|0|0|0|0|0|0|0|0|0|0|
+ Pay Gas in Tokens              |1|1|0|0|0|p|1|0|0|0|0|0|0|0|0|0|0|0|0|0| (not just ethers)
+ Web2.0 Style Login             |1|0|1|1|0|1|0|1|1|1|0|1|0|0|1|1|0|1|0|0| (familiar username/password)
+ Purchase ETH/Tokens In App     |1|0|1|1|p|1|0|0|0|1|1|0|1|0|1|0|1|0|1|1|
+ Web3 Provider Available        |1|0|1|0|1|0|0|1|0|1|1|0|1|0|1|1|1|1|0|1|
+ Software Token 2FA             |1|0|1|0|0|p|0|1|0|0|0|0|0|0|1|0|0|0|0|0|
+ Hardware Token 2FA             |1|0|0|0|0|p|0|0|0|0|0|0|0|0|0|0|0|0|0|0|
+ Hardware Wallet Integration    |1|0|0|0|1|p|0|0|0|1|0|0|0|1|0|0|1|0|0|1|
+ Transaction Firewall           |1|0|0|1|0|p|0|0|0|0|0|0|0|0|0|0|0|0|0|0| TX check against "firewall" to prevent attacks
+ Off-chain Login                |1|0|1|1|1|0|1|1|1|1|1|1|1|1|1|1|1|1|1|1| (no need for "TX-logins" in different devices)
+ No Mobile App Required         |1|0|1|0|1|1|1|1|1|1|0|0|0|1|1|1|1|1|0|0|
+ No Hardware Required           |1|1|1|1|1|1|1|1|1|1|1|1|1|0|1|1|1|1|1|1|
+ Sandboxed Key Storage          |1|0|1|1|1|0|1|1|1|1|1|1|1|0|1|1|1|1|1|1|  (or iframes and not easily accessible)
+ Upgradeable/Modular Contracts  |1|1|0|1|1|1|1|0|0|1|0|0|0|0|0|0|0|0|0|0| (SC-based User's contract is upgradeable/modular
+ Batched Transactions           |1|0|0|0|0|1|1|1|0|0|0|0|0|0|0|0|0|0|0|0| Send N-TX atomically in single on-chain TX
+ Open Sourced                   |1|1|1|1|1|1|1|0|1|1|1|1|1|1|1|1|1|1|1|1| 
 [[}]]
 
 
@@ -843,26 +905,33 @@
    - To interact with a Smart Contract, you send it raw bytes.
    - It does some computation, possibly changing its own state,
      and then sends you raw bytes in return.
-   - Method calling does not actually exist. It is a collective
-     illusion created by the ABI.
-   - The ABI is specified like a low-level format, but in function
-     it's more like a serialization format for a cross-language RPC framework.
-   - We could draw analogies between the architectural tiers of DApp and Web App:
-     - The blockchain is like the backing database
+   - Method calling does not actually exist. It is an "illusion" 
+     created by the ABI (sort of serialization format for RPC calls).  
+      See notes on "function wrappers" for ABI implementation in 
+     byte-code generated from Solidity sources.
+
+   - We could draw analogies between the architectural tiers of DApp [[{01_doc_has.comparative]]
+     and Web App:
      - A contract is like a web service
-     - A transaction is like a request
-     - ABI is the data-interchange format, like Protocol Buffer
+     - A transaction is like a request.
+     - The blockchain is like the backing database. 
+     - ABI is the data-interchange format, like Protocol Buffer.
+     - CORE DIFFERENCE: A backing DDBB always works in a best-effort, 
+       working as slave of clients. A blockchain "imposes" its consensus 
+       rules to clients, that acts as slave of the blockchain and must 
+       be ready to retry transactions at random.
+ [[}]]
 
  • EVM Memory
-   - A contract obtains a freshly cleared instance for each message call
-   - Memory is linear and can be addressed at byte level
-   -  Reads are limited to a width of 256 bits
-   -  Writes can be either 8 bits or 256 bits wide
+   - A contract obtains a freshly cleared instance for each message call.
+   - Memory is linear and can be addressed at byte level.
+   -  Reads are limited to a width of 256 bits.
+   -  Writes can be either 8 bits or 256 bits wide.
    - Memory is expanded by a word (256-bit), when accessing
-       (either reading or writing) a previously untouched memory word (ie.
-       any offset within a word). At the time of expansion, the cost in gas
-       must be paid. Memory is more costly the larger it grows (it scales
-       quadratically)
+     (either reading or writing) a previously untouched memory word (ie.
+     any offset within a word). At the time of expansion, the cost in gas
+     must be paid. Memory is more costly the larger it grows (it scales
+     quadratically)
    - calldata: Separate area of memory whe message call payload is placed
    - See also: @[#solidity_storage_magging]
 
@@ -882,19 +951,21 @@
      - Remaining Ethers are sent to target
      - storage & code are removed from the blockchain state
 
-• EVM Instructions:
+• EVM SUMMARY:
   REF: @[https://github.com/ethereum/go-ethereum/blob/master/core/vm/instructions.go]
-  - EVM works with next inputs:
-    Prog.Counter(PC): to known where to fetch next EVM instruction to execute
-                      in units of 32 bytes (0x20 bytes).
-    Contract Context: To know where contract state is in storage.
-    EVM "RAM" Memory: Input/Output  for Operations.
-    STACK           : input/Out for Operations
+  ┌── KEYPOINT: EVM WORKS WITH NEXT INPUTS/OUPUTS: ──────────────────────────────┐
+  │1)        BYTECODE: INMUTABLE ARRAY-OF-BYTES WITH OPCODES+OPCODE HARDCODE DATA│
+  │2)Prog.Counter(PC): 32 bytes (0x20 bytes) pointer to next EVM instruction     │
+  │3)Contract Context: To know where contract state is in storage.               │
+  │··└ Contract State: persistent KEY-VALUE storage                              │
+  │4)EVM "RAM" Memory: INPUT/OUTPUT for Operations WITH RANDOM ACCESS.           │
+  │5)           STACK: INPUT/OUTPUT for Operations WITH FIRST─IN/LAST─OUT ACCESS.│
+  │                                                 (Exception: SWAP movements)  │
+  │6)        CALLDATA: INMUTABLE ARRAY OF INPUT DATA (msg.data)                  │
+  └──────────────────────────────────────────────────────────────────────────────┘
+  - EVM entrypoint to bytecode is always the ZERO ADDRESS  (vs parametrizable entry point).
 
-  • EVM executes code start-to-end from zero address (vs some other defined/parametrizable entry point).
-
-
-  • EVM OPCODES: REF: https://www.ethervm.io/
+  - EVM OPCODES: REF: https://www.ethervm.io/
                       COND.ARIT. END-  DESCRIPTION
                       TIO- ME-  FUNC/
                       NAL  TIC  COMP.
@@ -932,14 +1003,14 @@
       ------------------------------- RETURN VALUE FROM FUNCTION
       RETURNDATASIZE |    |    |    | size-in-bytes of returned data from last external call (v.Byzantium+/EIP-211)
       RETURNDATACOPY |    |    |    | copy returned data (v.Byzantium+/EIP-211)
-                     |    |    |    | memory[dst_offset:dst_offset+length] = RETURNDATA[offset:offset+length]
+                     |    |    |    | memory[dst_offset:dst_offset+length) = RETURNDATA[offset:offset+length)
       ------------------------------- Reading Smart Contract Code
     • EXTCODESIZE    |    |    |    | address(addr).code.size for param addr.
       CODESIZE       |    |    |    | address(this).code.size
-      EXTCODECOPY    |    |    |    | EXTCODECOPY addr dst_offset offset length. copy contract's bytecode like:
+      EXTCODECOPY    |    |    |    | EXTCODECOPY addr dst offset offset-length. copy contract's bytecode like:
                      |    |    |    | memory[dst_offset:dst_offset+length] = address(addr).code[offset:offset+length]
-      CODECOPY       |    |    |    | CODECOPY dst_offset offset length  copy executing contract's bytecode like:
-                     |    |    |    | memory[dst_offset:dst_offset+length] = address(this).code[offset:offset+length]
+      CODECOPY       |    |    |    | CODECOPY dst_offset offset-length  copy executing contract's bytecode like:
+                     |    |    |    | memory[dst_offset:dst_offset+length) = address(this).code[offset:offset+length)
       ------------------------------- BLOCK RELATED RUNTIME PARAMS.
     • EXTCODEHASH    |    |    |    | EXTCODEHASH addr hash = address(addr).exists ? keccak256(address(addr).code) : 0  (v Constantinople +/ EIP-1052)
       BLOCKHASH      |    |    |    | BLOCKHASH block hash    hash = block.blockHash(block), only valid for 256 most recent blocks excluding current one
@@ -1996,7 +2067,13 @@ The signed TX is then sent to the network.    |   hacked)
     │ │   constanct MyIdentityStorage         <·· Instantiate
     │ │     storage IDS = myIdentityStorage(); │  Storage
     │ │                                        │
-    │ │   function ...(...) external {         │
+    │ │   constructor () {}                   <·· Constructor stop working when 
+    │ │                                        │  using Diamond. It must be replaced
+    │ │                                        │  with 'init' function in diamondCut                                   
+    │ │                                        │  (or 'post init' function/s after 
+    │ │                                        │  different diamond 'pieces' are setup
+    │ │                                        │  but before normal code use)
+    │ │   function ...(...) external {         │  
     │ │     MS01.myMap[selector] = myData;    <·· Write to
     │ │     MS01.aVar = uint(myData);          │      
     │ │     ...                                │
@@ -9862,6 +9939,443 @@ https://eips.ethereum.org/EIPS/eip-1820
   STEP 2) $ npx hardhat run scripts/deploy.ts
 [[}]]
 
+● DECONSTRUCTING A SOLIDITY SMART CONTRACT [[{10_EVM.debugging,12_solidity]]  
+  Summary of OpenZepellin Posts:
+PART 1: https://blog.openzeppelin.com/deconstructing-a-solidity-contract-part-i-introduction-832efd2d7737/
+PART 2: https://blog.zeppelin.solutions/deconstructing-a-solidity-contract-part-ii-creation-vs-runtime-6b9d60ecb44c
+PART 3: https://blog.zeppelin.solutions/deconstructing-a-solidity-contract-part-iii-the-function-selector-6a9b6886ea49
+PART 4: https://blog.zeppelin.solutions/deconstructing-a-solidity-contract-part-iv-function-wrappers-d8e46672b0ed
+PART 5: https://blog.zeppelin.solutions/deconstructing-a-solidity-contract-part-v-function-bodies-2d19d4bef8be
+PART 6: https://blog.zeppelin.solutions/deconstructing-a-solidity-contract-part-vi-the-swarm-hash-70f069e22aef
+(By Alejandro Santander in collaboration with Leo Arias)
+┌─ BasicToken.sol ─────────────────────────────────────────────────────────┐
+| pragma solidity ^0.4.24;                                                 |  
+|                                                                          |  
+| contract BasicToken {                                                    |  
+|   uint256 totalSupply_;                                                  |  
+|   mapping(address => uint256) balances;                                  |  
+|                                                                          |  
+|   constructor(uint256 _initialSupply) public {                           |  
+|     totalSupply_ = _initialSupply;                                       |  
+|     balances[msg.sender] = _initialSupply;                               |  
+|   }                                                                      |  
+|                                                                          |  
+|   function totalSupply() public view returns (uint256) {                 |  
+|     return totalSupply_;                                                 |  
+|   }                                                                      |  
+|                                                                          |  
+|   function transfer(address _to, uint256 _value) public returns (bool) { |  
+|     require(_to != address(0));                                          |  
+|     require(_value <= balances[msg.sender]);                             |  
+|     balances[msg.sender] = balances[msg.sender] – _value;                | 
+|     balances[_to] = balances[_to] + _value;                              |   
+|     return true;                                                         | 
+|   }                                                                      | 
+|                                                                          | 
+|   function balanceOf(address _owner) public view returns (uint256) {     | 
+|     return balances[_owner];                                             | 
+|   }                                                                      | 
+| }                                                                        | 
+└──────────────────────────────────────────────────────────────────────────┘
+
+    BasicToken.asm (executed in the context of a new Contract TX):
+    KEYPOINT: When analyzing bytecode we can put attention to 
+    JUMP/JUMPI/JUMPDEST (code forks) as marks to split into logical units. 
+    RETURN/REVERT/STOP: are also usefull.
+    units:
+    https://gists.rawgit.com/ajsantander/23c032ec7a722890feed94d93dff574a/raw/a453b28077e9669d5b51f2dc6d93b539a76834b8/BasicToken.svg
+    ┌─ CONTRACT INITIALIZATION START { (~70 instructions ) ──────────────
+    │   1) CREATE CONTRACT'S INITIAL STATE.
+    │   2) RETURN (to EVM) COPY OF RUNTIME BYTE-CODE  
+    │      (EVM will store it as SC account.code)
+    │ ┌─ FREE SOLIDITY MEMORY POINTER ────── 
+    │ │  SOLIDITY free-memory-pointer indicates where to store "stuff" with the
+    │ │  guarantee that no other Solidity (vs asm) code will overwrite it 
+    │ │  KEYPOINT: EVERY SINGLE FUNCTION IN SOLIDITY, WHEN COMPILED TO EVM BYTECODE,
+    │ │            WILL INITIALIZE THIS POINTER.
+    │ │      NOTE: MEM.[0x00, 0x40) reserved by Solidity to calculate hashes
+    │ │  HEAVELY USED BY MLOAD + MSTORE 
+    │ │000 PUSH1 80  <- MSTORE ARG1:(dec128) value to store 
+    │ │                 ("SPOILER":0x80 == mem.pos. to place constructor args loaded from TX.data)
+    │ │002 PUSH1 40  <- MSTORE ARG2: (dec64) TARGET POSITION IN MEMORY        
+    │ │004 MSTORE    <- STORE [0x80]@0x40 in MEM == mstore(0x40,0x80) (YULish CODE)
+    │ └─────────────────────────────────────
+    │ ┌─ NON-PAYABLE CHECK { ───────────────
+    │ │ bytecode for Solidity code "if(msg.value != 0) revert(); 
+    │ │ (injected by compiler -vs developer- when constructor|function is NOT payable.
+    │ │ 005 CALLVALUE  <- push TX.value (in wei) to stack-top
+    │ │ 006 DUP1       <- duplicate 1st element on stack
+    │ │ 007 ISZERO     <- push "0x01" IF CURRENT TOP-OF-STACK-VALUE IS ZERO (JUMPI ARG1)
+    │ │ 008 PUSH2 0010 <- JUMPI ARG2: Where to jump to. 
+    >>> 011 JUMPI      <- JUMP(If) to ARG2 IF ARG1 != 0  
+    │ │ 012 PUSH1 00   <- REVERT ARG1: Message Length
+    │ │ 014 DUP1       <- REVERT ARG2: Message offset position in memory
+    <<< 015 REVERT     <- REVERT
+    │ └─ NON-PAYABLE CHECK } ───────────────
+    ┌── BYTECODE RETRIEVING CONSTRUCTOR PARAMETERS { ──────── 
+    │  param values are appended at the end of a contract's bytecode.
+    >>>016 JUMPDEST   ┐
+    │ ┌─ read whatever is in memory@0x40 { ─
+    │ │ 017 POP       <- pops and discard (u)int256 from stack
+    │ │                  (leaves x80 as CODECOPY ARG 2, MEM.POS TO LOAD TO)
+    │ │ 018 PUSH1 40  <- CODECOPY ARG3: OFFSET-LENTH
+    │ │ 020 MLOAD     <- CODECOPY: target-mem-pos to copy-to ARG:  (0x80)   mload(0x40, 0x80)
+    │ └─ read whatever is in memory@0x40 } ─
+
+                         CODECOPY ARG1: (0x80): INITIAL OFFSET IN "RAM" MEMORY
+    │  021 PUSH1 20   <- CODECOPY ARG2: number-of-bytes-to-copy (0x20==32)
+    │  023 DUP1       <- KEEP A COPY.
+    │  024 PUSH2 0217 <- CODECOPY ARG3: offset instruction number to copy from ARG: (x0217 = 535)
+    │  027 DUP4       
+    │  028 CODECOPY   <- CODECOPY OPCODE [535,567) -> MEMORY [0x80,0x80+32) 
+    │  028 CODECOPY      == copy latest 32 bytes of code -constructor paramets(uint256),
+    │  028 CODECOPY         appended by solc as raw data at end-of-code into memory)
+    │  029 DUP2       
+    │  030 ADD        
+    │  031 PUSH1 40   <- MSTORE ARG2: VALUE TO STORE
+    │  033 SWAP1      <- SETUP STACK: ARG1: 0x80, ARG2: 0x40
+    │  034 DUP2       <- KEEP COPY (MSTORE WILL CONSUME STACK-TOP-2)
+    │  035 MSTORE     <- memory[0x80:0x80+0x20) = unit256(0x40)
+    │                    update free-memory-pointer by shifting 32 bytes forward
+    │  036 SWAP1      
+    │  037 MLOAD      <- reads memory-value@0x40 (10000) into stack,
+    │                    to be consumed in next cinstructions.
+    │                   (COMMON PATTERN: before function's body is executed, 
+    │                                    its parameters are loaded in the stack)
+    └── BYTECODE RETRIEVING CONSTRUCTOR PARAMETERS } ──────── 
+    ┌─ CONSTRUCTOR BODY BYTECODE { ─────────────   totalSupply_ = _initialSupply; (10000)
+    │   (No jumps, so constructor execution follows)
+    │                      ( SSTORE ARG1: VALUE TO STORE -10000- )
+    │   038 PUSH1 00    ┐ <- SSTORE ARG2: DESTINATION SLOT IN STORAGE
+    │   040 DUP2        | <- DUPLICATE ARG1, USED LATER; BUT CONSUMED BY SSTORE
+    │   041 DUP2        | <- DUPLICATE ARG2, USED LATER, BUT CONSUMED BY SSTORE 
+    │   042 SSTORE      ┘ <- STORE 10000 to SLOT 0@STORAGE, sstore(0x00 /*slot dest*/, 0x2710 /* value*/) 
+    │ ┌─ balances[msg.sender] = totalSupply; { ───
+    │ │ 043 CALLER      <- push msg.sender to memory@0x00
+    │ │ 044 DUP2        <- keep copy of ARG consumed by MSTORE 
+    │ │ 045 MSTORE      <- memory[0x100?,0x100+0x20) = unit256(????)
+    │ │ 046 PUSH1 01    <- MSTORE VALUE ARG 1: (1 == storage slot for 'balance' map)
+    │ │ 048 PUSH1 20    <- MSTORE VALUE ARG 2: DST MEM POSICION 
+    │ │ 050 MSTORE      <- memory[0x20,0x20+0x20) = uint256(01) 
+    │ │ 051 SWAP2         
+    │ │ 052 SWAP1         
+    │ │ 053 SWAP2         
+    │ │ 054 SHA3        <- final storage key for balances[msg.sender] == Keccak256(mem@[0x00,0x40))
+    │ │                                   [mapping slot value, msg.sender /*key*/] == ─┴─────────┘ 
+    │ │ 055 SSTORE      <- 10000 /*totalSupply*/ -> STORAGE-SLOT SHA3[...]
+    │ └─ balances[msg.sender] = totalSupply; } ───
+    │   056 PUSH2 01d1  <- CODECOPY ARG1: number-of-bytes-to-copy (465 dec == Runtime code)
+    │   059 DUP1        <- COPY ARG. Upon return, indicates the EVM how many bytes to copy as code
+    │   060 PUSH2 0046  <- CODECOPY ARG2: start-copy-position (dec 70)
+    │   063 PUSH1 00    <- CODECOPY ARG3: DST MEMORY: 0x00 
+    │   065 CODECOPY    <- memory[0x00,0x00+0x01d1) = address(this).code[0x46:0x46+0x01d1)
+    │                      to be saved in blockchain as the contract's runtime code after return
+    │   066 PUSH1 00    <- 0x00 INDICATES "NO-ERROR" to EVM 
+    <<< 068 RETURN      <- RETURN. Hands control over to EVM.
+    │                      EVM will see that TX.to == 0x0 (contract creation), STACK-TOP = 0x00
+    │                      (no errors) and will finally store memory[0x00,0x01d1) as 
+    │                      new contract's runtime code.
+    XXX 069 STOP         STOP ("just in case", compiler safety, this code must never be reached)
+    └─── CONTRACT INITIALIZATION   END } ─────────────────────────────────────
+       
+    ┌─ RUNTIME CODE ─────────────────────
+    │  070 000 PUSH1 80  ··┐ Setup Solidity 
+    │  072 002 PUSH1 40    ├ Free-memory-pointer
+    │  074 004 MSTORE    ··┘ memory[0x40:0x40+32] = (uint256) 80
+    │  Short calldata stack -------------┐ if calldata is shorter than
+    │  075 005 PUSH1 04                  | 4 bytes, jump to 86 (fallback)
+    │  077 007 CALLDATASIZE              | <- takes no arguments, returns the size of "calldata" (func.signature + func.args)
+    │  078 008 LT                        | calldata-size < 4 ?
+    │  079 009 PUSH2 0056                |
+    >>>082 012 JUMPI        -------------┘ JUMP TO 0x56 (86) to revert if that's is the case.
+    │  - Function Selector {-------------  <-- "How Solidity routes incoming transactions" 
+                                           Extract first 4 bytes of calldata (function signature hash)
+    │  083 013 PUSH4 ffffffff            ┐ 
+    │  088 018 PUSH29 010(rep56          | <- push 29-byte-long 0x000000001000...00 
+    │  118 048 PUSH1 00                  | CALLDATALOAD ARG 1: 
+    │  120 050 CALLDATALOAD              | <- READ 32 bytes @ POS 00 (ARG 1)  YUL: calldataload(0)
+    │                                    |    (== push entire calldata to the stack)
+    │  121 051 DIV                       | <- DIV consumes stack-top-2 dividing calldata / weird 0x000000001000...000
+    │                                    |    (filter-out non-funct.signature, push 0x00...0070a08231 to stack)
+    │  122 052 AND                       ┘ <- consumes stack-top-2 (func.id, ffffffff), to make sure that 
+                                              signature hash is exactly 8-bytes-long (Safety Solidity compiler measure)
+       
+                                           "swith-case" for the different function (selectors)
+    │  123 053 PUSH4 18160ddd            ┐ Matches "totalSupply()"? Jump to 91
+    │  128 058 DUP2                      | <- DUP2 needed since EQ consumes stack, but we want to keep around
+    │  129 059 EQ                        |
+    │  130 060 PUSH2 005b                | 0x5b == 74 (jump to next case if no match)
+    >>>133 063 JUMPI                     ┘ 
+    │  134 064 DUP1                      ┐ Matches "balanceOf(address)? Jump to 130
+    │  135 065 PUSH4 70a08231            |
+    │  140 070 EQ                        |
+    │  141 071 PUSH2 0082                |
+    >>>144 074 JUMPI                     ┘
+    │  145 075 DUP1                      ┐ Matches "transfer(address,uint256)"?
+    │  146 076 PUSH4 a9059cbb            | Jump to 176
+    │  151 081 EQ                        |
+    │  152 082 PUSH2 00b0                |
+    >>>155 085 JUMPI                     ┘
+    │  156 086 JUMPDEST                  ┐ No match (and no fallback funct), revert!
+    │  157 087 PUSH1 00                  |
+    │  159 089 DUP1                      |
+    │  160 090 REVERT     }              ┘
+    │  FUNCTION WRAPPERS {                 "package" calldata -> func. body 
+                                           "package" func.body result -> user 
+                                           PACKING AND UNPACKING == "ETHEREUM’S ABI SPEC"
+                                            By the time a function body is executed, its 
+                                           arguments should be sitting comfortably in the stack
+(or inn memory if the data is dynamic)
+    │                                      totalSupply() func. wrapper
+    >>>161 091 JUMPDEST                  ┐  ┐
+    │  162 092 CALLVALUE                 |  | Non-payable check
+    │  163 093 DUP1                      |  |
+    │  164 094 ISZERO                    |  |
+    │  165 095 PUSH2 0067                |  |
+    >>>168 098 JUMPI                     |  |
+    │  169 099 PUSH1 00                  |  |
+    │  171 101 DUP1                      |  |
+    │  172 102 REVERT                    |  ┘
+    >>>173 103 JUMPDEST                  |  ┐ Calldata unpacker
+    │  174 104 POP                       |  | <- clean up zero left-over in the stack
+    │  175 105 PUSH2 0070                |  | 0x70 == 112 (mark return point -just after next JUMP-)
+    │  178 108 PUSH2 00f5                |  | 0xf5 == 245 (jump destination == function body)
+    >>>181 111 JUMP                      |  ┘
+    │                                    |  ┐ uint256 memory returner
+    >>>182 112 JUMPDEST                  |  |
+    │  183 113 PUSH1 40                  |  |┐ Read current Solidity free-memory-pointer
+    │  185 115 DUP1                      |  ||
+    │  186 116 MLOAD                     |  |┘
+    │  187 117 SWAP2                     |  |┐ copy value returned in stack by function-body in free-memory-space 
+    │  188 118 DUP3                      |  ||
+    │  189 119 MSTORE                    |  |┘
+    │  190 120 MLOAD                     |  |┐ loads mem.pointer(again),
+    │  191 121 SWAP1                     |  || compares it to previous mem.pointer
+    │  192 122 DUP2                      |  || (most likely in attempt to calculate size-of-returned-data)
+    │  193 123 SWAP1                     |  || Some residual data due to optimizer stays here
+    │  194 124 SUB                       |  |┘
+    │  195 125 PUSH1 20                  |  | <- probably hardcoded size due to optimizer tricks
+    │  197 127 ADD                       |  |
+    │  198 128 SWAP1                     |  |
+    <<<199 129 RETURN                    ┘  ┘ <- finally totalSupply is returned!!
+    │                                      balanceOf(address) function wrapper
+    >>>200 130 JUMPDEST                  ┐ ┐ non-payable check
+    │  201 131 CALLVALUE                 | |
+    │  202 132 DUP1                      | |
+    │  203 133 ISZERO                    | |
+    │  204 134 PUSH2 008e                | |
+    >>>207 137 JUMPI                     | |
+    │  208 138 PUSH1 00                  | |
+    │  210 140 DUP1                      | |
+    │  211 141 REVERT                    | ┘
+    >>>212 142 JUMPDEST                  | ┐ Calldata unpacker (balanceOf)
+    │  213 143 POP                       | |
+    │  214 144 PUSH2 0070                | |
+    │  217 147 PUSH20 0xff...(20bytes)   | |
+    │  238 168 PUSH1 04                  | | ARG TO CALLDATA:
+    │  240 170 CALLDATALOAD              | | <- read 32-bytes-of-calldata (address the arg passed to the fun. call)
+    │  241 171 AND                       | | <- Mask with 0xff...  for checking/masking.
+    │  242 172 PUSH2 00fb                | | <- return address after next jump ends.
+    >>>245 175 JUMP                      ┘ ┘
+                                           transfer(address,uint256) function wrapper
+    >>>246 176 JUMPDEST                  ┐ ┐ Non-payable check
+    │  247 177 CALLVALUE                 | |
+    │  248 178 DUP1                      | |
+    │  249 179 ISZERO                    | |
+    │  250 180 PUSH2 00bc                | |
+    >>>253 183 JUMPI                     | |
+    │  254 184 PUSH1 00                  | |
+    │  256 186 DUP1                      | |
+    │  257 187 REVERT                    | ┘
+    >>>258 188 JUMPDEST                  | ┐ Calldata unpacker
+    │  259 189 POP                       | |
+    │  260 190 PUSH2 00e1                | |
+    │  217 147 PUSH20 f(40dig)           | |
+    │  284 214 PUSH1 04                  | |
+    │  286 216 CALLDATALOAD              | |
+    │  287 217 AND                       | |
+    │  288 218 PUSH1 24                  | |
+    │  290 220 CALLDATALOAD              | |
+    │  291 221 PUSH2 0123                | |
+    >>>294 224 JUMP                      | ┘
+    >>>295 225 JUMPDEST                  | ┐ bool memory returner
+    │  296 226 PUSH1 40                  | |
+    │  298 228 DUP1                      | |
+    │  299 229 MLOAD                     | |
+    │  300 230 SWAP2                     | |
+    │  301 231 ISZERO                    | |
+    │  302 232 ISZERO                    | |
+    │  303 233 DUP3                      | |
+    │  304 234 MSTORE                    | |
+    │  305 235 MLOAD                     | |
+    │  306 236 SWAP1                     | |
+    │  307 237 DUP2                      | |
+    │  308 238 SWAP1                     | |
+    │  309 239 SUB                       | |
+    │  310 240 PUSH1 20                  | |
+    │  312 242 ADD                       | |
+    │  313 243 SWAP1                     | |
+    <<<314 244 RETURN    }        -------┘ ┘
+
+    ┌─ totalSuppy()           FUN.BODY { ─
+    >>>315 245 JUMPDEST                    
+    │  316 246 PUSH1 00                   
+    │  318 248 SLOAD     <- load storage at pos.1 into stack              
+    │  319 249 SWAP1     <- put return position ready for JUMP
+    >>>320 250 JUMP      <- return                 
+    └─ totalSuppy()           FUN.BODY } ─
+    ┌─ balanceOf(address)     FUN.BODY { ─
+    >>>321 251 JUMPDEST                  
+    │  322 252 PUSH20 0xff(20-bytes)     ┐ cast incoming calldata into the address type
+    │  343 273 AND                       ┘ <- mask 32-bytes stack input into 20-bytes 
+    │                                         REMEMBER: Ethereum-addresses are 20 bytes long
+    │                                                   EVM-stack operates  in 32-byte words
+    │                                      concatenate mapping position + key and  store in memory
+    │  344 274 PUSH1 00                  ┐┐ 
+    │  346 276 SWAP1                     || "upload" address from 
+    │  347 277 DUP2                      || stack to memory
+    │  348 278 MSTORE                    |┘   to be placed   at 0x00 in memory 
+    │  349 279 PUSH1 01                  | <- balance slot 
+    │  351 281 PUSH1 20                  |    to be placed at 0x20
+    │  353 283 MSTORE                    |    in memory
+    │  354 284 PUSH1 40                  |
+    │  356 286 SWAP1                     ┘
+    │  357 287 SHA3                      ┐ Calculate storage position and read it 
+    │  358 288 SLOAD                     | into the stack
+    │  359 289 SWAP1                     | <- "resurfaces" function wrapper's JUMPDEST 
+    >> 360 290 JUMP                      ┘ <- Call back function wrapper for Ethereum ABI post-processing
+    └─ balanceOf(address)     FUN.BODY } ─
+    ┌─ transfer(address,uint256)FUN.BODY{─
+    >> 361 291 JUMPDEST                  
+    │  362 292 PUSH1 00       ┐ require (_to != address(0))
+    │  364 294 PUSH20 f(40rep)|
+    │  385 315 DUP4           |
+    │  386 316 AND            |
+    │  387 317 ISZERO         |
+    │  388 318 ISZERO         |
+    │  389 319 PUSH2 0147     |
+    >> 392 322 JUMPI          |
+    │  393 323 PUSH1 00       |
+    │  395 325 DUP1           |
+    │  396 326 REVERT         ┘
+    >> 397 327 JUMPDEST       ┐ require(_value <=balances[msg.sender]);
+    │  398 328 CALLER         |
+    │  399 329 PUSH1 00       |
+    │  401 331 SWAP1          |
+    │  402 332 DUP2           |
+    │  403 333 MSTORE         |
+    │  404 334 PUSH1 01       |
+    │  406 336 PUSH1 20       |
+    │  408 338 MSTORE         |
+    │  409 339 PUSH1 40       |
+    │  411 341 SWAP1          |
+    │  412 342 SHA3           |
+    │  413 343 SLOAD          |
+    │  414 344 DUP3           |
+    │  415 345 GT             |
+    │  416 346 ISZERO         |
+    │  417 347 PUSH2 0163     |
+    │  420 350 JUMPI          |
+    │  421 351 PUSH1 00       |
+    │  423 353 DUP1           |
+    │  424 354 REVERT         ┘
+    >> 425 355 JUMPDEST       ┐ read balances[msg.sneder] value
+    │  426 356 POP            |
+    │  427 357 CALLER         |
+    │  428 358 PUSH1 00       |
+    │  430 360 SWAP1          |
+    │  431 361 DUP2           |
+    │  432 362 MSTORE         |
+    │  433 363 PUSH1 01       |
+    │  435 365 PUSH1 20       |
+    │  437 367 DUP2           |
+    │  438 368 SWAP1          |
+    │  439 369 MSTORE         |
+    │  440 370 PUSH1 40       |
+    │  442 372 DUP1           |
+    │  443 373 DUP4           |
+    │  444 374 SHA3           |
+    │  445 375 DUP1           |
+    │  446 376 SLOAD          ┘
+    │  447 377 DUP6           ┐ calculate and store new balances[msg.sender] value
+    │  448 378 SWAP1          |
+    │  449 379 SUB            |
+    │  450 380 SWAP1          |
+    │  451 381 SSTORE         ┘
+    │  452 382 PUSH20 0xff(20bytes)      ┐ read balance[_to] value
+    │  473 403 DUP6           |
+    │  474 404 AND            |
+    │  475 405 DUP4           |
+    │  476 406 MSTORE         |
+    │  477 407 SWAP1          |
+    │  478 408 SWAP2          |
+    │  479 409 SHA3           |
+    │  480 410 DUP1           |
+    │  481 411 SLOAD          ┘
+    │  482 412 DUP4           ┐ calculate and store new balances[_to] value.
+    │  483 413 ADD            |
+    │  484 414 SWAP1          |
+    │  485 415 SSTORE         |
+    │  486 416 SWAP3          |
+    │  487 417 SWAP2          |
+    │  488 418 POP            |
+    │  489 419 POP            |
+    >> 490 420 JUMP           ┘
+    XX 491 421 STOP           |
+    └─ transfer(address,uint256)FUN.BODY}─
+
+    ┌─ METADATA HASH { ───────────  
+    │  Unreachable code, introduced by the compiler as the hash of info like source code,
+    │  compilation options,...). When CBOR-decoded it looks like:
+    │  0xa165627a7a723058202c27c1ef4be478b21f663f0d0ecdd1c73638730ffebbff1...
+    │     b z z r 0 : / / ...
+    │  It can also be inspected with Remix -> Compile tab > Details panel > Metadata section
+    │  bzzr0:// indicating storage in SWARM PROTOCOL v0
+    │  (or ipfs0:// indicating storage in IPFS ...)
+    │                               
+    │  492 422 log1                 <- NO JUMPDEST after an STOP. Clear indication that 
+    │  493 ...                         this code is not reachable.
+    │  501 431 INVALID              <- Just another hint indicating that this is not real
+    │  502 432 INVALID                 bytecode but metadata.
+    │  503 ...
+    │  534 464 INVALID 
+    └─ METADATA HASH } ───────────  
+    ┌ HARDCODED CONSTRUCTOR ARGS. AS 32 BYTES.
+    │  equals 0x00..002710 (dec 10000)
+    │  535 STOP   
+    │  536 STOP   
+    │  552 STOP   
+    │  553 STOP   
+    │  554 ...    
+    │  564 STOP   
+    │  565 INVALID
+    │  566 LT     
+    └──────────────────────────────
+
+
+opcodes can push/consume to/from EVM’s stack|memory|contract-storage
+
+
+"DIVIDE-AND-CONQUER" STRATEGY, PUT FOCUS ON  OPCODES:
+
+- JUMPI    : JUMP(If) second position in stack is NOT  "0".
+- JUMPDEST : Safety measure mark location as valid jump target. 
+- RETURN   : halts execution, returning data from portion-of-EVM's-memory
+- STOP     : completely halts execution of contract.
+
+- It can be use by wallets, Dapps (Etherscan, ..., SC-auditors, )
+  verify that the produced bytecode matches the contract’s bytecode, then fetch 
+  the contract’s JSON ABI and look at the NATSPEC documentation of the function 
+  being called.
+- bzzr://a6465fc1ce7ab1a92906ff7206b23d80a21bbd50b85b4bde6a91f8e6b2e3edde
+
+
+we would need to connect to the same Swarm network to which the metadata file was uploaded to
+(using for example swarm-gateways.net or setting up a local Swarm node)
+[[}]]
+
+
+
 ● Non Classified / TODO: [[{00_PM.TODO]]
   • Mnemonic to Seed: [[{wallet.mnemonics}]]
   @[https://ethereum.stackexchange.com/questions/25484/could-address-reuse-leak-your-mnemonic-seed/25705#2570://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki#from-mnemonic-to-seed]
@@ -9893,7 +10407,7 @@ https://eips.ethereum.org/EIPS/eip-1820
     @[https://github.com/EthVM/EthVM/tree/develop/apps/processing/kafka-streams/src/main/kotlin/com/ethvm/kafka/streams]
 </pre>
 
-  • Solidity Security Considerations [[{12_solidity,security.101}]]
+ • Solidity Security Considerations [[{12_solidity,security.101}]]
 @[http://solidity.readthedocs.io/en/develop/security-considerations.html#security-considerations]
 
  • Ethereum Package Registry [[{20_QA.solidity,12_solidity,20_QA.UX,00_PM.radar}]]
@@ -9951,9 +10465,6 @@ https://eips.ethereum.org/EIPS/eip-1820
    - How to make miner to mine only when there are Pending Transactions?
      As of now the geth miner running on my system mines even empty blocks.
    - How to do that same in Besu, Parity, ...?
-
- • Deconstructing a Sol. Contract [[{10_EVM.debugging,12_solidity}]]
-@[https://blog.openzeppelin.com/deconstructing-a-solidity-contract-part-i-introduction-832efd2d7737/]
 
  • Ether Vault (Anti-theft) [[{wallet.cloud,security}]]
    https://www.blunderingcode.com/ether-vaults/
@@ -11279,6 +11790,49 @@ REF: @[https://frax.finance/whitepaper/]
      and threats to frequently used smart contracts.
 [[}]]
 
+● TX HASH vs TX Receipt: [[{101]]
+  - When a transaction is signed and sent for mining, an inmutable 
+    TX-hash is created, that will be used as TX unique ID.
+
+  - When the transaction is finally mined, the TX receipt is created. 
+    It includes the original txHash, plus TX mining information:
+    receipt: {
+      transactionHash  : '0xc9f5...32bytes', <- Inmutable hash created before mining
+      cumulativeGasUsed: 28719,        <- Note
+      gasUsed          : 28719,
+      status           : false,        <- The TX reverted. Note. It was mined, and 
+                                          ethers spent, but not with the expected
+                                          "happy-path" behaviour.
+      transactionIndex : 0,            <- order of TX in its block
+      blockNumber      : 440, 
+      blockHash        : '0x...32bytes...',
+      from             : '0x05..20bytes address',
+      to               : '0x40..20bytes address',
+      logsBloom        : '0x00...'   , <- Bloom index of events emitted by the TX.
+                                          (empty when TX is reverted)
+    }
+
+  - NOTE: When a new TX has not yet being mined it can be resend with 
+    same TX.nonce and different max-gas and gas-price generating a new TX-hash.
+    The first TX to be included will invalidate any concurrent one since 
+    the TX.nonce will not be valid and discarded automatically by network nodes.
+[[}]]
+
+  > { tx: '0xf47f...41c',
+  >   receipt:
+  >    { transactionHash: '0x1234....',   <- Use it to identify MINED transaction.
+  >      blockHash: ...,
+  >      logs: [...],
+  >      status: '0x01',
+  >      gasUsed: 298373,
+  >      ...
+  >    },
+  >   logs: [...]                         <- logs == "emitted events"
+  > }
+
+
+[[}]]
+
 [[{00_PM.BACKLOG]]
   • Aragon OS: Advanced deployment [[{dev_framework.aragon,02_use_case.finance.DAO,security.governance}]]
   @[https://aragon.one/]
@@ -11842,4 +12396,91 @@ Custom ethereum client that uploads blockchain data to BigQuery
      └ event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
    - function owner() view external returns(address);
    [[}]]
+
+ • Polygon Edge 
+   https://polygon.technology/solutions/polygon-edge/ 
+
+ • ERC-4626, El Estándar Que Podría Impulsar la Nueva Ola de las DeFi
+   https://decrypt-co.cdn.ampproject.org/c/s/decrypt.co/es/99721/conoce-el-erc-4626-el-estandar-que-podria-impulsar-la-nueva-ola-de-las-defi
+
+ • 101 Ver "Ethereum Merge Update: End of PoW, Long Live PoS!" en YouTube
+   https://youtu.be/jy4QgwdTb7o 
+
+ • Ganache 7 Ethereum Simulator - Building on Web3 is now easier and faster than ever before
+   https://trufflesuite.com/blog/introducing-ganache-7/
+
+ • use_case.identity, standards
+   https://forum.eid.as/t/european-digital-identity-architecture-and-reference-framework/216/2 
+
+ • Ethereum 2.0 pide ayuda a la comunidad para la transición de Ethereum - Bolsamania.comh
+   ttps://www.bolsamania.com/noticias/criptodivisas/ethereum-20-pide-ayuda-a-la-comunidad-para-la-transicion-de-ethereum--8734838.html 
+
+ • Solidity 0.8.10 Release Announcement | Solidity Blog
+   https://blog.soliditylang.org/2021/11/09/solidity-0.8.10-release-announcement/ 
+   In our benchmarks, the new code transform has resulted in significant runtime gas savings,
+   although at the cost of a slight increase in code size.
+   While previously any Yul variable had a fixed position on stack during its entir
+   e lifetime, the new code transform drops this restriction and attempts to determ
+   ine a more optimal layout that (1) reduces the required amount of swapping and 
+   thereby reduces gas cost and (2) keeps overall stack usage as low as possible to 
+   work against stack-too-deep errors.
+
+ • komputing/KEthereum: Kotlin library for Ether
+   https://github.com/komputing/KEthereum 
+
+ • use_case.identity.SSI, standards
+   https://gataca.io/blog/the-verifier-universal-interface-vui-releases-its-first-official-draft-to-achieve-interoperability-between-id-wallets-and-verifier-components 
+
+ • 8 April 2022 - HackMD
+   https://hackmd.io/@benjaminion/eth2_news/https%3A%2F%2Fhackmd.io%2F%40benjaminion%2Fwnie2_220408 
+   https://consensys.net/blog/blockchain-explained/the-ethereum-2-0-beacon-chain-is-here-now-what/
+   https://consensys.net/blog/blockchain-explained/what-is-ethereum-2/
+   https://consensys.net/blog/blockchain-explained/how-to-safely-migrate-your-ethereum-2-0-validator-client/
+   https://consensys.net/blog/developers/how-to-monitor-your-eth2-validator-and-analyze-your-pl/
+   https://cdn.consensys.net/uploads/2022/04/14055036/Merge-FeatureBlock-Become_A_Validator.png
+
+ • execution-specs/arrow-glacier.md 
+   https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/arrow-glacier.md 
+
+ • execution-specs/arrow-glacier.md 
+      EU, eIDAS, Wallets:The revision process of the #eIDAS regulation 
+   contains three main components for the technical process, which is 
+   done in parallel to the legislative process. In the following we 
+   provide you with a brief overview and further resources:1. The eIDAS 
+   Expert group, works on the architecture reference framework #ARF 
+   #toolbox as well as the revised identity framework. The group 
+   consists of representatives of all EU member states and is divided 
+   into four working groups. More info about the eIDAS expert 
+   group:https://lnkd.in/edi87tFP2. The #European Digital #Identity 
+   Reference #Wallet #EUDI will be based on the proposed framework and 
+   toolbox and a public tender provides the development, consultancy and 
+   support for the #EUDI. You can find the tender here: 
+   https://lnkd.in/eSZ6e-fY3. The Large scale #pilots will use the EUDI 
+   reference wallet as well as other suitable wallets to pilot different 
+   use cases. There will be three to four consortia, consisting of a 
+   minimum of three member states leading the consortia. Currently, 
+   these consortia are forming and prepare the application for the 
+   tender, which is due on 17.08.2022. More information about the LSP: 
+   https://lnkd.in/enrs5h5iFor further information about the whole 
+   process you can also read our summary
+ • Pulse https://www.linkedin.com/pulse/search-engines-web3-conor-svensson/ 
+
+
+ • https://ethereum.stackexchange.com/questions/15364/ecrecover-from-geth-and-web3-eth-sign/16072#comment112406_16072
+   OZ's ECDSA has a tool to generate these wrapped messages [[{signature.ecdsa_secp256k1.recovery]]
+   as well as root out additional corner cases in ECDSA.
+   I wrote an article describing what I think is the right way to use 
+   web3's hashMessage() and sign(), Solidity's ecrecover(), and Open 
+   Zeppelin's ECDSA lib.
+   https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/cryptography/ECDSA.sol
+   https://medium.com/@yaoshiang/ethereums-ecrecover-openzeppelin-s-ecdsa-and-web3-s-sign-8ff8d16595e1
+   See also:
+   - http://coders-errand.com/details-of-ecdsa-signatures/
+   - https://blog.ricmoo.com/verifying-messages-in-solidity-50a94f82b2ca  
+  [[}]]
+
+ • [[{20_QA.error_control]]
+   https://ethereum.stackexchange.com/questions/109457/how-to-bubble-up-a-custom-error-when-using-delegatecall custom_errors
+   [[}]]
+ 
 [[}]]
