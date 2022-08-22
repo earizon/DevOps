@@ -573,7 +573,7 @@
   ==========================
   Based on previous work from: https://github.com/shanefontaine/ethereum-wallet-comparison
 
-  Lecture: 1: yes/OK, 0: yes/KO, p: In-progress
+  Lecture: 1: yes/OK/supported, 0: no/KO/unsupported, p: In-progress
 
            
                                  ┌······································· https://authereum.org
