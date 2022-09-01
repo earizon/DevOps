@@ -1,8 +1,7 @@
 ● Apropos:
   For comments, requests and feedback feel free to open an issue or 
   open a Pull-Request:
-@[https://github.com/earizon/txt_world_domination/blob/main/ETHEREUM.txt]
-
+@[https://github.com/earizon/ethereum/blob/master/notes.txt]
 
 - Topics Acronyms:
   - PM  : Project Management
@@ -337,7 +336,8 @@
   ─────────────────────│────│─│─│─────────────────────────────────────────────────────
   ethereum             |    | | |
   └ mainnet/1          | ETH| |y|
-  └ testnet kovan/42   | KOV| | |
+  └ testnet kovan/42   | KOV| | | Kovan only works with Parity Clients causing some troubles
+                       |    | | | https://medium.com/authereum/getting-ethereum-transaction-revert-reasons-the-easy-way-24203a4d1844
   └ testnet görli/5    | GOR| |y|
   └ testnet ropsten/3  | ROP| | | Ropsten deprecated by Ethereum fundation
   └ testnet rinkeby/4  | RIN| | |
@@ -606,19 +606,19 @@
  Testnet Availability        |1|1|1|0|1|1|1|1|1|0|1|1|0|1|1|1|1|1|0|0|
  SC-based(vs EOAs) Accounts  |1|1|0|1|0|1|1|0|0|1|0|0|0|0|0|0|0|0|0|0|
  Pay Gas in Tokens           |1|1|0|0|0|p|1|0|0|0|0|0|0|0|0|0|0|0|0|0|<- vs just ethers
- Web2.0 Style Login          |1|0|1|1|0|1|0|1|1|1|0|1|0|0|1|1|0|1|0|0|<- familiar username/password [[{security.AAA}]]
+ Web2.0 Style Login          |1|0|1|1|0|1|0|1|1|1|0|1|0|0|1|1|0|1|0|0|<- familiar username/password [[security.AAA]]
  Purchase ETH/Tokens In App  |1|0|1|1|p|1|0|0|0|1|1|0|1|0|1|0|1|0|1|1|
  Web3 Provider Available     |1|0|1|0|1|0|0|1|0|1|1|0|1|0|1|1|1|1|0|1|
  Software Token 2FA          |1|0|1|0|0|p|0|1|0|0|0|0|0|0|1|0|0|0|0|0|
  Hardware Token 2FA          |1|0|0|0|0|p|0|0|0|0|0|0|0|0|0|0|0|0|0|0|
  Hardware Wallet Integration |1|0|0|0|1|p|0|0|0|1|0|0|0|1|0|0|1|0|0|1|
- Transaction Firewall        |1|0|0|1|0|p|0|0|0|0|0|0|0|0|0|0|0|0|0|0|<- TX check against "firewall" to prevent attacks [[{security}]]
+ Transaction Firewall        |1|0|0|1|0|p|0|0|0|0|0|0|0|0|0|0|0|0|0|0|<- TX check against "firewall" to prevent attacks [[security]]
  Off-chain Login             |1|0|1|1|1|0|1|1|1|1|1|1|1|1|1|1|1|1|1|1|<- no need for "TX-logins" in different devices
  No Mobile App Required      |1|0|1|0|1|1|1|1|1|1|0|0|0|1|1|1|1|1|0|0|
  No Hardware Required        |1|1|1|1|1|1|1|1|1|1|1|1|1|0|1|1|1|1|1|1|
  Sandboxed Key Storage       |1|0|1|1|1|0|1|1|1|1|1|1|1|0|1|1|1|1|1|1|<- or iframes and not easily accessible
  Upgradeable/Modular S.C.    |1|1|0|1|1|1|1|0|0|1|0|0|0|0|0|0|0|0|0|0|<- SC-based User's contract is upgradeable/modular
- Batched Transactions        |1|0|0|0|0|1|1|1|0|0|0|0|0|0|0|0|0|0|0|0|<- Send N TX as 1 (atomic) onchain TX [[{architecture.batch,scalability.offchain,transaction.signature}]]
+ Batched Transactions        |1|0|0|0|0|1|1|1|0|0|0|0|0|0|0|0|0|0|0|0|<- Send N TX as 1 (atomic) onchain TX [[architecture.batch,scalability.offchain,transaction.signature]]
  Open Sourced                |1|1|1|1|1|1|1|0|1|1|1|1|1|1|1|1|1|1|1|1| 
 [[}]]
 
@@ -2471,7 +2471,7 @@ The signed TX is then sent to the network.    |   hacked)
 
     - Unicode string literals supported now.  unicode"Hello 😃"
 
-    - state mutability of functions can now be restricted during inheritance                        [qa]
+    - state mutability of functions can now be restricted during inheritance    [[20_QA]]
       with "pure" and "view".
 
     - structs and arrays containing mapping can only be used in storage.
@@ -2512,7 +2512,7 @@ The signed TX is then sent to the network.    |   hacked)
         - called whenever the call data is empty (with/without ether received).
 
   - New Features
-    - try/catch statement allows to react on failed external calls.               [qa][error-handling]
+    - try/catch statement allows to react on failed external calls.     [[20_QA.error_control]]
     - "struct" and "enum" types can be declared at file level.
     - Array slices can be used for calldata arrays.
       e.g.: low-level way to decode function call payload
@@ -3289,19 +3289,17 @@ this.confirmPurchase(...) # External call
 ● ERROR CONTROL [[{12_solidity.error_control,transaction,10_EVM.101,01_doc_has.diagram,13_SLC.debugging,10_EVM.implementation.besu,10_EVM.events,13_SLC.testing,transaction,dev_framework.web3j,20_QA.error_control]]
 @[https://solidity.readthedocs.io/en/v0.4.24/control-structures.html#error-handling-assert-require-revert-and-exceptions]
 
-  Error Management:
-  - Solidity uses state-reverting ("rollback") exceptions to handle errors:
-    Capturing ("try-catching") Exceptions IS NOT POSSIBLE:
-      EVM rollbacks any stat change in current call and all its sub/super-calls
-      including any events emitted up until the rollback.
-      (there is no safe way to continue execution while warrantying atomicity
-       and reproducibility of results)
+  ERROR MANAGEMENT: 
+
+  - When an error (revert/...) arises the EVM rollbacks any state-change in the 
+    current call and all its sub/super-calls including any events emitted up
+    until the rollback since there is no safe way to continue execution while 
+    warrantying atomicity and reproducibility of results.
   - TX is still mined and TXReceipt status flaged with "fail" error, but
     the execution of the mined will not modify any state. TX will just consume
     gas and record information about the error.
     See Example failed TX mined:
   @[https://etherscan.io/tx/0x9f00a37416a64735b02ab76da4477ea297bfd4923b1564c1b3579d542b3f4071]
-
 
   └ assert( "my code-logic assertion");
     - Represent a condition that must never happen unless
@@ -3418,6 +3416,7 @@ this.confirmPurchase(...) # External call
     ...
   }
 
+
   Related. Extracted from:
   @[https://besu.hyperledger.org/en/stable/HowTo/Send-Transactions/Revert-Reason/]
 
@@ -3460,26 +3459,29 @@ this.confirmPurchase(...) # External call
        import org.web3j.protocol.exceptions.TransactionException;
        import java.util.concurrent.CompletableFuture;
 
-          try {
-            // ... some code waiting for TX mining results
-            CompletableFuture<SomeObjectDTO> futureResult = new CompletableFuture();
-                             myContractProxy.doSendLog2BlockchainAsync(some_input_data, futureResult);
-          } catch(Throwable e /* capture "everything */) {
-            if (e instanceof TransactionException) {
-              TransactionException te = (TransactionException) e;
-              Optional<TransactionReceipt> tr = te.getTransactionReceipt();
-              if (tr.isPresent()) {
-                // https://dhondt.tech/blog/2019/1/Web3j-retrieve-revert-reason.html
-                System.err.println"revert reason:"+tr.get().getRevertReason());
-              } else {
-                System.err.println("txReceipt not present");
-              }
-            }
-          }
+       try {
+         // ... some code waiting for TX mining results
+         CompletableFuture<SomeObjectDTO> futureResult =
+                 new CompletableFuture();
+         myContractProxy.doSendLog2BlockchainAsync(some_input_data, futureResult);
+       } catch(Throwable e /* capture "everything */) {  /* try-catch, Solidity 0.8 */
+         if (e instanceof TransactionException) {
+           TransactionException te = (TransactionException) e;
+           Optional<TransactionReceipt> tr = te.getTransactionReceipt();
+           if (tr.isPresent()) {
+             // https://dhondt.tech/blog/2019/1/Web3j-retrieve-revert-reason.html
+             System.err.println"revert reason:"+tr.get().getRevertReason());
+           } else {
+             System.err.println("txReceipt not present");
+           }
+         }
+       }
+
   #############################
   # try/catch (Solidity 0.8+) #
   #############################
-  - Ex extracted from @[https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC1155/ERC1155.sol]
+  - Example extracted from
+  @[https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC1155/ERC1155.sol]
 
     try IERC1155Receiver(to).onERC1155Received(... )
         returns (bytes4 response) {
