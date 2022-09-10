@@ -415,6 +415,7 @@
                        |    | | | networks. Fees collected from this
                        |    | | | bridge are partially used to purchase
                        |    | | | carbon offsets.
+                       |    | | | - 
   ---------------------+----|-|-|-----------------------------------------------------
   Metadium Main./11    |META| | | Self Sov. Identity with 2 Factor Authentication
   └ Testnet/12         | KAL| | |
@@ -648,10 +649,10 @@
 
   - Ethereum use Merkle Patricia Tries (with roots hashed stored in block-header) for:
     ✓ root-of-state:  *1
-      · trie-path : sha3(ethereumAddress)
+      · trie-path : keccak256(ethereumAddress)
       · trie-value: rlp(ethereumAccount) ← nonce, balance,root-of-contract-storage, codeHash
                                                           └───────────┬──────────┘
-    ✓ root-of-transactions:                                 trie-path : sha3(position-of-variable)
+    ✓ root-of-transactions:                                 trie-path : keccak256(position-of-variable)
       · trie-path : rlp(transactionIndex)                   trie-value: rlp-encoding of storage value
       · trie-value: rlp(transaction)?
 
@@ -698,8 +699,8 @@
                leaf nodes first, then its leaf-parent, then leaf-grandparents,
                ... finally the root-node.
 
-    • p0..pF values := NULL|sha3(rlp(pointed-node))
-                            └─┬─┘
+    • p0..pF values := NULL|keccak256(rlp(pointed-node))
+                            └───┬───┘
       "Merkle part" of the Patricia trie.
       KEY POINTs: It root-hash is publicly known, then anyone can
                   provide a proof that the trie has a given value
@@ -2552,7 +2553,7 @@ The signed TX is then sent to the network.    |   hacked)
                              • storage of constants (strings,..)
     --asm sourceFile.sol
 
-  • LINKIN
+  • LINKING:
     • Replace bytecode placeholders (__$...34 chars...$__) with
       with actual library addresses, where the 34 chars is the
       keccak256("fully-qualified-library-name")
@@ -2990,7 +2991,7 @@ The signed TX is then sent to the network.    |   hacked)
   - PROBLEM: Mappings are virtually initialized:
     - every possible key exists mapped to zero-byte-rep
     - keys are NOT stored in the map.
-    - values are stored at the state-memory address == sha3(key)
+    - values are stored at the state-memory address == keccak256(key)
 
   - Solution: @[#solidity_storage_patterns]
 
@@ -3099,12 +3100,10 @@ addmod(uint x, uint y, uint k)
   returns (uint): /* compute (x + y) % k */
 mulmod(uint x, uint y, uint k)
   returns (uint): /* compute (x * y) % k */
-keccak256(...)
+keccak256(...) (deprecated alias: sha3(...) )
   returns (bytes32): compute Ethereum-SHA-3 hash
                 of the (tightly packed) arguments
   - See also <a href="https://ethereum.stackexchange.com/questions/10173/different-hash-values-for-keccak256-functions">keccak256 in web3js</a>
-sha3(...)
-  returns (bytes32): alias to keccak256()
 sha256(...)
   returns (bytes32): compute SHA-256 hash of the
                       (tightly packed) arguments
@@ -3139,7 +3138,7 @@ ecrecover
    }
 
  Comparing strings:
-   sha3(      "string1" ) == sha3("string2")  ← sha3("...") translates to sha3(bytes("..."))
+   keccak256(      "string1" ) == keccak256("string2")  ← keccak256("...") translates to keccak256(bytes("..."))
    ^^^^
    remember: sha3 is an alias for keccak256
    WARN :  Ethereum SHA3 != SHA3-NIST standard
@@ -3147,38 +3146,34 @@ ecrecover
    Keccak-256     5f16f4c7f149ac4f9510d9cf8cf384038ad348b3bcdc01915f95de12df9d1b02
    SHA3-256-NIST  7f5979fb78f082e8b1c676635db8795c4ac6faba03525fb708cb5fd68fd40c5e
 
- check if string is empty:
-<a TODO href="XXX">Check white-space paddings</a>
-bool stringNotEmpty = bytes(myTestedString).length &gt; 0; // alt 1, check underlying bytes array length
-                                            ^^^^^^^
-                                length implemented for
-                                bytes, not (yet) for string
+ - check for non-empty strings)
+   bytes(myTestedString)  .length & 0;         // alt 1, check bytes array length
+                                               // (.length not(yet) for string)
+   keccak256(myTestedString)  != keccak256("") // alt 2, check  keccak256 [[}]]
 
-bool stringNotEmpty = sha3 (myTestedString) != sha3("")    // alt 2, check sha3
+ - Check white-space paddings: [[{00_PM.TODO}]]
 
- uint256 ←→ Strings:
-    // https://ethereum.stackexchange.com/questions/6591/conversion-of-uint-to-string
-    function uint2str(uint _i) internal pure returns (string memory _uintAsString) {
-      if (_i == 0) {    return "0"; }
-        uint j = _i;
-        uint len;
-        while (j != 0) { // calculate decimals
-            len++;
-            j /= 10;
-        }
-        bytes memory bstr = new bytes(len);
-        uint k = len - 1;
-        while (_i != 0) {
-            bstr[k--] = byte(uint8(48 + _i % 10));
-            _i /= 10;
-        }
-        return string(bstr);
-    }
- bytes32 ←→ Strings:
-
-As of feb 2021 you can do
-bytes32 foo = "hello";
-string memory bar = string(abi.encodePacked(foo));
+ - uint256 to/from Strings:
+   // https://ethereum.stackexchange.com/questions/6591/conversion-of-uint-to-string
+   function uint2str(uint _i) internal pure returns (string memory _uintAsString) {
+     if (_i == 0) {    return "0"; }
+       uint j = _i;
+       uint len;
+       while (j != 0) { // calculate decimals
+           len++;
+           j /= 10;
+       }
+       bytes memory bstr = new bytes(len);
+       uint k = len - 1;
+       while (_i != 0) {
+           bstr[k--] = byte(uint8(48 + _i % 10));
+           _i /= 10;
+       }
+       return string(bstr);
+   }
+ - bytes32 to/from Strings:
+   bytes32 foo = "hello";
+   string memory bar = string(abi.encodePacked(foo));
 
 
  • STRING LIBRARIES:
@@ -12482,5 +12477,12 @@ Custom ethereum client that uploads blockchain data to BigQuery
  • [[{20_QA.error_control]]
    https://ethereum.stackexchange.com/questions/109457/how-to-bubble-up-a-custom-error-when-using-delegatecall custom_errors
    [[}]]
+
+ • https://github.com/NethermindEth/sedge
+   A one click setup tool for PoS network/chain validators. 
+   Currently, Sedge is designed primarily for solo stakers and testnet 
+   devs of the Beacon Chain and the Merge (Ethereum). Sedge generates 
+   docker-compose scripts for the entire on-premise validator setup 
+   based on the chosen client. 
  
 [[}]]
