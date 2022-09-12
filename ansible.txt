@@ -1,0 +1,1368 @@
+● Ansible Summary: [[{ansible.101]]
+- ansible-doc:  101,security.secret_management,qa #[ansible_summary]
+ @[https://docs.ansible.com/ansible/latest/cli/ansible-doc.html]
+ @[https://github.com/tldr-pages/tldr/blob/master/pages/common/ansible*]
+
+  Display information on modules installed in Ansible libraries.
+  Display a terse listing of plugins and their short descriptions.
+
+  $ ansible-doc --list \    ← List available action plugins (modules):
+        --type $pluginType    (optional) filter by type
+
+  $ ansible-doc $plugName \ ← Show information for plugin
+  $  --type $pluginType       (optional) filter by type
+
+  $ ansible-doc \           ← Show the playbook snippet for
+  $ --snippet $plugName       action plugin (modules)
+  $ --json*                  (optional) dump as JSON
+
+- ansible-playbook:
+@[https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html]
+  Execute tasks defined in playbook over SSH.
+
+  $ ansible-playbook $playbook   \ ← Run tasks in playbook:
+      -i $inventory_file01       \ ← Optional. def /etc/ansible/hosts → ./hosts
+      -i $inventory_file02       \ ← Optional.
+      -e "$var1=val1 $var2=val2" \ ← Optional. Inject env.vars into task execution
+      -e "@$variables.json"      \ ← Optional. Inject env.vars into task execution from json
+      --tags $tag1,tag2          \ ← Optional. Run tasks in playbook matching tags.
+      --start-at $task_name      \ ← Optional. Run tasks in playbook starting at task.
+      --ask-vault-pass*                ← alt.1. Ask for secrets interatively
+                                        (alt.B_1 --vault-password-file*passFile*)
+                                        (alt.B_2 export ANSIBLE_VAULT_PASSWORD_FILE=...)
+                                        See @[#ansible_handling_secrets]
+                                        for more info on secret management
+
+- ansible-galaxy: Create and manage Ansible roles.
+@[https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html]
+  $ ansible-galaxy install $username.$role_name ← Install a role
+  $ ansible-galaxy remove  $username.$role_name ← Remove a role
+  $ ansible-galaxy list                         ← List installed roles
+  $ ansible-galaxy search $role_name            ← Search for a given role:
+  $ ansible-galaxy init   $role_name            ← Create a new role
+
+- ansible : Manage groups of computers (/etc/ansible/hosts) over SSH
+  $ ansible $group --list-hosts                 ← List hosts belonging to a group
+  $ ansible $group  -m ping                     ← Ping host group
+  $ ansible $group  -m setup                    ← Display facts about host-group
+
+  $ ansible $group  -m command -a 'command' \   ← Execute a command on host-group
+  $    --become \                               ← (Optional) add admin privileges
+  $    -i inventory_file                        ← (Optional) Use custom inventory
+
+- *layout best practices*                          ║ *Controller*  1 ←→ N  ┌─→ *Module*
+(Recommended, non─mandatory)                       ║                       │
+best practice file layout approach:                ║ *Machine   *          │  (community pre─packaged)
+────────────────────────────────────────────────   ║  ^                    │ ─ abstracts recurrent system task
+production            # inventory file             ║─ host with            │ ─ Provide the real power of Ansible
+staging               # inventory file             ║  installed Ansible    │   avoiding custom scripts
+                                                   ║  with modules         │ ─ $ ansible─doc "module_name"
+group_vars/           # ← assign vars.             ║  prepakaged ←─────────┘ ─ Ex:
+                      #   to particular groups.    ║  and*config.files*        user:    name=deploy group=web
+  all.yml             # ← Ex:                      ║      └─┬────────┘         ^             ^            ^
+  │---                                             ║     1) $ANSIBLE_CONFIG  module   ensure creation of'deploy'
+  │ntp: ntp.ex1.com                                ║     2) ./ansible.cfg    name     account in 'web' group
+  │backup: bk.ex1.com                              ║     3) ~/.ansible.cfg   (executions are idempotent)
+                                                   ║     4) /etc/ansible/ansible.cfg
+  webservers.yml     # ← Ex:                       ║     Ex:
+  │---                                             ║     [defaults]
+  │apacheMaxClients: 900                           ║     inventory = hosts
+  │apacheMaxRequestsPerChild: 3000                 ║     remote_user = vagrant
+                                                   ║     private_key_file = ~/.ssh/private_key
+  dbservers.yml      # ← Ex:                       ║     host_key_checking = False
+  │---                                             ║─ "host" inventory file
+  │maxConnectionPool: 100                          ║         listing target servers,groups
+  │...                                             ║
+                                                   ║
+host_vars/                                         ║ Role   N  ←────→ 1   Playbook        1 ←─────→ N tasks
+   hostname1.yml      # ←assign variables          ║    ^                    ^                         ^
+   hostname2.yml      #  to particular systems     ║ Mechanism to          ─ main yaml defining        single proc.
+                                                   ║ share files/...         task to be executed       to execute
+library/              # (opt) custom modules       ║ for reuse *2          ─ Created by DevOps team
+module_utils/         # (opt) custom module_utils  ║@[https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html]
+                      #       to support modules   ║
+filter_plugins/       # (opt) filter plugins       ║*RUN SEQUENCE*
+                                                   ║ |playbook| 1←→N |Play| 1 → apply to → N |Hosts|
+webservers.yml        # ← Ex playbook:             ║                  ↑
+│---                  #   Map                      ║                  1
+│- hosts: webservers  # ← webservers─group         ║                  └─(contains)→ N |Task| 1→1 |Module|
+│                     #   to                       ║  ┌────────────────────────────────┘
+│  roles:             # ← roles                    ║  └→ each task is run in parallel across hosts in order
+│    - common         #                            ║     waiting until all hosts have completed the task before
+│    - webtier        #                            ║     moving to the next.(default exec.strategy, can be switched to "free")
+                                                   ║     | - name: ....
+dbservers.yml         # ← Ex playbook for db─tier  ║     |   hosts: groupTarget01
+site.yml              #*master playbook*           ║     |  *serial:*   # ←  Alt1: serial schedule-tunning.
+│---                    (whole infra)              ║     |  *  - 1      # ←        first in 1 host
+│# file: site.yml                                  ║     |  *  - "10%"  # ←        if OK, runs 10% simultaneously
+│- import_playbook: webservers.yml                 ║     |  *  - 30     # ←        finally 30 hosts in parallel
+│- import_playbook: dbservers.yml                  ║     |  tasks: ...
+                                                   ║     |# *strategy: free* ← Alt2:  Don't wait for other hosts
+                                                   ║
+*Role layout*                                      ║*|Playbook Play|*
+roles/                                             ║  INPUT
+├ webtierRole/     # ← same layout that common     ║ |Playbook| →  *ansible─playbook*  → Gather      ────→ exec tasks
+│ ...                                              ║                ^                    host facts          │
+├ monitoringRole/  # ← same layout that common     ║                exec tasks on       (network,            v
+│ ...                                              ║                the target host** *  storage,...)     async Handlers
+├─common/          # ← Common Role.                ║                                     └────┬────┘      use to:
+│ ├─tasks/         #                               ║                           Ussually gathered facts    service restart,
+│ │ └─ main.yml    #                               ║                           are used for               ...
+│ ├─handlers/      #                               ║                          *Conditional*Include. Ex:
+│ │ └─ main.yml    #                               ║                           ...
+│ ├─templates/     #                               ║                           - *include*: Redhat.yml
+│ │ └─ ntp.conf.j2 # ← notice .j2 extension        ║                             *when*: ansible_os_family == 'Redhat'
+│ ├─files/         #                               ║ Reminder:
+│ │ ├─ bar.txt     # ← input to   copy─resource    ║@[https://docs.ansible.com/ansible/2.4/playbooks_reuse_includes.html]
+│ │ └─ foo.sh      # ← input to script─resource    ║ "include"        ← evaluated @ playbook parsing
+│ ├─vars/          #                               ║ "import"         ← evaluated @ playbook execution
+│ │ └─ main.yml    # ← role related vars           ║ "import_playbook"← plays⅋tasks in each playbook
+│ ├─defaults/      #                               ║ "include_tasks"
+│ │ └─ main.yml    # ← role related vars           ║ "import_tasks"
+│ │                  ← with lower priority         ║
+│ ├─meta/          #                               ║*command module*
+│ │ └─ main.yml    # ← role dependencies           ║─ Ex:
+│ ├─library/       # (opt) custom modules          ║. $ ansible server01 -m command -a uptime
+│ ├─module_utils/  # (opt) custom module_utils     ║                     ^^^^^^^^^^
+│ └─lookup_plugins/# (opt) a given 'lookup_plugins'║                     default module. Can be ommited
+│                          is used                 ║  testserver │ success │ rc=0 ⅋⅋
+    ...                                            ║  17:14:07 up  1:16,  1 user, load average: 0.16, ...
+═══════════════════════════════════════════════════╩════════════════════════════════════════════════════════════════
+**1:*@[https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html]
+
+────────────────────────────────────────────────────────────────────────────────
+• playbook-layout:
+                                           *TASK vs ROLES PLAYBOOK LAYOUT*
+──────────────────────────────────────────────────────────┬───────────────────────────────────────────────────────────────────
+ PLAYBOOK YAML LAYOUT WITH*TASKS*                         │ PLAYBOOK YAML LAYOUT WITH*ROLES*
+──────────────────────────────────────────────────────────┼───────────────────────────────────────────────────────────────────
+---                                                       │ *based on a well known file structure*.
+- hosts: webservers         ← targeted (ssh) servers      │ ---
+  connection: ssh           ← :=ssh, localhost,. ..       │ - name : my list  of Task name
+                                                          │   hosts: database
+  vars:                     ← yaml-file-scoped var.list   │   vars_files:
+   - myYmlVar01 : "myVal01"                               │    - secrets.yml
+                                                          │
+  enviroment:               ← runtime-scoped env.var.list │    *# pre_tasks execute before roles *
+   - myEnvVar01 : "myEnv01"                               │    *pre_tasks*:
+                                                          │     - name: update the apt cache
+  tasks:                    ← ordered task list to        │       apt: update_cache=yes
+                              be executed                 │
+   - name: install apache2  ← task1                       │   roles:
+     apt: |                                               │    - role:  *databaseRole*
+        name=apache2                                      │      # next vars override those in (vars|defaults)/main.yml
+        update_cache=yes                                  │      database_name: " {{ myProject_ddbb_name }}"
+        state=lates                                       │      database_user: " {{ myProject_ddbb_user }}"
+     notify:                                              │    - { role: consumer, when: tag | default('provider') == 'consumer'}
+       - *restart-apache2-id*                             │    - { role: provider, when: tag | default('provider') == 'provider'}
+   - name: next_task_to_exec                              │
+     "module": ...                                        │
+                                                          │    *# post_tasks execute after roles *
+  handlers:                ←  tasks triggered by events   │    *post_tasks*:
+   - name: restart-apache2 ←  *name as a Unique-ID*       │     - name: notify Slack
+     service: name=apache2 state=restarted                │       local_action: ˃
+                                                          │         slack
+- hosts: localhost                                        │         domain=acme.slack.com
+  connection: local                                       │         token={{ slack_token }}
+  gather_facts: False                                     │         msg="database {{ inventory_hostname }} configured"
+                                                          │
+  vars:                                                   │   ...
+  ...                                                     │ ===========================
+                                                          │ roles search path: ./roles → /etc/ansible/roles
+                                                          │ role file layout:
+                                                          │ roles/B*databaseRole*/tasks/main.yml
+                                                          │ roles/B*databaseRole*/files/
+                                                          │ roles/B*databaseRole*/templates/
+                                                          │ roles/B*databaseRole*/handlers/main.yml
+                                                          │ roles/B*databaseRole*/vars/main.yml     # should NO be overrriden
+                                                          │ roles/B*databaseRole*/defaults/main.yml # can be       overrriden
+                                                          │ roles/B*databaseRole*/meta/main.yml     # dependency info about role
+──────────────────────────────────────────────────────────┴───────────────────────────────────────────────────────────────────
+- hosts: web_servers
+  tasks:
+     - shell: /usr/bin/foo
+      *register*:*foo_result*    ← *STDOUT exec ouput to ansible var*
+       ignore_errors: True          Json schema output depends on module
+                                    STDOUT to .rc in case.
+     - shell: /usr/bin/bar          Use -v on each module to investigate
+       when: *foo_result*.rc == 5
+
+
+● Error Handling   [[qa.error_handling]]
+-  default behavior:
+   - take a host out of the play if a task fails
+     and continue with the other hosts.
+
+- *serial*,  *max_fail_percentage* can be
+   used to define a playbook-play as failed.
+ @[https://docs.ansible.com/ansible/2.5/user_guide/playbooks_delegation.html#maximum-failure-percentage]
+
+- Using 'block' (task grouping) inside tasks:
+
+- hosts: app-servers
+ *max_fail_percentage:*"10%"  ← abort if surpassed.
+  tasks:
+  - name: Take VM out of the load balancer
+  - name: Create a VM snapshot before the app upgrade
+
+  - block:  ← scope error/recovery/rollback
+    - name: Upgrade the application
+    - name: Run smoke tests
+
+ *rescue:*
+    - name: Revert a VM to the snapshot after a failed upgrade
+
+ *always:*
+    - name: Re-add webserver to the loadbalancer
+    - name: Remove a VM snapshot
+
+────────────────────────────────────────────────────────────────────────────────
+
+• inventory file: ( defaults to /etc/ansible/hosts)
+- if marked as executable (+x) it's executed
+  and the json-output taken as effective-inventory.
+  - script must then support '--host=' and '--list=' flags
+
+Ex: hosts inventory file   ┌─→ Ex: test("ssh─ping") host in inventory
+─────────────────────────  │       using 'ping' module:
+ *development*   ←─────────┘   $ ansible -i ./hosts*-m ping*  *development*
+ *production*
+
+[all:vars]                                  <span xsmall>group patterns</span>
+ntp_server=ntp.ubuntu.com                   Other patterns:A
+                                            All hosts        *all*
+[ *production*:vars]                        All              ***
+db_primary_host=rhodeisland.example.com     Union           devO*:*staging
+db_replica_host=virginia.example.com        Intersection    stagingO*:⅋*database
+db_name=widget_production                   Exclusion       devO*:!*queue
+rabbitmq_host=pennsylvania.example.com      Wildcard         ***.example.com
+                                            Range           webO*[5:10]*
+[ *development*:vars]                       Regex           O*~web\d+\.example\.(com|org)*
+db_primary_host=quebec.example.com
+db_name=widget_staging
+rabbitmq_host=quebec.example.com
+
+[ *vagrant*:vars]
+db_primary_host=vagrant3
+db_name=widget_vagrant
+rabbitmq_host=vagrant3
+
+[ *vagrant*]
+ *vagrant1 ansible_host=127.0.0.1 ansible_port=2222*
+ *vagrant2 ansible_host=127.0.0.1 ansible_port=2200*
+
+[web_group01]
+ *georgia.example.com*
+ *newhampshire.example.com*
+ *newjersey.example.com*
+ *vagrant1*
+
+[rabbitmq]
+ *pennsylvania.example.com*
+ *vagrant2*
+
+[django:children]      ← Group of groups
+web_group01
+rabbitmq
+
+[web_group02]
+web_group01[01:20].example.com  ← ranges
+web-[a-t].example.com           ←
+
+● variable "scopes" ────────────────────────────────────────────────────────────
+Playbook Variable Main Scopes
+-*Global:*set by config, ENV.VARS and cli
+-*Play  :*each play and contained structures,
+          vars|vars_files|vars_prompt entries
+          role defaults
+-*Host  :*directly associated to a host,
+          like inventory, include_vars,
+          facts or registered task outputs
+
+Variable scope Overrinding rules:
+- The more explicit you get in scope, the more precedence
+  1    command line values (eg “-u user”) *(SMALLEST PRECEDENCE)*
+  2    role defaults
+  3 *1 inventory file || script group vars
+  4 *2 inventory group_vars/all
+  5 *2 playbook  group_vars/all
+  6 *2 inventory group_vars/*
+  7 *2 playbook  group_vars/*
+  8 *1 inventory file or script host vars
+  9 *2 inventory host_vars/*
+ 10 *2 playbook  host_vars/*
+ 11 *4 host facts || cached set_facts
+ 12    play vars
+ 13    play vars_prompt
+ 14    play vars_files
+ 15    role vars  (defined in role/vars/main.yml)
+ 16    block vars (only for tasks in block)
+ 17    task vars  (only for the task)
+ 18    include_vars
+ 19    set_facts || registered vars
+ 20    role (and include_role) params
+ 21    include params
+ 22    (-e) extra vars                     *(BIGEST PRECEDENCE)*
+    ↑
+   *1 Vars defined in inventory file or dynamic inventory
+   *2 Includes vars added by ‘vars plugins’ as well as
+      host_vars and group_vars which are added by the default
+      vars plugin shipped with Ansible.
+   *4 When created with set_facts’s cacheable option,
+      variables will have the high precedence in the play,
+      but will be the same as a host facts precedence when
+      they come from the cache.
+
+- Ad-hoc command   [[{troubleshooting,ansible.debugging,0_PM.TODO]]
+@[https://www.howtoforge.com/ansible-guide-ad-hoc-command/]
+  - Ad-Hoc allows to perform tasks without creating a playbook
+    first, such as rebooting servers, managing services, editing the line
+    configuration, copy a file to only one host, install only one package.
+  
+  - An Ad-Hoc command will only have two parameters, the group of a host
+    that you want to perform the task and the Ansible module to run.
+  [[}]]
+
+• MUST-KNOW MODULES:
+1) Package management
+- module for major package managers (DNF, APT, ...)
+  - install, upgrade, downgrade, remove, and list packages.
+  - dnf_module
+  - yum_module (required for Python 2 compatibility)
+  - apt_module
+  - slackpkg_module
+
+  - Ex:
+    |- name: install Apache,MariaDB
+    |  dnf:                # ← dnf,yum,
+    |    name:
+    |      - httpd
+    |      - mariadb-server
+    |    state: latest     # ← !=latest|present|...
+
+2) 'service' module
+  - start, stop, and reload installed packages;
+  - Ex:
+    |- name: Start service foo, based on running process /usr/bin/foo
+    |  service:
+    |    name: foo
+    |    pattern: /usr/bin/foo
+    |    state: started     # ← started|restarted|...
+    |    args: arg0value
+
+3) 'copy' module
+  - copies file: local_machine → remote_machine
+  |- name: Copy a new "ntp.conf file into place,
+  |  copy:
+  |    src: /mine/ntp.conf
+  |    dest: /etc/ntp.conf
+  |    owner: root
+  |    group: root
+  |    mode: '0644'  # or u=rw,g=r,o=r
+  |    backup: yes   # back-up original if different to new
+
+4) 'debug' module (print values to STDOUT/file during execution)
+  |- name: Display all variables/facts known for a host
+  |  debug:
+  |    var: hostvars[inventory_hostname]
+  |    verbosity: 4
+  |    dest: /tmp/foo.txt   # ← By default to STDOUT
+  |    verbosity: 2         # ← optional. Display only with
+                                $ ansible-playbook demo.yaml*-vv*
+
+5) 'file' module: manage file and its properties.
+    - set attributes of files, symlinks, or directories.
+    - removes files, symlinks, or directories.
+- Ex:
+  |- name: Change file ownership/group/perm
+  |  file:
+  |    path: /etc/foo # ← create if needed
+  |    owner: foo
+  |    group: foo
+  |    mode: '0644'
+  |    state: file ← file*|directory|...
+
+6) 'lineinfile' module
+   - ensures that particular line is in file
+   - replaces existing line using regex.
+   - Ex:
+     |- name: Ensure SELinux is set to enforcing mode
+     |  lineinfile:
+     |    path: /etc/selinux/config
+     |    regexp: '^SELINUX='       # ← (optional) creates if not found.
+     |    line: SELINUX=enforcing   # new value, do nothing if found
+
+
+7) 'git' module
+   - manages git checkouts of repositories to deploy files or software.
+   - Ex: Create git archive from repo
+     |- git:
+     |    repo: https://github.com/ansible/ansible-examples.git
+     |    dest: /src/ansible-examples
+     |    archive: /tmp/ansible-examples.zip
+
+8) 'cli_config'
+  -  platform-agnostic way of pushing text-based configurations
+     to network devices
+     - Ex1:
+       | - name: commit with comment
+       |   cli_config:
+       |     config: set system host-name foo
+       |     commit_comment: this is a test
+
+     - Ex2:
+       set switch-hostname and exits with a commit message.
+       |- name: configurable backup path
+       |  cli_config:
+       |    config: "{{ lookup('template', 'basic/config.j2') }}"
+       |    backup: yes
+       |    backup_options:
+       |      filename: backup.cfg
+       |      dir_path: /home/user
+
+
+9) 'archive' module
+   - create compressed archive of 1+ files.
+   - Ex:
+   |- name: Compress directory /path/to/foo/ into /path/to/foo.tgz
+   |  archive:
+   |    path:
+   |    - /path/to/foo
+   |    - /path/wong/foo
+   |    dest: /path/to/foo.tar.bz2
+   |    format: bz2
+
+10) Command
+   - takes the command name followed by a list of space-delimited arguments.
+Ex1:
+- name: return motd to registered var
+  command: cat /etc/motd .. ..
+  become: yes            # ← "sudo"
+  become_user: db_owner  # ← effective user
+  register: mymotd       # ← STDOUT to Ansible var mymotd
+  args:                  # (optional) command-module args
+                         # (vs executed command arguments)
+    chdir: somedir/      # ← change to dir
+    creates: /etc/a/b    # ← Execute command if path doesn't exists
+
+• host fact ─> Play Vars ────────────────────────────────────────────────────
+@[https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html]
+- UsingO*setup* module at play/run-time. Ex:
+
+  tasks:
+    - ...
+    - name: re-read facts after adding custom fact
+     *setup:*filter=ansible_local     ← re-run  *setup module*
+
+$ ansible targetHost01 -m  *setup*
+(Output will be similar to)
+Next facts are available with:
+- hosts: ...
+ *gather_facts: yes* ← Will execute the module "setup"
+
+{
+   *"ansible_os_family": "Debian",   *
+   *"ansible_pkg_mgr": "apt",        *
+   *"ansible_architecture": "x86_64",*
+  b*"ansible_nodename": "ubuntu2.example.com",
+    "ansible_all_ipv4_addresses": [ "REDACTED IP ADDRESS" ],
+    "ansible_all_ipv6_addresses": [ "REDACTED IPV6 ADDRESS" ],
+    "ansible_bios_date": "09/20/2012",
+    ...
+    "ansible_date_time": {
+        "date": "2013-10-02",
+        ...
+    },
+   *"ansible_default_ipv4": {*
+   *    ...                  *
+   *},                       *
+    ...
+    "ansible_devices": {
+        "sda": {
+            "partitions": {
+                ...
+                   *"size": "19.00 GB",*
+            },
+            ...
+        },
+        ...
+    },
+    ...
+    "ansible_env": {
+        "HOME": "/home/mdehaan",
+       *"PWD": "/root/ansible",*
+       *"SHELL": "/bin/bash",*
+        ...
+    },
+   *"ansible_fqdn": "ubuntu2.example.com",*
+   *"ansible_hostname": "ubuntu2",*
+    ...
+    "ansible_processor_cores": 1,
+    "ansible_ssh_host_key_dsa_public": ...
+    ...
+}
+
+• /etc/ansible/facts.d ──────────────────────────────────────────────────────
+(Local provided facts, 1.3+)
+Way to provide "locally supplied user values" as opposed to
+               "centrally supplied user values"  or
+               "locally dynamically determined values"
+
+If any files inside /etc/ansible/facts.d (@remotely managed host)
+ending in *.fact (JSON, INI, execs generating JSON, ...) can supply local facts
+
+Ex: /etc/ansible/facts.d/preferences.fact contains:
+[general]
+asdf=1    ← Will be available as {{ ansible_local.preferences.general.asdf }}
+bar=2       (keys are always converted to lowercase)
+
+
+To copy local facts and make the usable in current play:
+- hosts: webservers
+  tasks:
+    - name: create directory for ansible custom facts
+      file: state=directory recurse=yes path=/etc/ansible/facts.d
+
+    - name: install custom ipmi fact
+      copy: src=ipmi.fact dest=/etc/ansible/facts.d ← Copy local facts
+
+    - name: re-read facts after adding custom fact
+     *setup:*filter=ansible_local   ← re-run  *setup module* to make
+                                    ← locals facts available in current play
+
+• Lookups: Query ext.data: file sh KeyValDB .. ──────────────────────────────────
+@[https://docs.ansible.com/ansible/latest/user_guide/playbooks_lookups.html]
+  ...
+  vars:
+    motd_value: "{{ *lookup*( *'file'*, '/etc/motd') }}"
+                     ^^^^^^     ^^^^
+                     Use lookup One of:
+                     modules    - file
+                                - password
+                                - pipe     STDOUT of local exec.
+                                - env      ENV.VAR.
+                                - template j2 tpl evaluation
+                                - csvfile  Entry in .csv file
+                                - dnstxt
+                                - redis_kv Redis key lookup
+                                - etcd     etcd key lookup
+
+• "Jinja2" template ex. ─────────────────────────────────────────────────────
+  nginx.conf.j2 
+  server {
+          listen 80 default_server;
+          listen [::]:80 default_server ipv6only=on;
+
+          listen 443 ssl;
+
+          root /usr/share/nginx/html;
+          index index.html index.htm;
+
+          server_name         *{{* server_name *}}*;
+          ssl_certificate     *{{* cert_file   *}}*;
+          ssl_certificate_key *{{* key_file    *}}*;
+
+          location / {
+                  try_files $uri $uri/ =404;
+          }
+  }
+
+  ┌─ templates/000_default.conf.tpl ───
+  │˂VirtualHost *:80˃
+  │    ServerAdmin webmaster@localhost
+  │    DocumentRoot {{ doc_root }}
+  │
+  │    ˂Directory {{ doc_root }}˃
+  │        AllowOverride All
+  │        Require all granted
+  │    ˂/Directory˃
+  │˂/VirtualHost˃
+
+  Task:
+  |  - name: Setup default virt.host
+  |    template: src=templates/default.conf.tpl dest=/etc/apache2/sites-available/000-default.conf
+
+ *(j2) filters*
+ *|* must be interpreted as the "pipe" (input) to filter, not the "or" symbol.
+  # default if undefined:
+  - ...
+    "HOST": "{{ database_host  *| default('localhost')* }}"
+
+  # fail after some debuging
+  - ...
+    register: result
+   *ignore_errors: True*
+    ...
+    failed_when: resultO*| failed*
+  ...
+   *failed * True if registered value is a failed    task
+   *changed* True if registered value is a changed   task
+   *success* True if registered value is a succeeded task
+   *skipped* True if registered value is a skipped   task
+
+ *path filters*
+   *basename  *
+   *dirname   *
+   *expanduser*  '~' replaced by home dir.
+   *realpath  *  resolves sym.links
+  Ej:
+    vars:
+      homepage: /usr/share/nginx/html/index.html
+    tasks:
+    - name: copy home page
+      copy: ˂
+        src={{ homepage  *| basename* }}
+        dest={{ homepage }}
+
+ *Custom filters*
+  filter_plugins/surround_by_quotes.py
+  # From http://stackoverflow.com/a/15515929/742
+  def surround_by_quote(a_list):
+      return ['"%s"' % an_element for an_element in a_list]
+
+  class FilterModule(object):
+      def filters(self):
+          return {'surround_by_quote': surround_by_quote}
+
+
+• notify vs register: [[{02_doc_has.comparative]]
+@[https://stackoverflow.com/questions/33931610/ansible-handler-notify-vs-register]
+
+  some tasks ...                         |     some tasks ...
+ *notify:*nginx_restart                  |    *register:*nginx_restart
+                                         |
+  # our handler                          |     # do this after nginx_restart changes
+  - name: nginx_restart                  |    *when:*nginx_restart|changed
+          ^^^^^^^^^^^^^
+        - only fired when
+          tasks report changes
+        - only visible in playbook  ← With register task is displayed as skipped
+          if actually executed.       if 'when' condition is false.
+        - can be called from any
+          role.
+        - (by default) executed at
+          the end of the playbook.
+         *This can be dangerous*if playbook
+          fails midway, handler is NOT
+          notified. Second run can ignore
+          the handle since task could have
+          not changed now. Actually it will
+         *NOT be idempotent* (unless
+          --force-handler is set )
+        - To fire at specific point flush
+          all handlers by defining a task like:
+          - meta: flush_handlers
+        - called only once no matter how many
+          times it was notified.
+[[}]]
+
+
+● ansible-vault: Handling secrets [[{security.secret_management]] #[ansible_handling_secrets]
+  En/de-crypts values/data structures/files
+@[https://github.com/tldr-pages/tldr/blob/master/pages/common/ansible-vault.md]
+@[https://docs.ansible.com/ansible/latest/user_guide/vault.html#id17]
+
+  $*$ ansible-vault create $vault_file           *  ← Create new encrypted vault file with
+                                                      a prompt for a password.
+
+  $*$ ansible-vault create \                     *  ← Create new encrypted vault file
+  $*    --vault-password-file=$pass_file \       *     using a vault key file to encrypt it
+  $*    $vault_file                              *
+
+  $*$ ansible-vault encrypt \                    *  ← Encrypt existing file using optional
+  $*    --vault-password-file=$pass_file \       *    password file
+  $*    $vault_file                              *
+
+  $*$ ansible-vault encrypt_string               *  ← Encrypt string using Ansible's encrypted
+                                                      string format, interactively
+
+  $*$ ansible-vault view \                       *  ← View encrypted file, using pass.file
+  $*    --vault-password-file={{password_file}} \*    to decrypt
+  $*   $vault_file                               *
+
+  $*$ ansible-vault rekey \                      *  ← Re-key already encrypted vault file
+  $* --vault-password-file=$old_password_file    *    with new password file
+  $* --new-vault-password-file=$new_pass_file    *
+  $* $vault_file                                 *
+
+@[https://docs.ansible.com/ansible/latest/user_guide/playbooks_vault.html]
+- Ansible vaults use symetric-chiper encryption
+
+  INPUT               ENCRYPTING                OUTPUT                  Ussage
+                      COMMAND                   (can be added to SCM)   (Play.Execution)
+  ──────────────      ─────────────             ────────────────────    ──────────────────
+  external pass─┐  ┌→ $ ansible─vault \ (alt1)→ protectedPB.yml   ──┬→ $ ansible-playbook protectedPB.yml \  *1
+                │  │    create protectedPB.yml                      │   *--ask-vault-pass*                ← alt.A
+  secret needed─┤(alt1)                                             │   *--vault-password-file*passFile*  ← alt.B_1
+  at playbook   └──┤                                                │                          ^^^^^^^^
+  execution        │                                                │                   content/exec.STDOUT
+                   │                                                │          should be a single-line-string
+                   │                                                │   export ANSIBLE_VAULT_PASSWORD_FILE=... ← alt.B_2
+                 (alt.2)                                            │
+                   │                                                │
+                   │                                                │
+                   └→ $ ansible-vault \ (alt2)→ yml to be embeded ──┘
+                        encrypt_string          into existing playbook
+                                                Ex:
+                                                → mySecretToEncrypt
+                                                → bla bla blah(Ctrl+D)→ !vault ← C⅋P to a yml file:
+                                                →    $ANSIBLE_VAULT;1.1;AES256   - vars:
+                                                →    66386439653236336462...       - secret01: !vault |
+                                                →    64316265363035303763...                $ANSIBLE_VAULT;1.1;AES256
+                                                →           ...                             66386439653236336462...
+
+*1:  *WARN:* Currently requires all files to be encrypted with same password
+[[}]]
+
+• Ex. (yum install) [[{]]
+┌ apache@localhost ─────────────────────
+│ ---
+│ # file: ansible.yml
+│ - hosts: localhost
+│   connection: local
+│   gather_facts: False
+│
+│   vars:
+│     var_yum_prerequisites: [ 'httpd24'      , 'vim', 'tmux' ]
+│     var_apt_prerequisites: [ 'apache-server', 'vim', 'tmux' ]
+│
+│   vars_files:
+│     - /vars/vars_not_in_git.yml   ←  add to .gitignore
+│                                      avoid sharing sensitive data
+│                                      /vars/vars_not_in_git.yml will look like:
+│                                      password: !vault |
+│                                                $ANSIBLE_VAULT;1.1;AES256
+│                                                ...
+│
+│   tasks:
+│    - name: install yum pre-requisites
+│      when: ansible_os_family == "RedHat"
+│      become: true
+│      yum:
+│        name: {{ var_yum_prerequisites }}
+│        state: present
+│      notify:
+│      - restart-apache2
+│
+│    - name: install apt pre-requisites
+│      when: ansible_os_family == "Debian"
+│      become: true
+│      apt:
+│        name: {{ var_apt_prerequisites }}
+│        state: latest
+│      notify:
+│      - restart-apache2
+│
+│
+│   handlers:
+│   - name: restart-apache2
+│     service: name=httpd state=restarted
+└────────────────────────────────────────── [[}]]
+
+• Ex: Installing nginx [[{]]
+┌ web-tls.yml
+│ - name: wait in control host for ssh server to be running
+│   local_action: wait_for port=22 host="{{ inventory_hostname }}"
+│     search_regex=OpenSSH
+│
+│ - name: Configure nginx
+│  *hosts:* webservers
+│   become: True
+│  *vars:*
+│      *key_file*: /etc/nginx/ssl/nginx.key
+│      *cert_file*: /etc/nginx/ssl/nginx.crt
+│      *conf_file*: /etc/nginx/sites-available/default
+│     server_name: localhost
+│  *tasks:*
+│     - name: install nginx
+│       *apt*: *name*=nginx *update_cache*=yes
+│
+│     - name: create directories for ssl certificates
+│       *file*: *path*=/etc/nginx/ssl *state*=directory
+│
+│     - name: copy TLS key
+│       *copy*: *src*=files/nginx.key *dest*={{  *key_file* }} owner=root *mode*=0600
+│       *notify*: restart nginx
+│
+│     - name: copy TLS certificate
+│       *copy*: *src*=files/nginx.crt *dest*={{  *cert_file* }}
+│       *notify*: restart nginx
+│
+│     - name: copy config file
+│       *copy*: *src*=files/nginx.conf*.j2* *dest*={{  *conf_file* }}
+│
+│     - name: enable configuration
+│       # set attributes of file, symlink or directory
+│       *file*: *dest*=/etc/nginx/sites-enabled/default *src*={{  *conf_file* }} state=link
+│     - name: copy index.html
+│       # template → new file → remote host
+│       *template*: *src*=templates/index.html.j2 *dest*=/usr/share/nginx/html/index.html
+│         mode=0644
+│
+│     - name: show a debug message
+│       debug: "msg='Example debug message: conf_file {{  *conf_file* }} included!'"
+│
+│     - name: Example to register new ansible variable
+│       command: whoami
+│       register: login
+│     # (first debug helps to know who to write the second debug)
+│     - debug: var=login
+│     - debug: msg="Logged in as user {{ login.stdout }}"
+│
+│     - name: Example to *ignore errors*
+│       command: /opt/myprog
+│       register: result
+│       ignore_errors: *True*
+│     - debug: var=result
+│
+│  *handlers:*
+│     - name: restart nginx
+│       *service*: *name*=nginx *state*=restarted
+└────────────────────────────────────────────────────── [[}]]
+
+• Ex: Insanely complet Ansible playbook: [[{]] 
+@[https://gist.github.com/marktheunissen/2979474]
+---                                                                <- YAML documents must begin with doc.separator "---"
+
+####
+#### descriptive comment at the top of my playbooks.
+####
+#
+# Overview: Playbook to bootstrap a new host for configuration management.
+# Applies to: production
+# Description:
+#   Ensures that a host is configured for management with Ansible.
+###########
+#
+# Note:
+#  *YAML, like Python, cares about whitespace*: *Indent consistently*  .
+# Be aware! Unlike Python, YAML refuses to allow the tab character for
+# indentation, so always use spaces.
+#
+# Two-space indents feel comfortable to me, but do whatever you like.
+# vim:ff=unix ts=2 sw=2 ai expandtab
+#
+# If you're new to YAML, keep in mind that YAML documents, like XML
+# documents, represent a tree-like structure of nodes and text. More
+# familiar with JSON?  Think of YAML as a strict and more flexible JSON
+# with fewer significant characters (e.g., :, "", {}, [])
+#
+# The curious may read more about YAML at:
+# http://www.yaml.org/spec/1.2/spec.html
+#
+
+
+###
+# Notice the minus on the line below -- this starts the playbook's record
+# in the YAML document. Only one playbook is allowed per YAML file.  Indent
+# the body of the playbook.
+-
+
+  hosts: all
+  ###########
+  # Playbook attribute: hosts
+  # Required: yes
+  # Description:
+  #   The name of a host or group of hosts that this playbook should apply to.
+  #
+  ## Example values:
+  #   hosts: all -- applies to all hosts
+  #   hosts: hostname -- apply ONLY to the host 'hostname'
+  #   hosts: groupname -- apply to all hosts in groupname
+  #   hosts: group1,group2 -- apply to hosts in group1 ⅋ group2
+  #   hosts: group1,host1 -- mix and match hosts
+  #   hosts: *.mars.nasa.gov wildcard matches work as expected
+  #
+  ## Using a variable value for 'hosts'
+  #
+  # You can, in fact, set hosts to a variable, for example:
+  #
+  #   hosts: $groups -- apply to all hosts specified in the variable $groups
+  #
+  # This is handy for testing playbooks, running the same playbook against a
+  # staging environment before running it against production, occasional
+  # maintenance tasks, and other cases where you want to run the playbook
+  # against just a few systems rather than a whole group.
+  #
+  # If you set hosts as shown above, then you can specify which hosts to
+  # apply the playbook to on each run as so:
+  #
+  #   ansible-playbook playbook.yml --extra-vars="groups=staging"
+  #
+  # Use --extra-vars to set $groups to any combination of groups, hostnames,
+  # or wildcards just like the examples in the previous section.
+  #
+
+  sudo: True
+  ###########
+  # Playbook attribute: sudo
+  # Default: False
+  # Required: no
+  # Description:
+  #   If True, always use sudo to run this playbook, just like passing the
+  #   --sudo (or -s) flag to ansible or ansible-playbook.
+
+  user: remoteuser
+  ###########
+  # Playbook attribute:  user
+  # Default: "root'
+  # Required: no
+  # Description
+  #   Remote user to execute the playbook as
+
+  ###########
+  # Playbook attribute: vars
+  # Default: none
+  # Required: no
+  # Description:
+  #  Set configuration variables passed to templates ⅋ included playbooks
+  #  and handlers.  See below for examples.
+  vars:
+    color: brown
+
+    web:
+      memcache: 192.168.1.2
+      httpd: apache
+    # Tree-like structures work as expected, but be careful to surround
+    #  the variable name with ${} when using.
+    #
+    # For this example, ${web.memcache} and ${web.apache} are both usable
+    #  variables.
+
+    ########
+    # The following works in Ansible 0.5 and later, and will set $config_path
+    # "/etc/ntpd.conf" as expected.
+    #
+    # In older versions, $config_path will be set to the string "/etc/$config"
+    #
+    config: ntpd.conf
+    config_path: /etc/$config
+
+    ########
+    # Variables can be set conditionally. This is actually a tiny snippet
+    # of Python that will get filled in and evaluated during playbook execution.
+    # This expressioun should always evaluate to True or False.
+    #
+    # In this playbook, this will always evaluate to False, because 'color'
+    #  is set to 'brown' above.
+    #
+    # When ansible interprets the following, it will first expand $color to
+    # 'brown' and then evaluate 'brown' == 'blue' as a Python expression.
+    is_color_blue: "'$color' == 'blue'"
+
+    #####
+    # Builtin Variables
+    #
+    # Everything that the 'setup' module provides can be used in the
+    # vars section.  Ansible native, Facter, and Ohai facts can all be
+    # used.
+    #
+    # Run the setup module to see what else you can use:
+    # ansible -m setup -i /path/to/hosts.ini host1
+    main_vhost: ${ansible_fqdn}
+    public_ip:  ${ansible_eth0.ipv4.address}
+
+    # vars_files is better suited for distro-specific settings, however...
+    is_ubuntu: "'${ansible_distribution}' == 'ubuntu'"
+
+
+  ##########
+  # Playbook attribute: vars_files
+  # Required: no
+  # Description:
+  #   Specifies a list of YAML files to load variables from.
+  #
+  #   Always evaluated after the 'vars' section, no matter which section
+  #   occurs first in the playbook.  Examples are below.
+  #
+  #   Example YAML for a file to be included by vars_files:
+  #   ---
+  #   monitored_by: phobos.mars.nasa.gov
+  #   fish_sticks: "good with custard"
+  #   # (END OF DOCUMENT)
+  #
+  #   A 'vars' YAML file represents a list of variables. Don't use playbook
+  #   YAML for a 'vars' file.
+  #
+  #   Remove the indentation ⅋ comments of course, the '---' should be at
+  #   the left margin in the variables file.
+  #
+  vars_files:
+    # Include a file from this absolute path
+    - /srv/ansible/vars/vars_file.yml
+
+    # Include a file from a path relative to this playbook
+    - vars/vars_file.yml
+
+    # By the way, variables set in 'vars' are available here.
+    - vars/$hostname.yml
+
+    # It's also possible to pass an array of files, in which case
+    # Ansible will loop over the array and include the first file that
+    # exists.  If none exist, ansible-playbook will halt with an error.
+    #
+    # An excellent way to handle platform-specific differences.
+    - [ vars/$platform.yml, vars/default.yml ]
+
+    # Files in vars_files process in order, so later files can
+    # provide more specific configuration:
+    - [ vars/$host.yml ]
+
+    # Hey, but if you're doing host-specific variable files, you might
+    # consider setting the variable for a group in your hosts.ini and
+    # adding your host to that group. Just a thought.
+
+
+  ##########
+  # Playbook attribute: vars_prompt
+  # Required: no
+  # Description:
+  #   A list of variables that must be manually input each time this playbook
+  #   runs.  Used for sensitive data and also things like release numbers that
+  #   vary on each deployment.  Ansible always prompts for this value, even
+  #   if it's passed in through the inventory or --extra-vars.
+  #
+  #   The input won't be echoed back to the terminal.  Ansible will always
+  #   prompt for the variables in vars_prompt, even if they're passed in via
+  #   --extra-vars or group variables.
+  #
+  #   TODO: I think that the value is supposed to show as a prompt but this
+  #   doesn't work in the latest devel
+  #
+  vars_prompt:
+    passphrase: "Please enter the passphrase for the SSL certificate"
+
+    # Not sensitive, but something that should vary on each playbook run.
+    release_version: "Please enter a release tag"
+
+  ##########
+  # Playbook attribute: tasks
+  # Required: yes
+  # Description:
+  # A list of tasks to perform in this playbook.
+  tasks:
+    ##########
+    # The simplest task
+    # Each task must have a name ⅋ action.
+    - name: Check that the server's alive
+      action: ping
+
+    ##########
+    # Ansible modules do the work!
+    - name: Enforce permissions on /tmp/secret
+      action: file path=/tmp/secret mode=0600 owner=root group=root
+    #
+    # Format 'action' like above:
+    # modulename  module_parameters
+    #
+    # Test your parameters using:
+    #   ansible -m $module  -a "$module_parameters"
+    #
+    # Documentation for the stock modules:
+    # http://ansible.github.com/modules.html
+
+    ##########
+    # Use variables in the task!
+    #
+    # Variables expand in both name and action
+    - name: Paint the server $color
+      action: command echo $color
+
+
+    ##########
+    # Trigger handlers when things change!
+    #
+    # Ansible detects when an action changes something.  For example, the
+    # file permissions change, a file's content changed, a package was
+    # just installed (or removed), a user was created (or removed).  When
+    # a change is detected, Ansible can optionally notify one or more
+    # Handlers.  Handlers can take any action that a Task can. Most
+    # commonly they are used to restart a service when its configuration
+    # changes. See "Handlers" below for more about handlers.
+    #
+    # Handlers are called by their name, which is very human friendly.
+
+    # This will call the "Restart Apache" handler whenever 'copy' alters
+    # the remote httpd.conf.
+    - name: Update the Apache config
+      action: copy src=httpd.conf dest=/etc/httpd/httpd.conf
+      notify: Restart Apache
+
+    # Here's how to specify more than one handler
+    - name: Update our app's configuration
+      action: copy src=myapp.conf dest=/etc/myapp/production.conf
+      notify:
+        - Restart Apache
+        - Restart Redis
+
+    ##########
+    # Include tasks from another file!
+    #
+    # Ansible can include a list of tasks from another file. The included file
+    # must represent a list of tasks, which is different than a playbook.
+    #
+    # Task list format:
+    #   ---
+    #   - name: create user
+    #     action: user name=$user color=$color
+    #
+    #   - name: add user to group
+    #     action: user name=$user groups=$group append=true
+    #   # (END OF DOCUMENT)
+    #
+    #   A 'tasks' YAML file represents a list of tasks. Don't use playbook
+    #   YAML for a 'tasks' file.
+    #
+    #   Remove the indentation ⅋ comments of course, the '---' should be at
+    #   the left margin in the variables file.
+
+    # In this example $user will be 'sklar'
+    #  and $color will be 'red' inside new_user.yml
+    - include: tasks/new_user.yml user=sklar color=red
+
+    # In this example $user will be 'mosh'
+    #  and $color will be 'mauve' inside new_user.yml
+    - include: tasks/new_user.yml user=mosh color=mauve
+
+    # Variables expand before the include is evaluated:
+    - include: tasks/new_user.yml user=chris color=$color
+
+
+    ##########
+    # Run a task on each thing in a list!
+    #
+    # Ansible provides a simple loop facility. If 'with_items' is provided for
+    # a task, then the task will be run once for each item in the 'with_items'
+    # list.  $item changes each time through the loop.
+    - name: Create a file named $item in /tmp
+      action: command touch /tmp/$item
+      with_items:
+        - tangerine
+        - lemon
+
+    ##########
+    # Choose between files or templates!
+    #
+    # Sometimes you want to choose between local files depending on the
+    # value of the variable.  first_available_file checks for each file
+    # and, if the file exists calls the action with $item={filename}.
+    #
+    # Mostly useful for 'template' and 'copy' actions.  Only examines local
+    # files.
+    #
+    - name: Template a file
+      action: template src=$item dest=/etc/myapp/foo.conf
+      first_available_file:
+        # ansible_distribution will be "ubuntu", "debian", "rhel5", etc.
+        - templates/myapp/${ansible_distribution}.conf
+
+        # If we couldn't find a distribution-specific file, use default.conf:
+        - templates/myapp/default.conf
+
+    ##########
+    # Conditionally execute tasks!
+    #
+    # Sometimes you only want to run an action when a under certain conditions.
+    # Ansible will 'only_if' as a Python expression and will only run the
+    # action when the expression evaluates to True.
+    #
+    # If you're trying to run an task only when a value changes,
+    # consider rewriting the task as a handler and using 'notify' (see below).
+    #
+    - name: "shutdown all ubuntu"
+      action: command /sbin/shutdown -t now
+      only_if: "$is_ubuntu"
+
+    - name: "shutdown the government"
+      action: command /sbin/shutdown -t now
+      only_if: "'$ansible_hostname' == 'the_government'"
+
+    ##########
+    # Notify handlers when things change!
+    #
+    # Each task can optionally have one or more handlers that get called
+    # when the task changes something -- creates a user, updates a file,
+    # etc.
+    #
+    # Handlers have human-readable names and are defined in the 'handlers'
+    #  section of a playbook.  See below for the definitions of 'Restart nginx'
+    #  and 'Restart application'
+    - name: update nginx config
+      action: file src=nginx.conf dest=/etc/nginx/nginx.conf
+      notify: Restart nginx
+
+    - name: roll out new code
+      action: git repo=git://codeserver/myapp.git dest=/srv/myapp version=HEAD branch=release
+      notify:
+        - Restart nginx
+        - Restart application
+
+
+    ##########
+    # Run things as other users!
+    #
+    # Each task has an optional 'user' and 'sudo' flag to indicate which
+    # user a task should run as and whether or not to use 'sudo' to switch
+    # to that user.
+    - name: dump all postgres databases
+      action: pg_dumpall -w -f /tmp/backup.psql
+      user: postgres
+      sudo: False
+
+    ##########
+    # Run things locally!
+    #
+    # Each task also has a 'connection' setting to control whether a local
+    # or remote connection is used.  The only valid options now are 'local'
+    # or 'paramiko'.  'paramiko' is assumed by the command line tools.
+    #
+    # This can also be set at the top level of the playbook.
+    - name: create tempfile
+      action: dd if=/dev/urandom of=/tmp/random.txt count=100
+      connection: local
+
+  ##########
+  # Playbook attribute: handlers
+  # Required: no
+  # Description:
+  #   Handlers are tasks that run when another task has changed something.
+  #   See above for examples.  The format is exactly the same as for tasks.
+  #   Note that if multiple tasks notify the same handler in a playbook run
+  #   that handler will only run once.
+  #
+  #   Handlers are referred to by name. They will be run in the order declared
+  #   in the playbook.  For example: if a task were to notify the
+  #   handlers in reverse order like so:
+  #
+  #   - task: touch a file
+  #     action: file name=/tmp/lock.txt
+  #     notify:
+  #     - Restart application
+  #     - Restart nginx
+  #
+  #   The "Restart nginx" handler will still run before the "Restart
+  #   application" handler because it is declared first in this playbook.
+  handlers:
+    - name: Restart nginx
+      action: service name=nginx state=restarted
+
+    # Any module can be used for the handler action
+    - name: Restart application
+      action: command /srv/myapp/restart.sh
+
+    # It's also possible to include handlers from another file.  Structure is
+    # the same as a tasks file, see the tasks section above for an example.
+- include: handlers/site.yml
+[[}]]
+
+● Ansible Troubleshooting [[{troubleshooting]]
+  Problem ex:
+  'django_manage' mondule always returns 'changed: False' for
+  some "external" ddbb commands.
+  (*non*idempotent task)
+  Solution:
+ *'changed_when'/'failed_when'* provides hints to Ansible at play time:
+- name: init-database
+  django_manage:
+    command: createdb --noinput --nodata
+    app_path: "{{ proj_path }}"
+    virtualenv: "{{ venv_path }}"
+ *failed_when*: False # ←  avoid stoping execution
+  register: *result*
+ *changed_when:*  *result.out* is defined and '"Creating tables" in  *result.out*'
+
+- debug: var=result
+
+- fail:
+[[}]]
+
+
+● TODO/Non-Classified [[{01_PM.TODO]]
+• Dynamic Inventory  [[{cloud]]
+@[https://docs.ansible.com/ansible/2.5/user_guide/intro_dynamic_inventory.html]
+(EC2, OpenStack,...) [[}]]
+
+• Fact Caching:
+@[https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#fact-caching]
+  - To benefit from cached facts you will set gather_facts to False in most plays.
+  - Ansible ships with two persistent cache plugins: redis and jsonfile.
+  - To configure fact caching using redis, enable it in ansible.cfg as follows:
+  [defaults]
+  gathering = smart
+  fact_caching = redis
+  fact_caching_timeout = 86400
+
+• AWX GUI: [[{]]
+  @[https://www.howtoforge.com/ansible-awx-guide-basic-usage-and-configuration/]
+  
+  - AWX is an open source web application that provides a user interface, REST API,
+    and task engine for Ansible. It's the open source version of the Ansible Tower.
+    The AWX allows you to manage Ansible playbooks, inventories, and schedule jobs
+    to run using the web interface.
+  
+  - How to Run and Schedule Ansible Playbook Using AWX GUI
+  @[https://www.linuxtechi.com/run-schedule-ansible-playbook-awx-gui/]
+  [[}]]
+[[}]]
+
+- Ansible External Links: [[{]]
+- https://docs.ansible.com/ansible/latest/user_guide/index.html
+- Ansible in practice[Video]
+@[https://sysadmincasts.com/episodes/46-configuration-management-with-ansible-part-3-4]
+- Playbooks best practices:
+@[https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html]
+
+- Ronald Kurr has lot of very-useful and professional Ansible powered code to
+  provide JVM, Python, Desktops, ... machines. For example:
+ - Ansible Study Group Labs: https://github.com/kurron/ansible-study-group-labs
+ - An OpenVPN server in the cloud:
+   https://github.com/kurron/aws-open-vpn/blob/master/ansible/playbook.yml
+ - Installation of tools than any self-respecting Operation person loves and needs:
+   https://github.com/kurron/ansible-role-operations/blob/master/tasks/main.yml
+ - Installation of tools than any self-respecting JVM developer loves and needs.
+   https://github.com/kurron/ansible-role-jvm-developer/blob/master/tasks/main.yml
+ - Installation of tools than any self-respecting AWS command-line user loves and needs.
+   https://github.com/kurron/ansible-role-aws/blob/master/tasks/main.yml
+ - Connect to a Juniper VPN under Ubuntu.
+   https://github.com/kurron/ansible-role-jvpn/blob/master/tasks/main.yml
+ - Installation of tools than any self-respecting Atlassian user loves and needs.
+   https://github.com/kurron/ansible-role-atlassian/blob/master/tasks/main.yml
+ - Installation of tools than any self-respecting cross-platform .NET developer loves and needs.
+   https://github.com/kurron/ansible-role-dot-net-developer/blob/master/tasks/main.yml
+ - Docker container that launches a pipeline of Docker containers that
+   ultimately deploy Docker containes via Ansible into EC2 instances
+   https://github.com/kurron/docker-ec2-pipeline
+ - Increase operating system limits for Database workloads.
+   https://github.com/kurron/ansible-role-os-limits/blob/master/tasks/main.yml
+ - Creation of an Amazon VPC. Public and private subnets are created
+   in all availability zones.
+   https://github.com/kurron/ansible-role-vpc
+
+- Command line tools
+@[https://docs.ansible.com/ansible/latest/user_guide/command_line_tools.html]
+
+- run a single task 'playbook' against a set of hosts
+@[https://docs.ansible.com/ansible/latest/cli/ansible.html]
+
+- ansible-config view, edit, and manage ansible configuration
+@[https://docs.ansible.com/ansible/latest/cli/ansible-config.html]
+
+- ansible-console  interactive console for executing ansible tasks
+@[https://docs.ansible.com/ansible/latest/cli/ansible-console.html]
+
+- manage Ansible roles in shared repostories (default to [https://galaxy.ansible.com] )
+@[https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html]
+
+- display/dump configured inventory:
+@[https://docs.ansible.com/ansible/latest/cli/ansible-inventory.html]
+
+- ansible-pull pulls playbooks from a VCS repo and executes them for the local host:
+@[https://docs.ansible.com/ansible/latest/cli/ansible-pull.html]
+- ansible-vault  encryption/decryption utility for Ansible data files:
+ @[https://docs.ansible.com/ansible/latest/cli/ansible-vault.html]
+
+[[}]]
+
+[[ansible}]]
+
+
