@@ -1,4 +1,6 @@
 ● Ansible Summary: [[{ansible.101]]
+View on:
+https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/ansible.txt
 - ansible-doc:  101,security.secret_management,qa #[ansible_summary]
  @[https://docs.ansible.com/ansible/latest/cli/ansible-doc.html]
  @[https://github.com/tldr-pages/tldr/blob/master/pages/common/ansible*]

@@ -1,3 +1,5 @@
+View on:
+https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/notes.txt
 #############################################
 ●        Shell Scripting                    # [[{dev_language.shell_script]]
 #############################################

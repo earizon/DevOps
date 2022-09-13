@@ -1,4 +1,6 @@
 [[{jenkins]]
+View on:
+https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/Jenkins.txt
 #####################
 ● JENKINS SUMMARY/101 [[{jenkins.101,security.backup,security.secret_management,_PM.low_code,notifications.jenkins]]
 #####################
