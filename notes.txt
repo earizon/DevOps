@@ -2990,17 +2990,22 @@ https://www.redhat.com/sysadmin/improved-systemd-podman
   - PROBLEM: /var/lib/docker/devicemapper/devicemapper/data consumes too much space  
     $ sudo du -sch /var/lib/docker/devicemapper/devicemapper/data
     14g     /var/lib/docker/devicemapper/devicemapper/data       
-    https://meta.discourse.org/t/why-is-docker-devicemapper-taking-so-much-hard-drive-space/34378">[ref@stackoverflow]</a>
 
-    SOLUTION 1: Possible logs are not configured to be rotated. Fix:
-    "create/modify" /etc/docker/daemon.json  to look like:
-    {
-      "log-driver": "json-file",
-      "log-opts": {
-        "max-size": "10m",
-        "max-file": "3"
-      }
-    }
+    ($ docker logs 'container' knocks down the host server when output is processed)
+
+    SOLUTION 1: Possible logs are not configured to be rotated creating "huge" file.
+    Fix:
+    1) "create/modify" /etc/docker/daemon.json  to look like:
+       {
+         "log-driver": "json-file",
+         "log-opts": {
+           "max-size": "10m",
+           "max-file": "3"
+         }
+       }
+    2) $ sudo systemctl restart docker.service
+
+    SOLUTION 2: NOTE: maybe ulimit can fix it at global (Linux OS) scope. [[{01_PM.TODO}]]
 
   - PROBLEM: dns works on host, fails during builds or in running containers:
     └ SOLUTION 1) ALT 1:
