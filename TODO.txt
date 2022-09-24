@@ -1,15 +1,15 @@
 ● TODO [[{01_PM.TODO]]
 
 
-• Kayenta Canary Testing [[{qa.testing.canary,dev_stack.kayenta,0_PM.TODO]]
+• Kayenta Canary Testing [[{qa.testing.canary,dev_stack.kayenta,01_PM.TODO]]
 @[https://github.com/spinnaker/kayenta]
 - Kayenta platform:  Automated Canary Analysis (ACA) [[}]]
 
-• SonarQube (QA)  [[{qa.testing,dev_stack.sonarqube,0_PM.TODO]]
+• SonarQube (QA)  [[{qa.testing,dev_stack.sonarqube,01_PM.TODO]]
   Apply quality metrics to source-code
 [[}]]
 
-• Source{d}: Large Scale Code Analysis with IA [[{qa.code_analysis,qa.testing,git.*,0_PM.TODO]]
+• Source{d}: Large Scale Code Analysis with IA [[{qa.code_analysis,qa.testing,git.*,01_PM.TODO]]
 @[https://www.linux.com/blog/holberton/2018/10/sourced-engine-simple-elegant-way-analyze-your-code]
 
 - source{d} offers a suite of applications that uses machine learning on code
@@ -25,10 +25,7 @@
 [[}]]
 
 
-<div group>
-    <span title>Un-ordered</span><br/>
-<pre zoom labels="101,containerization.networking,networking.sdn.calico,networking.sdn.flannel,0_PM.TODO">
-<span xsmall>Container Networking</span>
+• Container Networking: [[{101,containerization.networking,networking.sdn.calico,networking.sdn.flannel,01_PM.TODO]] 
 @[https://jvns.ca/blog/2016/12/22/container-networking/]
 By Julia Evans
 
@@ -126,20 +123,13 @@ By Julia Evans
     "regular" mode, (just set route table entries, no encaps.)
   - The daemon that sets the routes gets them *using BGP messages*
     from other hosts. (etcd is  not used for distributing routes).
-</pre>
+[[}]]
 
+• CRI-O: container runtime for K8s / OpenShift.[[{]
+- OCI compliant Container Runtime Engines:
+[[}]]
 
-<pre zoom labels="_PM.TODO">
-<span xsmall>CRI-O</span>
-CRI-O: container runtime for K8s / OpenShift.
-OCI compliant Container Runtime Engines:
-- Docker
-- CRI-O
-- containerd
-</pre>
-
-<pre zoom labels="containerization.image.build,0_PM.TODO">
-<span xsmall>Kaniko (rootless builds)</span>
+• Kaniko (rootless builds): [[{containerization.image.build,01_PM.TODO]
 ☞ NOTE: To build *JAVA images* see also @[/JAVA/java_map.html?query=jib]
 
 @[https://github.com/GoogleContainerTools/kaniko]
@@ -152,11 +142,10 @@ OCI compliant Container Runtime Engines:
   the current exception of SHELL, HEALTHCHECK, STOPSIGNAL, and ARG.
   Multi-Stage Dockerfiles are also unsupported currently. The kaniko team
   have stated that work is underway on both of these current limitations.
-</pre>
+[[}]]
 
 
-<pre zoom labels="qa.testing,dev_language.java,qa,0_PM.TODO">
-<span xsmall>Testcontainers</span>
+• Testcontainers: [[{qa.testing,dev_language.java,qa,01_PM.TODO]
 @[https://www.testcontainers.org/#who-is-using-testcontainers]
 - Testcontainers is a Java library that supports JUnit tests,
   providing lightweight, throwaway instances of common databases,
@@ -231,19 +220,14 @@ Who is using Testcontainers?
     and plugin tests of its subproject, Apache SkyWalking Python, and of
     its eco-system built by the community, like SkyAPM NodeJS Agent
 -   jOOQ - Integration testing all of jOOQ with a variety of RDBMS
+[[}]]
 
+• docker-compose: dev vs pro  [[{]
+  https://stackoverflow.com/questions/60604539/how-to-use-docker-in-the-development-phase-of-a-devops-life-cycle/60780840#60780840
+  Modify your Compose file for production
+[[}]]
 
-</pre>
-
-<pre zoom labels="_PM.TODO">
-<span xsmall>docker-compose: dev vs pro</span>
-https://stackoverflow.com/questions/60604539/how-to-use-docker-in-the-development-phase-of-a-devops-life-cycle/60780840#60780840
-
-Modify your Compose file for production🔗
-</pre>
-
-<pre zoom labels="_PM.TODO" bgorange>
-<span xsmall>CRIU.org: Container Live Migration</span>
+• CRIU.org: Container Live Migration : [[{]
 @[https://criu.org/Main_Page]
 
 CRIU: project to implement checkpoint/restore functionality for Linux.
@@ -253,47 +237,23 @@ Checkpoint/Restore In Userspace, or CRIU (pronounced kree-oo, IPA:
 running container (or an individual application) and checkpoint its
 state to disk. The data saved can be used to restore the application
 
-Used for example to bootstrap JVMs in millisecs (vs secs)
+Used for example to bootstrap JVMs in millisecs (vs secs)     [[performance,dev_stack.java]]
 @[/JAVA/java_map.html#?jvm_app_checkpoint]
-
 and run it exactly as it was during the time of the freeze. Using
 this functionality, application or container live migration,
 snapshots, remote debugging, and many other things are now possible.
-</pre>
+[[}]]
 
-<pre zoom labels="troubleshooting,0_PM.TODO">
-<span xsmall>Avoid huge log dumps</span>
-https://devops.stackexchange.com/questions/12944/any-way-to-limit-docker-logs-output-by-default/12970#12970
 
-- Problem Context:
-  - Container output huge logs (maybe gigabytes).
-  - $ docker logs 'container' knocks down the host server when output is processed.
-
-- To limit docker logs, specify limits in docker daemon's config file like:
-  /etc/docker/daemon.json
-  {
-    "log-driver": "json-file",
-    "log-opts": {
-      "max-size": "10m",
-      "max-file": "3"
-    }
-  }
-  (then restart docker daemon after edit)
-NOTE: maybe ulimit can fix it at global (Linux OS) scope.
-</pre>
-
-<pre zoom labels="troubleshooting,0_PM.TODO">
-<span xsmall>ContainerCoreInterceptor </span>
+• ContainerCoreInterceptor:  [[{troubleshooting,01_PM.TODO]
 https://github.com/AmadeusITGroup/ContainerCoreInterceptor 
-GitHub - AmadeusITGroup/ContainerCoreInterceptor: Core_interceptor
-can be used to handle core dumps in a dockerized environment. It
-listens on the local docker daemon socket for events. When it
+Core_interceptor can be used to handle core dumps in a dockerized environment. 
+It listens on the local docker daemon socket for events. When it
 receives a die event it checks if the dead container produced any
 core dump or java heap dump.
-</pre>
+[[}]]
 
-<pre zoom labels="_PM.TODO">
-<span xsmall>KVM Kata containers</span>
+● KVM Kata containers:[[{01_PM.TODO]
 @[https://katacontainers.io/]
 - Security: Runs in a dedicated kernel, providing isolation of
   network, I/O and memory and can utilize hardware-enforced isolation
@@ -307,7 +267,7 @@ core dump or java heap dump.
 - Simplicity: Eliminates the requirement for nesting containers
   inside full blown virtual machines; standard interfaces make it easy
   to plug in and get started.
-</pre>
+[[}]]
 
 <pre zoom labels="containerization.docker">
 <span xsmall>avoid "sudo" docker</span>
@@ -315,7 +275,7 @@ $* $ sudo usermod -a -G docker "myUser"*
 $ newgrp docker  (take new group without re-login)
 </pre>
 
-<pre zoom labels="troubleshooting,qa,0_PM.TODO">
+<pre zoom labels="troubleshooting,qa,01_PM.TODO">
 <span xsmall>test images in 0.5 secs</span>
 @[https://medium.com/@aelsabbahy/tutorial-how-to-test-your-docker-image-in-half-a-second-bbd13e06a4a9]
 
@@ -729,11 +689,11 @@ subtree
 
 #######################
 
-<pre zoom labels="containerization.image,storage,0_PM.TODO">
+<pre zoom labels="containerization.image,storage,01_PM.TODO">
 <span xsmall>Resizing containers with the Device Mapper</span>
 @[http://jpetazzo.github.io/2014/01/29/docker-device-mapper-resize/]
 </pre>
-<pre zoom labels="containerization.docker,qa,containerization.security,0_PM.TODO">
+<pre zoom labels="containerization.docker,qa,containerization.security,01_PM.TODO">
 <span xsmall>Rootless Docker</span>
 @[https://docs.docker.com/engine/security/rootless/]
 </pre>
@@ -755,7 +715,7 @@ host-mach $ docker run -it figlet          # Boot new image instance
 
 
 ##################
-<pre zoom labels="ci/cd,qa,testing,selenium,web,_PM.low_code,0_PM.TODO">
+<pre zoom labels="ci/cd,qa,testing,selenium,web,_PM.low_code,01_PM.TODO">
 <span xsmall>Selenium Browser test automation</span>
 
 See also QAWolf:
@@ -790,7 +750,7 @@ See also QAWolf:
 
 
 
-<pre zoom labels="_PM.TODO">
+<pre zoom labels="01_PM.TODO">
 <span title></span>
 https://stackoverflow.com/questions/13043344/search-and-replace-in-bash-using-regular-expressions
 hello=ho02123ware38384you443d34o3434ingtod38384day
@@ -801,7 +761,7 @@ while [[ $hello =~ $re ]]; do
   echo "$hello"
 </pre>
 
-<pre zoom labels="_PM.TODO">
+<pre zoom labels="01_PM.TODO">
 <span title></span>
 https://stackoverflow.com/questions/19758915/keeping-a-branch-up-to-date-with-master @ma
 
@@ -867,7 +827,7 @@ http://chuletario.blogspot.com/2011/05/monitoring-uninterruptible-system-calls.h
 DevSecOps: Image scanning in your pipelines using quay.io scanner | Enable Sysadmin
 https://www.redhat.com/sysadmin/using-quayio-scanner
 #################################
-<pre zoom labels="git.*,0_PM.TODO">
+<pre zoom labels="git.*,01_PM.TODO">
 <span xsmall TODO>git-pw</span>
 @[http://jk.ozlabs.org/projects/patchwork/]
 @[https://www.collabora.com/news-and-blog/blog/2019/04/18/quick-hack-git-pw/]
@@ -926,7 +886,7 @@ CONFIG:
     fetch all the patches in the series, and apply them in the right order.
 </pre>
 
-<pre zoom labels="_PM.TODO">
+<pre zoom labels="01_PM.TODO">
 <span title>SaST-scan </span>
 https://github.com/AppThreat/sast-scan
 This repo builds appthreat/sast-scan (and
@@ -968,34 +928,34 @@ This is like a Swiss Army knife for DevSecOps engineers.
    yaml                    yamllint
 </pre>
 
-<pre zoom labels="_PM.TODO">
+<pre zoom labels="01_PM.TODO">
 <span title>red-hat-universal-base-images</span>
 https://developers.redhat.com/e-books/red-hat-universal-base-images-ubi
 - Alternative to Alpine Linux??
 </pre>
 
-<pre zoom labels="_PM.TODO">
+<pre zoom labels="01_PM.TODO">
 <span title></span>
 @[http://alblue.bandlem.com/2011/11/git-tip-of-week-git-notes.html]
 </pre>
 
-<pre zoom labels="_PM.TODO">
+<pre zoom labels="01_PM.TODO">
 <span title></span>
 bash local variable:
 https://tldp.org/LDP/abs/html/localvar.html
 </pre>
 
-<pre zoom labels="git,0_PM.WiP">
+<pre zoom labels="git,01_PM.WiP">
 <span title>Managing "many-branches" Git projects:</span>
 • sync all local/remote branches:
 https://stackoverflow.com/questions/27157166/sync-all-branches-with-git
 </pre>
 
-<pre zoom labels="0_PM.TODO">
+<pre zoom labels="01_PM.TODO">
 git 101 recipes: git Comparing diffs: @ma
 </pre>
 
-<pre zoom labels="git.*,0_PM.TODO">
+<pre zoom labels="git.*,01_PM.TODO">
 <a xsmall TODO href="https://opensource.com/article/18/11/gitbase">gitbase: Query Git with SQL</a>
 - Gitbase is a Go-powered open source project that allows SQL queries to be run on Git repositories.
 </pre>
@@ -1126,6 +1086,7 @@ $ docker container run -d \
   -v /var/run/docker.sock:/var/run/docker.sock portainer/portainer
 [[}]]
 
-
+• Run docker container as current user:
+  https://jtreminio.com/blog/running-docker-containers-as-current-host-user/
 
 [[01_PM.TODO}]]
