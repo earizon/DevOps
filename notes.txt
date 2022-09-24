@@ -166,7 +166,7 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
         echo "Selected language is $language"
       done 
 
-● 'test' CONDITIONAL BRANCHING:
+● 'test' CONDITIONAL BRANCHING: [[{]]
   (man test summary from GNU coreutils for more info)
    
   test   EXPRESSION  # ← EXPRESSION true/false sets the exit status.
@@ -217,12 +217,11 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
   -O FILE                    # FILE exists and is owned by the effective user ID
   -t FD   file descriptor FD is opened on a terminal
   -u FILE FILE exists and its set-user-ID bit is set
-  
-  BOOLEAN ADITION
+  • BOOLEAN ADITION:
     WARN : inherently ambiguous.  Use
-  EXPRESSION1 -a EXPRESSION2 # AND # 'test EXPR1 && test EXPR2' is prefered
-  EXPRESSION1 -o EXPRESSION2 # OR  # 'test EXPR1 || test EXPR2' is prefered
-  
+    EXPRESSION1 -a EXPRESSION2 # AND # 'test EXPR1 && test EXPR2' is prefered
+    EXPRESSION1 -o EXPRESSION2 # OR  # 'test EXPR1 || test EXPR2' is prefered
+  [[}]]
   
     WARN,WARN,WARN : your shell may have its own version of test and/or '[',
                      which usually supersedes the version described here.
@@ -308,7 +307,7 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
         curl --list-only https://..../dir1/ ← List contents of remote dir
 [[}]]
 
-● Kapow!: Shell Script to HTTP API: [[{web_hook,_PM.low_code,git.*,monitoring.prometheus,dev_stack.kubernetes,]]
+● Kapow!: Shell Script to HTTP API: [[{web_hook,01_PM.low_code,git.*,monitoring.prometheus,dev_stack.kubernetes,]]
 @[https://github.com/BBVA/kapow]    [[notifications.jira,InfraAsCode.ansible,git.*,git.github,notifications.slack,]]
   (by BBVA-Labs Security team members)
   " If you can script it, you can HTTP it !!!!"
@@ -342,7 +341,7 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
           chroot --userspec=sandbox /some/path /bin/sh -c' \
           -c 'ls / | kapow set /response/body'
 
-● WebHook  [[{0_PM.TODO]]
+● WebHook  [[{01_PM.TODO]]
 @[https://github.com/adnanh/webhook]
   - lightweight incoming webhook server to run shell commands
     You can also pass data from the HTTP request (such as headers,
@@ -438,7 +437,7 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
 [[}]]
 
 
-● GIT "Full Journey" [[{git.101,1_doc_type.diagram,0_PM.WiP]] #[git_summary]
+● GIT "Full Journey" [[{git.101,1_doc_type.diagram,01_PM.WiP]] #[git_summary]
   ######################################################################### 
   # Non-normative Git server setup for N projects with M teams of L users # 
   ######################################################################### 
@@ -851,7 +850,7 @@ $ $ git init   ← creates an initial layout containing (Alternatively $ $git cl
  └────────────────────────────────────────────────────────────────────────
 [[}]]
 
-● GPG signed commits @ma [[{security.secret_management,security.signed_content,0_PM.TODO]]
+● GPG signed commits @ma [[{security.secret_management,security.signed_content,01_PM.TODO]]
 @[https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work]
 
   GPG PRESETUP 
@@ -1026,7 +1025,7 @@ $ git pull  \             ←   # Verify signature at pull time
         a push occurs (a non-zero exit code will abort the push).
 [[}]]
 
-● Server-Side Hooks [[{0_PM.TODO.now]]
+● Server-Side Hooks [[{01_PM.TODO.now]]
 (system administrator only)
 - Useful to enforce nearly any kind of policy in repository.
 
@@ -1368,7 +1367,7 @@ happening, or to abort the collection if now isn’t a good time.
   cregit: Token-Level Blame Information for the Linux Kernel
   Blame tracks lines not tokens, cgregit blames on tokens (inside a line)
 
-• Gitea painless self-hosted Git service(Gogs) [[{0_PM.TODO,0_PM.low_code]]
+• Gitea painless self-hosted Git service(Gogs) [[{01_PM.TODO,01_PM.low_code]]
 @[https://gitea.io/]
 - Fork of gogs, since it was unmaintained.
 
@@ -1403,7 +1402,7 @@ https://github.com/awslabs/git-secrets#synopsis
 - Prevents you from committing passwords and other sensitive
   information to a git repository.
 
-• Forgit: Interactive Fuzzy Finder:[[{dev_stack.forgit,qa.UX,0_PM.TODO]]
+• Forgit: Interactive Fuzzy Finder:[[{dev_stack.forgit,qa.UX,01_PM.TODO]]
 @[https://www.linuxuprising.com/2019/11/forgit-interactive-git-commands-with.html]
 - It takes advantage of the popular "fzf" fuzzy finder to provide
   interactive git commands, with previews. [[}]]
@@ -1524,7 +1523,7 @@ https://github.com/awslabs/git-secrets#synopsis
 [[}]]
 
 ● Container Ecosystem:  [[{containerization.runtime,containerization.performance]] #[runtimes_summary]
-                        [[_doc_has.comparative,standards]]
+                        [[02_doc_has.comparative,standards]]
 - Image creation: 
   Alt 1) Dockerfile -> docker build
   Alt 2) buildah: Similar to docker build, it also allow to 
@@ -1668,7 +1667,7 @@ https://github.com/awslabs/git-secrets#synopsis
 - 'crun' is more portable: Ex: Risc-V.
 [[}]]
 
-● Container Network Iface (CNI): [[{containerization.networking,101,0_PM.TODO]]
+● Container Network Iface (CNI): [[{containerization.networking,101,01_PM.TODO]]
 @[https://github.com/containernetworking/cni]
 - specification and libraries for writing plugins to configure network interfaces
   in Linux containers, along with a number of supported plugins.
@@ -2609,7 +2608,7 @@ it has executed before and uses the result for each new build.
     cmd ["main.jar"]
 [[}]]
 
-● CNCF buildpacks.io: [[{containerization.image.build,_pm.low_code,dev_language.java]]
+● CNCF buildpacks.io: [[{containerization.image.build,01_pm.low_code,dev_language.java]]
 • build oci image directly from JAVA source source (Skipping Dockerfile/docker build)
 • highly modular and customizable.
 • used, among others, by spring (spring boot 2.3+) with  gradle and maven support.
@@ -3003,12 +3002,38 @@ https://www.redhat.com/sysadmin/improved-systemd-podman
       }
     }
 
-  - PROBLEM: dns works on host, fails on continers:
-    SOLUTION 1:  try to launch with --network host flag. ex.:
-    ...
-    docker_opts="${docker_opts} *--network host*"
-    script="wget https://repo.maven.apache.org/maven2" # ← dns can fail with bridge
-    echo "${mvn_script}" | docker run ${docker_opts} ${script}
+  - PROBLEM: dns works on host, fails during builds or in running containers:
+    └ SOLUTION 1) ALT 1:
+      1) Add next lines to /etc/docker/daemon.json:
+          {
+        +   "dns": ["8.8.8.8","4.4.4.4"],
+        +   "dns-search": ["companydomain",...]
+          }
+      2) $ sudo systemctl restart docker.service
+      3) $ journalctl -u docker.service --since "1m ago"  # Check logs for related errors.
+
+    └ SOLUTION 1) ALT 2:
+      1) Edit     /lib/systemd/system/docker.service
+             (/usr/lib/systemd/system/docker.service)
+         to look somthing like:
+         ...
+      +  ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock \
+            --dns 8.8.8.8 --dns 8.8.4.4  --dns-search default.svc.cluster.local \
+            --dns-search svc.cluster.local --dns-opt ndots:2 \
+            --dns-opt timeout:2 --dns-opt attempts:2
+
+       NOTE/WARN!!!: This configuration can be overriden by values in:
+       /etc/systemd/system/docker.service.d/*.conf
+
+      2) $ sudo systemctl daemon-reload
+      3) $ sudo systemctl restart docker.service
+      4) $ journalctl -u docker.service --since "1m ago"  # Check logs for related errors.
+
+    SOLUTION 2)  try to launch with --network host flag. ex.:
+      ...
+      docker_opts="${docker_opts} *--network host*"
+      script="wget https://repo.maven.apache.org/maven2" # ← dns can fail with bridge
+      echo "${mvn_script}" | docker run ${docker_opts} ${script}
 
   - INSPECTING LINUX NAMESPACES OF RUNNING CONTAINER:  
     use nsenter ( util-linux package) to "enter" into the
@@ -3038,7 +3063,7 @@ https://www.redhat.com/sysadmin/improved-systemd-podman
     * netstat installed on host (vs container).
 [[}]]
 
-● sysdig tools:  [[{containerization.monitoring,containerization.security,troubleshooting,0_pm.todo]]
+● sysdig tools:  [[{containerization.monitoring,containerization.security,troubleshooting,01_PM.todo]]
 container-focused linux troubleshooting and monitoring tool.
 
 once sysdig is installed as a process (or container) on the server,
@@ -3077,7 +3102,7 @@ example: "zoom into a client":
  @[https://docs.docker.com/config/containers/live-restore/]
  keep containers alive during daemon downtime
 
-• weave: [[{ci/cd.gitops,containerization.monitoring,_pm.low_code,gui,0_pm.todo]]
+• weave: [[{ci/cd.gitops,containerization.monitoring,01_pm.low_code,gui,01_PM.todo]]
 @[https://github.com/weaveworks/weave]
 - weaveworks company: """ delivers the most productive way for developers
   to connect, observe and control docker containers. """"
@@ -3177,7 +3202,7 @@ introducing convoy a docker storage driver for backup and recovery of volumes
   *registries = ['localhost:5000']*
 [[}]]
 
-• Protecting against Doki malware: [[{containerization.security,qa,0_PM.TODO]]
+• Protecting against Doki malware: [[{containerization.security,qa,01_PM.TODO]]
   https://containerjournal.com/topics/container-security/protecting-containers-against-doki-malware/
 
 • 2+Millions images with Critical Sec.Holes
@@ -3196,7 +3221,7 @@ https://www.infoq.com/news/2020/12/dockerhub-image-vulnerabilities/
 
 [[containerization}]]
 ##################################
-● Networking Summary for DevOps: # [[{101,_PM.low_code,networking.load_balancer,web_balancer,0_PM.WiP]]
+● Networking Summary for DevOps: # [[{101,01_PM.low_code,networking.load_balancer,web_balancer,01_PM.WiP]]
 ##################################
 • HTTP balanced proxy Quick Setup with HAProxy
   REF: @[https://github.com/AKSarav/haproxy-nodejs-redis/blob/master/haproxy/]
@@ -3219,10 +3244,10 @@ https://www.infoq.com/news/2020/12/dockerhub-image-vulnerabilities/
   │   server server1 host01:8081 maxconn 32 ←  composed of (single server) "server1"
   │                                            at host01:8081
   └─────────────────────────────────────────
-• Reverse Proxy  [[0_PM.TODO]]
-• Forward Proxy  [[0_PM.TODO]]
+• Reverse Proxy  [[01_PM.TODO]]
+• Forward Proxy  [[01_PM.TODO]]
 
-• CharlesProxy: Monitor TLS/HTTPS traffic: [[{network.TLS,troubleshooting,0_PM.TODO]]
+• CharlesProxy: Monitor TLS/HTTPS traffic: [[{network.TLS,troubleshooting,01_PM.TODO]]
 @[https://www.charlesproxy.com/]
   HTTP proxy / HTTP monitor / Reverse Proxy enabling developers to view HTTP+SSL/HTTPS
   traffic between loal machine and Internet, including requests, responses and HTTP headers
@@ -3280,7 +3305,7 @@ https://www.infoq.com/news/2020/12/dockerhub-image-vulnerabilities/
                                 Sidecar2 ←→ App2
    [[}]]
 
-• nginx.conf summary [[{networking.nginx,web_balancer,0_PM.WiP]] #[nginx_conf_summary]
+• nginx.conf summary [[{networking.nginx,web_balancer,01_PM.WiP]] #[nginx_conf_summary]
 REF: @[https://raazkumar.com/tutorials/nginx/nginx-conf/]
 
 • nginx ==   fast HTTP reverse proxy
@@ -3500,7 +3525,7 @@ REF: @[https://raazkumar.com/tutorials/nginx/nginx-conf/]
   [[}]]
 [[}]]
 
-● Vagrant (VMs as code):[[{vagrant_PM.low_code,101,troubleshooting]]  
+● Vagrant (VMs as code):[[{vagrant,01_PM.low_code,101,troubleshooting]]  
   - External Links:
     - @[https://www.vagrantup.com/docs/index.html]
     - @[https://www.vagrantup.com/docs/cli/]                         CLI Reference
