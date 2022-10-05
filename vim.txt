@@ -1,7 +1,8 @@
 Vim Cheat Sheet [[{text_utils.vim]]
 vim History: @[https://begriffs.com/posts/2019-07-19-history-use-vim.html]
+   - Core Author: Bram Moolenaar (Bram@Vim.org)
 
-  CONCEPTS:
+● CONCEPTS:
   ===========
   vim buffer: in-memory buffer of file on disk.
   vim window: graphical viewport on a buffer.
@@ -18,18 +19,18 @@ vim History: @[https://begriffs.com/posts/2019-07-19-history-use-vim.html]
   :wa            <- write all buffers
   :q             <- quit (! to force, loosing non writen modifications in buffer)
 
- 
+
   gf    : edit file under your cursor in current window. (<c-O> to move to previous buffer)
   <c-w>g: edit file under your cursor in new tab.
   <c-w>f: edit file under your cursor in new vert. split.
 
-  <c-^>/<c-6>/<c-O>: navigate to previous buffer/scroll-line in current window 
+  <c-^>/<c-6>/<c-O>: navigate to previous buffer/scroll-line in current window
                      :h CTRL-^ and :h alternate-file for more info.
 
   TIP: Learn to use :b and :sb to switch buffers instead of cycling! (See :h :b)
 
- *BASICS*:                                      │  *VISUAL("EASY") MODE*:             │
- ───────────────────────────────────────────────┼ ────────────────────────────────────┤
+● BASICS:                                       │  *VISUAL("EASY") MODE*:             │
+ ───────────────────────────────────────────────┼─────────────────────────────────────┤
   [Esc]  key      ← exit edit/visual/... mode   │   v: start V. (mark) mode           │
   :help "keyword" ← open help for keyword       │     (then apply command on it)      │
   :ls             ← list open buffers           │Ctrl: Enter Visual Block Mode. Very  │
@@ -38,7 +39,7 @@ vim History: @[https://begriffs.com/posts/2019-07-19-history-use-vim.html]
   .               ← repeat last command         │      "switch-case like" code,...    │
   ...!            ← '!' forces cmd ...          │    ˃ ← shift text right             │
                          execution              │    ˂ ← shift text left              │
-  :!sh ← pass visual-block/range as STDIN to 
+  :!sh ← pass visual-block/range as STDIN to
          sh/python/... and replace block/range
          with STDOUT from sh/python/... execution
 
@@ -47,7 +48,7 @@ vim History: @[https://begriffs.com/posts/2019-07-19-history-use-vim.html]
   INSERT/EDIT:                                                     *(BOOK)MARKING* ☞FAST MOVE☜ among code
   (i)nsert before cursor     │   (r)eplace single character      │ ma     ← set  local (     line)    (m)ark
   (I)nsert start of line     │   (J)oin line below with space    │ mA     ← set global (file,line)book(m)ark
-  (a)ppend after cursor      │  (gJ)   "   "     witouth ""      │  'a    ← go to 'a' (file+line) 
+  (a)ppend after cursor      │  (gJ)   "   "     witouth ""      │  'a    ← go to 'a' (file+line)
   (A)ppend at end-of-line    │  (cc)hange/replace entire line    │ :marks ← list "book"marks
   (o)pen(add) new line below │   (C)hange/ "      to end-of-line
   (O)pen(add) new line above │ (ciw)hange/replace word           │  *MACROS*
@@ -56,31 +57,31 @@ vim History: @[https://begriffs.com/posts/2019-07-19-history-use-vim.html]
      (buffer still in memory)│                                   │ @a ← run macro 'a'
   (d)elete marked text       │                                   │ @@ - rerun last macro
   (R)eplace (vs insert)      │                                   │ TIP: macros are really powerful, they
-                             │                                   │      can be used even as a basic data 
+                             │                                   │      can be used even as a basic data
                              │                                   │      processing engine.
 
  ● MOVE RELATIVE TO:
-  ▶ cursor                  ▶ word                     ▶ screen            
-  │    ↑k                   │ w:  forward to w.start   │  H: S. top        
-  └ ←h ↓j →l                │ b: backward to w.start   │  M: S. middle     
-  ─                         └ e:  forward to w.  end   │  L: S. low        
-  ▶ window: <c-w>+...                                  │ Ctrl+b: back full 
-  │      ↑k                 ▶ Scroll:                  │ Ctrl+u: back half 
-  │   ←h ↓j →l              │ Ctrl + e : down 1 line   │ Ctrl+f: for. full 
-  │ <c-w>_: "maximize" win  └ Ctrl + y : up   1 line   └ Ctrl+d: for. half 
+  ▶ cursor                  ▶ word                     ▶ screen
+  │    ↑k                   │ w:  forward to w.start   │  H: S. top
+  └ ←h ↓j →l                │ b: backward to w.start   │  M: S. middle
+  ─                         └ e:  forward to w.  end   │  L: S. low
+  ▶ window: <c-w>+...                                  │ Ctrl+b: back full
+  │      ↑k                 ▶ Scroll:                  │ Ctrl+u: back half
+  │   ←h ↓j →l              │ Ctrl + e : down 1 line   │ Ctrl+f: for. full
+  │ <c-w>_: "maximize" win  └ Ctrl + y : up   1 line   └ Ctrl+d: for. half
   │ <c-w>=: make all win.
   │         same size
   │ :h CTRL-W : Help
-  └          
-  ▶ code-block:         ▶ line:              
-  │ %: jump to "peer"   │  0: start-of-l.    
-  │    block-delimiter  │  $:   end-of-l.    
+  └
+  ▶ code-block:         ▶ line:
+  │ %: jump to "peer"   │  0: start-of-l.
+  │    block-delimiter  │  $:   end-of-l.
   │    ({[←...→)}]      │ 9g: line 9
   │ {: prev. paragraph  │ gg: first line of d.
-  │    or block.        │  G: last  line of d.  
-  │ }: next paragraph   └ 4G: 4th line of d.  
-  └    or block                            
- 
+  │    or block.        │  G: last  line of d.
+  │ }: next paragraph   └ 4G: 4th line of d.
+  └    or block
+
  *SEARCH*(regex)        *REPLACE* (re gex)                    *YANK("COPY") AND PASTE*  *REGISTERS* (C&P for the pros)
   /...  ← forward search │:%s/XX/YY/... ← (s)ubstitute XX→YY │ yy ← yank line            │ :reg ← show registers content
   ?...  ← backward  "    │ ^        ^    ┌ i == ignore case  │ yw ← yank to next work    │ "xy  ← yank into register x
@@ -95,18 +96,18 @@ vim History: @[https://begriffs.com/posts/2019-07-19-history-use-vim.html]
 
  *MULTIFILE EDIT*                          *TABS*                                     *SPELL CHECK (7.0+)*
   :e file_name (current pane, new buffer) │ :tabn ... open (new/existing)file        │  :set spell spelllang=en_us
-  :bn (b)uffer (n)ext in current pane     │           in new tab                     │  :setlocal spell spelllang=en_us 
+  :bn (b)uffer (n)ext in current pane     │           in new tab                     │  :setlocal spell spelllang=en_us
   :bp (b)uffer (n)ext in current pane     │ Ctrl+wT: move current window to new tab  │   (^ prefer on mixed prose/code)
   :bd (b)uffer (d)elete                   │ gt: (g)o next (t)ab (gT for prev)        │  :set nospell  ← turn-off
-  :ls*list buffers                        │ #gt (g)o to tab #                        │  - Color code: 
+  :ls*list buffers                        │ #gt (g)o to tab #                        │  - Color code:
   :sp  file_or_buffer hori.(s)plit→edit   │ :tabm # (m)ove tab to #th pos.           │    · Red   : misspelled words
   :vsp file_or_buffer vert.(s)plit→edit   │                                          │    · Orange: rare words
-  Ctrl+ws: split window horizontally      │                                          │    · Blue  : words NOT capitalized 
+  Ctrl+ws: split window horizontally      │                                          │    · Blue  : words NOT capitalized
   Ctrl+wv: split window vertically        │                                          │]s [s ← Move to next/prev.error
-  Ctrl+w←: move to (←↑→↓) window          │                                          │   z= : Show alternatives               
+  Ctrl+w←: move to (←↑→↓) window          │                                          │   z= : Show alternatives
                                                                                      │   zg : add to dict.
                                                                                      │   zw : remove from dict
-                                                                                        
+
 <hr/>
 <span xsmall>Package Manager (vim 8.0+/Neovim)</span>
 - Package manager: Replaces ad-hoc plugin managers before 8.0
@@ -114,11 +115,11 @@ vim History: @[https://begriffs.com/posts/2019-07-19-history-use-vim.html]
   │Package│ 1 ←···→ 1+ │plugin│ 1 ←····→ 1+ │vimscript│
 
 - Use like:
-$*$ mkdir -p ~/.vim/pack/$name/start* ← $name : arbitrary name, 
+$*$ mkdir -p ~/.vim/pack/$name/start* ← $name : arbitrary name,
                                         ~/.local/share/nvim/site/pack/$name/start for neovim
 $*$ cd ~/.vim/pack/$name/start*
 $*$ git clone $url_git_repo   *       ← use $*$ git pull ...* to update/swith package version
-    
+
 <hr/>
 <span xsmall>CoC Plugin: Intellisense support</span>
 @[https://github.com/neoclide/coc.nvim]
@@ -134,3 +135,32 @@ $*$ git clone $url_git_repo   *       ← use $*$ git pull ...* to update/swith 
                                                  │        → restart coc
                                                  │- :CocDisable
 [[text_utils.vim}]]
+
+
+- Vim 9.0 (2022-06) [[{01_PM.NEW]]
+  - many small additions.
+  - Vim9 script.
+    - Much better performance by compiling commands  (up to x10/x100)
+    - closer to common languages like JS/TypeScript/Java.
+    - Splitting up large script is much simpler with 'import/export' support
+    - WARN: No 100% backwards compatible  by legacy scripts support
+            still working. (no plans to drop it)
+    - # vs " for comments.
+      - dictionary not available as function arg.
+      - error control.
+      - def vs function!
+      - argument+return types must be specified.
+  - Code coverage dramatically increased.
+- Vim 8.2 (2019-12)
+
+Vim is Charityware. You can use and copy it as much as you like, but
+you are encouraged to make a donation for needy children in Uganda.
+Please visit the ICCF web site for more information:
+https://iccf-holland.org
+
+
+[[01_PM.NEW}]]
+
+[[{01_PM.TODO]]
+• http://rayninfo.co.uk/vimtips.html
+[[01_PM.TODO}]]
