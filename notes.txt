@@ -2404,6 +2404,17 @@ $ dockviz images - -i *                 #  <- Show incremental size (vs cumulati
                                      Probably the most frequently changed layer
                                      is also the smaller layer                 
 
+    Standard Labels are also recomended. They can be added like:
+    LABEL org.label-schema.build-date=2022-02-17T05:47Z
+    LABEL org.label-schema.description=Ethereum transaction signing application,
+    LABEL org.label-schema.name=Ethsigner,
+    LABEL org.label-schema.schema-version=1.0,
+    LABEL org.label-schema.url=https://docs.ethsigner.consensys.net,
+    LABEL org.label-schema.vcs-ref=4c42aec7,
+    LABEL org.label-schema.vcs-url=https://github.com/ConsenSys/ethsigner,
+    LABEL org.label-schema.vendor=Consensys,
+    LABEL org.label-schema.version=22.1.0
+
    $ docker build \
       --build-arg http_proxy=http://...:8080 \
       --build-arg https_proxy=https://..:8080 \
