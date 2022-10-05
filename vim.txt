@@ -108,20 +108,19 @@ vim History: @[https://begriffs.com/posts/2019-07-19-history-use-vim.html]
                                                                                      │   zg : add to dict.
                                                                                      │   zw : remove from dict
 
-<hr/>
-<span xsmall>Package Manager (vim 8.0+/Neovim)</span>
+
+● Package Manager (vim 8.0+/Neovim):
 - Package manager: Replaces ad-hoc plugin managers before 8.0
-                  (old vundler, vim-plug,... *not needed anymore*)
+                  (bundler, vim-plug,... *not needed anymore*)
   │Package│ 1 ←···→ 1+ │plugin│ 1 ←····→ 1+ │vimscript│
 
 - Use like:
-$*$ mkdir -p ~/.vim/pack/$name/start* ← $name : arbitrary name,
+$*$ mkdir -p ~/.vim/pack/$name/start* ← $name : arbitrary name, ussually local or plugin
                                         ~/.local/share/nvim/site/pack/$name/start for neovim
 $*$ cd ~/.vim/pack/$name/start*
 $*$ git clone $url_git_repo   *       ← use $*$ git pull ...* to update/swith package version
 
-<hr/>
-<span xsmall>CoC Plugin: Intellisense support</span>
+● CoC Plugin: Intellisense support. Reuse all Visual Code plugins thanks to LSP:
 @[https://github.com/neoclide/coc.nvim]
 - add support for Language Server Protocol (LSP) allowing to  reuse "Visual Studio Plugins"
 
