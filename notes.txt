@@ -1,28 +1,46 @@
-View on:
-https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/notes.txt
+●  Apropos:
+- Visit next Web site for a great experience:
+  https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/notes.txt
+- If you want to contribute to great gistory of this
+  document you can take the next flight to:
+@[https://www.github.com/earizon/DevOps]
+  Your commits and pull-request will be immortalized
+  in the Pantheon of the Unicode Gods.
+────────────────────────────────────────────────────────────────────────────────
+
 #############################################
 ●        Shell Scripting                    # [[{dev_language.shell_script]]
 #############################################
 
 ● REFERENCE SCRIPT:  [[{dev_language.shell_script.101]] #[bash_summary]
 
-  #!/bin/bash 
+  #!/bin/bash
   # NOTE: The Bash "syntax sugar" VAR1=$("some command") executes "some command"
   #  and assigns execution (STDOUT) output as effective value to VAR1
-  readonly OUTPUT="LOGS/$(basename $0).$(whoami).$(date +%Y%m%d_%Hh%Mm%Ss).log"
-                                            #   $(whoami) will avoid collisions  among
-                                            #   different users even if writing to the
-                                            #   same directory and serves as audit trail.
-                                            #   This happens frequently in DevOps when
-                                            #   executing in sudo/non-sudo contexts.
-  if [ ! -d LOGS ] ; then mkdir LOGS ; fi   # opinionated. Save to LOGS 
-  ln -sf ${OUTPUT} link_last_log.$(basename $0).gitignore # (opinionated) Improve UX, create link to latest log 
-  exec 3>&1   # Copy current STDOUT to &3
-  exec 4>&2   # Copy current STDERR to &4
-  echo "Cloning STDOUT/STDERR to ${OUTPUT}"
-  exec &> >(tee -a "$OUTPUT") # Redirect to STDOUT and file <a target="_new" href="https://unix.stackexchange.com/questions/145651/using-exec-and-tee-to-redirect-logs-to-stdout-and-a-log-file-in-the-same-time">REF:</a>
-  exec 2>&1
+
+  # SETUP STDERR/STDOUT logging to file and console {{{
+  readonly LOG_DIR="LOGS.gitingore"
+  if [ ! -d ${LOG_DIR}.gitignore ] ; then
+     mkdir ${LOG_DIR}.gitignore
+  fi
+  # $(whoami) will avoid collisions  among different users even if writing to the
+  # same directory and serves as audit trail. # This happens frequently in DevOps when
+  # executing in sudo/non-sudo contexts.
+  readonly OUTPUT="${LOG_DIR}.gitignore/$(basename $0).$(whoami).$(date +%Y%m%d_%Hh%Mm%Ss).log"
+  ln -sf ${OUTPUT} link_last_log.$(basename $0).gitignore  # (opinionated) Improve UX, create link to latest log
+  exec 3>&1
+  exec 4>&2
+  echo "Cloning STDOUT/STDERR to ${PWD}/${OUTPUT}"
+                                           # (Opnionated) Redirect to STDOUT and file REF:
+  exec &> >(tee -a "$OUTPUT")              # Comment to disable (Ussually not needed in Kubernetes/AWS-EC2/...
+                                           # since console output is direcly saved to files/S3 by some external mechanism.
+                                           # https://unix.stackexchange.com/questions/145651↩
+                                           #   /using-exec-and-tee-to-redirect-logs-to-stdout-and-a-log-file-in-the-same-time
+
+  exec 2>&1                                # (Opinionated). Mix errors (STDERR) with STDOUT.
+                                           # Recommended to see errors in the context of normal execution.
   echo "message logged to file & console"
+  # }}}
 
   global_exit_status=0
   readonly WD=$(pwd)    # Best Practice: write down current work dir are use it
@@ -45,7 +63,7 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
                                           #  REF: @[https://en.wikipedia.org/wiki/Fail-fast]
     local -r name = ${HOME}               # local: scoped to function!!!                      [[qa]]
     echo "Cleaning resource and exiting"
-    rm -fO ${FILE_RESOURCE_01} 
+    rm -fO ${FILE_RESOURCE_01}
     set -e                                # <- Re-enable fail-fast.
   }
 
@@ -140,7 +158,7 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
                                    |     If parameter is '@', an indexed array subscripted by '@' or '*', or an
                                    |     associative array name, the results differ.
   readonly const1=${varA}
-  
+
 ● CONCURRENT PROCESS BARRIER SYNCHRONIZATION:
   Wait for background jobs to complete example:
   (
@@ -158,27 +176,27 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
   @[https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop]
       # Define the list of a menu item
       select   language  in C# Java PHP Python Bash Exit
-      do 
+      do
         #Print the selected value
         if [[   $language  == "Exit" ]] ; then
           exit 0
         fi
         echo "Selected language is $language"
-      done 
+      done
 
 ● 'test' CONDITIONAL BRANCHING: [[{]]
   (man test summary from GNU coreutils for more info)
-   
+
   test   EXPRESSION  # ← EXPRESSION true/false sets the exit status.
   test [ EXPRESSION ]
-  
+
   -n STRING                  # STRING length >0
                              # (or just STRING)
   -z STRING                  #  STRING length == 0
   STRING1 = STRING2          # String equality
   STRING1 != STRING2         # String in-equality
-  
-  
+
+
   INTEGER1 -eq INTEGER2      # ==
   INTEGER1 -ge INTEGER2      # <=
   INTEGER1 -gt INTEGER2
@@ -187,31 +205,31 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
   INTEGER1 -ne INTEGER2
   ^^^^^^^^
     NOTE:  INTEGER can be -l STRING (length of STRING)
-  
-   FILE TEST/COMPARISION 
+
+   FILE TEST/COMPARISION
     WARN:  Except -h/-L, all FILE-related tests dereference symbolic links.
-  -e FILE                    # FILE exists 
-  -f FILE                    # FILE exists and is a1regular file 
+  -e FILE                    # FILE exists
+  -f FILE                    # FILE exists and is a1regular file
   -h FILE                    # FILE exists and is   symbolic link  (same as -L)
   -L FILE                    #                                     (same as -h)
-  -S FILE                    # FILE exists and is   socket 
-  -p FILE                    # FILE exists and is a named pipe 
-  -s FILE                    # FILE exists and has   size greater than zero 
-  
-  
+  -S FILE                    # FILE exists and is   socket
+  -p FILE                    # FILE exists and is a named pipe
+  -s FILE                    # FILE exists and has   size greater than zero
+
+
   -r FILE                    # FILE exists and read  permission is granted
   -w FILE                    # FILE exists and write permission is granted
   -x FILE                    # FILE exists and exec  permission is granted
-  
+
   FILE1  -ef FILE2           # ← same device and inode numbers
   FILE1 -nt FILE2            # FILE1 is newer (modification date) than FILE2
   FILE1 -ot FILE2            # FILE1 is older (modification date) than FILE2
   -b FILE                    # FILE exists and is block special
   -c FILE                    # FILE exists and is character special
-  -d FILE                    # FILE exists and is a directory 
+  -d FILE                    # FILE exists and is a directory
   -k FILE                    # FILE exists and has its sticky bit set
-  
-  
+
+
   -g FILE                    # FILE exists and is set-group-ID
   -G FILE                    # FILE exists and is owned by the effective group ID
   -O FILE                    # FILE exists and is owned by the effective user ID
@@ -222,11 +240,11 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
     EXPRESSION1 -a EXPRESSION2 # AND # 'test EXPR1 && test EXPR2' is prefered
     EXPRESSION1 -o EXPRESSION2 # OR  # 'test EXPR1 || test EXPR2' is prefered
   [[}]]
-  
+
     WARN,WARN,WARN : your shell may have its own version of test and/or '[',
                      which usually supersedes the version described here.
                      Use /usr/bin/test to force non-shell ussage.
-  
+
   Full documentation at: @[https://www.gnu.org/software/coreutils/]
 [[}]]
 
@@ -272,7 +290,7 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
 - HAProxy PROXY protocol
 - ...
 
-  HTTP Example 
+  HTTP Example
   $ curl http://site.{one,two,three}.com  \
          --silent                         \    ← Disable progress meter
          --anyauth                        \    ← make curl figure out auth. method
@@ -334,7 +352,7 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
     We can share information without having to grant SSH access to anybody.
 
 
-  Recipe: Run script as a given user: 
+  Recipe: Run script as a given user:
   # Note that `kapow` must be available under $PATH relative to /some/path
   kapow route add /chrooted\
       -e 'sudo --preserve-env=KAPOW_HANDLER_ID,KAPOW_DATA_URL \
@@ -406,47 +424,47 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
     @[https://git-blame.blogspot.com/]
 
 ● GIT: What's new: [[{]]
-- 2.28: 
+- 2.28:
 @[https://github.blog/2020-07-27-highlights-from-git-2-28/]
 
  - Git 2.28 takes advantage of 2.27 commit-graph optimizations to  [[performance]]
    deliver a handful of sizeable performance improvements.
 
 
-- 2.27: 
+- 2.27:
  - commit-graph file format was extended to store changed-path Bloom
    filters. What does all of that mean? In a sense,
    this new information helps Git find points in history that touched a
    given path much more quickly (for example, git log -- <path>, or git [[performance]]
    blame).
 
-- 2.25: 
+- 2.25:
 @[https://www.infoq.com/news/2020/01/git-2-25-sparse-checkout/]
   500+ changes since 2.24.
 
   Sparse checkouts are one of several approaches Git supports to improve   [scalability]
   performance when working with big(huge or monolithic) repositories.      [monolitic]
-   They are useful to keep working directory clean by specifying which     [performance] 
+   They are useful to keep working directory clean by specifying which     [performance]
   directories to keep. This is useful, for example, with repositories
   containing thousands of directories.
 
   See also: http://schacon.github.io/git/git-read-tree.html#_sparse_checkout
 
-- 2.23: 
+- 2.23:
   https://github.blog/2019-08-16-highlights-from-git-2-23
 [[}]]
 
 
 ● GIT "Full Journey" [[{git.101,1_doc_type.diagram,01_PM.WiP]] #[git_summary]
-  ######################################################################### 
-  # Non-normative Git server setup for N projects with M teams of L users # 
-  ######################################################################### 
+  #########################################################################
+  # Non-normative Git server setup for N projects with M teams of L users #
+  #########################################################################
  · CONTEXT:
    · ssh access has been enabled to server (e.g: $ $ sudo apt install openssh-server   )
    · Ideally ssh is protected. See for example:
    @[../DevOps/linux_administration_summary.html#knockd_summary]
    (Alternatives include using GitHub,GitLab,BitBucket, AWS/Scaleway/Azure/... )
-   
+
  · We want to configure linux users and groups to match a "permissions layout" similar to:
     GIT_PROJECT1 ···→ Linux Group teamA ····→ R/W permssions to /var/lib/teamA/project01 *1
     GIT_PROJECT2 ···→ Linux Group teamA ····→ R/W permssions to /var/lib/teamA/project02
@@ -459,11 +477,11 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
     GIT_PROJECT5 ···→ ...
   *1: setup /var/lib/teamA/project01 like:
   $ $ sudo mkdir -p /var/lib/teamA/project01                 ← create directory
-  $ $ cd /var/lib/teamA/project01                           
+  $ $ cd /var/lib/teamA/project01
   $ $ sudo git init --bare                                   ← INIT NEW GIT BARE DIRECTORY !!!!
                                                                (GIT OBJECT DATABASE for
                                                                 commits/trees/blogs, ...)
-  $ $ DIR01=/var/lib/teamA/project01                        
+  $ $ DIR01=/var/lib/teamA/project01
   $ $ sudo find ${DIR01} -exec chown -R nobody:teamA {} \;   ← Fix owner:group_owner for dir. recursively
   $ $ sudo find ${DIR01} -type d -exec chmod g+rwx {} \;     ← enable read/wr./access perm. for dirs.
   $ $ sudo find ${DIR01} -type f -exec chmod g+rw  {} \;     ← enable read/write      perm. for files
@@ -471,9 +489,9 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
     Finally add the desired linux-users to the 'teamA' linux-group at will. More info at:
     @[../DevOps/linux_administration_summary.html#linux_users_groups_summary] )
 
-  ###################################################################### 
-  # Non-normative ssh client access to Git remote repository using ssh # 
-  ###################################################################### 
+  ######################################################################
+  # Non-normative ssh client access to Git remote repository using ssh #
+  ######################################################################
 • PRE-SETUP) Edit ~/.bashrc to tune the ssh options for git ading lines similar to:
   + GIT_SSH_COMMAND=""
   + GIT_SSH_COMMAND="${GIT_SSH_COMMAND} -oPort=1234 "                 ← connect to port 1234 (22 by default)
@@ -482,7 +500,7 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
   + GIT_SSH_COMMAND="${GIT_SSH_COMMAND} ..."                          ← any other suitable ssh options (-4, -C, ...)
 
     Optionally add your GIT URL like:
-  $ + export GIT_URL="myRemoteSSHServer"              
+  $ + export GIT_URL="myRemoteSSHServer"
   $ + export GIT_URL="${GIT_URL}/var/lib/my_git_team   ← Must match path in server (BASE_GIT_DIR)
   $ + export GIT_URL="${GIT_URL}/ourFirstProject"      ← Must match name in server (PROJECT_NAME)
 
@@ -499,40 +517,40 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
   $ $ git clone   myUser1 @${GIT_URL}                  ← execution will warn about cloning empty directory.
   $ $ cd ourFirstProject                               ← move to local clone.
   $ $ ...                                              ← Continue with standards git work flows.
-  $ $ git add ...                                     
-  $ $ git commit ...                                  
+  $ $ git add ...
+  $ $ git commit ...
 
-  ############################# 
-  # COMMON (SIMPLE) GIT FLOWS # 
-  ############################# 
+  #############################
+  # COMMON (SIMPLE) GIT FLOWS #
+  #############################
   ┌─ FLOWS 1: (Simplest flow) no one else pushed changes before our push.────────────────────────────────────
-  │           NO CONFLICTS CAN EXISTS BETWEEN LOCAL AND REMOTE WORK 
-  │  local ─→ git status ─→ git add . ─→ git commit ··································→ git push \ 
-  │  edit     └───┬────┘    └───┬────┘   └───┬────┘                                     origin featureX 
+  │           NO CONFLICTS CAN EXISTS BETWEEN LOCAL AND REMOTE WORK
+  │  local ─→ git status ─→ git add . ─→ git commit ··································→ git push \
+  │  edit     └───┬────┘    └───┬────┘   └───┬────┘                                     origin featureX
   │               │         add file/s       │                                         └─────┬─────────┘
   │       display changes   to next commit   │                                       push to featureX branch
   │       pending to commit              commit new file history                     at remote repository.
 
   ┌─ FLOWS 2: someone else pushed changes before us,  ───────────────────────────────────────────────────────
   │           BUT THERE ARE NO CONFLICTS (EACH USER EDITED DIFFERENT FILES)
-  │  local → git status → git add . → git commit ─→ git pull ·························→ git push \ 
-  │  edit                                          └───┬───┘                            origin featureX 
-  │               • if 'git pull' is ommitted before 'git push', git will abort warning about remote changes 
+  │  local → git status → git add . → git commit ─→ git pull ·························→ git push \
+  │  edit                                          └───┬───┘                            origin featureX
+  │               • if 'git pull' is ommitted before 'git push', git will abort warning about remote changes
   │                 conflicting with our local changes. 'git pull' will download remote history and since
   │                 different files have been edited by each user, an automatic merge is done  (local changes
   │                  + any other user's remote changes). 'git pull' let us see other's people work locally.
 
   ┌─ FLOW 3: someone else pushed changes before our push,  ──────────────────────────────────────────────────
   │          BUT THERE ARE  CONFLICTS (EACH USER EDITED ONE OR MORE COMMON FILES)
-  │  local → git status → git add . → git commit ─→ git pull ┌→ git add  → git commit → git push \ 
-  │  edit                                              ↓     ↑  └──┬──┘                 origin featureX 
-  │                                             "fix conflicts" mark conflicts as 
+  │  local → git status → git add . → git commit ─→ git pull ┌→ git add  → git commit → git push \
+  │  edit                                              ↓     ↑  └──┬──┘                 origin featureX
+  │                                             "fix conflicts" mark conflicts as
   │                                             └─────┬──────┘  resolved
   │                                  manually edit conflicting changes (Use git status to see conflicts)
 
   ┌─ FLOW 4: Amend local commit ─────────────────────────────────────────────────────────────────────────────
-  │  local → git status → git add . → git commit  → git commit ─amend ...→ git commit → git push \ 
-  │  edit                                                                               origin featureX 
+  │  local → git status → git add . → git commit  → git commit ─amend ...→ git commit → git push \
+  │  edit                                                                               origin featureX
 
   ┌─ GIT FLOW: Meta-flow using WIDELY ACCEPTED BRANCHES RULES  ──────────────────────────────────────────────
   │  to manage common issues when MANAGING AND VERSIONING SOFTWARE RELEASES
@@ -555,9 +573,9 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
   │  └───────────────────┴──────────────────────────────────────────────────────────────────────────────────┘
   │
   │  • master branch ← "Ignore".
-  │  ├─ • develop (QA test branch) ·················• merge ·················· • merge ┐  ...• merge ┐            
+  │  ├─ • develop (QA test branch) ·················• merge ·················· • merge ┐  ...• merge ┐
   │  │  │                                           ↑ feat.1                   ↑       ·     ↑       ·
-  │  │  ├→ • feature/appFeature1 • commit • commit ─┘  ························│·······↓ ... ┘       ·      
+  │  │  ├→ • feature/appFeature1 • commit • commit ─┘  ························│·······↓ ... ┘       ·
   │  │  │     (git checkout -b)                                                │       ·             ·
   │  │  │                                                                      │       ·             ·
   │  │  ├→ • feature/appFeature2 • commit • commit • commit • commit • commit ─┘       ·  ┌··········┘
@@ -577,7 +595,7 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
 
 <hr/>
 <span xsmall>RECIPES</span>
-                                            PLAYING WITH BRANCHES 
+                                            PLAYING WITH BRANCHES
   $ git checkout    newBranch             ← swith to local branch (use -b to create if not yet created)
   $ git branch -av                        ←  List (-a)ll existing branches
   $ git branch -d branchToDelete          ← -d: Delete branch
@@ -585,7 +603,7 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
   $ git checkout v1.4-lw                  ← Move back to (DETACHED) commit. ('git checkout HEAD' to reattach)
  $ git remote update origin --prune       ← Update local branch to mirror remote branches in 'origin'
 
-                                            VIEW COMMIT/CHANGES HISTORY 
+                                            VIEW COMMIT/CHANGES HISTORY
   $ git log -n 10                         ← -n 10. See only 10 last commits.
   $ git log -p path_to_file               ← See log for file with line change details (-p: Patch applied)
   $ git log --all --decorate \            ← PRETTY BRANCH PRINT Alt.1
@@ -594,11 +612,11 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
      --decorate --date=relative --all
 
 
-                                            UPDATE ALL REMOTE BRANCHES TO LOCAL REPO 
+                                            UPDATE ALL REMOTE BRANCHES TO LOCAL REPO
   (REF: https://stackoverflow.com/questions/10312521/how-to-fetch-all-git-branches=
   for remote in `git branch -r`;             # ← add remote branches on server NOT yet tracked locally
      do git branch \                         #   (pull only applies to already tracked branches)
-        --track ${remote#origin/} $remote; 
+        --track ${remote#origin/} $remote;
   done
 
   $ git fetch --all                            # ← == git remote update.
@@ -609,7 +627,7 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
                                                #    - It will NOT create local branches (tracking remote branches)
   $ git pull --all                             # ← Finally update all tracked branches.
 
-                                            TAGS: 
+                                            TAGS:
   $ git tag                               ← List tags
   → v2.1.0-rc.2
   → ...
@@ -619,7 +637,7 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
                                             if commit ommited (9fceb..) HEAD is used)
   $ git tag v1.4-lw                       ← Create lightweight tag ("alias" for commit-checksum)
 
-                                            SHARING/PUSHING TAGS 
+                                            SHARING/PUSHING TAGS
                                             WARN : 'git push' does NOT push tags automatically
   $ git push origin v1.5                  ← Share 'v1.5' tag to remote 'origin' repo
   $ git push origin --tags                ← Share all tags
@@ -632,7 +650,7 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
   → 75509731d28d... refs/tags/v2.1.0-rc.2
   → 8fc0a3af313d... refs/tags/v2.1.1
   → ...
-                                            REVERTING CHANGES 
+                                            REVERTING CHANGES
  $ git reset --hard HEAD~1                ← revert to last-but-one (~1) local commit (Not yet pushed)
                                             (effectively removing last commit from local history)
  $ git checkout path/fileN                ← revert file not yet "git-add"ed or removed from FS to last commited ver.
@@ -648,9 +666,9 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/not
                                             origin/branch1 to recover from upstream -vs local- branch.
 
 
-                                            CLONING REMOTES 
+                                            CLONING REMOTES
   $ git clone --depth=1  \                ← Quick/fast-clone (--depth=1) with history truncated to last N commits.
-                                            Very useful in CI/CD tasks. 
+                                            Very useful in CI/CD tasks.
         --single-branch \                 ← Clone only history leading to tip-of-branch (vs cloning all branches)
                                             (implicit by previous --depth=... option)
         --branch '1.3' \                  ← branch to clone (defaults to HEAD)
@@ -665,67 +683,67 @@ Methods to track who changed and/or when a change(bug) was introduced include:
   · git-blame helps to find recently introduced bugs.
   · git-bisect helps find bugs digged many commits down in history.
   · Ussage example:
-  
-                               MANUAL BISECT SEARCH 
+
+                               MANUAL BISECT SEARCH
     $ git bisect start       ← start investigating issue.
     (run tests)
     $ git bisect bad         ← tell git that current commit is broken
     (run tests)
     $ git bisect good v1.0   ← tell git that current commit is OK
-    Bisecting: 6 revisions↲  ← Git counts about 12 commits between 
+    Bisecting: 6 revisions↲  ← Git counts about 12 commits between
     left to test after this    "good" and "bad" and checks out middle one
-    (run tests) 
+    (run tests)
     ...
     b04... is 1st bad commit ← repeat git bisect good/bad until reaching
                                1st bad commit.
-    $ git bisect reset       ← DON'T FORGET: reset after finding commit. 
+    $ git bisect reset       ← DON'T FORGET: reset after finding commit.
 
-                               AUTOMATING BISECT SEARCH 
-  $ git bisect start HEAD v1.0 
+                               AUTOMATING BISECT SEARCH
+  $ git bisect start HEAD v1.0
   $ git bisect run test.sh   ← test.sh must return 0 for "OK" results
                                non-zero otherwise.
 
 • git blame : annotates lines-of-files with:
 @[https://git-scm.com/book/en/v2/Git-Tools-Debugging-with-Git#_file_annotation]
   $ git blame -L 69,82 -C path2file  ← display last commit+committer for a given line
-                                       -C: try to figure out where snippets of code 
+                                       -C: try to figure out where snippets of code
                                            came from (copied/file moved)
-  b8b0618cf6fab (commit_author1 2009-05-26 ... 69) ifeq 
-  b8b0618cf6fab (commit_author1 2009-05-26 ... 70)   
+  b8b0618cf6fab (commit_author1 2009-05-26 ... 69) ifeq
+  b8b0618cf6fab (commit_author1 2009-05-26 ... 70)
   ^1da177e4c3f4 (commit_author2 2005-04-16 ... 71) endif
   ^                                            ^^
   prefix '^' marks initial commit for line    line
 
 
- 
+
 
 • git grep : find any string/regex in any file in any commit, working directory (default) or index.
 @[https://git-scm.com/book/en/v2/Git-Tools-Searching#_git_grep]
-  •  Much faster than standard 'grep' UNIX command!!! 
-  $ git grep -n      regex01  ← display file:line   matching regex01 in working dir. 
+  •  Much faster than standard 'grep' UNIX command!!!
+  $ git grep -n      regex01  ← display file:line   matching regex01 in working dir.
                                 -n/--line-number: display line number
                                 Use -p / --show-functions to display enclosing function
-                                (Quick way to check where something is being called from) 
+                                (Quick way to check where something is being called from)
   $ git grep --count regex01  ← Summarize file:match_count matching regex01 in working dir.
-  
+
   $ git grep                  ← display file:line matching
-      -n -e '#define' --and \ ← '#define' and 
+      -n -e '#define' --and \ ← '#define' and
        \( -e ABC -e DEF \)      ( ABC or DEF )
       --break --heading \     ← split up output into more readable format
       "v1.8.0"                      ← search only in commit with tag "v1.8.0"
-  
+
 • Git Log Searching:
   $ git log -S ABC --oneline ← log only commits changing the number-of-occurrences of "ABC"
   e01503b commit msg ...       Replace -S by -G for REGEX (vs string).
   ef49a7a commit msg ...
 
-• Line history Search: 
-  $ git log -L :funABC:file.c ← git will try to figure out what the bounds of 
+• Line history Search:
+  $ git log -L :funABC:file.c ← git will try to figure out what the bounds of
                                 function funABC are, then look through history and
-                                display every change made. 
+                                display every change made.
                                 If programming lang. is not supported, regex can be
                                 used like {: -L '/int funABC/',/^[}]/:file.c
-                                range-of-lines or single-line-number can be used to 
+                                range-of-lines or single-line-number can be used to
                                 filter out non interesting results.
 <hr/>
 <span xsmall>Plumbings Summary</span>
@@ -742,8 +760,8 @@ $ $ git init   ← creates an initial layout containing (Alternatively $ $git cl
 
    ~/.git/index  ←············  binary file with staging area data (files 'git-added' but not yet commited)
                                 Use (porcelain) $ $ git ls-files   to see indexes files (git blobs)
-        ┌─.git/objects/  (  GIT OBJECT STORE  ) ─────────┐      $ $ echo "..." > file1.txt       
-        │                                                │      $ $ git hash─object ─w file1.txt 
+        ┌─.git/objects/  (  GIT OBJECT STORE  ) ─────────┐      $ $ echo "..." > file1.txt
+        │                                                │      $ $ git hash─object ─w file1.txt
 ┌········→ • /af/3??? •···→ •/a1/12???                   │          └───────────┬────────────────┘
 ·       │  │(2nd commit)                      ┌············ save to Object Store┘content─addressable File System.
 ·       │  v                                  v          │  WARN : Original file name lost. We need to add a mapping
@@ -752,7 +770,7 @@ $ $ git init   ← creates an initial layout containing (Alternatively $ $git cl
 · ·  ·  │                   ·           └···┐            │┌· Finally an snapshot of the index is created like a tree:
 · ·  ·  │                   ·               ·            │·$ $ git write-tree                 .git/index snapshot to tree
 · ·  ·  │                   ├─····························┘  ( /af/9???... tree object will be added to Obj.Store)
-· ·  ·  │                   ·               ·            │ $ $ git cat-file -p ${tree_hash}  
+· ·  ·  │                   ·               ·            │ $ $ git cat-file -p ${tree_hash}
 · ·  ·  │                   ·               ·            │     100644 blob b133......  file1.txt  ← Pointer+file_name to blob
 · ·  ·  │                   ·               ·            │     040000 tree 8972......  subdir...  ← Pointer+"dirname" to (sub)tree
 · ·  ·  │                   ·               ·            │     ...
@@ -760,16 +778,16 @@ $ $ git init   ← creates an initial layout containing (Alternatively $ $git cl
 · ·  ·  │                   ·               ·            │     file   type content     Name of file
 · ·  ·  │                   ·               ·            │     permis.     address.ID
 · ·  ·  │                   ·               ·            │ ☞KEY-POINT:☜
-· ·  ·  │                   v               v            │  Starting at a tree, we can rebuild everything it points to   
-· ·  ·  │                   • /af/9... •┬··→• /12/d... • │  All that rest is mapping trees to some "context" in history. 
+· ·  ·  │                   v               v            │  Starting at a tree, we can rebuild everything it points to
+· ·  ·  │                   • /af/9... •┬··→• /12/d... • │  All that rest is mapping trees to some "context" in history.
 · ·  ·  │                               └··→• /34/2... • │
 · ·  ·  │  ^^^^^^^^^^^^     ^^^^^^^^^^^^    ^^^^^^^^^^^^ │  Plumbing "workflow" summary:
 · ·  ·  │    commits          Trees           Blobs      │← Add 1+ Blobs → Update Index → Snapshot to Tree
 · ·  ·  └────────────────────────────────────────────────┘  → create commit pointing to tree of "historical importance"
 · ·  └·······················─┬──────────────────────┐        → create friendly refs to commits
 · · $ $ echo "initial commit" | git commit-tree 321.....   ← create commit pointing to tree of "historical importance"
-· ·     af3...                                               Use also flag '-p $previous_commit' to BUILD A LINEAR ORDERED 
-· ·                                                          HISTORY OF COMMITS !!! 
+· ·     af3...                                               Use also flag '-p $previous_commit' to BUILD A LINEAR ORDERED
+· ·                                                          HISTORY OF COMMITS !!!
 · ·
 · · $ $ git cat-file -p af3....                            -p: show parent of given commit
 · ·   tree 3212f923d36175b185cfa9dcc34ea068dc2a363c   ← Pointer to tree of interest
@@ -783,13 +801,13 @@ $ $ git init   ← creates an initial layout containing (Alternatively $ $git cl
                       ^^^^^^         $ $ git update-ref refs/heads/master   ← With plumbing each new commit requires a new
     refs in heads/ folder are        $ $ cat  .git/refs/heads/master          git update-ref.
     COMMONLY CALLED BRANCHS            af3... (pointer to commit)
-                                       Now $ $ git cat-file -p master   "==" $ $ git cat-file -p af3... 
+                                       Now $ $ git cat-file -p master   "==" $ $ git cat-file -p af3...
 
                                      $ $ git rev-parse master               ← check value of ref
                                        af3...
 
                                      $ $ git update-ref refs/heads/dev     ← Create second branch (ref in heads/ folder)
-                                     $ $ git branch                       
+                                     $ $ git branch
                                        dev
                                      * master ←·························  current branch is determined by (contents of)
                                      $ $ cat .git/HEAD                     ~/.git/HEAD. Using plumbing we can change it like
@@ -807,28 +825,28 @@ $ $ git init   ← creates an initial layout containing (Alternatively $ $git cl
  └────────────────────────────────────────────────────────────────────────
  ┌ MERGE @[https://git-scm.com/docs/git-merge]────────────────────────────
  │ add changes for other branch as single "M"erge commit
- │ $ $ git checkout branch01 ⅋⅋ git merge branch02  
+ │ $ $ git checkout branch01 ⅋⅋ git merge branch02
  │ • → • → • → • → •H1 → •M  : M = changes of ( x1+x2+H2 )
  │         │             ↑
  │         └─→ •x1→ •x2→ •H2
  └────────────────────────────────────────────────────────────────────────
  ┌ REBASE @[https://git-scm.com/docs/git-rebase]──────────────────────────
  │ "replay" full list of commits to head of branch
- │ $ $ git checkout branch01 ⅋⅋ git rebase branch02  
+ │ $ $ git checkout branch01 ⅋⅋ git rebase branch02
  │ • → • → • → • →H1 •x1→ •x2→ •H2
  │         │
  │         └─→ •x1→ •x2→ •H2
  └────────────────────────────────────────────────────────────────────────
  ┌ Squash N last commit into single one  (rebase interactively) ──────────
- │ 
+ │
  │ • → • → • → • →H1      ← refs/heads/branch01
  │         │
  │         └─→ • H2' (x1 + x2)
- │ 
- │ $ $ git rebase --interactive HEAD~2  
+ │
+ │ $ $ git rebase --interactive HEAD~2
 
  │   pick 64d03e last-but-2 commit comment ← Different interesing actions are available
- │   pick 87718a last-but-1 commit comment   Replace "pick" by "s"(quash) to mark commit 
+ │   pick 87718a last-but-1 commit comment   Replace "pick" by "s"(quash) to mark commit
  │   pick 83118f HEAD       commit comment   to be squashed into single commit.
  │                                            ·
  │   s 64d03e last-but-2 commit comment     ←·┘
@@ -840,29 +858,29 @@ $ $ git init   ← creates an initial layout containing (Alternatively $ $git cl
 
  ┌ CHERRY-PICK @[https://git-scm.com/docs/git-cherry-pick]────────────────
  │ "Pick" unique-commits from branch and apply to another branch
- │ $ $ git checkout branch02 ⅋⅋ git cherry-pick  -x branch02  
+ │ $ $ git checkout branch02 ⅋⅋ git cherry-pick  -x branch02
  │ ··· • → • →H1 → ...                          └┬┘
  │     │                  • Useful if "source" branch is public, generating
  │     └─→ • → • →H2 →      standardized commit message allowing co-workers
  │                          to still keep track of commit origin.
  │                        • Notes attached to the commit do NOT follow the
- │                          cherry-pick. Use $ $ git notes copy "from" "to"  
+ │                          cherry-pick. Use $ $ git notes copy "from" "to"
  └────────────────────────────────────────────────────────────────────────
 [[}]]
 
 ● GPG signed commits @ma [[{security.secret_management,security.signed_content,01_PM.TODO]]
 @[https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work]
 
-  GPG PRESETUP 
+  GPG PRESETUP
 
   See @[General/cryptography_map.html?id=pgp_summary] for a summary on
   how to generate and manage pgp keys.
 
-  GIT PRESETUP 
+  GIT PRESETUP
   $ git config --global \
         user.signingkey 0A46826A  ← STEP 1: Set default key for tags+commits sign.
 
-  $ git tag -s v1.  -m 'my signed 1.5 tag'  ←   Signing tags 
+  $ git tag -s v1.  -m 'my signed 1.5 tag'  ←   Signing tags
             └──┬──┘                           (follow instructions to sign)
           replaces -a/--anotate
 
@@ -872,43 +890,43 @@ $ $ git init   ← creates an initial layout containing (Alternatively $ $git cl
   Date:   ...
 
   my signed 1.5 tag
-  -----BEGIN PGP SIGNATURE-----                                    
-  Version: GnuPG v1                                                
-                                                                   
-  iQEcBAABAgAGBQJTZbQlAAoJEF0+sviABDDrZbQH/09PfE51KPVPlanr6q1v4/Ut 
-  ...                                                              
-  =EFTF                                                            
-  -----END PGP SIGNATURE-----                                      
+  -----BEGIN PGP SIGNATURE-----
+  Version: GnuPG v1
+
+  iQEcBAABAgAGBQJTZbQlAAoJEF0+sviABDDrZbQH/09PfE51KPVPlanr6q1v4/Ut
+  ...
+  =EFTF
+  -----END PGP SIGNATURE-----
 
   commit ...
 
-  $ git tag -  v1.4.2.1  ←   Verify tag 
+  $ git tag -  v1.4.2.1  ←   Verify tag
             └┘             Note: signer’s pub.key must be in local keyring
   object 883653babd8ee7ea23e6a5c392bb739348b1eb61
   type commit
   ...
-  gpg: Signature made Wed Sep 13 02:08:25 2006 PDT using DSA key ID  
-  F3119B9A                                                           
-  gpg: Good signature from "Junio C Hamano <junkio@cox.net>"         
-  gpg:                 aka "[jpeg image of size 1513]"               
-  Primary key fingerprint: 3565 2A26 2040 E066 C9A7  4A7D C0C6 D9A4  
-  F311 9B9A                                                          
+  gpg: Signature made Wed Sep 13 02:08:25 2006 PDT using DSA key ID
+  F3119B9A
+  gpg: Good signature from "Junio C Hamano <junkio@cox.net>"
+  gpg:                 aka "[jpeg image of size 1513]"
+  Primary key fingerprint: 3565 2A26 2040 E066 C9A7  4A7D C0C6 D9A4
+  F311 9B9A
   └──────────────────────────┬────────────────────────────────────┘
    Or error similar to next one will be displayed:
      gpg: Can't check signature: public key not found
    error: could not verify the tag 'v1.4.2.1'
 
-  $ git commit -  -  -m 'Signed commit'  ←   Signing Commits (git 1.7.9+) 
+  $ git commit -  -  -m 'Signed commit'  ←   Signing Commits (git 1.7.9+)
 
-  $ git log --show-signature -1          ←   Verify Signatures 
+  $ git log --show-signature -1          ←   Verify Signatures
   commit 5c3386cf54bba0a33a32da706aa52bc0155503c2
-  gpg: Signature made Wed Jun  4 19:49:17 2014 PDT using RSA key ID 
-  0A46826A                                                          
-  gpg: Good signature from "1stName 2ndName (Git signing key)       
-  <user01@gmail.com>"                                               
+  gpg: Signature made Wed Jun  4 19:49:17 2014 PDT using RSA key ID
+  0A46826A
+  gpg: Good signature from "1stName 2ndName (Git signing key)
+  <user01@gmail.com>"
   Author: ...
   ...
-$ $ git log --pretty="format:%h %G? %aN  %s" 
+$ $ git log --pretty="format:%h %G? %aN  %s"
                                 ^^^
                                 check and list found signatures
          Ex. Output:
@@ -924,19 +942,19 @@ that every commit in the branch to be merged is signed and
 furthermore signs the resulting merge commit.
 
 
-$ git merge \             ←   # Verify signature at merge time 
+$ git merge \             ←   # Verify signature at merge time
   --verify-signatures \
   -S \                    ← Sign merge itself.
   signed-branch-to-merge  ← Commit must have been signed.
 
-$ git pull  \             ←   # Verify signature at pull time 
+$ git pull  \             ←   # Verify signature at pull time
   --verify-signatures
 [[}]]
 
 ●  Client Hooks [[{01_PM.TODO.now]]
 @[https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks]
 
-  Client-Side Hooks 
+  Client-Side Hooks
   - not copied when you clone a repository
     - to enforce a policy do on the server side
   - committing-workflow hooks:
@@ -968,7 +986,7 @@ $ git pull  \             ←   # Verify signature at pull time
       - Generally, this script is used for notification or something similar.
 
   - email-workflow  hooks:
-    - invoked by  git am 
+    - invoked by  git am
                   ^^^^^^
                   Apply a series of patches from a mailbox
                   prepared by git format-patch
@@ -1043,7 +1061,7 @@ $ git pull  \             ←   # Verify signature at pull time
      by the push.
 
  update hook :
- - similar to pre-receive hook.but  run once for each branch the 
+ - similar to pre-receive hook.but  run once for each branch the
    push is trying to update  (ussually just one branch is updated)
 
  - INPUT arguments:
@@ -1077,7 +1095,7 @@ $ git pull  \             ←   # Verify signature at pull time
  - Exit  0: Update
    Exit !0: Rollback reference, continue with next one.
 
- post-receive 
+ post-receive
  - can be used to update other services or notify users.
  - INPUT: STDIN reference list
  - Useful for:
@@ -1091,7 +1109,7 @@ $ git pull  \             ←   # Verify signature at pull time
 
 ● GIT Commit Standard Emojis: [[{]]
 @[https://gist.github.com/parmentf/035de27d6ed1dce0b36a]
- Commit type               Emoji                    Graph 
+ Commit type               Emoji                    Graph
  Initial commit           :tada:                      🎉
  Version tag              :bookmark:                  🔖
  New feature              :sparkles:                  ✨
@@ -1137,7 +1155,7 @@ $ git pull  \             ←   # Verify signature at pull time
 
 ● GitHub: Custom Bug/Feature-request templates [[{git.github]]
   WARN : Non standard (Vendor lock-in) Microsoft extension.
- $ cat .github/ISSUE_TEMPLATE/bug_report.md 
+ $ cat .github/ISSUE_TEMPLATE/bug_report.md
  | ---
  | name: Bug report
  | about: Create a report to help us improve
@@ -1162,7 +1180,7 @@ $ git pull  \             ←   # Verify signature at pull time
  |
  | ...
 
- $ cat .github/ISSUE_TEMPLATE/feature_request.md 
+ $ cat .github/ISSUE_TEMPLATE/feature_request.md
   | ---
   | name: Feature request
   | about: Suggest an idea for this project
@@ -1184,10 +1202,10 @@ $ git pull  \             ←   # Verify signature at pull time
   | **Additional context**
   | Add any other context or screenshots about the feature request here.
 
- $ cat ./.github/pull_request_template.md 
+ $ cat ./.github/pull_request_template.md
  ...
 
- $ ./.github/workflows/*  
+ $ ./.github/workflows/*
   WARN : Non standard (Vendor lock-in) Microsoft extension.
  @[https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions]
 [[}]]
@@ -1203,8 +1221,8 @@ $ git pull  \             ←   # Verify signature at pull time
       → build OK
         repo.owner merges PR
          → second build triggered on target-branch
-           →  second build randomnly fails      
-              leading to broken targeted branch 
+           →  second build randomnly fails
+              leading to broken targeted branch
               └───────────────┬───────────────┘
                Reasons include:
                - Race condition: Parallel PR was merged in-between
@@ -1231,7 +1249,7 @@ $ git pull  \             ←   # Verify signature at pull time
   -  merge button replaced by merge-request-button to queue the build.
   -  The merge will happen automatically at the end of the build if the build succeeds
   -  direct push on the branch is forbidden
-  -  Merge requests on different PRs will process the builds sequentially 
+  -  Merge requests on different PRs will process the builds sequentially
 
 - Prerequisites to run the code locally:
   - Maven (tested agains 3.5)
@@ -1241,7 +1259,7 @@ $ git pull  \             ←   # Verify signature at pull time
   - Install UnbreakableBranch plugin at Bitbucket
   - bitbucketBranch source plugin Jenkins plugin should be
     a patched so that mandatory environment variables are
-    injected.   Note that this plugin hasn't been released yet 
+    injected.   Note that this plugin hasn't been released yet
 
 
 @[https://github.com/newren/git-filter-repo/]
@@ -1457,8 +1475,8 @@ https://github.com/awslabs/git-secrets#synopsis
 #############################################################
 
 @[https://reproducible-builds.org/]
-  Containerization == "Reproducible Builds" 
-  == set of software development practices that create an 
+  Containerization == "Reproducible Builds"
+  == set of software development practices that create an
      independently-verifiable path from source to binary code.
 
 • OCI Standards Specification:  [[{containerization.runtime,standards,1_doc_type.comparative]]
@@ -1469,7 +1487,7 @@ https://github.com/awslabs/git-secrets#synopsis
   container image formats and runtime
 
 - VALUES: (mostly adopted from the appc founding values)
-  - Composable: All tools for downloading, installing, and running 
+  - Composable: All tools for downloading, installing, and running
     containers should be well integrated, but independent and composable.
   - Portable: runtime standard should be usable across different hardware,
     operating systems, and cloud environments.
@@ -1487,8 +1505,8 @@ https://github.com/awslabs/git-secrets#synopsis
   associated with a reference implementation of that specification:
   It includes entire contents of the libcontainer project, including
   "nsinit" and all modifications needed to make it run independently
-  of Docker.  This codebase, called runc, can be found at           
-  https://github.com/opencontainers/runc                            
+  of Docker.  This codebase, called runc, can be found at
+  https://github.com/opencontainers/runc
 
 - the responsibilities of the Technical Oversight Board (TOB)
   can be followed at https://github.com/opencontainers/tob:
@@ -1512,9 +1530,9 @@ https://github.com/awslabs/git-secrets#synopsis
       to leverage the reference OCI container runtime runc in 2017.
     - Apache Mesos.
     - AWS announced OCI image format in its Amazon EC2 Container Registry (ECR).
-  
+
   - Will the runtime and image format specs support multiple platforms?
-  
+
   - How does OCI integrate with CNCF?
       A container runtime is just one component of the cloud native
     technical architecture but the container runtime itself is out of
@@ -1524,9 +1542,9 @@ https://github.com/awslabs/git-secrets#synopsis
 
 ● Container Ecosystem:  [[{containerization.runtime,containerization.performance]] #[runtimes_summary]
                         [[02_doc_has.comparative,standards]]
-- Image creation: 
+- Image creation:
   Alt 1) Dockerfile -> docker build
-  Alt 2) buildah: Similar to docker build, it also allow to 
+  Alt 2) buildah: Similar to docker build, it also allow to
          add image-lyaer manually from the host command line.
          (removing the need for a Dockerfile).
          (RedHat rootless 'podman' is based on buildah)
@@ -1539,10 +1557,10 @@ https://github.com/awslabs/git-secrets#synopsis
   Alt 2) Crun       (OOSS, C-based, faster than runC )
   Alt 2) containerd (OOSS, maintained by IBM and others)
   Alt 3) CRI-O: very lightweight alterantive for k8s
-  Alt 3) rklet 
+  Alt 3) rklet
 
 - Registries and Repositories
-  repository: "storage" for OCI binary images.  
+  repository: "storage" for OCI binary images.
   registry:   index of 1+ repositories (ussually its own repo)
 
 - Container Orchestration "==" Kubernetes, AWS EC2, ...
@@ -1603,11 +1621,11 @@ https://github.com/awslabs/git-secrets#synopsis
   spawns several threads.
   'crun', written in C, does not have that problem.
   Ex:
-  $ RUNC="/usr/bin/runc" , CRUN="/usr/bin/crun" 
-  $ podman --runtime $RUNC run --rm --pids-limit 5 fedora echo it works 
+  $ RUNC="/usr/bin/runc" , CRUN="/usr/bin/crun"
+  $ podman --runtime $RUNC run --rm --pids-limit 5 fedora echo it works
                                     └────────────┘
   →  Error: container create failed (no logs from conmon): EOF
-  $ podman --runtime $CRUN run --rm --pids-limit 1 fedora echo it works 
+  $ podman --runtime $CRUN run --rm --pids-limit 1 fedora echo it works
                                     └────────────┘
   →  it works
 
@@ -1617,13 +1635,13 @@ https://github.com/awslabs/git-secrets#synopsis
 - runc/crun comparative:
   $ CMD_RUNC="for i in {1..100}; do runc run foo < /dev/null; done"
   $ CMD_CRUN="for i in {1..100}; do crun run foo < /dev/null; done"
-  $ time -v sh -c "$CMD_RUNC"                                      
+  $ time -v sh -c "$CMD_RUNC"
   → User time (seconds): 2.16
   → System time (seconds): 4.60
   → Elapsed (wall clock) time (h:mm:ss or m:ss): 0:06.89
   → Maximum resident set size (kbytes): 15120
   → ...
-  $ time -v sh -c "$CMD_CRUN"                                      
+  $ time -v sh -c "$CMD_CRUN"
   → ...
   → User time (seconds): 0.53
   → System time (seconds): 1.87
@@ -1778,7 +1796,7 @@ https://github.com/awslabs/git-secrets#synopsis
 
   - docker help summary:
   Usage: docker COMMAND
-  
+
   A self-sufficient runtime for containers
   Options:
   --config string      Location of client config files (default "/root/.docker")
@@ -1791,23 +1809,23 @@ https://github.com/awslabs/git-secrets#synopsis
   --tlskey string      Path to TLS key file               (default "/root/.docker/key.pem")
   --tlsverify          Use TLS and verify the remote
   --version            Print version information and quit
-  
-• Management Commands:       
-              Manage ...     
-  config      Docker configs 
-  container   containers     
-  network     networks       
-  node        Swarm nodes    
-  plugin      plugins        
-  secret      Docker secrets 
-  service     services       
-  swarm       Swarm          
-  system      Docker         
-  trust       trust on       
-              Docker images  
-  volume      volumes        
-                             
-                             
+
+• Management Commands:
+              Manage ...
+  config      Docker configs
+  container   containers
+  network     networks
+  node        Swarm nodes
+  plugin      plugins
+  secret      Docker secrets
+  service     services
+  swarm       Swarm
+  system      Docker
+  trust       trust on
+              Docker images
+  volume      volumes
+
+
 • docker  running containers commands :
 | · attach      Attach local STDIN/OUT/ERR streams to a running container
 | · cp          Copy files/folders between a container and the local filesystem
@@ -1872,8 +1890,8 @@ https://github.com/awslabs/git-secrets#synopsis
   │  Deferred Removal Enabled: false
   │  Deferred Deletion Enabled: false
   │  Deferred Deleted Device Count: 0
-  │      Data loop file: /var/...devicemapper/data 
-  │  Metadata loop file: /var/.../devicemapper/metadata 
+  │      Data loop file: /var/...devicemapper/data
+  │  Metadata loop file: /var/.../devicemapper/metadata
   │  Library Version: 1.02.137 (2016-11-30)
   │  Logging Driver: json-file
   │  Cgroup Driver: cgroupfs
@@ -1910,7 +1928,7 @@ https://github.com/awslabs/git-secrets#synopsis
   · inspect     Return low-level information on Docker objects
 | · ps          List running containers summary
 |               -a: (all) show also exited containers.
-| · version     Show the Docker version information                            
+| · version     Show the Docker version information
 
 
 ● /var/run/docker.sock:
@@ -1918,12 +1936,12 @@ https://github.com/awslabs/git-secrets#synopsis
   - Unix socket the Docker daemon listens on by default,
     used to communicate with the daemon from within a container.
   - Can be mounted on containers to allow them to control Docker:
-    This is potentially a security hole and must be restricted to 
+    This is potentially a security hole and must be restricted to
     "special" container (e.g: Kubernetes controlers,...)
     $ docker run -v /var/run/docker.sock:/var/run/docker.sock ....
 
 ● Docker Networks: [[{containerization.networking,101]]
-  $ docker network create  network01     <-  Create new network 
+  $ docker network create  network01     <-  Create new network
 
   $ docker run      \
     --network network01 \                <- Use it.
@@ -1946,7 +1964,7 @@ https://github.com/awslabs/git-secrets#synopsis
 
 ● VOLUMES [[{containerization.storage]]
 
-                                            REUSING VOLUMES: 
+                                            REUSING VOLUMES:
   $ docker run -it  --name alpha \       <- Create new container mounting
     -v $(pwd)/log:/var/log  \               host directoy as volume
     ubuntu bash
@@ -1955,14 +1973,14 @@ https://github.com/awslabs/git-secrets#synopsis
     --volumes-from alpha                 <- Share volumes from alpha container
     --name beta
     ubuntu
-  
+
 
                                             CREAR REUSABLE VOLUME
   $ docker volume create --name=www_data <- Create Volume
   $ docker run -d -p 8888:80 \
-    -v www_data:/var/www/html            <- reuse in new (nginx) container 
+    -v www_data:/var/www/html            <- reuse in new (nginx) container
     -v logs:/var/log/nginx nginx
-  
+
   $ docker run \
     -v  www_data:/website                <- reuse in (vi) container
     -w /website \                           <- Make it writable to container
@@ -1986,9 +2004,9 @@ https://github.com/awslabs/git-secrets#synopsis
   services:
   ######################################################### Database #
     postgres:
-      restart: always
+      restart: always                       # <- "always", "on-failure:5", "no"
       container_name: primedb
-     *image: postgres:10. *                 # ← use pre-built image
+     *image: postgres:10. *                 # use pre-built image
       environment:
         POSTGRES_PASSWORD: postgres
         ...
@@ -2150,18 +2168,18 @@ https://github.com/awslabs/git-secrets#synopsis
         quorum-dev-quickstart:
           ipv4_address: 172.16.239.12
   # using the YAML template ####################################################
-    ... 
+    ...
   volumes:
     public-keys:
     prometheus:
     grafana:
 
-  networks:                           
-    quorum-dev-quickstart:            
-      driver: bridge                  
-      ipam:                           
-        config:                       
-          - subnet: 172.16.239.0/24   
+  networks:
+    quorum-dev-quickstart:
+      driver: bridge
+      ipam:
+        config:
+          - subnet: 172.16.239.0/24
 
 • docker-compose SystemD Integration:
 
@@ -2223,20 +2241,20 @@ https://github.com/awslabs/git-secrets#synopsis
 @[https://docs.docker.com/registry/#what-it-is]
 @[https://docs.docker.com/registry/introduction/]
   $ docker run -d -p 5000:5000 \  ← Start registry server
-    --restart=always             
-    --name registry registry:2   
+    --restart=always
+    --name registry registry:2
 
   $ docker pull ubuntu            ← Pull (example) image
   $ docker image tag ubuntu \     ← Tag the image to "point"
     localhost:5000/myfirstimage     to local registry
   $ docker push \                 ← Push to local registry
-    localhost:5000/myfirstimage  
+    localhost:5000/myfirstimage
   $ docker pull \                 ← final Check
-    localhost:5000/myfirstimage  
+    localhost:5000/myfirstimage
 
   NOTE: clean setup testing like:
-  $ docker container stop  registry 
-  $ docker container rm -v registry 
+  $ docker container stop  registry
+  $ docker container rm -v registry
 [[}]]
 
 ● Dockerize (non-friendly container apps): [[{containerization.image.build,01_PM.low_code,containerization.troubleshooting]]
@@ -2247,11 +2265,11 @@ https://github.com/awslabs/git-secrets#synopsis
   - Tail multiple log files to stdout and/or stderr.
   - Wait for other services to be available using TCP, HTTP(S),
     unix before starting the main process.
-  
+
   Typical use case:
    - application that has one or more configuration files and
      you would like to control some of the values using ENV.VARs.
-   - dockerize allows to set an environment variable and update the 
+   - dockerize allows to set an environment variable and update the
      config file before starting the contenerized application
    - other use case: forward logs from harcoded files on the filesystem to stdout/stderr
      (Ex: nginx logs to /var/log/nginx/access.log and /var/log/nginx/error.log by default)
@@ -2271,7 +2289,7 @@ $ docker logs --tail 3           <- Dump last 3 lines
 $ docker logs --tail 1 --follow  <- Dump last 3 lines, then follow future los.
 
 $ docker stop containerXX && \   <- Try to stop container properly.
-  sleep 30 && \                  
+  sleep 30 && \
   docker kill containerXX        <- Finally if it doesn't respond in 30 secs.
 
 $ docker container prune  <- Prune stopped containers
@@ -2378,10 +2396,10 @@ $ dockviz images - -i *                 #  <- Show incremental size (vs cumulati
   │    -p ${SESSION_TOKEN} \                 │
   │    ${REGISTRY}                           │
   │                                          │
-  │ TARGET=""                                │    
-  │ TARGET="${TARGET}${REGISTRY}/${USER}"    │    
-  │ TARGET="${TARGET}/${IMG_NAME}:${IMG_VER}"│    
-  │ sudo docker push ${TARGET}               │    
+  │ TARGET=""                                │
+  │ TARGET="${TARGET}${REGISTRY}/${USER}"    │
+  │ TARGET="${TARGET}/${IMG_NAME}:${IMG_VER}"│
+  │ sudo docker push ${TARGET}               │
   └──────────────────────────────────────────┘
 
   DOWNLOAD IMAGE)
@@ -2391,18 +2409,18 @@ $ dockviz images - -i *                 #  <- Show incremental size (vs cumulati
 ● BUILD DOCKER/OCI IMAGE 101 [[{containerization.dockerfile,containerization.image.build]]
   ┌─ Dockerfile ───────────────────────────────┐
   │ FROM registry.redhat.io/ubi7/ubi           <- 72.7 MB layer
-  │ RUN dnf update                             <- 30.1 MB layer 
+  │ RUN dnf update                             <- 30.1 MB layer
   │ COPY target/dependencies /app/dependencies <- 10.0 MB layer
   │ COPY target/resources    /app/resources    <-  9.0 MB layer
   │ COPY target/classes      /app/classes      <-  0.5 MB layer
   │                                            │  └──┬──┘
-  │ ENTRYPOINT java -cp \                      │ Put most frequently changed 
-  │   /app/dependencies/*:... \                │ layer down the layer "stack", 
-  │   my.app.Main                              │ so that when building and/or 
-  └────────────────────────────────────────────┘ uploading new images only 
-                                                 them will be affected. 
+  │ ENTRYPOINT java -cp \                      │ Put most frequently changed
+  │   /app/dependencies/*:... \                │ layer down the layer "stack",
+  │   my.app.Main                              │ so that when building and/or
+  └────────────────────────────────────────────┘ uploading new images only
+                                                 them will be affected.
                                      Probably the most frequently changed layer
-                                     is also the smaller layer                 
+                                     is also the smaller layer
 
     Standard Labels are also recomended. They can be added like:
     LABEL org.label-schema.build-date=2022-02-17T05:47Z
@@ -2421,7 +2439,7 @@ $ dockviz images - -i *                 #  <- Show incremental size (vs cumulati
       -t 'registry_server'/'user_name'/'image_name':'tag' .
          ^^^^^^^^^^^^^^^^^^
          default one if not
-         provided 
+         provided
 
 
 Note: Unless you tell Docker otherwise, it will do as little work as possible when
@@ -2437,7 +2455,7 @@ it has executed before and uses the result for each new build.
    (--no-cache can also be useful)
 
 • Dockerfile : ARG vs ENV:
-  
+
   ARG : Vaules are consumed/used at build time. Not available at runtime.
   ENV : Values are consumed/used at runtime by final app.
   Both can be combined to provide a default ENV (Runtime) value to apps like:
@@ -2448,15 +2466,15 @@ it has executed before and uses the result for each new build.
 • Dockerfile : ENTRYPOINT vs COMMAND
 
   └ ENTRYPOINT:
-    - Defaults to '/bin/sh -c'. 
+    - Defaults to '/bin/sh -c'.
     - It can be changed with ENTRYPOINT or '$ docker run --entrypoint ...'
-    - similar to "init" process in Linux. (First command to be executed). 
+    - similar to "init" process in Linux. (First command to be executed).
     - It will act, in practice, as the binary executable. Ex:
       $ alias CAT="docker run --entrypoint /bin/cat myImage"
       $ CAT /etc/passwd
 
   └ COMMAND:
-    - Commands are the params passed to ENTRYPOINT. 
+    - Commands are the params passed to ENTRYPOINT.
     - No defaults exits.  The must be indicated as:
       $ docker run -i -t ubuntu command1 command2 ....
 
@@ -2475,7 +2493,7 @@ it has executed before and uses the result for each new build.
   │ CMD [ "npm", "start" ]            │
   └───────────────────────────────────┘
    $ docker build -t node-base  \     <-  STEP 1) Compile base image
-     -f Dockerfile.base .          
+     -f Dockerfile.base .
 
   ┌ Dockerfile.child ─┐
   │ FROM node-base    │
@@ -2483,9 +2501,9 @@ it has executed before and uses the result for each new build.
   │ EXPOSE 8000       │
   │ COPY . /src       ← *3
   └───────────────────┘
-  $ docker build -t node-child \   <- STEP 2: Compile child image   
-    -f Dockerfile.child \        
-      --build-arg NODE_ENV=... . 
+  $ docker build -t node-child \   <- STEP 2: Compile child image
+    -f Dockerfile.child \
+      --build-arg NODE_ENV=... .
 
   $ docker run -p 8000:8000 \        <- STEP 3: Test
    -d node-child *
@@ -2602,7 +2620,7 @@ it has executed before and uses the result for each new build.
   gcr.io/distroless/java       gcr.io/distroless/nodejs
   gcr.io/distroless/cc         gcr.io/distroless/java/jetty
                                gcr.io/distroless/dotnet
-  
+
   ex java multi-stage dockerfile:
   @[https://github.com/googlecontainertools/distroless/blob/master/examples/java/dockerfile]
 
@@ -2612,7 +2630,7 @@ it has executed before and uses the result for each new build.
     run javac examples/*.java
     run jar cfe main.jar \
         examples.hellojava examples/*.class
-  
+
     from gcr.io/distroless/java:11            <- stage 2) copy compiled jars to distroless
     copy --from= *build-env* /app /app
     workdir /app
@@ -2784,11 +2802,11 @@ it has executed before and uses the result for each new build.
   docker.io   docker.io/radial/busyboxplus  Full-chain, Internet... 30     [OK]
   ...
   $ podman run -it docker.io/library/busybox
-  / #                                       
+  / #
 
-  $ URL="https://raw.githubusercontent.com/nginxinc/docker-nginx" 
-  $ URL="${URL}/594ce7a8bc26c85af88495ac94d5cd0096b306f7/       " 
-  $ URL="${URL}/mainline/buster/Dockerfile                      " 
+  $ URL="https://raw.githubusercontent.com/nginxinc/docker-nginx"
+  $ URL="${URL}/594ce7a8bc26c85af88495ac94d5cd0096b306f7/       "
+  $ URL="${URL}/mainline/buster/Dockerfile                      "
   $ podman build -t nginx ${URL}                                   ← build Nginx web server using
                     └─┬─┘                                            official Nginx Dockerfile
                       └────────┐
@@ -2925,7 +2943,7 @@ $*$ podman inspect quay.io/${USER}/nginx            * ← Inspect image
     systemd    systemd Generate a  *SystemD unit file* for a Podman container
 
 
-• SystemD Integration: 
+• SystemD Integration:
 https://www.redhat.com/sysadmin/improved-systemd-podman
 - auto-updates help to make managing containers even more straightforward.
 
@@ -2997,10 +3015,10 @@ https://www.redhat.com/sysadmin/improved-systemd-podman
   - https://github.com/tldr-pages/tldr/blob/master/pages/common/kompose.md
 
 - CONTAINERIZATION TROUBLESHOOTING 101: [[{containerization.troubleshooting]]
-  
-  - PROBLEM: /var/lib/docker/devicemapper/devicemapper/data consumes too much space  
+
+  - PROBLEM: /var/lib/docker/devicemapper/devicemapper/data consumes too much space
     $ sudo du -sch /var/lib/docker/devicemapper/devicemapper/data
-    14g     /var/lib/docker/devicemapper/devicemapper/data       
+    14g     /var/lib/docker/devicemapper/devicemapper/data
 
     ($ docker logs 'container' knocks down the host server when output is processed)
 
@@ -3051,7 +3069,7 @@ https://www.redhat.com/sysadmin/improved-systemd-podman
       script="wget https://repo.maven.apache.org/maven2" # ← dns can fail with bridge
       echo "${mvn_script}" | docker run ${docker_opts} ${script}
 
-  - INSPECTING LINUX NAMESPACES OF RUNNING CONTAINER:  
+  - INSPECTING LINUX NAMESPACES OF RUNNING CONTAINER:
     use nsenter ( util-linux package) to "enter" into the
     container (network, filesystem, ipc, ...) namespace.
 
@@ -3296,11 +3314,11 @@ https://www.infoq.com/news/2020/12/dockerhub-image-vulnerabilities/
   Service Mesh: Takes care of (netwok)distributed concerns (visibility, security, balancing,
                 service discovery, ...)
 
-  1st GENERATION. Each app     2nd Generation. A common      3rd Generation. Sidecar    
-  links against a library.     sidecar is used.              functionality moved to     
-                                                             linux kernel usinb eBFP    
-  ┌─ App1 ────┐ ┌─ App2 ────┐  ┌─ App1 ────┐ ┌─ App2 ────┐                              
-  │  ┌───────┐│ │  ┌───────┐│  │           │ │           │                              
+  1st GENERATION. Each app     2nd Generation. A common      3rd Generation. Sidecar
+  links against a library.     sidecar is used.              functionality moved to
+                                                             linux kernel usinb eBFP
+  ┌─ App1 ────┐ ┌─ App2 ────┐  ┌─ App1 ────┐ ┌─ App2 ────┐
+  │  ┌───────┐│ │  ┌───────┐│  │           │ │           │
   │  │Service││ │  │Service││  └───────────┘ └───────────┘   ┌─ App1 ────┐ ┌─ App2 ────┐
   │  │Mesh   ││ │  │Mesh   ││  ┌───────────┐ ┌───────────┐   │           │ │           │
   │  │Library││ │  │Library││  │ServiceMesh│ │ServiceMesh│   └───────────┘ └───────────┘
@@ -3312,12 +3330,12 @@ https://www.infoq.com/news/2020/12/dockerhub-image-vulnerabilities/
   │       ┌─ Network─┐      │  │       ┌─ Network─┐      │   │       ┌─ Network─┐      │
   │       └──────────┘      │  │       └──────────┘      │   │       └──────────┘      │
   └─────────────────────────┘  └─────────────────────────┘   └─────────────────────────┘
-                                 Envoy, Linkerd, Nginx,...     Cilium                         
-                                 or kube-proxy                                          
+                                 Envoy, Linkerd, Nginx,...     Cilium
+                                 or kube-proxy
 
    App1 ←→ Kernel TCP/IP        App1 ←→ SideCar1              App1 ←→ Kernel eBFP
    Kernel TCP/IP ←→ App2        SideCar1 ←→ Kernel TCP/IP     Kernel eBFP ←→ App2
-                                Kernel TCP/IP ←→ Sidecar2                      
+                                Kernel TCP/IP ←→ Sidecar2
                                 Sidecar2 ←→ App2
    [[}]]
 
@@ -3451,7 +3469,7 @@ REF: @[https://raazkumar.com/tutorials/nginx/nginx-conf/]
     gzip_buffers 16 8k;
     gzip_http_version 1.1;
     gzip_types text/plain text/css application/json application/javascript ↩
-               text/xml application/xml application/xml+rss text/javascript ↩ 
+               text/xml application/xml application/xml+rss text/javascript ↩
                application/x-font-ttf font/opentype image/svg+xml image/x-icon;
     ##
     # Virtual Host Configs
@@ -3509,7 +3527,7 @@ REF: @[https://raazkumar.com/tutorials/nginx/nginx-conf/]
   See also:
   @[https://github.com/trimstray/nginx-admins-handbook]
   @[https://github.com/tldr-devops/nginx-common-configuration]
-[[networking.nginx}]] 
+[[networking.nginx}]]
 
 [[}]]
 
@@ -3522,26 +3540,26 @@ REF: @[https://raazkumar.com/tutorials/nginx/nginx-conf/]
      Prometheus periodically pulls multidimensional data from different apps/components.
      Grafana allows to visualize Prometheus data in custom dashboards.
      (Alternatives include Monit, Datadog, Nagios, Zabbix, ...)
- 
+
  └*Application Monitoring*:
    · OpenTelemetry: replaces OpenTracing and OpenCensus.
-     Cloud Native Foundation projects. 
+     Cloud Native Foundation projects.
      It also serves as ¿front-end? for Jaeger and others.
    · Jaeger, New Relic: (Very opinionated)
    (Other alternatives include AppDynamics, Instana, ...)
- 
+
  └ Log Management: (Opinionated)
    · Elastic Stack
      (Alternative include Graylog, Splunk, Papertrail, ...)
-     Elastic search has evolved throught the years to become a 
+     Elastic search has evolved throught the years to become a
      full analytical platform.
- 
+
    MUCH MORE DETAILED INFORMATION IS AVAILABLE AT:
- @[../Architecture/architecture_map.html] 
+ @[../Architecture/architecture_map.html]
   [[}]]
 [[}]]
 
-● Vagrant (VMs as code):[[{vagrant,01_PM.low_code,101,troubleshooting]]  
+● Vagrant (VMs as code):[[{vagrant,01_PM.low_code,101,troubleshooting]]
   - External Links:
     - @[https://www.vagrantup.com/docs/index.html]
     - @[https://www.vagrantup.com/docs/cli/]                         CLI Reference
@@ -3560,7 +3578,7 @@ REF: @[https://raazkumar.com/tutorials/nginx/nginx-conf/]
 
 
  - * Vagrant Share *
-   ################# 
+   #################
 @[https://www.vagrantup.com/intro/getting-started/share.html]
 @[https://www.vagrantup.com/docs/share]
    - $ vagrant share   <- Quick how-to, share a Vagrant environment with anyone in the World.
@@ -3578,18 +3596,18 @@ REF: @[https://raazkumar.com/tutorials/nginx/nginx-conf/]
        (pair programming, debugging ops problems, etc....)
 
  - Vagrant Command List:
-   $ vagrant "COMMAND" -h 
+   $ vagrant "COMMAND" -h
    $ vagrant list-commands  # Most frequently used commands
 
-- FREQUENTLY USED                                                     
-  box           manages boxes: installation, removal, etc.            
-  destroy       stops and deletes all traces of the vagrant machine   
-  global-status outputs status Vagrant environments for this user     
-  halt          stops the vagrant machine                             
-  help          shows the help for a subcommand                       
-  init          initializes new environment (new Vagrantfile)         
-  login         log in to HashiCorp's Vagrant Cloud                   
-  package       packages a running vagrant environment into a box     
+- FREQUENTLY USED
+  box           manages boxes: installation, removal, etc.
+  destroy       stops and deletes all traces of the vagrant machine
+  global-status outputs status Vagrant environments for this user
+  halt          stops the vagrant machine
+  help          shows the help for a subcommand
+  init          initializes new environment (new Vagrantfile)
+  login         log in to HashiCorp's Vagrant Cloud
+  package       packages a running vagrant environment into a box
   plugin        manages plugins: install, uninstall, update, etc.
   port          displays information about guest port mappings
   powershell    connects to machine via powershell remoting
@@ -3617,15 +3635,15 @@ REF: @[https://raazkumar.com/tutorials/nginx/nginx-conf/]
   rsync           syncs rsync synced folders to remote machine
   rsync-auto      syncs rsync synced folders automatically when files change
 
- 
+
 - QUICK HOW-TO:
-  $ mkdir vagrant_getting_started 
-  $ cd vagrant_getting_started    
+  $ mkdir vagrant_getting_started
+  $ cd vagrant_getting_started
   $ vagrant init                  # <- creates new Vagrantfile.
 
 
 
-- "Advanced" Vagranfile Example: 3 VM's Cluster using Virtual Box 
+- "Advanced" Vagranfile Example: 3 VM's Cluster using Virtual Box
   ┌──────────────────────────────────────────────────────────────────────────┐
   │ # -*- mode: ruby -*-                                                     │
   │ # vi: set ft=ruby :                                                      │
