@@ -1,39 +1,48 @@
+●  Apropos:
+- Visit next Web site for a great experience:
+  https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/Jenkins.txt
+
+- If you want to contribute to great gistory of this
+  document you can take the next flight to:
+@[https://www.github.com/earizon/DevOps]
+  Your commits and pull-request will be immortalized
+  in the Pantheon of the Unicode Gods.
+────────────────────────────────────────────────────────────────────────────────
+
 [[{jenkins]]
-View on:
-https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/Jenkins.txt
 #####################
 ● JENKINS SUMMARY/101 [[{jenkins.101,security.backup,security.secret_management,01_PM.low_code,notifications.jenkins]]
 #####################
-  ################## 
-  # External Links # 
-  ################## 
+  ##################
+  # External Links #
+  ##################
   @[https://jenkins.io/doc/]      @[https://jenkins.io/user-handbook.pdf]
   @[https://jenkins.io/doc/book/] @[https://github.com/sahilsk/awesome-jenkins]
-  using/using-credentials/,  
+  using/using-credentials/,
   pipeline/running-pipelines,
   pipeline/multibranch,             Branches and Pull Requests
   pipeline/docker,
   pipeline/shared-libraries,        Extending with Shared Libraries
   pipeline/development,             Pipeline Development Tools
-  pipeline/syntax,                  Pipeline Syntax 
-  pipeline/pipeline-best-practices  Pipeline Best Practices 
-  pipeline/scaling-pipeline 
+  pipeline/syntax,                  Pipeline Syntax
+  pipeline/pipeline-best-practices  Pipeline Best Practices
+  pipeline/scaling-pipeline
   blueocean/*
-  managing                          Managing Jenkins 
+  managing                          Managing Jenkins
   managing/cli
   managing/script-console
   managing/nodes
   managing/script-approval
   managing/users
-  system-administration             System Administration 
+  system-administration             System Administration
 
 •  Pipeline injected ENV.VARS
 
   - ${BASE_JENKINS_URL}/pipeline-syntax/globals#env  ← FULL LIST OF ENV.VARs:
   - $env.BUILD_ID       :
-    $env.BUILD_NUMBER   : 
+    $env.BUILD_NUMBER   :
     $env.BUILD_TAG      : String of jenkins-${JOB_NAME}-${BUILD_NUMBER}
-                                                          ^^^^^^^^^^^^ 
+                                                          ^^^^^^^^^^^^
                           Useful to subclassify resource/jar/etc output artifacts
     $env.BUILD_URL      : URL where results of this build can be found
                           (Ex.: http://buildserver/jenkins/job/MyJobName/17/)
@@ -64,14 +73,14 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
   │   environment {                  │
   │     T1 = 'development'           ← Env.var with global visibility
   │     CC = """${sh(                ← Env.var set from shell STDOUT.
-  │         returnStdout: true,      │ trailing whitespace appended. 
+  │         returnStdout: true,      │ trailing whitespace appended.
   │         script: 'echo "clang"'   │ (Use .trim() to fix)
   │         )}"""                    │
-  │     AWS_SECRET_ACCESS_KEY     =  │     
+  │     AWS_SECRET_ACCESS_KEY     =  │
   │       credentials ('aws-acc-key')← Secret protected by Jenkins    [security.secret_management]
   │   }                              │ *1
   │                                  │
-  │   parameters {                   ← parameters allowed to be modified  at runtime  
+  │   parameters {                   ← parameters allowed to be modified  at runtime
   │     string(name: 'Greeting',     ← Referenced as ${params.Greeting}
   │            defaultValue: 'Hello',│
   │            description: 'Hi!')   │
@@ -100,10 +109,10 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
   │                                  │
   │     stage('Build') {             ← (trans|com)pile/package/... using maven/npm/... plugins
   │                                  │
-  │       environment {              ← ENV.VAR with local stage visibility 
+  │       environment {              ← ENV.VAR with local stage visibility
   │         msg1 = "Building..."     │ (also visible to shell scripts)
   │         EXIT = """               ← Initialized to returned status code shell exec.
-  │         ${sh(                    │ """ .... """ to embed multi-stage script. 
+  │         ${sh(                    │ """ .... """ to embed multi-stage script.
   │           returnStatus: true,    │
   │           script: 'exit 1'       │
   │         )}"""                    │
@@ -111,17 +120,17 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
   │                                  │
   │       steps {                    ← ORDERED list of steps in stage.
   │         echo " ${msg1} :..."     ← shell-like interpolation for double-coutes
-  │             sh 'printenv'        ← msg1 and EXIT available here     
-  │             sshagent (           │                                   
+  │             sh 'printenv'        ← msg1 and EXIT available here
+  │             sshagent (           │
   │               crendentials: ['keys']  ←····┬─ ssh with help of agent
-  │             )                    │         │  (ssh-agent plugin     
-  │             {                    │         │   needed)              
+  │             )                    │         │  (ssh-agent plugin
+  │             {                    │         │   needed)
   │                sh 'ssh user@remoteIP' ←····┘
-  │             }                    │ 
-  │       }                          │  NOTE:                                                                  
-  │     }                            │  ┌─ GROOVY SYNTAX SUGAR ──────┐                    
-  │                                  │  │ sh([script: 'echo hello']) ← standard funct. call                    
-  │     stage('Test') {              │  │ sh  script: 'echo hello'   ← shortcut                    
+  │             }                    │
+  │       }                          │  NOTE:
+  │     }                            │  ┌─ GROOVY SYNTAX SUGAR ──────┐
+  │                                  │  │ sh([script: 'echo hello']) ← standard funct. call
+  │     stage('Test') {              │  │ sh  script: 'echo hello'   ← shortcut
   │       steps { ... }              │  │ sh          'echo hello'   ← ultra-sortcut (Single
   │     }                            │  └────────────────────────────┘ param fun.only
   │                                  │
@@ -144,13 +153,13 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
   │           subject: '...'         │   [notifications.jenkins]   │              │ • Alias Variable (Opt)            │
   │       }                          │                             │              │ • Credentials: Cert.credentials   │
   │       unstable { ...  }          ← PIPELINE RESULT             │              │   stored in Jenkins. Its value is │
-  │       success  { ...  }          │ STATUS CLASSIFICATION       │              │   the credential ID, which Jenkins│     
+  │       success  { ...  }          │ STATUS CLASSIFICATION       │              │   the credential ID, which Jenkins│
   │       failure  { ...  }          │                             │              │   writes out to generated snippet │
   │       changed  { ...  }          │                             │──────────────┼───────────────────────────────────┤
   │   }                              │                             │ Docker Client│ • Handle Docker Host Cert.Auth.   │
   │ }                                │                             │  Certificate │                                   │
   └──────────────────────────────────┘                             └──────────────┴───────────────────────────────────┘
-                                                                    
+
   ┌ *2 GIT REPO. CLONING ("checkouts" in Jenkin) SUMMARY ────────────────┐
   │ REF: @[https://jenkins.io/doc/pipeline/steps/workflow-scm-step/]     │
   │ checkout([                                                           │
@@ -187,11 +196,11 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
   │      steps {                         │  ·   (In practice: Named cache of generated artifacts
   │         unstash  'app'               ←··•   during same pipeline for reuse in further steps)
   │         sh '...'                     │  ·   Removed at pipeline termination.
-  │       }                              │  · 
-  │       post { ...  }                  │  · 
-  │     }                                │  · 
-  │     stage('Test on Windows') {       │  ·        
-  │       agent { label 'windows' }      │  · 
+  │       }                              │  ·
+  │       post { ...  }                  │  ·
+  │     }                                │  ·
+  │     stage('Test on Windows') {       │  ·
+  │       agent { label 'windows' }      │  ·
   │       steps {                        │  ·
   │         unstash 'app'                ←··┘
   │         bat '...'                    │
@@ -201,8 +210,8 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
   │   }                                  │
   │ }                                    │
   └──────────────────────────────────────┘
-                          
-● ┌─ PARALLEL EXECUTION ───────────┐ 
+
+● ┌─ PARALLEL EXECUTION ───────────┐
   │ stage('Test') {                │
   │   parallel                     ←·•  Execute linux⅋windows nodes
   │   linux: {                     │ ·  in parallel.
@@ -220,7 +229,7 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
   │     node('windows') { ... }    ←·┘
   │   }                            │
   │ }                              │
-  └────────────────────────────────┘ 
+  └────────────────────────────────┘
 [[jenkins.101}]]
 
 ────────────────────────────────────────────────────────────────────────────────
@@ -241,7 +250,7 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
        WARN:  There are issues with bare naked ampersands in the XML such as when you have ⅋ in Groovy code.
             (REF: @[https://stackoverflow.com/questions/8424228/export-import-jobs-in-jenkins])
 
-  └ · ALT 2: USING CURL 
+  └ · ALT 2: USING CURL
     *******************
     SERVER_URL = "http://..."                                     ← Without Authentication
     SERVER_URL = "http://${USER}:${API_TOKEN}@..."                ← With    Authentication
@@ -278,7 +287,7 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
   │ React app    │            │ production │
   │ npm          │            │            │
   └──────────────┴────────────┴────────────┘
-  
+
   STEP 1) Setup local git repository
    - clone:
    $ git clone https://github.com/?????/building-a-multibranch-pipeline-project
@@ -288,21 +297,21 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
    - Creak dev/pro branches:
      $ git branch development
      $ git branch production
-  
+
   STEP 2) Add 'Jenkinsfile' stub (agent, stages sections) to repo
          (initially in master branch)
-  
+
   STEP 3) Create new Pipeline in Jenkins Blue Ocean Interaface
           browse to "http://localhost:8080/"
             → click "Create a new Pipeline"
               → Choose "Git" in "In Where do you store your code?"
                 → Repository URL: "/home/.../building-a-multibranch-pipeline-project"
                   → Save
-  
+
       Blue Ocean will detect the presence of the "Jenkinsfile" stub
       in each branch and will run each Pipeline against its respective branch,
-  
-  
+
+
   STEP 4) Start adding functionality to the Jenkinsfile pipeline
           (commit to git once edited)
       pipeline {
@@ -333,18 +342,18 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
               }
           }
       }
-  
+
   STEP 5) Click "run" icon of the master branch of your Pipeline project,
           and check the result.
-  
+
   STEP 6) Add "deliver" and "deploy" stages to the Jenkinsfile Pipeline
           (and commit changes)
-          Jenkins will selectively execute based on the branch that Jenkins is building from 
-  
+          Jenkins will selectively execute based on the branch that Jenkins is building from
+
         + stage('Deliver for development') {
-        +     when { 
-        +         branch 'development' 
-        +     } 
+        +     when {
+        +         branch 'development'
+        +     }
         +     steps {
         +         sh './jenkins/scripts/deliver-for-development.sh'
         +         input message: 'Finished using the web site? (Click "Proceed" to continue)'
@@ -352,9 +361,9 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
         +     }
         + }
         + stage('Deploy for production') {
-        +     when { 
-        +         branch 'production' 
-        +     } 
+        +     when {
+        +         branch 'production'
+        +     }
         +     steps {
         +         sh './jenkins/scripts/deploy-for-production.sh'
         +         input message: 'Finished using the web site? (Click "Proceed" to continue)'
@@ -372,7 +381,7 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
                                                           ^^^^
                                   result of step is that of downstream build
                                   (success, unstable, failure, not built, or aborted).
-  
+
                                   false →  step succeeds even if the downstream build failed
                                            use result property of the return value as needed.
   [[}]]
@@ -405,10 +414,10 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
 • Jenkins X: https://jenkins-x.io/es/
   Accelerate Continuous Delivery on Kubernetes                                   [[k8s]]
   · https://github.com/kurron/jx3-k3s-vault
-    Jenkins X 3.x GitOps repository using k3s to create a kubernetes 
+    Jenkins X 3.x GitOps repository using k3s to create a kubernetes
     cluster, github for the git and container registry and external vault
-  · Rather than having to have deep knowledge of the internals of 
-    Jenkins X Pipeline, Jenkins X will default awesome pipelines for your 
+  · Rather than having to have deep knowledge of the internals of
+    Jenkins X Pipeline, Jenkins X will default awesome pipelines for your
     projects that implements fully CI and CD."
   · Environment Promotion via GitOps.
   · Preview Environments.

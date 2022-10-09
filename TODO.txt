@@ -1,3 +1,15 @@
+●  Apropos:
+- Visit next Web site for a great experience:
+  https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/TODO.txt
+
+- If you want to contribute to great gistory of this
+  document you can take the next flight to:
+@[https://www.github.com/earizon/DevOps]
+  Your commits and pull-request will be immortalized
+  in the Pantheon of the Unicode Gods.
+────────────────────────────────────────────────────────────────────────────────
+
+
 ● TODO [[{01_PM.TODO]]
 
 
@@ -25,7 +37,7 @@
 [[}]]
 
 
-• Container Networking: [[{101,containerization.networking,networking.sdn.calico,networking.sdn.flannel,01_PM.TODO]] 
+• Container Networking: [[{101,containerization.networking,networking.sdn.calico,networking.sdn.flannel,01_PM.TODO]]
 @[https://jvns.ca/blog/2016/12/22/container-networking/]
 By Julia Evans
 
@@ -247,7 +259,7 @@ snapshots, remote debugging, and many other things are now possible.
 
 • ContainerCoreInterceptor:  [[{troubleshooting,01_PM.TODO]
 https://github.com/AmadeusITGroup/ContainerCoreInterceptor 
-Core_interceptor can be used to handle core dumps in a dockerized environment. 
+Core_interceptor can be used to handle core dumps in a dockerized environment.
 It listens on the local docker daemon socket for events. When it
 receives a die event it checks if the dead container produced any
 core dump or java heap dump.
@@ -269,14 +281,12 @@ core dump or java heap dump.
   to plug in and get started.
 [[}]]
 
-<pre zoom labels="containerization.docker">
-<span xsmall>avoid "sudo" docker</span>
+• avoid "sudo" docker [[{containerization.docker]]
 $* $ sudo usermod -a -G docker "myUser"*
 $ newgrp docker  (take new group without re-login)
-</pre>
+[[}]]
 
-<pre zoom labels="troubleshooting,qa,01_PM.TODO">
-<span xsmall>test images in 0.5 secs</span>
+• test images in 0.5 secs  [[{troubleshooting,qa,01_PM.TODO]]
 @[https://medium.com/@aelsabbahy/tutorial-how-to-test-your-docker-image-in-half-a-second-bbd13e06a4a9]
 
 ...When you’re done with this tutorial you’ll have a small YAML
@@ -294,80 +304,77 @@ allow you to test this:
   allowing the user to generate tests from the current system state.
   Once the test suite is written they can be executed, waited-on, or
   served as a health endpoint.
-</pre>
+[[}]]
 
-</div>
-</div>
+• https://github.com/dbohdan/structured-text-tools/blob/master/sql-based.md
+  https://github.com/dbohdan/structured-text-tools#sql-based-tools
 
-<div group><!-- {{{ -->
-<span title>Unordered / backlog</span><br/>
-</div> <!-- }}} -->
-</body>
-</html>
+• lefthook: powerful Git hooks for Node.js, Ruby, Python PIP, ... [[{]]
+  https://github.com/Arkweid/lefthook
+  git, hooks, node.js, go, Python pip, ...
 
-<!--
-https://github.com/dbohdan/structured-text-tools/blob/master/sql-based.md
+  Fast. It is written in Go. Can run commands in parallel.
+  Powerful. With a few lines in the config you can check only the changed files on pre-push hook.
+  Simple. It is single dependency-free binary which can work in any environment.
 
-https://github.com/dbohdan/structured-text-tools#sql-based-tools
+  book Read the introduction post
 
-https://github.com/dbohdan/structured-text-tools/blob/master/sql-based.md
-######################
-git, hooks, node.js, go, Python pip, ...
-https://github.com/Arkweid/lefthook
-Fast and powerful Git hooks manager for Node.js, Ruby or any other type of projects.
+  # On `git push` lefthook will run spelling and links check for all of the changed files
+  pre-push:
+    parallel: true
+    commands:
+      spelling:
+        files: git diff --name-only HEAD @{push}
+        glob: "*.md"
+        run: npx yaspeller {files}
+      check-links:
+        files: git diff --name-only HEAD @{push}
+        glob: "*.md"
+        run: npx markdown-link-check {files}
+[[}]]
 
-    Fast. It is written in Go. Can run commands in parallel.
-    Powerful. With a few lines in the config you can check only the changed files on pre-push hook.
-    Simple. It is single dependency-free binary which can work in any environment.
-
-book Read the introduction post
-
-# On `git push` lefthook will run spelling and links check for all of the changed files
-pre-push:
-  parallel: true
-  commands:
-    spelling:
-      files: git diff --name-only HEAD @{push}
-      glob: "*.md"
-      run: npx yaspeller {files}
-    check-links:
-      files: git diff --name-only HEAD @{push}
-      glob: "*.md"
-      run: npx markdown-link-check {files}
-###############################
-
-####################################
+• GraphDash: web-based dashboard built on graphs and their metadata.
 https://github.com/AmadeusITGroup/GraphDash
-GitHub - AmadeusITGroup/GraphDash: A web-based dashboard built on graphs and their metadata.#####################################
-################################
-########################
-Use libguestfs to manage virtual machine disk images
-https://www.redhat.com/sysadmin/libguestfs-manage-vm
 
-#########################
+• Use libguestfs to manage virtual machine disk images
+  https://www.redhat.com/sysadmin/libguestfs-manage-vm
+
+• workflow-cps-global-lib-http-plugin  [[{jenkins.jenkinsfile]]
 https://github.com/AmadeusITGroup/workflow-cps-global-lib-http-plugin
-The current official plugin workflow-cps-global-lib does provide a way to retrieve shared libraries through a SCM, such as Git. The goal of this plugin is to provide another way to retrieve shared libraries via the @Library declaration in a Jenkinsfile.This is a way to separate to concerns : source code (SCM) and built artefacts (binaries). Built artefacts are immutable, tagged and often stored on a different kind of infrastructure. Since pipelines can be used to make production loads, it makes sense to host the libraries on a server with a production-level SLA for example. You can also make sure that your artefact repository is close to your pipelines and share the same SLA. Having your Jenkins and your artefact repository close limitsr latency and limits network issues.
-########################## Uber Open-Sources Tool to Automatically Clean Up Stale Code
-https://www.infoq.com/news/2020/06/uber-piranha/
-######################3
-DevOps, GIT: Part 3: Context from commits – alexwlchan
-https://alexwlchan.net/a-plumbers-guide-to-git/3-context-from-commits/ 
-###########################
-https://github.com/tldr-pages/tldr/tree/master/pages/common @ma
-See git
-###################
-https://github.blog/author/dstolee/
-###################
-ansible,qa,billion_dollar_mistake,
-4 lines of code to improve your Ansible play
-With a tiny bit of effort, you can help the next person by not just
-mapping the safe path but leaving warnings about the dangers
-###################
-https://stackoverflow.com/questions/41717180/docker-compose-container-using-host-dns-server
+  retrieve shared libraries through a SCM, such as Git.
+  The goal of this plugin is to provide another way to retrieve
+  shared libraries via the @Library declaration in a Jenkinsfile.
+  This is a way to separate to concerns : source code (SCM) and built
+  artefacts (binaries). Built artefacts are immutable, tagged and often
+  stored on a different kind of infrastructure. Since pipelines can be
+  used to make production loads, it makes sense to host the libraries
+  on a server with a production-level SLA for example. You can also
+  make sure that your artefact repository is close to your pipelines
+  and share the same SLA. Having your Jenkins and your artefact
+  repository close limitsr latency and limits network issues.
+[[}]]
 
-https://docs.docker.com/network/bridge/
-########################
-Gerrit: Git server built on top of git with voting mechanism:
+• OOSS Tool to Automatically Clean Up Stale Code
+  https://www.infoq.com/news/2020/06/uber-piranha/
+
+• GIT: Part 3: Context from commits
+  https://alexwlchan.net/a-plumbers-guide-to-git/3-context-from-commits/ 
+
+• https://github.blog/author/dstolee/  [[{git,scalability]]
+  Git’s database internals V: scalability
+  This fifth and final part of our blog series exploring Git's
+  internals shows several strategies for scaling your Git repositories
+  that match related database sharding techniques.
+[[}]]
+
+• 4 lines of code to improve your Ansible play [[{ansible,qa.billion_dollar_mistake]]
+  With a tiny bit of effort, you can help the next person by not just
+  mapping the safe path but leaving warnings about the dangers
+[[}]]
+
+• https://docs.docker.com/network/bridge/
+
+• Gerrit: Git server built on top of git with voting mechanism:
 https://docs.google.com/presentation/d/1C73UgQdzZDw0gzpaEqIC6SPujZJhqamyqO1XOHjH-uk/edit#slide=id.g4d6c16487b_1_844
 - Submit Type / Submit Strategy:
   - FAST_FORWARD_ONLY:
@@ -388,138 +395,136 @@ https://docs.google.com/presentation/d/1C73UgQdzZDw0gzpaEqIC6SPujZJhqamyqO1XOHjH
     (Reviewed-On, Reviewed-By, Tested-By).
   - ALLOW CONTENT MERGES:
     whether Gerrit should do a content merge if the same files have been touched
-##############
-containers,security,
+
+• Building rootless containers for JavaScript front ends  [[{containerization.security.101]]
 https://developers.redhat.com/blog/2021/03/04/building-rootless-containers-for-javascript-front-ends/?sc_cid=7013a000002vsMVAAY
-Building rootless containers for JavaScript front ends
-###############
-Git: What's new 2.31
-https://github.blog/2021-03-15-highlights-from-git-2-31/
-###############
-https://space.sh
-Server apps and automation in a nutshell
-very, very non-intrusive. If you want to manage servers
-remotely Space would SSH into those servers to run your tasks and
-never upload anything to the server, nor have any dependencies other
-than a POSIX shell (ash/dash/bash 3.4+).
-- Used as the base from simplenetes.
-####################
-Github:
-https://github.com/nektos/act
-########################
-https://github.com/tldr-pages/tldr/blob/master/pages/common/batch.md
-Execute commands at a later time when the system load levels permit.
-Service atd (or atrun) should be running for the actual executions.
-More information: https://man.archlinux.org/man/at.1.
-#######################
-low-code:
-https://github.com/tldr-pages/tldr/blob/master/pages/common/beanstalkd.md
-A simple and generic work-queue server. More information:
-https://beanstalkd.github.io/.
-#######################
-https://github.com/tldr-pages/tldr/blob/master/pages/common/bmaptool.md
-####################
-https://github.com/bup/backup
-Very efficient backup system based on the git packfile format,
-providing fast incremental saves and global deduplication (among and
-within files, including virtual machine images). Current release is
-0.31, and the development branch is master. Please post problems or
-patches to the mailing list for discussion (see the end of the README
-below).
-######################
-https://github.com/tldr-pages/tldr/blob/master/pages/common/csvclean.md
-https://github.com/tldr-pages/tldr/blob/master/pages/common/csvcut.md
-https://github.com/tldr-pages/tldr/blob/master/pages/common/csvformat.md
-https://github.com/tldr-pages/tldr/blob/master/pages/common/csvgrep.md
-https://github.com/tldr-pages/tldr/blob/master/pages/common/csvkit.md
-https://github.com/tldr-pages/tldr/blob/master/pages/common/csvlook.md
-https://github.com/tldr-pages/tldr/blob/master/pages/common/csvsort.md
-https://github.com/tldr-pages/tldr/blob/master/pages/common/csvsql.md
-https://github.com/tldr-pages/tldr/blob/master/pages/common/csvstat.md
-https://github.com/tldr-pages/tldr/blob/master/pages/common/csvtool.md
-########################
-docker,qa: Exploring docker images, discovering ways to shrink it.
-https://github.com/tldr-pages/tldr/blob/master/pages/common/dive.md
-########################
-dolt: Git + SQL!!!
-https://github.com/tldr-pages/tldr/blob/master/pages/common/dolt-add.md
-https://github.com/tldr-pages/tldr/blob/master/pages/common/dolt.md
-https://github.com/tldr-pages/tldr/blob/master/pages/common/dolt-blame.md
-https://github.com/tldr-pages/tldr/blob/master/pages/common/dolt-branch.md
-https://github.com/tldr-pages/tldr/blob/master/pages/common/dolt-checkout.md
-https://github.com/tldr-pages/tldr/blob/master/pages/common/dolt-commit.md
-- Dolt is a SQL database that you can fork, clone, branch, merge, push
-  and pull just like a git repository. Connect to Dolt just like any
-  MySQL database to run queries or update the data using SQL commands.
-  Use the command line interface to import CSV files, commit your
-  changes, push them to a remote, or merge your teammate's changes.
-########################
-Find duplicate files:
-https://github.com/tldr-pages/tldr/blob/master/pages/common/fdupes.md
+[[}]]
 
-https://github.com/tldr-pages/tldr/blob/master/pages/common/jdupes.md
-enhanced fork of fdupes. More information: https://github.com/jbruchon/jdupes.
+• Git: What's new 2.31
+  https://github.blog/2021-03-15-highlights-from-git-2-31/
 
-########################
-https://github.com/tldr-pages/tldr/blob/master/pages/common/gibo.md
-Fetch gitignore boilerplates. More information: https://github.com/simonwhitaker/gibo.
-########################
-https://github.com/tldr-pages/tldr/tree/master/pages/common/git-*.md
-git-stage              git-am.md                git-annex.md          git-annotate.md      git-annotate
-git-apply.md           git-apply                git-archive.md        git-archive          git-bisect.md
-git-blame.md           git-branch.md            git-bugreport.md      git-bugreport
-git-bundle.md          git-bundle               git-cat-file.md       git-check-attr.md
-git-check-attr         git-check-ignore.md      git-check-mailmap.md
-git-check-mailmap      git-check-ref-format.md  git-check-ref-format
-git-checkout-index.md  git-checkout-index       git-checkout.md
-git-cherry-pick.md     git-cherry-pick          git-cherry.md         git-cherry
-git-clean.md           git-clone.md             git-clone             git-column.md        git-column
-git-commit-graph.md    git-commit-graph         git-commit-tree.md    git-commit.md
-git-commit             git-config.md            git-count-objects.md  git-count-objects
-git-credential.md      git-credential           git-describe.md       git-diff.md          git-diff
-git-difftool.md        git-difftool             git-fetch.md          git-flow.md
-git-for-each-repo.md   git-for-each-repo        git-format-patch.md
-git-fsck.md            git-gc.md                git-grep.md           git-grep             git-help.md        git-ignore.md
-git-imerge.md          git-init.md              git-instaweb.md       git-lfs.md           git-log.md
-git-ls-files.md        git-ls-files             git-ls-remote.md      git-ls-remote
-git-ls-tree.md         git-maintenance.md       git-maintenance       git-merge.md
-git-merge              git-mergetool.md         git-mergetool         git-mv.md            git-notes.md
-git-pr.md              git-pr                   git-prune.md          git-pull.md          git-push.md        git-rebase.md
-git-reflog.md          git-reflog               git-remote.md         git-remote           git-repack.md
-git-replace.md         git-request-pull.md      git-reset.md          git-restore.md
-git-restore            git-rev-list.md          git-rev-parse.md      git-revert.md        git-rm.md
-git-send-email.md      git-shortlog.md          git-show-branch.md    git-show-branch
-git-show-ref.md        git-show-ref             git-show.md           git-sizer.md         git-stage.md
-git-stage              git-stash.md             git-stash             git-status.md        git-stripspace.md
-git-stripspace         git-submodule.md         git-subtree.md        git-svn.md
-git-switch.md          git-switch               git-tag.md            git-update-index.md
-git-update-index       git-update-ref.md        git-var.md            git-var              git-worktree.md
-git.md
-########################
-Analyze nginx configuration files. More information: https://github.com/yandex/gixy.
-https://github.com/tldr-pages/tldr/blob/master/pages/common/gixy.md
-########################
+• https://space.sh,  Server apps and automation in a nutshell   [[{01_PM.low_code]]
+   very, very non-intrusive. If you want to manage servers
+   remotely Space would SSH into those servers to run your tasks and
+   never upload anything to the server, nor have any dependencies other
+   than a POSIX shell (ash/dash/bash 3.4+).
+   - Used as the base from simplenetes.
+[[}]]
+
+• https://github.com/nektos/act
+  Run your GitHub Actions locally rocket
+
+
+• batch:  Execute commands at a later time when system load levels goes down.
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/batch.md
+  Execute commands at a later time when the system load levels permit.
+  Service atd (or atrun) should be running for the actual executions.
+  More information: https://man.archlinux.org/man/at.1.
+
+• beanstalkd:  [[{01_PM.low_code]]
+  https://beanstalkd.github.io/.
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/beanstalkd.md
+  A simple and generic work-queue server. [[}]]
+
+• https://github.com/tldr-pages/tldr/blob/master/pages/common/bmaptool.md
+  Create or copy block maps intelligently (designed to be faster than cp or dd).
+  https://source.tizen.org/documentation/reference/bmaptool.
+
+• https://github.com/bup/backup:  Very efficient backup system based on git packfile format,
+  providing fast incremental saves and global deduplication (among and
+  within files, including virtual machine images). Current release is
+  0.31, and the development branch is master. Please post problems or
+  patches to the mailing list for discussion (see the end of the README
+  below).
+
+• https://github.com/tldr-pages/tldr/blob/master/pages/common/csvclean.md
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/csvcut.md
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/csvformat.md
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/csvgrep.md
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/csvkit.md
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/csvlook.md
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/csvsort.md
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/csvsql.md
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/csvstat.md
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/csvtool.md
+
+• Exploring docker images, discovering ways to shrink it.  [[{qa,containarization.qa]]
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/dive.md
+
+• dolt: Git + SQL!!!
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/dolt-add.md
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/dolt.md
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/dolt-blame.md
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/dolt-branch.md
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/dolt-checkout.md
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/dolt-commit.md
+  - Dolt is a SQL database that you can fork, clone, branch, merge, push
+    and pull just like a git repository. Connect to Dolt just like any
+    MySQL database to run queries or update the data using SQL commands.
+    Use the command line interface to import CSV files, commit your
+    changes, push them to a remote, or merge your teammate's changes.
+
+• Fetch gitignore boilerplates.
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/gibo.md
+  More info: https://github.com/simonwhitaker/gibo.
+
+• https://github.com/tldr-pages/tldr/tree/master/pages/common/git-*.md
+  git-stage              git-am.md                git-annex.md          git-annotate.md      git-annotate
+  git-apply.md           git-apply                git-archive.md        git-archive          git-bisect.md
+  git-blame.md           git-branch.md            git-bugreport.md      git-bugreport
+  git-bundle.md          git-bundle               git-cat-file.md       git-check-attr.md
+  git-check-attr         git-check-ignore.md      git-check-mailmap.md
+  git-check-mailmap      git-check-ref-format.md  git-check-ref-format
+  git-checkout-index.md  git-checkout-index       git-checkout.md
+  git-cherry-pick.md     git-cherry-pick          git-cherry.md         git-cherry
+  git-clean.md           git-clone.md             git-clone             git-column.md        git-column
+  git-commit-graph.md    git-commit-graph         git-commit-tree.md    git-commit.md
+  git-commit             git-config.md            git-count-objects.md  git-count-objects
+  git-credential.md      git-credential           git-describe.md       git-diff.md          git-diff
+  git-difftool.md        git-difftool             git-fetch.md          git-flow.md
+  git-for-each-repo.md   git-for-each-repo        git-format-patch.md
+  git-fsck.md            git-gc.md                git-grep.md           git-grep             git-help.md        git-ignore.md
+  git-imerge.md          git-init.md              git-instaweb.md       git-lfs.md           git-log.md
+  git-ls-files.md        git-ls-files             git-ls-remote.md      git-ls-remote
+  git-ls-tree.md         git-maintenance.md       git-maintenance       git-merge.md
+  git-merge              git-mergetool.md         git-mergetool         git-mv.md            git-notes.md
+  git-pr.md              git-pr                   git-prune.md          git-pull.md          git-push.md        git-rebase.md
+  git-reflog.md          git-reflog               git-remote.md         git-remote           git-repack.md
+  git-replace.md         git-request-pull.md      git-reset.md          git-restore.md
+  git-restore            git-rev-list.md          git-rev-parse.md      git-revert.md        git-rm.md
+  git-send-email.md      git-shortlog.md          git-show-branch.md    git-show-branch
+  git-show-ref.md        git-show-ref             git-show.md           git-sizer.md         git-stage.md
+  git-stage              git-stash.md             git-stash             git-status.md        git-stripspace.md
+  git-stripspace         git-submodule.md         git-subtree.md        git-svn.md
+  git-switch.md          git-switch               git-tag.md            git-update-index.md
+  git-update-index       git-update-ref.md        git-var.md            git-var              git-worktree.md
+  git.md
+
+• Analyze nginx configuration files.
+  https://github.com/yandex/gixy.
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/gixy.md
+
+• Render markdown on terminal.
 https://github.com/charmbracelet/glow
-Render markdown on terminal.
-########################
-https://github.com/paypal/gnomon
-https://github.com/tldr-pages/tldr/blob/master/pages/common/gnomon.md
 
-A command line utility, a bit like moreutils's ts, to prepend
-timestamp information to the standard output of another command.
-Useful for long-running processes where you'd like a historical
-record of what's taking so long.
-#########################
-https://gource.io/
-Renders an animated tree diagram of Git, SVN, Mercurial and Bazaar
-repositories. It shows files and directories being created, modified
-##################
-https://github.com/tldr-pages/tldr/blob/master/pages/common/molecule.md
-- Molecule helps testing ansible roles. More information: https://molecule.readthedocs.io.
-#####################
-- Git-big:
+• Gnomon: pipeline utility to prepend timestamp information from STDOUT.  [[{101]]
+  https://github.com/paypal/gnomon
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/gnomon.md
+
+  Useful for long-running processes where you'd like a historical
+  record of what's taking so long. [[}]]
+
+• gource: Renders an animated tree diagram of Git, SVN, Mercurial and Bazaar
+  https://gource.io/
+  Shows files and directories being created, modified
+
+
+• Molecule helps testing ansible roles.
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/molecule.md
+  More information: https://molecule.readthedocs.io.
+
+• Git-big: cli extension for managing Write Once Read Many (WORM) files.  [[{git,scalability]]
   https://github.com/vertexai/git-big
-  Git Big is a command line extension to Git for managing Write Once Read Many (WORM) files.
 
   $ git big init                  ← Init repo
 
@@ -577,53 +582,57 @@ https://github.com/tldr-pages/tldr/blob/master/pages/common/molecule.md
       | | └-- Depo (Remote repo) OK  ← Only in depot after clone
       | └---- Cache              KO
       └------ Workding dir       KO
-#####
-bash qa error_control
-https://linuxtect.com/make-bash-shell-safe-with-set-euxo-pipefail/
+[[}]]
+
+
+• set -o pipefail   bash flag  @[[{bash,qa.error_control]]
+  https://linuxtect.com/make-bash-shell-safe-with-set-euxo-pipefail/
 ...By default, if a commands in a pipe fails,  pipe continues to
-   execute.
-   set -o pipefail makes it fail instead.
+   execute,  makes it fail instead.
+[[}]]
 
-######################
-https://www.redhat.com/sysadmin/container-volatile-overlay-mounts
-Recent versions of Podman, Buildah, and CRI-O have started to take
-advantage of a new kernel feature, volatile overlay mounts. This
-feature allows you to mount an overlay file system with a flag that
-tells it not to sync to the disk.
+• volatile overlay mounts and containers: [[{containerization]]
+  https://www.redhat.com/sysadmin/container-volatile-overlay-mounts
+  Recent versions of Podman, Buildah, and CRI-O have started to take
+  advantage of a new kernel feature, volatile overlay mounts. This
+  feature allows you to mount an overlay file system with a flag that
+  tells it not to sync to the disk.
 
-https://sysadmin.prod.acquia-sites.com/sysadmin/overlay-mounts
+  https://sysadmin.prod.acquia-sites.com/sysadmin/overlay-mounts
 
-Speed up container builds with overlay mounts
-How Podman can speed up builds for multiple distributions by sharing the host's metadata.
-Overlay mounts help to address a challenge we run into when we have
-several containers on a single host. The basic problem is that every
-time you run dnf or yum inside a container, the container downloads
-and processes the metadata of all the repositories. To address this,
-we added an advanced volume mount to allow all of the containers to
-share the host's metadata. This approach avoids repeating the
-download and processing for each container. I previously wrote a blog
-post introducing the concept of overlay mounts inside of builds.
-######################
-https://git-scm.com/docs/merge-strategies
-resolve: This can only resolve current-branch and another pulled-branch
-recursive:
-ours:
-theirs:
-patience:
-diff-algorithm=[patience|minimal|histogram|myers]
-    ignore-space-change
-    ignore-all-space
-    ignore-space-at-eol
-    ignore-cr-at-eol
+  Speed up container builds with overlay mounts
+  How Podman can speed up builds for multiple distributions by sharing the host's metadata.
+  Overlay mounts help to address a challenge we run into when we have
+  several containers on a single host. The basic problem is that every
+  time you run dnf or yum inside a container, the container downloads
+  and processes the metadata of all the repositories. To address this,
+  we added an advanced volume mount to allow all of the containers to
+  share the host's metadata. This approach avoids repeating the
+  download and processing for each container. I previously wrote a blog
+  post introducing the concept of overlay mounts inside of builds.
+[[}]]
 
-renormalize
-no-renormalize
-no-renames
-find-renames[=n]
-rename-threshold=n
-subtree[=path]
-octopus
-subtree
+• Git merge strategies:                     [[{]]
+  https://git-scm.com/docs/merge-strategies
+  resolve: This can only resolve current-branch and another pulled-branch
+  recursive:
+  ours:
+  theirs:
+  patience:
+  diff-algorithm=[patience|minimal|histogram|myers]
+      ignore-space-change
+      ignore-all-space
+      ignore-space-at-eol
+      ignore-cr-at-eol
+
+  renormalize
+  no-renormalize
+  no-renames
+  find-renames[=n]
+  rename-threshold=n
+  subtree[=path]
+  octopus
+  subtree
 
 - git merge strategies: (From Bitbucket UI)
   - Merge commit --no-ff
@@ -656,9 +665,9 @@ subtree
     If the source branch is out of date with the target branch, reject
     the merge request. Otherwise, combine all commits into one new
     non-merge commit on the target branch.
+[[}]]
 
-######################
-- GitLab CI to publish HTML pages:
+• GitLab CI to publish HTML pages:  [[{]]
   https://roneo.org/en/framagit-render-html/
 
   You can render HTML using the Gitlab CI. This doc was redacted for
@@ -667,8 +676,10 @@ subtree
 
   A service called GitHack seems to propose the same, I didn't test it
   though.
-###########################
-- bash "$-" read-variable:
+[[}]]
+
+
+• bash "$-" read-variable:  [[{]]
   · prints/reports current set-of-options in current shell.
     ex.: "im...." outputs means following options are enabled:
           m - monitor     : (set -m),
@@ -686,24 +697,21 @@ subtree
  esac
 
  sudo ${SUDO_OPTS} ...
+[[}]]
 
-#######################
-
-<pre zoom labels="containerization.image,storage,01_PM.TODO">
-<span xsmall>Resizing containers with the Device Mapper</span>
+• Resizing containers with the Device Mapper: [[{containerization.image,storage,01_PM.TODO]]
 @[http://jpetazzo.github.io/2014/01/29/docker-device-mapper-resize/]
-</pre>
-<pre zoom labels="containerization.docker,qa,containerization.security,01_PM.TODO">
-<span xsmall>Rootless Docker</span>
-@[https://docs.docker.com/engine/security/rootless/]
-</pre>
+[[}]]
 
-<pre zoom labels="containerization.image.build">
-<span xsmall>Show image change history</span>
+• Rootless Docker: [[{containerization.docker,qa,containerization.security,01_PM.TODO]]
+@[https://docs.docker.com/engine/security/rootless/]
+[[}]]
+
+• Show image change history: [[{containerization.image.build]]
    $ docker history /clock:1.0
-</pre>
-<pre zoom labels="containerization.image.build">
-<span xsmall>Commit image modifications</span>
+[[}]]
+
+• Commit image modifications [[{containerization.image.build]]
 (Discouraged most of the time, modify Dockerbuild instead)
 host-mach $ docker run -it ubuntu bash     # Boot up existing image
 container # apt-get install ...            # Apply changes to running instance
@@ -711,20 +719,15 @@ host-mach $ docker diff $(docker ps -lq)   # Show changes done in running contai
 host-mach $ docker commit $(docker ps -lq) # Commit/Confirm changes
 host-mach $ docker tag figlet              # Tage new image
 host-mach $ docker run -it figlet          # Boot new image instance
-</pre>
+[[}]]
 
-
-##################
-<pre zoom labels="ci/cd,qa,testing,selenium,web,_PM.low_code,01_PM.TODO">
-<span xsmall>Selenium Browser test automation</span>
-
+• Selenium Browser test automation [[{ci/cd,qa,testing,selenium,web,_PM.low_code,01_PM.TODO]]
 See also QAWolf:
+[[}]]
 
-</pre>
 
-
-<pre zoom labels="containerization.image.build,dev_stack.kubernetes.ballerina,dev_stack.metaparticle,InfraAsCode.pulumi,1_doc_type.comparative,TODO,dev_language.java,">
-<span xsmall>Packaging Apps</span>
+• Packaging Apps:  [[{containerization.image.build,InfraAsCode.pulumi,02_doc_has.comparative,]]
+                   [[dev_stack.kubernetes.ballerina,dev_stack.metaparticle,dev_language.java]]
 @[https://www.infoq.com/articles/metaparticle-pulumi-ballerina/]
 - Packaging Applications for Docker and Kubernetes approaches comparative.
   • Metaparticle:
@@ -745,32 +748,26 @@ See also QAWolf:
       deployable into Docker or Kubernetes by auto generating Docker images and YAML's.
     - https://v1-0.ballerina.io/learn/by-example/
     - WARN : It uses its own language (vs Java, Go, ...)
-
-</pre>
-
+[[}]]
 
 
-<pre zoom labels="01_PM.TODO">
-<span title></span>
-https://stackoverflow.com/questions/13043344/search-and-replace-in-bash-using-regular-expressions
-hello=ho02123ware38384you443d34o3434ingtod38384day
-re='(.*)[0-9]+(.*)'
-while [[ $hello =~ $re ]]; do
-  hello=${BASH_REMATCH[1]}${BASH_REMATCH[2]}
+• Bash: Search&Replace with regexs:
+  https://stackoverflow.com/questions/13043344/search-and-replace-in-bash-using-regular-expressions
+
+  hello=ho02123ware38384you443d34o3434ingtod38384day
+  re='(.*)[0-9]+(.*)'
+  while [[ $hello =~ $re ]]; do
+    hello=${BASH_REMATCH[1]}${BASH_REMATCH[2]}
   done
   echo "$hello"
-</pre>
 
-<pre zoom labels="01_PM.TODO">
-<span title></span>
-https://stackoverflow.com/questions/19758915/keeping-a-branch-up-to-date-with-master @ma
+• https://stackoverflow.com/questions/19758915/keeping-a-branch-up-to-date-with-master @ma [[{git.101}]]
 
-_______________________
-DevOps pipelines DONT's:
-https://jamesjoshuahill.github.io/talk/2018/12/06/how-not-to-build-a-pipeline/
-_______________________
-Git 101:
-https://jamesjoshuahill.github.io/note/2015/02/07/is-your-branch-up-to-date/
+• DevOps pipelines DONT's:
+  https://jamesjoshuahill.github.io/talk/2018/12/06/how-not-to-build-a-pipeline/
+
+• git update branches:
+https://jamesjoshuahill.github.io/note/2015/02/07/is-your-branch-up-to-date/  [[{Git.101]]
 Nearly everything you do with git happens on your machine. Don’t
 take my word for it. Turn off your wifi and see how many git commands
 you can run. You’ll see fetch, pull and push fail without a
@@ -779,56 +776,70 @@ of: status, commit, checkout, cherry-pick, merge, rebase, diff, log
 and see how many times git tells you that you’re up-to-date. How
 can you be up-to-date if you’re disconnected?
 ....
-When you run git fetch origin the list of branches and commit history is downloaded from GitHub and synchronised into the clone on your machine. Doing a fetch won’t affect your local branches, so it’s one of the safest git commands you can run. You can fetch as much as you like.
-</pre>
-#############################
-An Interview With Linus Torvalds: Linux and Git | Tag1 Consulting
-https://www.tag1consulting.com/blog/interview-linus-torvalds-linux-and-git
+When you run git fetch origin the list of branches and commit history
+is downloaded from GitHub and synchronised into the clone on your
+machine. Doing a fetch won’t affect your local branches, so it’s
+one of the safest git commands you can run. You can fetch as much as
+you like.
+[[}]]
 
-##################
-DevOps, ansible: what ansible is not
-https://www.linkedin.com/pulse/ansible-what-marcel-koert/
-#################
-https://www.30secondsofcode.org/git/p/1
-#################
-5 tips for configuring virtualenvs with Ansible Tower | Enable Sysadmin
-https://www.redhat.com/sysadmin/virtualenvs-ansible-tower
-###################
-How to Create Your Own Repositories for Packages - Percona Database Performance Blog
-https://www.percona.com/blog/2020/01/02/how-to-create-your-own-repositories-for-packages/
-#######################3333
-This is how a #GitOps pipeline looks like.
-⚫ Firstly, the user changes the code in the Git repository.
-⚫ Then a container image gets created, and it is pushed to the container registry.
-⚫ It gets updated into a config updater.
-⚫ Once a user creates a pull request to merge to a different branch, it deploys to the concerned branch.
-⚫ Then it tests whether it is all good or not.
-⚫ Once it’s all good, the reviewer will be able to merge it.
-⚫ After the merge, it goes to the test branch.
-⚫ Once you create a pull request, it will deploy to that test
-branch. Below are a few popular GitOps tools that you must try while
-working on GitOps workflows. • Flux: Flux was created in 2016 by
-Weaveworks. It is a GitOps operator for your Kubernetes cluster. •
-ArgoCD: ArgoCD is also a GitOps operator but with a web user
-interface. • Jenkins X: A CICD solution for Kubernetes clusters but
-different than classic Jenkins. • WKSctl: A GitOps tool that uses
-Git commits to manage the Kubernetes cluster. • Gitkube: Gitkube is
-ideal for development where it uses Git push to build and deploy
-docker images on a Kubernetes cluster. • Helm Operator: an
-open-source Kubernetes operator to manage helm chart releases
-declaratively. Know more about GitOps: http://bit.ly/393ahpv
+• An Interview With Linus Torvalds: Linux and Git
+  https://www.tag1consulting.com/blog/interview-linus-torvalds-linux-and-git
+
+• DevOps, ansible: what ansible is not  [[{ansible.101]]
+  https://www.linkedin.com/pulse/ansible-what-marcel-koert/ [[}]]
+
+• https://www.30secondsofcode.org/git/p/1
+  30 secs recipes:
+  · How does Git's fast-forward mode work?
+  · Prints a list of all local branches sorted by date.
+  · Prints a list of all merged local branches.
+  · Delete merged branches
+  · Deletes all local merged branches.
+  · Create a git commit with a different date
+  · Purge a file from history
+  · Completely purges a file from history.
+  · View a visual graph of the repository
+  · Disables the default fast forwarding on merge commits.
+  · Prints a list of lost files and commits.
+  · ...
+
+• 5 tips for configuring virtualenvs with Ansible Tower
+  https://www.redhat.com/sysadmin/virtualenvs-ansible-tower
+
+• How to Create Your Own Repositories for Packages
+  https://www.percona.com/blog/2020/01/02/how-to-create-your-own-repositories-for-packages/
+
+• This is how a #GitOps pipeline looks like.
+NEXT) Firstly, the user changes the code in the Git repository.
+NEXT) Then a container image gets created, and it is pushed to the container registry.
+NEXT) It gets updated into a config updater.
+NEXT) Once a user creates a pull request to merge to a different branch, it deploys to the concerned branch.
+NEXT) Then it tests whether it is all good or not.
+NEXT) Once it’s all good, the reviewer will be able to merge it.
+NEXT) After the merge, it goes to the test branch.
+NEXT) Once you create a pull request, it will deploy to that test
+    branch. Below are a few popular GitOps tools that you must try while
+    working on GitOps workflows. • Flux: Flux was created in 2016 by
+    Weaveworks. It is a GitOps operator for your Kubernetes cluster. •
+    ArgoCD: ArgoCD is also a GitOps operator but with a web user
+    interface. • Jenkins X: A CICD solution for Kubernetes clusters but
+    different than classic Jenkins. • WKSctl: A GitOps tool that uses
+    Git commits to manage the Kubernetes cluster. • Gitkube: Gitkube is
+    ideal for development where it uses Git push to build and deploy
+    docker images on a Kubernetes cluster. • Helm Operator: an
+    open-source Kubernetes operator to manage helm chart releases
+    declaratively. Know more about GitOps: http://bit.ly/393ahpv
 
     https://geekflare.com/gitops-introduction/
 
-##################################3
-Chuletario de pócimas y recetas: Monitoring uninterruptible system calls.
-http://chuletario.blogspot.com/2011/05/monitoring-uninterruptible-system-calls.html?m=1
-##################################3
-DevSecOps: Image scanning in your pipelines using quay.io scanner | Enable Sysadmin
-https://www.redhat.com/sysadmin/using-quayio-scanner
-#################################
-<pre zoom labels="git.*,01_PM.TODO">
-<span xsmall TODO>git-pw</span>
+• Chuletario de pócimas y recetas: Monitoring uninterruptible system calls.
+  http://chuletario.blogspot.com/2011/05/monitoring-uninterruptible-system-calls.html?m=1
+
+• DevSecOps: Image scanning in your pipelines using quay.io scanner
+  https://www.redhat.com/sysadmin/using-quayio-scanner
+
+• git-pw:  [[{]]
 @[http://jk.ozlabs.org/projects/patchwork/]
 @[https://www.collabora.com/news-and-blog/blog/2019/04/18/quick-hack-git-pw/]
 - git-pw requires patchwork v2.0, since it uses the
@@ -840,7 +851,7 @@ https://www.redhat.com/sysadmin/using-quayio-scanner
 
   $ pip install --user git-pw
 
-CONFIG:
+
   $ git config pw.server https://patchwork.kernel.org/api/1.1
   $ git config pw.token YOUR_USER_TOKEN_HERE
 
@@ -884,10 +895,9 @@ CONFIG:
     $ git-pw series apply 95139
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
     fetch all the patches in the series, and apply them in the right order.
-</pre>
+[[}]]
 
-<pre zoom labels="01_PM.TODO">
-<span title>SaST-scan </span>
+• SaST-scan [[{devops.security.101]]
 https://github.com/AppThreat/sast-scan
 This repo builds appthreat/sast-scan (and
 quay.io/appthreat/sast-scan), a container image with a number of
@@ -926,78 +936,58 @@ This is like a Swiss Army knife for DevSecOps engineers.
    Visual                  Force (vf)   pmd
    Apache                  Velocity (vm)    pmd
    yaml                    yamllint
-</pre>
+[[}]]
 
-<pre zoom labels="01_PM.TODO">
-<span title>red-hat-universal-base-images</span>
-https://developers.redhat.com/e-books/red-hat-universal-base-images-ubi
-- Alternative to Alpine Linux??
-</pre>
+• red-hat-universal-base-images
+  https://developers.redhat.com/e-books/red-hat-universal-base-images-ubi
+  - Alternative to Alpine Linux??
 
-<pre zoom labels="01_PM.TODO">
-<span title></span>
-@[http://alblue.bandlem.com/2011/11/git-tip-of-week-git-notes.html]
-</pre>
+• @[http://alblue.bandlem.com/2011/11/git-tip-of-week-git-notes.html]
 
-<pre zoom labels="01_PM.TODO">
-<span title></span>
-bash local variable:
-https://tldp.org/LDP/abs/html/localvar.html
-</pre>
+• Managing "many-branches" Git projects:
+  - sync all local/remote branches:
+  https://stackoverflow.com/questions/27157166/sync-all-branches-with-git
 
-<pre zoom labels="git,01_PM.WiP">
-<span title>Managing "many-branches" Git projects:</span>
-• sync all local/remote branches:
-https://stackoverflow.com/questions/27157166/sync-all-branches-with-git
-</pre>
+• git 101 recipes: git Comparing diffs: @ma
 
-<pre zoom labels="01_PM.TODO">
-git 101 recipes: git Comparing diffs: @ma
-</pre>
+• gitbase: Query Git with SQL
+  https://opensource.com/article/18/11/gitbase
 
-<pre zoom labels="git.*,01_PM.TODO">
-<a xsmall TODO href="https://opensource.com/article/18/11/gitbase">gitbase: Query Git with SQL</a>
-- Gitbase is a Go-powered open source project that allows SQL queries to be run on Git repositories.
-</pre>
-
-<pre zoom labels="container,application.development,TODO">
-<span xsmall>Kaniko, Container Build</span>
+• Kaniko, Container Build: [[{container,application.development,TODO]]
 - Kaniko performs container builds inside a container environment,
  *without relying on a container daemon (Docker Daemon)*.
 - Kaniko extracts the file system from the base image,
   executes the build commands in user space atop the extracted
   file system, taking a snapshot of the file system after each command.
--
-</pre>
+[[}]]
 
-Bash syntax Sugar. Check hostname match -[0-9] or exit. Otherwise asing match to var.
+• Bash syntax Sugar. Check hostname match -[0-9] or exit. Otherwise asing match to var.
   [[ `hostname` =~ -([0-9]+)$ ]] || exit 1
   ordinal=${BASH_REMATCH[1]}
 
-###########################
-Shrunk node_modules (from 700MB to 104MB)
-https://tsh.io/blog/reduce-node-modules-for-better-performance/
-#######################
-https://github.com/smallstep/certificates
- 
-An online SSH Certificate Authority
-•   Delegate SSH authentication to step-ca by using SSH certificates instead of public keys and authorized_keys files
-•   For user certificates, connect SSH to your single sign-on provider, to improve security with short-lived certificates and MFA (or other security policies) via any OAuth OIDC provider.
-•   For host certificates, improve security, eliminate TOFU warnings, and set up automated host certificate renewal
-#######################
- 
-● https://docs.ipfs.io/how-to/host-git-style-repo/ 
-  serve a read-only Git repository through the IPFS network. 
+• https://github.com/smallstep/certificates
+  An online SSH Certificate Authority
+  · Delegate SSH authentication to step-ca by using SSH
+    certificates instead of public keys and authorized_keys files
+  · For user certificates, connect SSH to your single sign-on
+    provider, to improve security with short-lived certificates and MFA
+    (or other security policies) via any OAuth OIDC provider.
+  · For host certificates, improve security, eliminate TOFU
+    warnings, and set up automated host certificate renewal
+
+
+• https://docs.ipfs.io/how-to/host-git-style-repo/ [[{]]]
+  serve a read-only Git repository through the IPFS network.
   end result: git cloneable url served through IPFS!
 
 1) git clone --bare git@myhost.io/myrepo   <·· --bare: don't create working tree, just .git object store
 2) cd myrepo
-3) git update-server-info                  <·· Add metadata information to .git/info and .git/objects/info 
+3) git update-server-info                  <·· Add metadata information to .git/info and .git/objects/info
                                                in order to help clients discover what references and packs
                                                the server has. (needed for HTTP -vs ssh -)
-4) mv objects/pack/*.pack .                <·· Optional, unpack "large packfile" into its individual 
-   git unpack-objects < *.pack                 objects, allowing IPFS to deduplicate objects if 
-   rm -f *.pack objects/pack/*                 the Git repository is duplicated 2+ times 
+4) mv objects/pack/*.pack .                <·· Optional, unpack "large packfile" into its individual
+   git unpack-objects < *.pack                 objects, allowing IPFS to deduplicate objects if
+   rm -f *.pack objects/pack/*                 the Git repository is duplicated 2+ times
 
 (at this point the repository is ready to be served)
 
@@ -1010,66 +1000,101 @@ An online SSH Certificate Authority
   $ REPO_HASH="QmX679gmfya..."
   $ git clone http://${REPO_HASH}.ipfs.localhost:8080/ myrepo  <·· Cloning git from IPFS!!!!
 
-- See also: https://dev.to/woss/part-1-rehosting-git-repositories-on-ipfs-23bf 
-  truly distributed way of hosting the git repository 
-  AT A SPECIFIC REVISION, TAG, OR BRANCH, 
+- See also: https://dev.to/woss/part-1-rehosting-git-repositories-on-ipfs-23bf
+  truly distributed way of hosting the git repository
+  AT A SPECIFIC REVISION, TAG, OR BRANCH,
+[[}]]
 
-##########################
-Git 2.37 Brings Built-in File Monitor, Improved Pruning, and More @mahttps://www.infoq.com/news/2022/06/git-2-37-released/ 
-According to Jeff Hostetler, the author of the patches for git's new file monitor, the implementation relies mostly on cross-platform code with custom backends leveraging OS-native features, i.e. FSEvents on macOS and ReadDirectoryChangesW on Windows. A Linux backend would probably use either inotify or fanotify, Hostetler says, but that work has not started yet.
+• Git 2.37 Brings Built-in File Monitor, Improved Pruning, and More    @ma
+  https://www.infoq.com/news/2022/06/git-2-37-released/ 
+  According to Jeff Hostetler, the author of the patches for git's new
+  file monitor, the implementation relies mostly on cross-platform code
+  with custom backends leveraging OS-native features, i.e. FSEvents on
+  macOS and ReadDirectoryChangesW on Windows. A Linux backend would
+  probably use either inotify or fanotify, Hostetler says, but that
+  work has not started yet.
+• Infra As DDBB: IaSQL
+  https://iasql.com/
+• Top 10 container guides for sysadmins | Enable Sysadmin
+  https://www.redhat.com/sysadmin/containers-articles-2021
+• bash: Parse Arguments in Bash Scripts With getopts
+  https://ostechnix.com/parse-arguments-in-bash-scripts-using-getopts/
+• Dockerfile Linter Hadolint Brings Fixes and Improvements, and Support for ARM64 Binaries
+  https://www.infoq.com/news/2022/04/hadolint-dockerfile-linter/
 
-_________________________DevOps: Infra As DDBB: IaSQLhttps://iasql.com/ 
-__________________________DevOps: Top 10 container guides for sysadmins | Enable Sysadminhttps://www.redhat.com/sysadmin/containers-articles-2021 
-___________________________DevOps, bash: Parse Arguments in Bash Scripts With getopts - OSTechNixhttps://ostechnix.com/parse-arguments-in-bash-scripts-using-getopts/ 
-__________________________Devops: Dockerfile Linter Hadolint Brings Fixes and Improvements, and Support for ARM64 Binarieshttps://www.infoq.com/news/2022/04/hadolint-dockerfile-linter/?utm_source=email&utm_medium=devops&utm_campaign=newsletter&utm_content=04052022 
-__________________________DevOps: Jenkins Pipeline Builder Now Available | Linux Todayhttps://www.linuxtoday.com/developer/jenkins-pipeline-builder-now-available/ 
-__________________________DevOps: Git and ssh keysIn our last post, we talked about SSH signing: a new feature in Git that allows you to use the SSH key you likely already have in order to sign certain kinds of objects in Git.This release includes a couple of new additions to SSH signing. Suppose you use SSH keys to sign objects in a project you work on. To track which SSH keys you trust, you use the allowed signers file to store the identities and public keys of signers you trust.Now suppose that one of your collaborators rotates their key. What do you do? You could update their entry in the allowed signers file to point at their new key, but that would make it impossible to validate objects signed with the older key. You could store both keys, but that would mean that you would accept new objects signed with the old key.Git 2.35 lets you take advantage of OpenSSH’s valid-before and valid-after directives by making sure that the object you’re verifying was signed using a signature that was valid when it was created. This allows individuals to rotate their SSH keys by keeping track of when each key was valid without invalidating any objects previously signed using an older key.Git 2.35 also supports new key types in the user.signingKey configuration when you include the key verbatim (instead of storing the path of a file that contains the signing key). Previously, the rule for interpreting user.signingKey was to treat its value as a literal SSH key if it began with “ssh-“, and to treat it as filepath otherwise. You can now specify literal SSH keys with keytypes that don’t begin with “ssh-” (like ECDSA keys).[source, source]_____________________________________
-https://threadreaderapp.com/thread/1361976512002555907.html
+• Git and ssh keys
+  SSH signing you to use SSH-keys to sign certain kinds of objects in Git.
+  - Git 2.35 includes a couple of new additions to SSH signing.
+    -  To track which SSH keys you trust, you use the ALLOWED SIGNERS FILE
+       to store the identities and public keys of signers you trust.
+       PROBLEM: NOW suppose one commiter rotates their key.
+       - You could update their entry in the allowed signers file
+         but that would make it impossible to validate objects signed with
+         the older key.
+       - You could store both keys, but that would mean that you
+         would accept new objects signed with the old key.
+       SOLUTION: Git 2.35 lets you take advantage of OpenSSH’s
+                 valid-before and valid-after directives.
+   - Git 2.35 also supports new key types in the user.signingKey
+     configuration when you include the key verbatim (instead of storing
+     the path of a file that contains the signing key). Previously, the
+     rule for interpreting user.signingKey was to treat its value as a
+     literal SSH key if it began with “ssh-“, and to treat it as
+     filepath otherwise. You can now specify literal SSH keys with
+     keytypes that don’t begin with “ssh-” (like ECDSA
+     keys).[source, source]
 
-Problema: Los devs pican código que es imposible de desplegar de lo 
-mierda que es (a veces no pueden ni ejecutarlo en sus propias 
-maquinas...).
+• [[{containerization.101,devops.101]]
 
-Solución: Pues lo encapsulamos en contenedores, emulando su propia maquina.
+  PROBLEM : developers write code that is impossible to deploy because ...
+            it's a BBS (Big Bull ...)
+            Manytime they can not even execute in their own laptops or explain
+            random configuration errors after any small change.
+  SOLUTION: "We encapsulate into containers, emulating their own machine!!!!"
 
-Problema: Ahora tenemos 500 contenedores. Todo es ridículamente difícil de manejar.
-Solución: Pues lo solucionamos con orquestradores de contenedores.
+  PROBLEM : Now we have 500 containers!!. Everything is ridicously hard to manage.
+  SOLUTION: "We solve it using containers orchestrators!!!"
 
-Problema: Los orquestradores son ridículamente complejos de manejar 
-          y están añadiendo otra capa más de complejidad, por no hablar de 
-          la fuente de problemas exóticos en la que se han convertido. 
-          (Kubernetes, alguien?)
-Solución: "están en ello, estoy seguro que nos sorprenderán"
+  PROBLEM : Container orchestrators are ridicously complex to manage and they
+            are adding another layer of complexity, not to mention the source
+            of exotic problems they have become.
+            (Kubernetes, anyone?)
+  SOLUTION: "We are on it! sure they will surprise us!!!"
 
-__________________________
-How to Use S3 as a Private Git Repository – Fancy Beans
-https://fancybeans.com/2012/08/24/how-to-use-s3-as-a-private-git-repository/ 
+  REAL SOLUTION: Force developers to create FAIL-FAST code.
+  https://en.wikipedia.org/wiki/Fail-fast
 
-Basically, use git for local commands that manipulate the local 
-repository (adding, committing, merging) and jgit for any 
-interactions that involve sending or receiving data from the S3 
-bucket.
+  KEY-POINT: REAL PROBLEMS REQUIRE REAL SOLUTIONS
 
-https://github.com/bgahagan/git-remote-s3
-Push and pull git repos to/from an s3 bucket. Uses gpg to encrypt the 
-repo contents (but not branch names!) before sending to s3.
+[[}]]
 
+• How to Use S3 as a Private Git Repository
+  https://fancybeans.com/2012/08/24/how-to-use-s3-as-a-private-git-repository/
+  Basically, use git for local commands that manipulate the local
+  repository (adding, committing, merging) and jgit for any
+  interactions that involve sending or receiving data from the S3
+  bucket.
 
-https://www.petekeen.net/hosting-private-git-repositories-with-gitolite
+  https://github.com/bgahagan/git-remote-s3
+  Push and pull git repos to/from an s3 bucket. Uses gpg to encrypt the
+  repo contents (but not branch names!) before sending to s3.
 
-Step 1: Install Gitolite
+  https://www.petekeen.net/hosting-private-git-repositories-with-gitolite
 
-Gitolite is a system for managing git repositories using git itself 
-to manage the configuration. Essentially, after initial configuration 
-you make all changes by editing a config file, committing it, and 
-pushing up to your git server.
+  Step 1: Install Gitolite
 
-Gitolite installation is pretty straightforward:
+  Gitolite is a system for managing git repositories using git itself
+  to manage the configuration. Essentially, after initial configuration
+  you make all changes by editing a config file, committing it, and
+  pushing up to your git server.
+
+  Gitolite installation is pretty straightforward:
+
 
 • Nexus Repository Management:[[{containerization.image.registry]]
-https://blog.sonatype.com/using-nexus-3-as-your-repository-part-1-maven-artifacts
-https://blog.sonatype.com/using-nexus-3-as-your-repository-part-2-npm-packages
-https://blog.sonatype.com/using-nexus-3-as-your-repository-part-3-docker-images
+  https://blog.sonatype.com/using-nexus-3-as-your-repository-part-1-maven-artifacts
+  https://blog.sonatype.com/using-nexus-3-as-your-repository-part-2-npm-packages
+  https://blog.sonatype.com/using-nexus-3-as-your-repository-part-3-docker-images
   - See also: Artifactory by JFrog
 [[}]]
 
@@ -1090,3 +1115,41 @@ $ docker container run -d \
   https://jtreminio.com/blog/running-docker-containers-as-current-host-user/
 
 [[01_PM.TODO}]]
+
+● Git modules @ /usr/lib/git-core
+  3_097_168 /usr/lib/git-core/git
+  1_839_328 /usr/lib/git-core/git-remote-http
+  1_835_232 /usr/lib/git-core/git-http-push
+  1_831_520 /usr/lib/git-core/git-imap-send
+  1_823_072 /usr/lib/git-core/git-fast-import
+  1_822_912 /usr/lib/git-core/git-http-fetch
+  1_802_048 /usr/lib/git-core/git-remote-testsvn
+  1_793_856 /usr/lib/git-core/git-daemon
+  1_789_984 /usr/lib/git-core/git-http-backend
+  1_773_344 /usr/lib/git-core/git-shell
+  1_773_280 /usr/lib/git-core/git-credential-cache--daemon
+  1_773_216 /usr/lib/git-core/git-sh-i18n--envsubst
+  1_773_216 /usr/lib/git-core/git-credential-store
+  1_773_216 /usr/lib/git-core/git-credential-cache
+     46_169 /usr/lib/git-core/git-add--interactive
+     29_600 /usr/lib/git-core/git-rebase--preserve-merges
+     25_832 /usr/lib/git-core/git-submodule
+     22_362 /usr/lib/git-core/git-instaweb
+     17_485 /usr/lib/git-core/git-subtree
+     16_938 /usr/lib/git-core/git-sh-prompt
+     16_411 /usr/lib/git-core/git-legacy-stash
+     16_334 /usr/lib/git-core/git-filter-branch
+     10_297 /usr/lib/git-core/git-mergetool
+      9_306 /usr/lib/git-core/git-sh-setup
+      9_201 /usr/lib/git-core/git-mergetool--lib
+      8_290 /usr/lib/git-core/git-bisect
+      4_401 /usr/lib/git-core/git-web--browse
+      4_130 /usr/lib/git-core/git-request-pull
+      4_096 /usr/lib/git-core/mergetools
+      3_695 /usr/lib/git-core/git-merge-one-file
+      3_693 /usr/lib/git-core/git-quiltimport
+      2_650 /usr/lib/git-core/git-parse-remote
+      2_477 /usr/lib/git-core/git-merge-octopus
+      2_448 /usr/lib/git-core/git-sh-i18n
+      2_236 /usr/lib/git-core/git-difftool--helper
+        944 /usr/lib/git-core/git-merge-resolve
