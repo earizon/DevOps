@@ -21,58 +21,6 @@
 - @[https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/]
 [[}]]
 
-● Who-is-Who: [[{]]
-  (Forcibly incomplete but still quite pertinent list of core people and companies)
-  - Linus Torvalds:
-    - He loves C++ and Microkernels, author of a Unix like
-       hobbie project for x86. Nothing serious.
-     @[http://www.linux-schule.net/linux/text34.html]
-     @[https://en.wikipedia.org/wiki/Linus_Torvalds]
-  - Alan Cox
-  @[https://en.wikipedia.org/wiki/Alan_Cox]
-  - Ingo Molnár
-    @[https://en.wikipedia.org/wiki/Ingo_Moln%C3%A1r]
-    - Completely Fair Scheduler
-    - in-kernel TUX HTTP / FTP server.
-    - thread handling enhancements
-    - real-time preemption patch set
-      (with Thomas Gleixner and others)
-  - Moshe Bar: Author on the "Linux Internals" book. (With Ingo Molnár
-      scheduler).
-    - Serial entrepreneur,  co-founder of Qumranet (sold to Red Hat),
-      which created the industry standard KVM hypervisor, powering nearly
-      all cloud offerings. He also co-founded software company XenSource,
-      the makers of the Xen hypervisor (sold to Citrix).
-      Previously regular columnist for Linux Journal, Byte.com, Dr.Dobbs.
-      He started learning UNIX on a PDP-11 with AT&T UNIX Release 6 back
-      in 1981.
-      Today he works as CEO of https://www.codenotary.com.
-
-    Moshe is at this time a board member of Tinaba SpA, Graylog Inc, ePrice SpA, Quandoo AG, Cascade Partners LP and Optigrowth Sarl.
-  - Patrick Volkerding, creator of Slackware, the first Linux
-    distribution.
-  @[https://en.wikipedia.org/wiki/Patrick_Volkerding]
-  - Marc Ewing, creator of Red Hat
-  @[https://en.wikipedia.org/wiki/Marc_Ewing]
-  - Robert Love
-  @[https://en.wikipedia.org/wiki/Robert_Love]
-    Ximian, Linux Desktop Group, SuSe Novell, worked on GNOME,
-    on 2007 joins Google to work on Android, engineered several
-    kernel and system-level solutions like its novel shared memory
-    subsystem, ashmem. From 2014 Love continues to work at Google
-    as Director of Engineering for Search Infrastructure.
-  - Andries Brouwer
-  @[https://en.wikipedia.org/wiki/Andries_Brouwer#Linux_kernel]
-  - Bredan D.Gregg: Author of many great books and posts on
-      Linux observability and monitoring
-  @[http://www.brendangregg.com/]
-  - Rusty Russell
-  @[https://en.wikipedia.org/wiki/Rusty_Russell]
-    work on the Linux kernel's succesful networking subsystem
-    (netfilter, iptables) and the Filesystem Hierarchy Standard.
-  - Many, many others.
-[[}]]
-
 ● Linux Basics: [[{linux.101]]
 - Linux itself is just an OS kernel in charge of sharing the LIMITED hardware
   resources amongst potentially many running tasks and users working simultaneously
@@ -186,7 +134,7 @@
   change the child-process user/permission to a less privileged
   account.
 
-- A simplified process-tree of a running-system will look like:
+- A simplified process-tree of a running-system will look like:      [[{02_doc_has.diagram]]
 
     PROCESS                                       USER    PROCESS   PARENT-ID
                                                          UNIQUE-ID
@@ -208,7 +156,7 @@
           ...
     Notice for example that the same process "bash" runs as a user or another
     ( *mike* or  *alice*) depending on the "path"
-    followed until the process is executed.
+    followed until the process is executed.                          [[}]]
 
     - The initial sshd running as root user, will span a new sshd child process
       with restricted  *"mike"* privileges/permissions once the user
@@ -288,7 +236,7 @@ Permissions │Symbol│      FILE                   │     DIRECTORY          
 └───────────┴──────┴───────────────────────────────────────────────────────────┘
 [[}]]
 
-● Network Time Protocol 101: [[{configuration.server,troubleshooting]]
+● Network Time Protocol 101: [[{configuration.clock,troubleshooting]]
 
    # REF:@[https://www.server-world.info/en/note?os=Fedora_25&p=ntp&f=2]
    $ sudo dnf -y install ntp                       # <- STEP 1) Install ntp client on RedHat flavours
@@ -382,7 +330,7 @@ Permissions │Symbol│      FILE                   │     DIRECTORY          
 @[https://wiki.archlinux.org/index.php/Access_Control_Lists]
 [[}]]
 
-● Kernel Tunning:  [[{configuration,configuration.network,storage.fs,performance,troubleshooting,]] #[sysctl_summary]
+● Kernel Tunning: [[{configuration.sysctl,configuration.network,storage.fs,troubleshooting.performance,]] #[sysctl_summary]
 • sysctl
   - Cli app to view/modify kernel parameters affecting the runtime behavior
     of network, file-systems, kernel logging, ...
@@ -410,217 +358,115 @@ Permissions │Symbol│      FILE                   │     DIRECTORY          
                                    Use -p /etc/sysctl.d/99-custom.conf for
                                    alternative (non default) path
 
-  /proc/sys/ Overview:
-  ├── abi/vsyscall32
-  ├── debug
-  │   ├── exception-trace
-  │   └── kprobes-optimization
-  ├── dev
-  │   ├── cdrom/autoclose
-  │   │   ├── ...
-  │   ├── hpet/max-user-freq
-  │   ├── mac_hid/mouse_button2_keycode
-  │   │   ├── ...
-  │   ├── parport
-  │   │   ├── default/...
-  │   │   └── parport0/...
-  │   │       ├── devices
-  │   │       │   ├── active
-  │   │       │   └── lp/timeslice
-  │   │       ├── /dma, /irq, /modes, /spintime
-  │   │       ├── irq
-  │   │       ├── modes
-  │   │       └── spintime
-  │   ├── raid/speed_limit_max(min)
-  │   ├── scsi/logging_level
-  │   └── tty/ldisc_autoload
-  ├── fs/*
-  ├── kernel
-  │   ├── acct
-  │   ├── acpi_video_flags
-  │   ├── auto_msgmni
-  │   ├── bootloader_type
-  │   ├── bootloader_version
-  │   ├── bpf_stats_enabled
-  │   ├── cad_pid
-  │   ├── cap_last_cap
-  │   ├── core_pattern
-  │   ├── core_pipe_limit
-  │   ├── core_uses_pid
-  │   ├── ctrl-alt-del
-  │   ├── dmesg_restrict
-  │   ├── domainname
-  │   ├── firmware_config/...
-  │   ├── ftrace_dump_on_oops
-  │   ├── ftrace_enabled
-  │   ├── hardlockup_all_cpu_backtrace
-  │   ├── hardlockup_panic
-  │   ├── hostname
-  │   ├── hotplug
-  │   ├── hung_task_check_count
-  │   ├── hung_task_check_interval_secs
-  │   ├── hung_task_panic
-  │   ├── hung_task_timeout_secs
-  │   ├── hung_task_warnings
-  │   ├── io_delay_type
-  │   ├── kexec_load_disabled
-  │   ├── keys/... (6 tunnable params)
-  │   ├── kptr_restrict
-  │   ├── max_lock_depth
-  │   ├── modprobe
-  │   ├── modules_disabled
-  │   ├── msgmax
-  │   ├── msgmnb
-  │   ├── msgmni
-  │   ├── msg_next_id
-  │   ├── ngroups_max
-  │   ├── nmi_watchdog
-  │   ├── ns_last_pid
-  │   ├── numa_balancing*
-  │   ├── osrelease
-  │   ├── ostype
-  │   ├── overflowgid
-  │   ├── overflowuid
-  │   ├── panic*
-  │   ├── perf_*
-  │   ├── pid_max
-  │   ├── poweroff_cmd
-  │   ├── print-fatal-signals
-  │   ├── printk*
-  │   ├── pty/(max | nr | reserve )
-  │   ├── random/... (7 tunnable params)
-  │   ├── randomize_va_space
-  │   ├── real-root-dev
-  │   ├── sched_autogroup_enabled
-  │   ├── sched_cfs_bandwidth_slice_us
-  │   ├── sched_child_runs_first
-  │   ├── sched_domain
-  │   │   ├── cpu0/domain0 ( Same for cpu1,2,... domain0/1)
-  │   │   │   │   ├── busy_factor
-  │   │   │   │   ├── cache_nice_tries
-  │   │   │   │   ├── flags
-  │   │   │   │   ├── imbalance_pct
-  │   │   │   │   ├── max_interval
-  │   │   │   │   ├── max_newidle_lb_cost
-  │   │   │   │   ├── min_interval
-  │   │   │   │   └── name
-  │   ├── sched_latency_ns
-  │   ├── sched_migration_cost_ns
-  │   ├── sched_min_granularity_ns
-  │   ├── sched_nr_migrate
-  │   ├── sched_rr_timeslice_ms
-  │   ├── sched_rt_period_us
-  │   ├── sched_rt_runtime_us
-  │   ├── sched_schedstats
-  │   ├── sched_tunable_scaling
-  │   ├── sched_util_clamp_max
-  │   ├── sched_util_clamp_min
-  │   ├── sched_wakeup_granularity_ns
-  │   ├── seccomp
-  │   │   ├── actions_avail
-  │   │   └── actions_logged
-  │   ├── sem
-  │   ├── sem_next_id
-  │   ├── sg-big-buff
-  │   ├── shmall
-  │   ├── shmmax
-  │   ├── shmmni
-  │   ├── shm_next_id
-  │   ├── shm_rmid_forced
-  │   ├── softlockup_all_cpu_backtrace
-  │   ├── softlockup_panic
-  │   ├── soft_watchdog
-  │   ├── stack_tracer_enabled
-  │   ├── sysctl_writes_strict
-  │   ├── sysrq
-  │   ├── tainted
-  │   ├── threads-max
-  │   ├── timer_migration
-  │   ├── traceoff_on_warning
-  │   ├── tracepoint_printk
-  │   ├── unknown_nmi_panic
-  │   ├── unprivileged_bpf_disabled
-  │   ├── unprivileged_userns_apparmor_policy
-  │   ├── unprivileged_userns_clone
-  │   ├── usermodehelper
-  │   │   ├── bset
-  │   │   └── inheritable
-  │   ├── version
-  │   ├── watchdog
-  │   ├── watchdog_cpumask
-  │   ├── watchdog_thresh
-  │   └── yama
-  │       └── ptrace_scope
-  ├── net
-  │   ├── bridge/ .. (6 tunnable params)
-  │   ├── core/... (40 tunnable params)
-  │   ├── fan/version
-  │   ├── ipv4
-  │   │   ├── cipso_* (4 tunnable params)
-  │   │   ├── conf
-  │   │   │   ├── all  ... 31
-  │   │   │   ├── default ... 31
-  │   │   │   ├── lo ... 31
-  │   │   │   └── enp0s25 ... 31
-  │   │   ├── ... 31 more params
-  │   │   ├── neigh
-  │   │   │   ├── default ... 20
-  │   │   │   ├── lo      ... 16
-  │   │   │   ├── enp0s25 ... 16
-  │   │   │   └── docker0 ... 16
-  │   │   ├── ping_group_range
-  │   │   ├── raw_l3mdev_accept
-  │   │   ├── route/ ... 16
-  │   │   ├── tcp_* ... (71 tunnable params)
-  │   │   ├── udp_* ... ( 5 tunnable params)
-  │   │   ├── vs/... (26 tunnable params)
-  │   │   └── xfrm4_gc_thresh
-  │   ├── ipv6/...
-  │   │   ├── route ... (11 tunnable params)
-  │   │   ├── seg6_flowlabel
-  │   │   └── xfrm6_gc_thresh
-  │   ├── netfilter ... (65 tunnable params)
-  │   ├── nf_conntrack_max
-  │   └── unix
-  │       └── max_dgram_qlen
-  ├── fs
-  │   ├── aio-max-nr
-  │   ├── aio-nr
-  │   ├── binfmt_misc
-  │   │   ├── register
-  │   │   └── status
-  │   ├── dentry-state
-  │   ├── dir-notify-enable
-  │   ├── epoll/max_user_watches
-  │   ├── file-max
-  │   ├── file-nr
-  │   ├── inode-nr
-  │   ├── inode-state
-  │   ├── inotify/...
-  │   ├── lease-break-time
-  │   ├── leases-enable
-  │   ├── mount-max
-  │   ├── mqueue/...
-  │   ├── nr_open
-  │   ├── overflowgid
-  │   ├── overflowuid
-  │   ├── pipe-max-size
-  │   ├── pipe-user-pages-hard
-  │   ├── pipe-user-pages-soft
-  │   ├── protected_fifos
-  │   ├── protected_hardlinks
-  │   ├── protected_regular
-  │   ├── protected_symlinks
-  │   ├── quota/...
-  │   ├── suid_dumpable
-  │   ├── verity/require_signatures
-  │   ├── nfs/...
-  │   └── xfs/...
-  ├── sunrpc ... (11 tunnable params)
-  ├── user/... (9 tunnable params)
-  └── vm/... (48 tunnable params)
+  /proc/sys/ OVERVIEW:
+  ├ abi/vsyscall32
+  ├ debug
+  │ ├ exception-trace
+  │ └ kprobes-optimization
+  ├ dev
+  │ ├ parport
+  │ │ ├ default/...
+  │ │ └ parport0/...
+  │ │   ├ devices
+  │ │   ...
+  │ ├ raid/speed_limit_max(min)
+  │ ├ scsi/logging_level
+  │ ├ tty/ldisc_autoload
+  │ ...
+  ├ kernel    REF:  https://www.kernel.org/doc/html/v5.7/admin-guide/sysctl/kernel.html
+  │ ├ acct
+  │ ├ sched_*
+  │ ├ sem
+  │ ├ watchdog*
+  │ ...
+  ├ net
+  │ ├ core/... (40 tunnable params)
+  │ ├ ipv4/* (devices, conf, route, tcp, udp,...)
+  │ ├ ipv6/...
+  │ ├ netfilter ... (65 tunnable params)
+  │ ├ nf_conntrack_max
+  │ ├ unix
+  │ │ └ max_dgram_qlen
+  │ ...
+  ├ fs
+  │ ├ inotify/...
+  │ ├ nfs/...
+  │ ├ ext4/...
+  │ ├ xfs/...
+  │ ...
+  ├ sunrpc ... (11 tunnable params)
+  ├ user/... (9 tunnable params)
+  └ vm/... (48 tunnable params)
+[[configuration.sysctl}]]
 
+● Linux Kernel Tunning with 'tuned': [[{linux.101,monitoring.101,configuration.kernel,01_PM.TODO,qa.UX]]
+  /proc/sys/vm/ Kernel FS "control pannel"   [[{01_PM.TODO}]]
+  https://tuned-project.org/
+- About tuned:
+  - OS Tunning is done in practice through:
+    - long-profiling
+    - continuous-monitoring
+  - Tunning becomes harder if system load changes frequently.
+
+    Ex.: A system with a peak of load certain hours a day
+         can be tuned for performance     those known hours
+         and    tuned for power-efficency the rest of day
+
+
+- man 8 tuned: Dynamic Adaptive system tuning daemon
+@[https://linux.die.net/man/8/tuned]
+
+  - cron-friendly system service that lets to select a tuning profile
+    (pre-build or custom).
+  - Tuning include:
+    - sysctl settings (/proc/sys/)
+    - settings for disk-elevators
+    - power management options
+    - transparent hugepages
+    - custom-scripts
+
+- Install):
+$*$ sudo dnf -y install tuned    * ← RedHat/Fedora/CentOS package install
+$*$ sudo systemctl enable tuned  * ← enable tuned service at boot
+→ ...
+$ sudo systemctl start  tuned # ← Start  tuned service now
+$ sudo systemctl status tuned # ← Check  tuned service status
+$ sudo systemctl status tuned
+→ * tuned.service - Dynamic System Tuning Daemon
+→    Loaded: loaded (/usr/lib/systemd/system/tuned.service; disabled; vendor preset: disabled)
+→    Active: *active (running)* since Sun 2019-01-20 16:29:05 EST; 15s ago
+→      Docs: man:tuned(8)
+→            man:tuned.conf(5)
+→            man:tuned-adm(8)
+→  Main PID: 10552 (tuned)
+→     Tasks: 4 (limit: 4915)
+→    Memory: 15.7M
+→    CGroup: /system.slice/tuned.service
+→            └─10552 /usr/bin/python3 -Es /usr/sbin/tuned -l -P
+
+*Ussage:*
+$ *tuned-adm list*   #  ← List existing tunning profiles
+→ Available profiles:
+→ - balanced                    - General non-specialized
+→ - desktop                     - Optimize for the desktop
+→ - latency-performance         - deterministic performance             (increased power consumption)
+→ - network-latency             - deterministic performance low-latency (increased power consumption)
+→ - network-throughput          - Optimize for streaming network throughput
+                                  generally only necessary on older CPUs or
+                                  40G+ networks
+→ - powersave                   - Optimize for low power consumption
+→ - throughput-performance      - provides excellent performance across a
+                                  variety of common server workloads
+→ - virtual-guest               - Optimize for running inside a virtual guest
+→ - virtual-host                - Optimize for running KVM guests
+→ Current active profile: balanced
+
+$ *sudo tuned-adm active*  #  ← query status
+Current active profile: balanced
+
+$ *sudo tuned-adm profile  powersave* # ←  select profile
 [[}]]
+
 
 [[}]]
 
@@ -738,7 +584,7 @@ $ *nice -20 make* ← Sets make priority to -20
 $ *renice 10 "pid"* ← Changes priority of running process.
 [[}]]
 
-● pv monit data pipe progress: [[{monitoring.pipes,monitoring.i/o,profiling.file_system,storage.profiling]]
+● pv monit data pipe progress: [[{monitoring.pipes,monitoring.i/o,profiling.storage.FS,storage.profiling]]
 • pv provides time elasped, %compl., progressbar, throughput, ETA, ...on STDERR.
 • cat /dev/zero | pv | cat ˃ /dev/null  # Check CPU/memory perf.
 • pv file | nc -w 1 somewhere.com 3000  # Check network perf.
@@ -773,7 +619,7 @@ DATA TRANSFER MODIFIERS
                  --pidfile FILE save PID of (first running) pv instance.
 [[}]]
 
-● GNU Parallel  [[{job_control.*,distributed.computing,scalability]]
+● GNU Parallel  [[{job_control.*,performance.distributed]]
 @[https://linux.die.net/man/1/parallel]
 @[https://www.gnu.org/software/parallel/parallel_cheat.pdf]
 @[https://www.reddit.com/r/programming/comments/ayew9r/never_got_around_to_learning_gnu_parallel_here_is/]
@@ -978,7 +824,7 @@ TODO:
 ~:$ echo $?              --exit             Exit immediately if nm is not running or connecting
 → 0                      --quiet            Don't print anything
                          --wait-for-startup Wait for nm startup instead of a connection
-<hr/>
+
 ● Troubleshooting
 
 *bypass network manager* by manually launching dhcp client:
@@ -992,60 +838,51 @@ $ sudo systemctl stop    ModemManager.service
 $ sudo systemctl disable ModemManager.service
 [[}]]
 
-● basic network audit/control [[{monitoring.network,troubleshooting]]
-*Socket Statistics (ss)*
-<a href="https://linux.die.net/man/8/ss">man 8 ss</a>  (ss: socket statistics)
+● BASIC NETWORK AUDIT/CONTROL [[{monitoring.network,troubleshooting]]
+• Socket Statistics ss: (replaces 'netstat'),  man 8 ss
 
-ss USAGE EXAMPLES
+ $ sudo ss -ntlp     <···-n : Do not resolve IP to DNS (much) faster.
+                         -t : Show tcp (filter out UNIX, UDP, ...)
+                         -l : Show socket waiting for (client) connetions
+                         -p : Show process PID that controls the socket.
+  Output example:
+  State   Recv-Q Send-Q  Local       Peer
+                         Addr:Port   Addr:Port
+  LISTEN  0      128     *:80        *:*      users:(("lighttpd",pid=23515,fd=4))
+  LISTEN  0      128     *:22        *:*      users:(("sshd",pid=571,fd=3))
 
-*$ sudo ss -ntlp*
-^^^^^^^^^^^^^^^
-Display TCP (-t) ports listening (-l) for remote
-request and show also the process that
-opened the port (-p): -p requires sudo-permissions
--n: Do not reverse-resolve IPs to DNS names
-(example output)
-→ State      Recv-Q Send-Q  Local Address:Port   Peer Address:Port
-→ LISTEN     0      128     *:80                 *:*                users:(("lighttpd",pid=23515,fd=4))
-→ LISTEN     0      128     *:22                 *:*                users:(("sshd",pid=571,fd=3))
+ $ sudo ss -t -a -p  <··· Display all (-a) connected (vs -l/listening) TCP (-t)
+                          sockets and processes using them (-p)
+  STATE       ... ADDRESS:PORT        PEER ADDRESS:PORT
+  ESTABLISHED ... 127.0.0.1:postgres  127.0.0.1:46404     users:(("postgres",pid=64032,fd=11))
+  ESTABLISHED ... 127.0.0.1:37200     127.0.0.1:50004     users:(("sshd",pid=61411,fd=10))
+  ESTABLISHED ... 127.0.0.1:postgres  127.0.0.1:45086     users:(("postgres",pid=43553,fd=11))
+  TIME_WAIT   ...
 
-*$ sudo ss -t -a -p *
-^^^^^^^^^^^^^^^^^^
-Display all (-a) non-listening (no -l provided)
-TCP (-t) sockets and processes using them (-p)
-→ STATE       ... ADDRESS:PORT              PEER ADDRESS:PORT
-→ ESTABLISHED ... 127.0.0.1:postgres        127.0.0.1:46404        users:(("postgres",pid=64032,fd=11))
-→ ESTABLISHED ... 10.0.0.5:idonix-metanet   81.61.178.46:51003     users:(("sshd",pid=61411,fd=3),("sshd",pid=61407,fd=3))
-→ ESTABLISHED ... 127.0.0.1:37200           127.0.0.1:50004        users:(("sshd",pid=61411,fd=10))
-→ ESTABLISHED ... 127.0.0.1:postgres        127.0.0.1:45086        users:(("postgres",pid=43553,fd=11))
-→ TIME_WAIT   ...
-
-*$ ss -o state established '( dport = :ssh or sport = :ssh )'*
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Display all established ssh connections.
-
-*$ ss -x src /tmp/.X11-unix/**
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Find all local processes connected to X server.
+ $ ss \               <··· Display all established ssh connections.
+   -o state established
+   '( dport = :ssh or sport = :ssh )'
 
 
-*$ ss -o state fin-wait-2 '( sport =  :http  or  sport  =  :https  )'  dst 193.233.7/24*
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-List  all  the tcp sockets in state FIN-WAIT-1 for our apache to
-network 193.233.7/24 and look at their timers.
+ $ ss -x src /tmp/.X11-unix/* <·· Find all local processes connected to X server.
 
 
-*DISPLAY IP Routing Table*
-$ ip route list
-→ *default via 10.0.0.1 dev eth0*
-→ 10.0.0.0/24     dev eth0    proto kernel scope link src 10.0.0.5
-→ 169.254.0.0/16  dev eth0                 scope link metric 1002
-→ 172.17.0.0/16   dev docker0 proto kernel scope link src 172.17.0.1
-→ 168.63.129.16   via 10.0.0.1 dev eth0 proto static
-→ 169.254.169.254 via 10.0.0.1 dev eth0 proto static
-→ ...
+ $ ss \                                <····  List tcp sockets in state FIN-WAIT-1
+   -o state fin-wait-2 \                      for http/https@193.233.7/24
+  '( sport = :http or sport = :https )' \     and look at their timers.
+  dst 193.233.7/24*
 
-*DISPLAY IP Routing Table*
+
+ $ ip route list     <····· DISPLAY IP ROUTING TABLE
+  *default via 10.0.0.1 dev eth0*
+  10.0.0.0/24     dev eth0    proto kernel scope link src 10.0.0.5
+  169.254.0.0/16  dev eth0                 scope link metric 1002
+  172.17.0.0/16   dev docker0 proto kernel scope link src 172.17.0.1
+  168.63.129.16   via 10.0.0.1 dev eth0 proto static
+  169.254.169.254 via 10.0.0.1 dev eth0 proto static
+  ...
+
+ $ ip link         <···· DISPLAY IP DEVICE STATUS
 1: lo:     ˂LOOPBACK,           UP,LOWER_UP˃ ...  state UNKNOWN mode DEFAULT ...
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
 2: eth0:   ˂BROADCAST,MULTICAST,UP,LOWER_UP˃ ...  state UP      mode DEFAULT ...
@@ -1083,16 +920,12 @@ $ sudo tcpdump \    "snif" IP traffic
     - DVB Selection Information Table (DVB SIT), (v4)
     - gRPC Web (gRPC-Web) (v4)
     - SSH File Transfer Protocol (SFTP) (v4)
+
+  REF: https://9to5linux.com/wireshark-4-0-released-as-worlds-most-popular-network-protocol-analyzer
 [[}]]
 
-• Show IP route from source to destination ("hop" path)*
-$ sudo traceroute "destination_IP_or_host" ← (attempts to ) show the route of a packet.
-
-
-  NOTE:  + Wireshark [[{monitoring.network,01_PM.TODO]]
-https://9to5linux.com/wireshark-4-0-released-as-worlds-most-popular-network-protocol-analyzer
-[[}]]
-
+ $ sudo traceroute \        <··· (attempts to) show IP ("hop" path) route
+   "destination_IP_or_host"      from source to destination for an IP packet.
 
 
 *Examine open ports in remote machine*
@@ -1111,7 +944,7 @@ $ firejail --list | grep 'firefox' | awk -F: '{print$1}'
 $ firejail  --bandwidth=PID set interface-name down-speed up-speed
 [[}]]
 
-● Internet Utility commands [[{linux.101,configuration.network,difficulty.easy]]
+● Internet Utility commands [[{linux.101,configuration.network,]]
 $ *host (ip_address|domain_name)*  ← Performs lookup of an internet address (using the Domain Name System, DNS). Simply type:
 or
 **
@@ -1159,8 +992,8 @@ $*$ sudo nethogs                                                                
 
 ● Remote access  [[{security.remote_access]]
 ● ssh (text console)  [[{security.aaa,security.audit_user]]
-- <a href="https://en.wikipedia.org/wiki/Secure_Shell">ssh protocol</a> is the
-  standard way to access Linux remotely.
+  @[https://en.wikipedia.org/wiki/Secure_Shell]:
+  standard way to access Linux&Other OSes remotely.
   A running "sshd" (ssh daemon) must be instaled and running
   on the remote machine. Used also for tunneling TCP connections.
 
@@ -1226,13 +1059,11 @@ $*$ sudo nethogs                                                                
     $TUNNEL 1>/dev/null
 }
 
-See <a href="https://linux.die.net/man/1/ssh">man 1 ssh</a> and
-    <a href="https://linux.die.net/man/8/sshd">man 8 sshd</a>
-for full list options. SSH, being the core security method to access
-Linux server has a lot of simple and advanced options and different
-configurations use different (paranoid) security options.
+  ssh client and daemon have a wide range of useful options, including
+  reconnection, tunneling, HTTP-sock-proxy-establishment, ...
+  See 'man 1 ssh' and 'man 8 sshd' for details.
 
-See also:
+  Related:
 @[https://www.reddit.com/r/linuxadmin/comments/b9c7lw/using_a_yubikey_as_smartcard_for_ssh_public_key/]
 [[}]]
 
@@ -1258,15 +1089,12 @@ See also:
 [[}]]
 
 ● Knockd ("Invisible Linux")  [[{security.aaa,security.remote_access]] #[knockd_summary]
-<a href="https://www.maketecheasier.com/make-linux-server-invisible-knockd/">REF(Michael Aboagye @ MakeTechEasier.com)</a>
-UUID: 96493a84-bac4-49a0-b553-a8fee7310c1c
-
-- port-knock server:
-  - It listens to all traffic on an network interface
-    waiting for special sequences of port-hits.
-
-- clients (telnet, socat, ...) initiate port-hits by
-  sending a TCP or packet to a port on the server.
+@[https://www.maketecheasier.com/make-linux-server-invisible-knockd/]
+ REF(Michael Aboagye @ MakeTechEasier.com)
+  - Knockd allows to  listen to traffic on an network interface/port
+    waiting first for special sequences of port-hits.
+  - clients (telnet, socat, ...) initiate port-hits by sending a TCP
+     or packet to a port on the server.
 
 *PRE-SETUP*
 - Install and Configure Iptables
@@ -1337,28 +1165,28 @@ $ ssh my-server-ip
 $ knock -v my-server-ip 9000 8000 7000
 [[security.remote_access}]]
 
-● System Info [[{monitoring]]
+● SYSTEM INFO [[{linux.101,monitoring.101]]
 
-● Basic info [[{linux.101,monitoring.101]]
-$ *uptime*  ← shows how long the computer has been "up" since last reboot.
-           number of users and the processor load
-$ *date*    ← current date/time
-$ *cal*     ← display calendar
-$ *uname*   ← print information on the system such as OS type, kernel version...
-    -a --- print all the available information
-    -m --- print only information related to the machine itself
-    -n --- print only the machine hostname
-    -r --- print the release number of the current kernel
-    -s --- print the operating system name
-    -p --- print the processor type
+$ uptime  ← shows how long the computer has been "up" since last reboot.
+            number of users and the processor load
+$ date    ← current date/time
+$ cal     ← display calendar
+$ uname   ← print information on the system such as OS type, kernel version...
+            -a --- print all the available information
+            -m --- print only information related to the machine itself
+            -n --- print only the machine hostname
+            -r --- print the release number of the current kernel
+            -s --- print the operating system name
+            -p --- print the processor type
 
-$ **cat /etc/*release* | sort | uniq</b> ← Shows OS identification
-                                       (Distribution, major, minor,patch version, flavour, ...)
-$ *free - *  ← human-readable memory report (-g: Gigabytes)
+$ cat /etc/release | sort | uniq  ← Shows OS identification
+                                  (Distribution, major,minor,patch,flavour, ...)
+$ free    ← human-readable memory report (-g: Gigabytes)
               total        used        free      shared  buff/cache   available
 Mem:        6102476      812244     4090752       13112     1199480     4984140
 Swap:       2097148           0     2097148
-$ *getconf -ag*  ← Get all system config. parameters
+
+$ getconf -ag  ← Get all system config. parameters
 → ...
 → PAGESIZE                           4096
 → ..
@@ -1392,23 +1220,25 @@ $ *getconf -ag*  ← Get all system config. parameters
 → LEVEL4_CACHE_LINESIZE              0
 → ...
 
+$ dmidecode types    <··· Decode DMI (system board)
+ 0 BIOS
+ 1 System
+ 2 Baseboard
+ 4 Processor
+ 6 Memory Module
+ 7 Cache
+11 OEM Strings
+12 System Config.Options
+16 Physical Memory Array
+17 Memory Device
+24 Hardware Security
+25 System Power Controls
+32 System Boot
+33 64-bit Memory Error
+39 Power Supply
+   ...
 
-
-*dmidecode types*
- 0   BIOS                 11   OEM Strings                       22   Portable Battery          33   64-bit Memory Error
- 1   System               12   System Configuration Options      23   System Reset              34   Management Device
- 2   Baseboard            13   BIOS Language                     24   Hardware Security         35   Management Device Component
- 3   Chassis              14   Group Associations                25   System Power Controls     36   Management Device Threshold Data
- 4   Processor            15   System Event Log                  26   Voltage Probe             37   Memory Channel
- 5   Memory Controller    16   Physical Memory Array             27   Cooling Device            38   IPMI Device
- 6   Memory Module        17   Memory Device                     28   Temperature Probe         39   Power Supply
- 7   Cache                18   32-bit Memory Error               29   Electrical Current Probe  40   Additional Information
- 8   Port Connector       19   Memory Array Mapped Address       30   Out-of-band Remote Access 41   Onboard Devices Extended Information
- 9   System Slots         20   Memory Device Mapped Address      31   Boot Integrity Services   42   Management Controller Host Interface
-10   On Board Devices     21   Built-in Pointing Device          32   System Boot
-
-Show physical mem.banks
-$ sudo dmidecode -t 17
+$ sudo dmidecode -t 17  <··· Show physical mem.banks
 | OUPUT PHYSICAL MACHINE                      | OUPUT VIRTUAL MACHINE (Manufacturer: QUEMU,...)
 | # dmidecode 3.2                             | # dmidecode 3.0
 | Getting SMBIOS data from sysfs.             | Getting SMBIOS data from sysfs.
@@ -1457,24 +1287,23 @@ $ sudo dmidecode -t 17
 |     Configured Memory Speed: 1333 MT/s      |
 [[}]]
 
-● vmstat(global stats) [[{monitoring.memory,monitoring.i/o]]
-<a href="https://linux.die.net/man/8/vmstat">man 8vmstat</a>display real-time stats of procs.,mem, paging, block IO, traps, disks and cpu activity.
-Ussage:
-  $ vmstat [options] [delay [count]]
-The first report produced gives averages since the last reboot.
-Additional reports give information on a sampling period of length delay.
-The process and memory reports are instantaneous in either case.
+●   $ vmstat [options] [delay [count]] (global stats) [[{monitoring.101,monitoring.memory,monitoring.i/o]] (man 8 vmstat)
+  Display real-time stats of procs., mem, paging, block IO, traps, disks and cpu activity.
+
+  The first report produced gives averages since the last reboot.
+  Additional reports give information on a sampling period of length delay.
+  The process and memory reports are instantaneous in either case.
 
  -a --active: Display active and inactive memory
-              FROM:<a href="https://unix.stackexchange.com/questions/305606/linux-inactive-memory">REF</a>
+              FROM: https://unix.stackexchange.com/questions/305606/linux-inactive-memory
               * active memory are pages which have been accessed "recently"
               * inactive memory are pages which have not been accessed "recently"
               """A high ratio of active to innactive memory can indicate
                  memory pressure, but that condition is usually accompanied by
                  pagin/swapping which is easier to understand"""
  -f --forks : display number of forks (fork,vfork,clone) since boot. This
- -m --slabs : Display <a href="https://en.wikipedia.org/wiki/Slab_allocation">slabinfo</a>
-              (memory assigned to kernel objects)
+ -m --slabs : Display slabinfo (memory assigned to kernel objects)
+              https://en.wikipedia.org/wiki/Slab_allocation
  -s --stats : Displays a table of various event counters and memory statis‐
             tics. (without repeating)
  -d --disk  : Report disk statistics
@@ -1524,7 +1353,7 @@ CPU (percentages of total CPU time)             |   cache: Cache name
 
 
 
-* 1: <a href="https://stackoverflow.com/questions/6345020/what-is-the-difference-between-buffer-vs-cache-memory-in-linux">REF</a>
+* 1: https://stackoverflow.com/questions/6345020/what-is-the-difference-between-buffer-vs-cache-memory-in-linux
     - buffers are associated with a specific block device,
       caching filesystem metadata(dir contents, file permissions),
       as tracking in-flight pages (what's being written
@@ -1538,38 +1367,28 @@ CPU (percentages of total CPU time)             |   cache: Cache name
 [[}]]
 
 ● Accurate mem.use [[{monitoring.memory,troubleshooting.memory]]
-<a href="https://github.com/pixelb/ps_mem/">REF</a>
+  REF: https://github.com/pixelb/ps_mem/:
 
-PIP INSTALL:
-$ sudo pip install ps_mem
+$ sudo pip install ps_mem  <··· PIP (P)ackage (I)nstaler for (P)ython
+  USSAGE:
+  ps_mem [-h|--help] [-p PID,...] [-s|--split-args] [-t|--total] [-w N]
+         [-d|--discriminate-by-pid] [-S|--swap]
 
-USSAGE:
-ps_mem [-h|--help] [-p PID,...] [-s|--split-args] [-t|--total] [-w N]
-       [-d|--discriminate-by-pid] [-S|--swap]
+  $ sudo ps_mem                        <··· Simple ussage:
+   Private  +   Shared  =  RAM used       Program
 
-Ex 1:
-  $ sudo ps_mem
-  →  Private  +   Shared  =  RAM used       Program
-  →
-  →  34.6 MiB +   1.0 MiB =  35.7 MiB       gnome-terminal
-  → 139.8 MiB +   2.3 MiB = 142.1 MiB       firefox
-  → 291.8 MiB +   2.5 MiB = 294.3 MiB       gnome-shell
-  → 272.2 MiB +  43.9 MiB = 316.1 MiB       chrome (12)
-  → 913.9 MiB +   3.2 MiB = 917.1 MiB       thunderbird
-  → ---------------------------------
-  →                           1.9 GiB
-  → =================================
-  →
+   34.6 MiB +   1.0 MiB =  35.7 MiB       gnome-terminal
+  139.8 MiB +   2.3 MiB = 142.1 MiB       firefox
+  291.8 MiB +   2.5 MiB = 294.3 MiB       gnome-shell
+  272.2 MiB +  43.9 MiB = 316.1 MiB       chrome (12)
+  913.9 MiB +   3.2 MiB = 917.1 MiB       thunderbird
+  ---------------------------------
+                            1.9 GiB
 
-Ex 2: Show only ps_mem for current $USER:
-  ~ sudo ps_mem -p $(pgrep -d, -u $USER)
+
+  $ sudo ps_mem -p $(pgrep -d, -u $USER)  <···  Show only ps_mem for current $USER
   → ...
 
-Ex 3: Summarize total RAM usage per user:
-
-  for i in $(ps -e -o user= | sort | uniq); do
-    printf '%-20s%10s\n' $i $(sudo ps_mem --total -p $(pgrep -d, -u $i))
-  done
 [[}]]
 
 ● SysV shared memory [[{linux.101,configuration.memory,monitoring.memory,]]
@@ -1581,11 +1400,10 @@ _
 [[monitoring}]]
 
 ● BACKUPS  [[{security.backup,linux.101,storage.compression]]
-● tar (tape-archive)
-<a href="https://linux.die.net/man/1/tar">man 1 tar</a>
-- standard tool for archiving saving a (many) files and directories to a single
-  tape or disk archive.
-- Individual files can be restored from the .tar file when needed.
+● tar (tape-archive) (man 1 tar)
+  - standard tool for archiving saving a (many) files and directories to a single
+    tape or disk archive.
+  - Individual files can be restored from the .tar file when needed.
 
 Examples:
 *Create archive file:*
@@ -1664,7 +1482,7 @@ $ tar tzf _home_myUser_myProject_01.tar.gz
 [[}]]
 
 #[multicore_compression_tools_summary]
-● multi-core compression tools [[{performance.storage,02_doc_type.comparative]]
+● multi-core compression tools [[{storage.compression,performance.CPU,02_doc_has.comparative]]
   NOTE: bzip2 offers a much better compression than gz when source
   files have low entropy (many repeated words, white spaces,...) while
   consuming (much) more CPU.
@@ -1793,7 +1611,7 @@ $ ac      ← Tell how much time users are logged in.
     - Example asciinema recording "embedded" in github markdown:
       https://github.com/mvndaemon/mvnd
 
-● Audit framework  [[{monitoring.audit_framework]]
+● Audit framework  [[{monitoring.audit_framework,02_doc_has.diagram]]
   REF: @[https://www.youtube.com/watch?v=x2u_prS2HmM]
 *ARCHITECTURE:*                                   *LOG "TOPICS":*
                                                   ┌───────────────────
@@ -1848,7 +1666,8 @@ process     │    ║        │
 
   - Audispd (dispatcher) provides a plugin system to dispath
     to other places (remote machines, Prometheus,...)
-  In RHEL 8+ it has been integrated into auditd. <a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8-beta/html/8.0_beta_release_notes/new-features">REF</a>
+  In RHEL 8+ it has been integrated into auditd.
+  (REF https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8-beta/html/8.0_beta_release_notes/new-features)
 
 ● Audit Daemon "Full Journey":
 └ INITIAL SETUP:
@@ -2524,54 +2343,53 @@ sed stays for "Stream editor", and has a lot of powerful flags like searching fo
 
 [[101.text_utils}]]
 
-CONTROL BACKGROUND (LONG-RUNNING) SERVICES  [[{systemd]]
-● SystemD  [[{configuration.systemd,configuration.server,]] #[systemd_summary]
+● SystemD System Start and Service Configuration [{configuration.systemd]] #[systemd_summary]
 @[http://freedesktop.org/wiki/Software/systemd/]
-<a href="https://www.freedesktop.org/software/systemd/man/systemd.service.html">man page</a>,
-<a href="http://www.tecmint.com/create-new-service-units-in-systemd/">See also</a>
+@[https://www.freedesktop.org/software/systemd/man/systemd.service.html]
+@[http://www.tecmint.com/create-new-service-units-in-systemd/]
 "service unit"                  "targets"
 - createNew                       unit_collection
 - run                             "wants"
 - lifespan:daemon|run-once
 
-Check unit_collections:          Check status of a service:
-# systemctl --type=service       # systemctl status firewalld.service
-
-Change to given runlevel (run-level)
-$ sudo *systemctl isolate* multi-user.target
-                           ^^^^^^^^^^^^^^^^^
-
-
-# (sudo) systemctl daemon-reload
-# (sudo) systemctl \
+$ systemctl --type=service           <··· Check unit_collections.
+$ systemctl status firewalld.service <··· Check status of service
+$ sudo systemctl isolate \           <··· Change to new runlevel (run-level)
+        multi-user.target
+$ sudo systemctl \
    enable|start|stop|restart|disable \
      firewalld.service
 
-# sudo vim /etc/systemd/system/MyCustomScript.service\
-  | [Unit]
-  | Description = making network connection up
-  | After = network.target
-  | [Service]
-  | ExecStart = /root/scripts/conup.sh
-  | [Install]
-  | WantedBy = multi-user.target
+  ┌─ /etc/systemd/system/MyCustomScript.service ┐ Don't forget to exec:
+  │ [Unit]                                      │ $ sudo systemctl daemon-reload
+  │ Description = making network connection up  │ (systemctl config is on RAM)
+  │ After = network.target                      │
+  │ [Service]                                   │
+  │ ExecStart = /root/scripts/conup.sh          │
+  │ [Install]                                   │
+  │ WantedBy = multi-user.target                │
+  └─────────────────────────────────────────────┘
 
+◆ SYSTEMD CORE: manager, systemd
 
-*Systemd      |Systemd      |Systemd           | Systemd*
-*Utilities    |Daemons      |Targets           | Core   *
+◆ SYSTEMD UTILITIES
+  $ systemctl     : main control tool from systemd.
+  $ journalctl    : Queyr systemd Journal
+  $ notify        : Notify Serv.Mgn about start-up-completion/...daemon status changes
+  $ analyze       : analyze and debug system-manager.
+  $ systemd-cgls  : recursively shows contents of selected control group hierarchy in a tree.
+  $ systemd-cgtop : shows "top" control groups of local control group hierarchy.
+  $ loginctl      : Control SystemD login Manager.
+  $ systemd-nspawn: Spawn a command or OS in a light-weight container.  In many ways it is
+                    is similar to chroot(1), but more powerful by fully virtualizing
+                    FS hierarchy, process tree, various IPC subsystems and host+domain name.
 
-$ systemctl  |systemd      | bootmode         | manager
-$ journalctl |journald     | basic            | systemd
-$ notify     |networkd     | shutdown
-$ analyze    |logind       | reboot
-$ cgls       |user session |
-$ cgtop                    | multiuser
-$ loginctl                 | dbus dlog, logind
-$ nspawn                   |
-                           | graphical
-                           | user-session
-                           | display service
-
+◆ SYSTEMD DAEMONS       ◆ SYSTEMD TARGETS
+  · systemd       :       · bootmode   · reboot     · logind
+  · journald      :       · basic      · multiuser  · graphical
+  · networkd      :       · shutdown   · dbus dlog  · user-session
+  · logind        :                                 · display service
+  · user sessiona :
 [[}]]
 
 ● FILE NAME EXTENSIONS FOR UNIT TYPES:  [[{configuration.systemd]]
@@ -2709,22 +2527,12 @@ journalctl:
   - systemd-journal-remote is more of a proof-of-concept than an actually
     useful tool, lacking good authentication among other things.
 [[}]]
-[[systemd}]]
+[[configuration.systemd}]]
 
-APPLICATION PACKAGE MANAGERS  [[{app.packaging]]
-● RPM  [[{app.packaging.rpm,01_PM.WiP]]
-- Understanding Meta Package Handlers
-- Setting up Yum Repositories
-- Using Repositories
-- Managing Packages with yum
-- Using Yum Groups
-- Understanding yum and RPM Queries
-- Using RPM Queries
-<hr/>
-● DNF
+APPLICATION PACKAGE MANAGERS  [[{packaging]]
+● DNF  ("yum++") [[{packaging.rpm,01_PM.WiP]]
 @[https://dnf.readthedocs.io/en/latest/]
-DNF == "yum++"
-<a href="https://github.com/rpm-software-management">rpm soft. management @ GitHub</a>
+@[https://github.com/rpm-software-management]
 *MOST COMMONLY USED:*
 $ dnf search  "*myPackage*"     # ← Show matching pattern in package name|description
 $ dnf list    "*myPackage*"     # ← Show matching pattern in package name
@@ -2781,324 +2589,39 @@ $ dnf repolist
 → pgdg94                   PostgreSQL 9.4 7 - x86_64
 → updates                  CentOS-7 - Updates
 
-*Full command list:*
-<!-- { -->
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#clean-command-label">clean</a>
-    Performs cleanup of temporary files kept for repositories. This includes any
-    such data left behind from disabled or removed repositories as well as
-    for different distribution release
-    versions.
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#distro-sync-command-label">distro-sync</a>
-    As necessary upgrades, downgrades or keeps selected installed packages to
-    match the latest version available from any enabled repository. If no
-    package is given, all installed packages are considered.
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#downgrade-command-label">downgrade</a>
-    Downgrades the specified packages to the highest installable package of all
-    known lower versions if possible. When version is given and is lower than
-    version of installed package then it downgrades to target version.
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#group-command-label">group</a>
-    Groups are virtual collections of packages. DNF keeps track of groups
-    that the user selected (“marked”) installed and can manipulate the
-    comprising packages with simple commands.  (See only manual for more info)
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#help-command-label">help</a>
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#history-command-label">history</a>
-   The history command allows the user to view what has happened in past
-   transactions and act according to this information (assuming the
-   history_record configuration option is set).
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#info-command-label">info</a>
-     list description and summary information about installed and available packages.
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#install-command-label">install</a>
-    DNF makes sure that the given packages and their dependencies are
-    installed on the system. Each <spec> can be either a <package-spec>, or a
-    @<group-spec>. See Install Examples. If a given package or provide cannot
-    be (and is not already) installed, the exit code will be non-zero.
+● SCL (Software Collections): https://www.softwarecollections.org/en/
+  $ python --version
+  Python 2.7.5
 
-    When <package-spec> that specify exact version of the package is given,
-    DNF will install the desired version, no matter which version of the
-    package is already installed. The former version of the package will be
-    removed in the case of non-installonly package.
+  $ scl enable rh-python35 bash   <··· Example Ussage:
+  $ python --version
+  Python 3.5.1
 
-    There are also a few specific install commands install-n, install-na and
-    install-nevra that allow the specification of an exact argument in NEVRA
-    format.
+$ sudo yum --disablerepo=\* \            <·····  Install from a given repository:
+  --enablerepo=my-cool-repo \
+  install myPackage
 
-    dnf install tito
-        Install package tito (tito is package name).
-    dnf install ~/Downloads/tito-0.6.2-1.fc22.noarch.rpm
-        Install local rpm file tito-0.6.2-1.fc22.noarch.rpm from ~/Downloads/ directory.
-    dnf install tito-0.5.6-1.fc22
-        Install package with specific version. If the package is already
-        installed it will automatically try to downgrade or upgrade to specific version.
-    dnf --best install tito
-        Install the latest available version of package. If the package is
-        already installed it will automatically try to upgrade to the latest
-        version. If the latest version of package cannot be installed, the installation fail.
-    dnf install vim
-        DNF will automatically recognize that vim is not a package name, but
-        provide, and install a package that provides vim with all required
-        dependencies. Note: Package name match has precedence over package provides match.
-    dnf install https://.../packages/tito/0.6.0/1.fc22/noarch/tito-0.6.0-1.fc22.noarch.rpm
-        Install package directly from URL.
-    dnf install '@Web Server'
-        Install environmental group ‘Web Server’
-    dnf install /usr/bin/rpmsign
-        Install a package that provides /usr/bin/rpmsign file.
-    dnf -y install tito --setopt=install_weak_deps=False
-        Install package tito (tito is package name) without weak deps. Weak
-        deps are not required for core functionality of the package, but they
-        enhance the original package (like extended documentation, plugins,
-        additional functions, …).
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#list-command-label">list</a>
-    Dumps lists of packages depending on the packages’ relation to the system
-    . A package is installed if it is present in the RPMDB, and it is
-    available if it is not installed but it is present in a repository that
-    DNF knows about. The list command can also limit the displayed packages
-    according to other criteria, e.g. to only those that update an installed
-    package. The exclude option in configuration file (.conf) might influence
-    the result, but if the command line option --disableexcludes is used, it
-    ensure that all installed packages will be listed
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#makecache-command-label">makecache</a>
-    dnf [options] makecache
-        Downloads and caches in binary format metadata for all known repos.
-        Tries to avoid downloading whenever possible (e.g. when the local
-        metadata hasn’t expired yet or when the metadata timestamp hasn’t changed).
-    dnf [options] makecache --timer
-        Like plain makecache but instructs DNF to be more resource-aware,
-        meaning will not do anything if running on battery power and will
-        terminate immediately if it’s too soon after the last successful
-        makecache run (see dnf.conf(5), metadata_timer_sync).
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#mark-command-label">mark</a>
-    dnf mark install <package-specs>...
-        Marks the specified packages as installed by user. This can be useful
-        if any package was installed as a dependency and is desired to stay on
-        the system when Auto Remove Command or Remove Command along with
-        clean_requirements_on_remove configuration option set to True is executed.
-    dnf mark remove <package-specs>...
-        Unmarks the specified packages as installed by user....
-    dnf mark group <package-specs>...
-        Marks the specified packages as installed by group...
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#module-command-label">module</a>
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#provides-command-label">provides</a>
-    Finds the packages providing the given <provide-spec>. This is useful
-    when one knows a filename and wants to find what package (installed or not
-    ) provides this file.
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#reinstall-command-label">reinstall</a>
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#remove-command-label">remove</a>
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#repoinfo-command-label">repoinfo</a>
-<a bgorange href="https://dnf.readthedocs.io/en/latest/command_ref.html#repolist-command-label">repolist</a>
-
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#repoquery-command-label">repoquery</a>
-    dnf [options] repoquery [<select-options>] [<query-options>] [<pkg-spec>]
-        Searches the available DNF repositories for selected packages and
-        displays the requested information about them. It is an equivalent of rpm
-        -q for remote repositories.
-    dnf [options] repoquery --querytags
-        Provides list of recognized tags by repoquery option --queryformat
-        There are also a few specific repoquery commands repoquery-n,
-        repoquery-na and repoquery-nevra that allow the specification of an exact
-        argument in NEVRA format (does not affect arguments of options like –
-        whatprovides <arg>, …).
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#repository-packages-command-label">repository-packages</a>
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#search-command-label">search</a>
-    Search package metadata for the keywords. Keywords are matched as case-
-    insensitive substrings, globbing is supported. By default lists packages
-    that match all requested keys (AND operation). Keys are searched in
-    package names and summaries. If option “–all” is used, lists packages
-    that match at least one of keys (OR operation). And in addition keys are
-    searched in package descriptions and URLs. The result is sorted from the
-    most relevant results to the least.
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#shell-command-label">shell</a>
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#swap-command-label">swap</a>
-    Remove spec and install spec in one transaction. Each "spec" can be
-    either a <package-spec>, which specifies a package directly, or a
-    @"group-spec", which specifies an (environment) group which contains it.
-    Automatic conflict solving is provided in DNF by –allowerasing option
-    that provides functionality of swap command automatically
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#updateinfo-command-label">updateinfo</a>
-    Display information about update advisories.
-    Depending on output type, DNF displays just counts of advisory types (
-    omitted or --summary), list of advisories (--list) or detailed
-    information (--info). When --info with -v option is used, the information
-    is even more detailed
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#upgrade-command-label">upgrade</a>
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#upgrade-minimal-command-label">upgrade-minimal</a>
-    Upgrade-minimal Command
-
-    $ dnf [options] upgrade-minimal
-        Updates each package to the latest version that provides bugfix, enhancement
-        or fix for security issue (security)
-    $ dnf [options] upgrade-minimal <package-installed-specs>...
-        Updates each specified package to the latest available version that provides
-        bugfix, enhancement or fix for security issue (security). Updates
-        dependencies as necessary.
-<a href="https://dnf.readthedocs.io/en/latest/command_ref.html#upgrade-to-command-label">upgrade-to</a>
-<!-- } -->
-
-- ADDITIONAL INFORMATION:
-    <a href="https://dnf.readthedocs.io/en/latest/command_ref.html#options-label">Options</a>
-    <a href="https://dnf.readthedocs.io/en/latest/command_ref.html#specifying-packages-label">Specifying Packages</a>
-    <a href="https://dnf.readthedocs.io/en/latest/command_ref.html#specifying-packages-versions-label">Specifying Exact Versions of Packages</a>
-    <a href="https://dnf.readthedocs.io/en/latest/command_ref.html#specifying-provides-label">Specifying Provides</a>
-    <a href="https://dnf.readthedocs.io/en/latest/command_ref.html#specifying-groups-label">Specifying Groups</a>
-    <a href="https://dnf.readthedocs.io/en/latest/command_ref.html#specifying-transactions-label">Specifying Transactions</a>
-    <a href="https://dnf.readthedocs.io/en/latest/command_ref.html#metadata-synchronization-label">Metadata Synchronization</a>
-    <a href="https://dnf.readthedocs.io/en/latest/command_ref.html#configuration-files-replacement-policy-label">Configuration Files Replacement Policy</a>
-    <a href="https://dnf.readthedocs.io/en/latest/command_ref.html#files-label">Files</a>
-    <a href="https://dnf.readthedocs.io/en/latest/command_ref.html#see-also-label">See Also</a>
-
-  <a href="https://www.softwarecollections.org/en/">Software Collections</a>
-Ex:
-$ python --version
-Python 2.7.5
-
-$ scl enable rh-python35 bash
-$ python --version
-Python 3.5.1
-
-  # <a href="https://wiki.centos.org/SpecialInterestGroup/SCLo">https://wiki.centos.org/SpecialInterestGroup/SCLo</a>
-  # <a href="http://fedoraproject.org/wiki/EPEL">http://fedoraproject.org/wiki/EPEL</a>
-  """ Extra Packages for Enterprise Linux (or EPEL) is a Fedora Special Interest
-    Group that creates, maintains, and manages a high quality set of additional
-    packages for Enterprise Linux, including, but not limited to, Red Hat
-    Enterprise Linux (RHEL), CentOS ... usually based on their Fedora counterparts
-    and will never conflict with or replace packages in the base Enterprise
-    Linux distributions....  """
-
-
- *# Install from given repository:*
-$ sudo yum --disablerepo=\* --enablerepo=my-cool-repo install myPackage
-
-Ex: Install Development Tools
-...
-*$ dnf groupinfo "Development Tools"*
-→ Group: Development Tools
-→  Description: A basic development environment.
-→  Mandatory Packages:
-→    autoconf
-→    automake
-→    binutils
-→    ...
-→  Default Packages:
-→    byacc
-→    cscope
-→    ...
-→  Optional Packages:
-→    ElectricFence
-→    ant
-→    babel
-     ...
-*$ sudo dnf groupinstall "Development Tools"*
+ $ dnf groupinfo "Development Tools"     <····· $ sudo dnf groupinstall "Development Tools"
+ Group: Development Tools                       to install all the group
+  Description: A basic development environment.
+  Mandatory Packages:
+    autoconf
+    automake
+    binutils
+    ...
+  Default Packages:
+    byacc
+    cscope
+    ...
+  Optional Packages:
+    ElectricFence
+    ant
+    babel
+    ...
 [[}]]
 
-● FlatPak [[{app.packaging.flatpak,01_PM.TODO]]
-https://www.flatpak.org/
-*Sandboxes*
-- each application is built and run in an isolated 'sandbox' environment
-  containing an application and its runtime.
-- By default, the application can only access the contents of its sandbox.
-- Access to user files, network, graphics sockets, subsystems on the bus and devices
-  have to be explicitly granted.
-- Access to other things, such as other processes, is deliberately NOT possible.
-
--  resources inside the sandbox that need to be exposed outside are known as "exports".
-   (Ex: .desktop file and icon,...)
-
-*Portals*
-- Mechanism through which applications can interact with the host environment
-  from within a sandbox. They give the ability to interact with data, files
-  and services without the need to add sandbox permissions.
-
-- Examples of capabilities that can be accessed through portals include opening
-  files through a file chooser dialog, or printing.
-- Interface toolkits can implement transparent support for portals, so access
-  to resources outside of the sandbox will work securely and out of the box.
-
-*Repositories*
-- applications and runtimes are typically stored and published using repositories,
- which behave very similarly to Git repositories, containing a single object or
- multiple ones. Each object is versioned, allowing the up|down-grade.
-- Remote repository's content can be inspected and searched, and it can
-  be used as the source of applications and runtimes.
-- When an update is performed, new versions of installed applications and
-  runtimes are downloaded from the relevant remotes. (only the difference actually)
-
-● flatpak cli
-NOTE: graphical software management tools exists so command-line is optional
-
-$ flatpak install
-
-$ flatpak uninstall
-
-*Identifiers*
-- unique three-part like
-  com.company.App
-              ^^^
-      final segment is the object's name
-
-
-*Identifier triple*
-
-   com.company.App/i386/stable         com.company.App//stable       com.company.App/i386//
-   ^^^^^^^^^^^^^^^ ^^^^ ^^^^^^                        ^^                                 ^^
-    Application-ID Arch branch                   Use default                        Use default
-    or name                                      architecture                       branch
-
-
-*System versus user*
-- Flatpak commands/repositories can be used/applied:
-  - system-wide (default)
-  - per-user    (--user option)
-
-*Basic commands*
-$ flatpak remotes # ← list remotes repositores configured on the system
-(output list indicates whether remote has been added per-user or system-wide)
-
-
-$  *URL_FLATPAKREPO*="https://dl.flathub.org/repo/flathub*.flatpakrepo*
-                                                          ^^^^^^^^^^^
-                                                       a .flatpakrepo file
-                                                       contains:
-                                                       - remote details
-                                                       - remote GPG key
-$ flatpak remote-add \          ← Add a remote repository
-     --if-not-exists \
-     flathub \                  ← arbitrary local-name assigned to remote
-      *${URL_FLATPAKREPO}*
-
-$ flatpak remote-delete flathub ← Remove remote-repo from list of known remotes
-
-$ flatpak search gimp           ← return any applications matching search terms.
-(each row-result includes application ID + remote where it was found)
-
-
-$ FLATPAKREF="https://flathub.org/repo/appstream/org.gimp.GIMP.flatpakref"
-$ flatpak install ${FLATPAKREF}         ← install application from FLATPAKREF
-$ flatpak install flathub org.gimp.GIMP ← install application from remote and ID
-                  ^^^^^^^ ^^^^^^^^^^^^^
-                  remote  application ID
-  (the application runtime will also be instaled if not yet present)
-
-*$ flatpak run org.gimp.GIMP     ← Run the application*</b>
-
-$ flatpak update                ← update all your installed applications
-                                  and runtimes to the latest version
-
-$ flatpak list                  ← List installed applications and runtimes
-
-$ flatpak list --app            ← List installed applications only
-
-$ flatpak uninstall ${APP_ID}   ← Uninstall Application
-
-*Full Journey*
-# Add remote "repository"
-$ flatpak remote-add --user --from gnome https://sdk.gnome.org/gnome.flatpakrepo
-# Install monodevelop from remote repository
-$ flatpak install --user --from https://download.mono-project.com/repo/monodevelop.flatpakref
-# Run monodevelop
-$ flatpak run com.xamarin.MonoDevelop
-[[}]]
-
-● apt (Debian/Ubuntu/...)  [[{app.packaging.apt,troubleshooting.configuration]]
+● apt (Debian/Ubuntu/...)  [[{packaging.apt]]
+  (o 'aptitude' ncurses variant)
 - @[https://help.ubuntu.com/community/AptGet/Howto#Maintenance_commands]
 
 - 'apt', introduced by Ubuntu in 2014, is recomended over "older" 'apt-get' and 'apt-cache'.
@@ -3106,58 +2629,54 @@ $ flatpak run com.xamarin.MonoDevelop
   It also add a progress bar by default.
 
 
-$*$      apt      search  regexPackageName   * ← Show all package with similar name
-$*$      apt      show    package1           * ← Show package details (Version, Origin,
+  $ apt search regexPackageName                ← Show all package with similar name
+  $ apt show   package1                        ← Show package details (Version, Origin,
                                                  Maintainer,  *Bugs Reporting*, dependencies,
                                                  recomended extra-packages,  *homepage*,
                                                  Description,
-$*$ dpkg -L "package_name"                   * ← list files in package
-$*$ dpkg -c foo.deb                          * ← lists files in the manually downloaded package
+  $ dpkg -L "package_name"                     ← list files in package
+  $ dpkg -c foo.deb                            ← lists files in the manually downloaded package
                                                  "./foo.deb".
- *Installing Updating*
-$*$ sudo apt      install package1 package2  * ← (-s to simulate)
-$*$ sudo aptitude install package1 package2  * ← Ncurses variant
-$*$ sudo apt    reinstall package1           * ← Reinstall.
-$*$ sudo apt     upgrade  package1           * ← Upgrade
-$*$ sudo apt     update                      * ← Refresh local cache with remote info about
+  INSTALL/UPDATE
+  $ sudo apt      install package1 package2    ← (-s to simulate)
+  $ sudo apt    reinstall package1             ← Reinstall.
+  $ sudo apt     upgrade  package1             ← Upgrade
+  $ apt list --upgradable                      <· list what can be updated.
+  $ sudo apt     update                        ← Refresh local cache with remote info about
                                                  newest package version.
-                                              ☞  Run periodically and after modifications
-                                                 to /etc/apt/*. Execute:
-                                               $*$ apt list --upgradable * to see what can
-                                                 be updated.
-
-$*$ sudo apt      upgrade                   * ← upgrade all installed packages.
-$*$ sudo apt full-upgrade                   * ← Upgrades packages with dependencies auto-handling
-$*$ sudo apt dist-upgrade                   * ← like 'upgrade' adding the "smart upgrade" checkbox.
+                                       KEY-POINT Run periodically and after modifications
+                                                 to /etc/apt/*.
+  $ sudo apt      upgrade                     ← upgrade all installed packages.
+  $ sudo apt full-upgrade                     ← Upgrades packages with dependencies auto-handling
+  $ sudo apt dist-upgrade                     ← like 'upgrade' adding the "smart upgrade" checkbox.
                                                 It tells APT to use "smart" conflict resolution
-                                                system, *trying to upgrade  most important packages*
-                                               *at expense of less important ones.*
+                                                system, TRYING TO UPGRADE MOST IMPORTANT PACKAGES
+                                                AT EXPENSE OF LESS IMPORTANT ONES.
                                              ¡¡¡does not upgrade from a previous version!!!
 
-$*$ apt-cache depends --recurse \            * ← Show installed package dependencies.
-$*   --installed $package ||grep '[ ]'       *
+  $ apt-cache depends --recurse \              ← Show installed package dependencies.
+     --installed $package ||grep '[ ]'
 
- *Cleaning/Removal*
-$*$ sudo apt-get remove "package_name"       * ← keep   configuration files
-$*$ sudo apt-get purge  "package_name"       * ← Remove configuration files
-$*$ sudo apt-get autoclean * ← removes .deb files for packages no longer installed.
+  Cleaning/Removal*
+  $ sudo apt-get remove "package_name"         ← keep   configuration files
+  $ sudo apt-get purge  "package_name"         ← Remove configuration files
+  $ sudo apt-get autoclean   ← removes .deb files for packages no longer installed.
                                (saving space in /var/cache/apt/archives)
-$*$ apt-get clean          * ← like autoclean, but removing all packages from package-cache.
+  $ apt-get clean            ← like autoclean, but removing all packages from package-cache.
                                Not recomended with slow-connections.
                                ($ du -sh /var/cache/apt/archives)
-$*$ apt-get autoremove     * ← removes packages no longer needed
+  $ apt-get autoremove       ← removes packages no longer needed
 
- *Diagnostics/troubleshooting:*
-$*$ apt-get check            * ← update package lists
-                                 checks for broken dependencies
+  $ apt-get check            ← update package lists          [[packaging.apt.troubleshooting]]
+                               check for broken dependencies
 
-$*$ sudo apt -f install      * ← Fix Broken Packages ("complains" about "unmet dependencies")
-$*$ dpkg-reconfigure package1*
+  $ sudo apt -f install      ← Fix Broken Packages ("complains" about "unmet dependencies")
+  $ dpkg-reconfigure package1
 
-$*$ echo "'package1' hold" |\* ← Put package1 on hold  *(avoid non-controlled upgrade)*.
-$*sudo dpkg --set-selections *  *WARN:* side effect: prevents upgrades to packages
-                                                    depending on updated versions of package1.
-                                                  $*$ sudo apt dist-upgrade * will override it
+  $ echo "'package1' hold" |\  ← Put package1 on hold  (AVOID NON-CONTROLLED UPGRADE).
+  sudo dpkg --set-selections    WARN: (SIDE-EFFECT) prevents upgrades to packages
+                                      depending on updated versions of package1.
+                                      ('sudo apt dist-upgrade'  will override it)
   - Setting  *http-proxy*
     - alt 1: Temporary proxy session:
       # export http_proxy=http://username:password@yourproxyaddress:proxyport
@@ -3177,13 +2696,12 @@ $*$ dpkg -S $search_pattern * ← "what package provides this file/package?" rev
                                 (but not installed by default) alternative.
                                 'apt-file' also allows to search over all available packages,
 
-<hr/>
- *<span TODO>APT Sources*
+● APT Sources: [[01_PM.TODO]]
   - /etc/apt/sources.list file
     @[https://help.ubuntu.com/community/SourcesList]
-[[}]]
+[[{packaging.apt}]]
 
-● apk (Alpine)  [[{app.packaging,01_PM.TODO]]
+● apk (Alpine)  [[{packaging,01_PM.TODO]]
 @[https://wiki.alpinelinux.org/wiki/Alpine_Linux_package_management]
 - Alpine Linux is designed to run from RAM, implying that package management
   involves two phases:
@@ -3285,7 +2803,7 @@ Information on Packages
   # apk info -a zlib ← -w: show just webpage info
                        -a: show          all info
 [[}]]
-[[app.packaging}]]
+[[packaging}]]
 
 
 ● LINUX ALERT/MONITORING BEST-PATTERNS [[{security.notifications,monitoring.notifications]]
@@ -3386,7 +2904,7 @@ $*# glances -s -B $ADDRESS -p $PORT *          $*# glances -c -P 172.16.27.56 *
 [[}]]
 
 ● Dynamic Tracing Tools [[{monitoring.jobs,profiling,security.encryption]]
-                        [[app.mysql,app.postgresql,app.java,app.python]]
+                        [[dev_stack.mysql,dev_stack.postgresql,dev_stack.java]]
 @[https://www.tecmint.com/bcc-best-linux-performance-monitoring-tools/]
  *"Tool Collection"*
   -*sslsniff*                                                                   [[{monitoring.network]]
@@ -3501,17 +3019,17 @@ $*# glances -s -B $ADDRESS -p $PORT *          $*# glances -c -P 172.16.27.56 *
     samples the length of the CPU run queues and determine when there are
     idle CPUs, yet queued threads waiting their turn.                 [[}]]
 
-  -*criticalstat*                                                     [[{monitoring.kernel,profiling.kernel,debugging]]
-    traces and reports occurences of atomic critical sections in the  [[troubleshooting.locks]]
+  -*criticalstat*                                                     [[{monitoring.kernel,profiling.kernel]]
+    traces and reports occurences of atomic critical sections in the  [[profiling.locks]]
     kernel with useful stacktraces showing the origin of them.
   @[https://github.com/iovisor/bcc/blob/master/tools/criticalstat_example.txt] [[}]]
 
-  -*dbslower*                                                         [[{profiling,app.mysql,app.postgresql]]
+  -*dbslower*                                                         [[{profiling,dev_stack.mysql,dev_stack.postgresql]]
   @[https://github.com/iovisor/bcc/blob/master/tools/dbslower_example.txt]
     traces queries served by a MySQL or PostgreSQL server, and prints
     those that exceed a latency (query time) threshold.
 
-  -*dbstat*                                                           [[{profiling,app.mysql,app.postgresql]]
+  -*dbstat*                                                           [[{profiling,dev_stack.mysql,dev_stack.postgresql]]
   @[https://github.com/iovisor/bcc/blob/master/tools/dbstat_example.txt]
     traces queries performed by a MySQL or PostgreSQL database process, and
     displays a histogram of query latencies.                          [[}]]
@@ -3520,7 +3038,7 @@ $*# glances -s -B $ADDRESS -p $PORT *          $*# glances -c -P 172.16.27.56 *
   @[https://github.com/iovisor/bcc/blob/master/tools/dcstat_example.txt]
     dcstat shows directory entry cache (dcache) statistics.           [[}]]
 
-  -*deadlock*                                                         [[{troubleshooting.locks.deadlock]]
+  -*deadlock*                                                         [[{profiling.locks.deadlock]]
   @[https://github.com/iovisor/bcc/blob/master/tools/deadlock_example.txt]
     This program detects potential deadlocks on a running process. The program
     attaches uprobes on `pthread_mutex_lock` and `pthread_mutex_unlock` to build
@@ -3570,7 +3088,7 @@ $*# glances -s -B $ADDRESS -p $PORT *          $*# glances -c -P 172.16.27.56 *
     of which call stacks performed allocations that weren't subsequently freed  [[}]]
 
   -*nfs...*
-  -*offcputime, offcpu...*                                           [[troubleshooting.locks.profiling]]
+  -*offcputime, offcpu...*                                           [[profiling.locks.profiling]]
   @[https://github.com/iovisor/bcc/blob/master/tools/offcputime_example.txt]
     shows stack traces that were blocked, and the total duration they
     were blocked.                                                    [[}]]
@@ -3580,7 +3098,7 @@ $*# glances -s -B $ADDRESS -p $PORT *          $*# glances -c -P 172.16.27.56 *
     simple program that traces the Linux out-of-memory (OOM) killer,
     and shows basic details on one line per OOM kill:                [[}]]
 
-  -*wakeuptime*                                                      [[{throubleshooting.locks.profiling]]
+  -*wakeuptime*                                                      [[{profiling.locks.profiling]]
   @[https://github.com/iovisor/bcc/blob/master/tools/wakeuptime_example.txt]
   measures when threads block, and shows the stack traces for the
   threads that performed the wakeup, along with the process names of the waker
@@ -3634,7 +3152,7 @@ $*# glances -s -B $ADDRESS -p $PORT *          $*# glances -c -P 172.16.27.56 *
 [[}]]
 
 ● KERNEL MONITORIZATION [[{monitoring.kernel]]
-● Kernel Monit.Diagram [[{monitoring,troubleshooting]]
+● Kernel Monit.Diagram [[{monitoring,troubleshooting,02_doc_has.diagram]]
   ↑        ┌───────────────────────────────────────────────────────────────────┐
   │        │                    APPLICATIONS                                   |
   │        ├───────────────────────────────────────────────────────────────────┤
@@ -3717,7 +3235,7 @@ Summary:
   [-u username]                  |
   [-f]                           |   [-f]
   [-p pid]                       |   [-p pid]
-  [[--] command [arg ...]]       |   [[--] command [arg ...]]
+  [ [--] command [arg ...] ]     |   [ [--] command [arg ...] ]
 
  - runs the specified command until it exits, intercepting/recording:
    + dynamic library calls  by process
@@ -3732,9 +3250,7 @@ Summary:
 
 [[}]]
 
-● strace: System call tracer [[{monitoring.jobs]]
-<a href="https://linux.die.net/man/1/strace">man 1 strace</a>
-
+● strace: System call tracer [[{monitoring.jobs]] (man 1 strace)
 SUMMARY
 strace                    | strace -c  ← -c: Count time, calls, and errors
                           |                  for each system call and report summary on exit.
@@ -3831,63 +3347,160 @@ Global average activities among all processors are also reported.
           an outstanding disk I/O request.
 [[}]]
 
-● pidstat: Linux job/task stats  [[{monitoring.jobs,job_control.*,monitoring.i/o,performance.memory]]
-<a href="https://linux.die.net/man/1/pidstat">man 1 pidstat</a>
-Summary
+● (man 1) pidstat: Linux job/task stats  [[{monitoring.jobs,job_control.*,monitoring.i/o]]
+  $ pidstat   [[{profiling.jobs.IO.block,profiling.storage,storge.profiling]]
+  By Sebastien Godard (http://pagesperso-orange.fr/sebastien.godard/)
+ -d Report I/O statistics
+    kB_rd/s
+    kB_wr/s
+    kB_ccwr/s:  Cancelled-writes eg. task truncates some dirty pagecache.
+                (IO which another task has been accounted for).
+    iodelay  : Block-I/O delay of task-monitored, measured in clock ticks.  [[{profiling.jobs.]]
+               including  delays waiting for sync-block-I/O and swaping-block-I/O completion. ]]
 
-pidstat
-  [ -C comm ]       ← Display only tasks whose command name includes the string comm
-  [ -d ]            ← Report I/O statistics
-  [ -h ]
-  [ -I ]
-  [ -l ]
-  [ -p { pid [,...] | SELF | ALL } ]
-  [ -r ]            ← Report page-faults and memory ussage
-  [ -t ]            ← Also display stats for associated threads
-  [ -T { TASK | CHILD | ALL } ]
-  [ -u ]
-  [ -V ]
-  [ -w ]
-  [ secs_interval [ count ] ]
+ --dec= 0|1|2*  number of decimal-places to use.
+ -e 'program' arg1 arg2 ...  Exec. program + args to be monitored.
+ -G cmd_name_regex Filter by processes mathching regex for its command-name .
+ -H Display timestamp-in-seconds since epoch. (1970-01-01)
+ -h Display activities horizontally in a single line, without statistics (for batch tasks)
+ --human
+ -I In SMP archs, indicate to divide task CPU ussage should be divided by total num.or proccessors.
+ -l Display command-name + all its arguments.
+ -p $PID Filter by process $PID Select tasks (processes)
+         Use SELF for the pidstat process itself.
+         Use ALL  for all tasks.
+ -R Report realtime-priority and scheduling-policy info, including:
+ -r Report pagefaults and memory utilization. [[profiling.jobs.pagefaults]]
+   minflt/s : Total number of minor-faults per sec, (not loading from disk).
+   minflt-nr: Total number of minor-faults for task-and-children for time-interval.
+   majflt/s : Total number of major-faults per secd,
+   majflt-nr: Total number of major-faults for task-and-children for time-interval.
+   VSZ      : virtual memory usage of entire task in kilobytes.
+   RSS      : Resident Set Size: (non-swapped physical memory used in kilobytes).
+   %MEM     : Resident Set Size %
+   -nr      : Total number of major-faults by task-and-children for time-interval.
+ -s     Report stack utilization.  [[profiling.jobs.memory.stack]]
+   StkSize  : memory in kilobytes reserved for the task as stack, (not necessarily used)
+   StkRef   : memory in kilobytes used as stack, referenced by the task.
+ -T {TASK*|CHILD|ALL}
+ -t     display statistics per-thread.
+ -U [ username ] Display  real-user-name or filter by user-name.
+ -u Report CPU utilization.  [[{profiling.jobs.cpu]]
+   %usr      : CPU used by task at user-level NOT include time spent running a Virt.CPU.
+    usr-ms   : Total millisecs spent by task+children at user level.
+   %system   : CPU used by task while executing at the system level (kernel).
+    system-ms: Total millisecs spent by task+children at systeml level (kernel).
+   %guest    : Percentage of CPU spent by the task    in virt. machine. (KVM/Qemu/...?)
+    guest-ms : Total millisecs spent by task+children in virt. machine. (KVM/Qemu/...?)
+    %wait    : Percentage of CPU spent by the task while waiting to run.
+    %CPU     : Total percentage of CPU time used by the task. [[}]]
+           Total  number  of milliseconds spent by the task and all its children in virtual
+           machine (running a virtual processor).
+ -v Report some kernel tables.  [[monitoring.jobs.kernel]]
+ -w Report task switching activity: [[profiling.jobs.kernel]]       [[{profiling.jobs.kernel]]
+    cswch/s  : Total number of voluntary context-switches per sec.
+                   voluntary == task blocks waiting for a resource.
+    nvcswch/s: Total number of non-voluntary context switches per sec.
+               non voluntary == task executes for the duration of its time slice and then
+               is forced to relinquish the processor. [[}]]
 
-- monitor individual tasks.
-- Dumps to STDOUT activities for every task selected    (-p)
-   or for every        task managed by the Linux kernel (-p ALL)
-   or for every active task managed by the Linux kernel ("no -p")
+  ENV.VARS:
+  S_COLORS := never|always|auto (display statistics in color)
+
+EXAMPLES
+ $ pidstat 2 5   <··· Dump 5-reports of CPU-statistics for every active task at 2-secs intervals.
+ $ pidstat -r -p 1643 2 5
+              Display five reports of page faults and memory statistics for PID 1643  at  two  second
+              intervals.
+ $ pidstat -C "fox|bird" -r -p ALL
+              Display  global  page  faults and memory statistics for all the processes whose command
+              name includes the string "fox" or "bird".
+
+ $ pidstat -T CHILD -r 2 5
+              Display five reports of page faults statistics at two second intervals  for  the  child
+              processes  of  all  tasks  in the system. Only child processes with non-zero statistics
+              values are displayed.
 [[}]]
 
-● iostat(CPU, I/O, FS)  [[{MONITORING.I/O,MONITORING.STORAGE,01_PM.TODO">
-UUID: b5ad9545-0ba4-40f2-80cd-9e8889465afb
+● iostat(CPU, I/O, FS)  [[{MONITORING.I/O,MONITORING.STORAGE,01_PM.TODO]]
 @[https://linux.die.net/man/1/iostat]
 $ iostat -xt 2  # -x Show extended statistics
                 # -t Print time
 avg-cpu:  %user   %nice %system %iowait  %steal   %idle
            4.27    0.00    4.27    2.26    0.00   89.20
 
-Device   r/s   w/s  rkB/s  wkB/s  rrqm/s  wrqm/s  %rrqm  %wrqm  r_await   w_await  aqu-sz rareq-sz wareq-sz  svctm  %util
-sda     0.00  5.50   0.00  36.00    0.00    5.00   0.00  47.62     0.00     17.55    0.09     0.00     6.55   0.82   0.45
-sdb     0.00  0.00   0.00   0.00    0.00    0.00   0.00   0.00     0.00      0.00    0.00     0.00     0.00   0.00   0.00
-dm-0    0.00  3.00   0.00  12.00    0.00    0.00   0.00   0.00     0.00    123.00    0.37     0.00     4.00   0.50   0.15
-dm-1    0.00  0.00   0.00   0.00    0.00    0.00   0.00   0.00     0.00      0.00    0.00     0.00     0.00   0.00   0.00
-dm-2    0.00  7.50   0.00  30.00    0.00    0.00   0.00   0.00     0.00      0.47    0.00     0.00     4.00   0.40   0.30
-        ^^^^  ^^^^   ^^^^  ^^^^^    ^^^^    ^^^^   ^^^^   ^^^^     ^^^^      ^^^^    ^^^^     ^^^^     ^^^^   ^^^^   ^^^^
-        read                                                    r_await   r_await   aqu-sz                   ignore  elapsed
-        req.                                                    avg msec  avg msec  avg                      to be   time %
-                                                                for read  for read  queue                    removed during
-                                                                requests  requests  length                           which
-                                                                                    of req                           I/O req
-                                                                                    issued                           were
-                                                                                                                     issued
-                                                                                                                     *bandwidth*
-                                                                                                                     *ussage*
+Device  r/s  w/s rkB/s wkB/s rrqm/s wrqm/s %rrqm %wrqm r_await  w_await aqu-sz rareq-sz wareq-sz svctm %util
+sda    0.00 5.50  0.00 36.00   0.00   5.00  0.00 47.62    0.00    17.55   0.09     0.00     6.55  0.82  0.45
+sdb    0.00 0.00  0.00  0.00   0.00   0.00  0.00  0.00    0.00     0.00   0.00     0.00     0.00  0.00  0.00
+dm-0   0.00 3.00  0.00 12.00   0.00   0.00  0.00  0.00    0.00   123.00   0.37     0.00     4.00  0.50  0.15
+dm-1   0.00 0.00  0.00  0.00   0.00   0.00  0.00  0.00    0.00     0.00   0.00     0.00     0.00  0.00  0.00
+dm-2   0.00 7.50  0.00 30.00   0.00   0.00  0.00  0.00    0.00     0.47   0.00     0.00     4.00  0.40  0.30
+       ^^^^ ^^^^  ^^^^ ^^^^^   ^^^^   ^^^^  ^^^^  ^^^^    ^^^^     ^^^^   ^^^^     ^^^^     ^^^^  ^^^^  ^^^^
+       read                                            r_await  r_await  aqu-sz                  ignore elapsed
+       req.                                            avg msec avg msec avg                     to be  time %
+                                                       for read for read queue                   remove during
+                                                       requests requests length                         which
+                                                                         of req                         I/O req
+                                                                         issued                         were
+                                                                                                        issued
+                                                                                                        BANDWIDTH
+                                                                                                        USSAGE
 [[}]]
 
-● blktrace (block I/O traffic) [[{monitoring.storage.blocks,monitoring.storage.,01_PM.TODO]]
-@[https://linux.die.net/man/8/blktrace]
+● blktrace (block I/O traffic) [[{monitoring.storage.blocks]] (man 8 blktrace)
+  generate traces of the i/o traffic on (low-level) block devices vs (high-level) File Systems.
+ $ sudo blktrace -d /dev/sda -o - | blkparse -i -   <··· trace i/o for /dev/sda
+                                                         Alt. using btrace script:
+                                                         $ btrace /dev/sda
+
+ $ blktrace /dev/sda /dev/sdb          <··· trace /dev/sda+/dev/sdb to current dir.
+ $ blkparse sda sdb                    <··· View saved trace
+
+SYNOPSIS
+       blktrace -d dev [ -r debugfs_path ] [ -o output ] [ -w time ] [ -a action ] [ -A action_mask ] [ -v ]
+
+DESCRIPTION
+OPTIONS
+    -a/--set-mask=hex-mask :  Set filter mask to hex-mask (see below for masks)
+                              barrier : barrier attribute
+                              complete: completed by driver
+                              discard : discard / trim traces
+                              fs      : requests
+                              issue   : issued to driver
+                              pc      : packet command events
+                              queue   : queue operations
+                              read    : read traces
+                              requeue : requeue operations
+                              sync    : synchronous attribute
+                              write   : write traces
+                              notify  : trace messages
+                              drv_data: additional driver specific trace
+
+       --act-mask=mask     : Add mask to current filter (see below for masks)
+       --buffer-size=size  : Specifies (1024) buffer size for event extraction. Def 512KiB.
+       --dev=dev           : Adds dev as a device to trace
+       --input-devs=file   : Adds the devices found in file as devices to trace
+       --num-sub-buffers=X : number of buffers to use. Def: 4 sub buffers.
+       --listen            : Run in network listen/server mode.
+       --host=hostname     : Run in network client mode
+       --port=number       : Network port to use (default 8462)
+       --no-sendfile       : Make the network client NOT use sendfile() to transfer data
+       --output=basename   : Specifies base name for input files. Default is device.blktrace.cpu.
+                             Specifying -o - runs  in  live mode with blkparse (writing data to standard out).
+       --output-dir=dir    : Prepend file to output file name(s)
+       --relay=rel-path    : Specifies debugfs mount point
+       --version
+       -w seconds
+       --stopwatch=seconds
+
+
+  REQUEST TYPES:
+  - file system  : normal read/write op from a specific disk location at a given size.
+                   typically originating from a user process
+  - SCSI commands: blktrace sends the command data block as a payload so that blkparse can decode it.
 [[}]]
 
-● perf (kernel counters) [[{monitoring.kernel.counters,profiling.jobs,app.java,troubleshooting.locks,01_PM.TODO]]
-[[}]]
+● perf (kernel counters) [[{monitoring.kernel.counters,profiling.jobs,dev_stack.java,profiling.locks,01_PM.TODO]]
 TODO @[http://www.brendangregg.com/perf.html]
 TODO @[http://www.brendangregg.com/flamegraphs.html]
 - Perf: new kernel-based subsystem that provide a framework for all things performance analysis.
@@ -3974,8 +3587,12 @@ Overhead  Shared Object              Symbol
  2.90%    perf                       [.] symbols__insert
 ...
 
+• https://github.com/flamegraph-rs/flamegraph
+  perf+dtrace flamegraph generator with additional support for Cargo projects! (Rust based)
+  It can be used to profile anything, not just Rust projects!
+
 -*Sleep-time Profiling*
- See also latencytop([[99937290-9184-4d98-b590-e6f7443afc38?]])
+ See also @[#latencytop]
 
 - Syscall Pofiling:
   $ perf trace --durtion=100
@@ -4014,10 +3631,10 @@ Overhead  Shared Object              Symbol
 - General framework for bench.suites:
   https://linux.die.net/man/1/perf-bench
 
-- Analyze lock events:                   [[{troubleshooting.locks]]
+- Analyze lock events:                   [[{profiling.locks]]
   https://linux.die.net/man/1/perf-lock  [[}]]
 
-• Example Profiling with Perf (FB 60 TB+ input data)              [[{app.spark]]
+• Example Profiling with Perf (FB 60 TB+ input data)              [[{]]
 Extracted from:
   "Apache Spark @Scale: A  production use case"
 @[https://engineering.fb.com/core-data/apache-spark-scale-a-60-tb-production-use-case/]
@@ -4030,7 +3647,7 @@ Extracted from:
    *duration/frequency of sampling. The profiling samples are aggregated*
    *and displayed as a Flame Graph across the executors using our       *
    *internal metrics collection framework.                              * [[}]]
-
+[[{monitoring.kernel.counters}]]
 
 ● SystemTap (stap) [[{monitoring.jobs,troubleshooting.*,01_PM.TODO]]
 - C&P from https://lwn.net/Articles/852112/:  [[{02_doc_has.comparative]]
@@ -4053,7 +3670,7 @@ Extracted from:
   @[https://developers.redhat.com/blog/2019/07/24/probing-golang-runtime-using-systemtap/]
 [[}]]
 
-● (x)latencytop [[{performance.job_profiling,troubleshooting.locks,troubleshooting.jobs,QA.UX]]
+● (x)latencytop [[{profiling.locks,troubleshooting.jobs,QA.UX]] #[latencytop]
 @[https://linux.die.net/man/8/xlatencytop]
 - aimed at:
   - identifying and visualizing where (kernel and userspace) latencies are happening
@@ -4081,8 +3698,7 @@ NOTE: See also the more advanced TimeChart:
     @[http://blog.fenrus.org/?p=5]
 [[}]]
 
-● latrace [[{monitoring.jobs,monitoring.libc,troubleshooting,01_PM.TODO]]
-<a href="https://linux.die.net/man/1/latrace">man 1 latrace</a>
+● latrace [[{monitoring.jobs,monitoring.libc,troubleshooting,01_PM.TODO]] (man 1 latrace
 - LD_AUDIT 2.4+ libc frontend
 
 $ latrace [-ltfsbcCpADaoyIiBdvTFELVh] command [arg ... ]
@@ -4100,73 +3716,6 @@ $ latrace [-ltfsbcCpADaoyIiBdvTFELVh] command [arg ... ]
   (see the section called "PIPE mode").
 [[}]]
 
-● Linux Kernel Tunning with 'tuned': [[{linux.101,monitoring.101,configuration.server,01_PM.TODO,qa.UX]]
-  /proc/sys/vm/ Kernel FS "control pannel"   [[{01_PM.TODO}]]
-  https://tuned-project.org/
-- About tuned:
-  - OS Tunning is done in practice through:
-    - long-profiling
-    - continuous-monitoring
-  - Tunning becomes harder if system load changes frequently.
-
-    Ex.: A system with a peak of load certain hours a day
-         can be tuned for performance     those known hours
-         and    tuned for power-efficency the rest of day
-
-
-- man 8 tuned: Dynamic Adaptive system tuning daemon
-@[https://linux.die.net/man/8/tuned]
-
-  - cron-friendly system service that lets to select a tuning profile
-    (pre-build or custom).
-  - Tuning include:
-    - sysctl settings (/proc/sys/)
-    - settings for disk-elevators
-    - power management options
-    - transparent hugepages
-    - custom-scripts
-
-- Install):
-$*$ sudo dnf -y install tuned    * ← RedHat/Fedora/CentOS package install
-$*$ sudo systemctl enable tuned  * ← enable tuned service at boot
-→ ...
-$ sudo systemctl start  tuned # ← Start  tuned service now
-$ sudo systemctl status tuned # ← Check  tuned service status
-$ sudo systemctl status tuned
-→ * tuned.service - Dynamic System Tuning Daemon
-→    Loaded: loaded (/usr/lib/systemd/system/tuned.service; disabled; vendor preset: disabled)
-→    Active: *active (running)* since Sun 2019-01-20 16:29:05 EST; 15s ago
-→      Docs: man:tuned(8)
-→            man:tuned.conf(5)
-→            man:tuned-adm(8)
-→  Main PID: 10552 (tuned)
-→     Tasks: 4 (limit: 4915)
-→    Memory: 15.7M
-→    CGroup: /system.slice/tuned.service
-→            └─10552 /usr/bin/python3 -Es /usr/sbin/tuned -l -P
-
-*Ussage:*
-$ *tuned-adm list*   #  ← List existing tunning profiles
-→ Available profiles:
-→ - balanced                    - General non-specialized
-→ - desktop                     - Optimize for the desktop
-→ - latency-performance         - deterministic performance             (increased power consumption)
-→ - network-latency             - deterministic performance low-latency (increased power consumption)
-→ - network-throughput          - Optimize for streaming network throughput
-                                  generally only necessary on older CPUs or
-                                  40G+ networks
-→ - powersave                   - Optimize for low power consumption
-→ - throughput-performance      - provides excellent performance across a
-                                  variety of common server workloads
-→ - virtual-guest               - Optimize for running inside a virtual guest
-→ - virtual-host                - Optimize for running KVM guests
-→ Current active profile: balanced
-
-$ *sudo tuned-adm active*  #  ← query status
-Current active profile: balanced
-
-$ *sudo tuned-adm profile  powersave* # ←  select profile
-[[}]]
 [[monitoring.kernel}]]
 
 ● powertop  [[{monitoring.hardware]]
@@ -4267,29 +3816,26 @@ OTHER PERTINENT OPTIONS:
 [[}]]
 
 
-● Integrated Admin Tools [[{configuration.foreman,configuration.server,difficulty.easy,01_PM.TODO]]
-● Foreman Server Lifecycle Mng.
+● Integrated Admin Tools [[{configuration.foreman,QA.UX,01_PM.TODO]]
+● Foreman Server Lifecycle Mng. [[{]]
 @[https://theforeman.org/introduction.html]
 @[https://github.com/theforeman/foreman_bootdisk]
 [[}]]
 
-● cockpit UI [[{monitoring,difficulty.easy,security.aaa,security.selinux]]
+● cockpit Web UI [[{QA.UX,configuration.cockpit,monitoring,security.aaa,security.selinux]]
+                 [[troubleshooting]]
 @[https://cockpit-project.org/]
-- The easy-to-use, integrated, glanceable, and open web-based interface for your servers.
+- easy-to-use, integrated, "glanceable", web-based interface for servers.
 
 @[https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8-beta/html/managing_systems_using_the_cockpit_web_interface/getting-started-with-cockpit_system-management-using-cockpit]
 
-- The Cockpit Web interface enables you a wide range of administration tasks, including:
-  - Managing services
-  - Managing user accounts
-  - Managing and monitoring system services
-  - Configuring network interfaces and firewall
-  - Reviewing system logs
-  - Managing virtual machines
-  - Creating diagnostic reports
-  - Setting kernel dump configuration
-  - Configuring SELinux
-  - Updating software
-  - Managing system subscriptions
+- UI with wide range of administration tasks, including:
+  - Managing services, user accounts, system services
+    network interfaces,  firewall, virtual machines,
+    kernel-dump-configuration, SELinux, software updates,
+    system subscriptions.
+  - system logs tracing,
+  - diagnostic reports.
+[[}]]
 [[}]]
 [[linux}]]

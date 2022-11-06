@@ -1,6 +1,13 @@
 [[{linux]]
 LINUX STORAGE [[{storage]]
 
+● Find duplicate files: [[{]]
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/fdupes.md
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/jdupes.md
+  enhanced fork of fdupes.
+  More information: https://github.com/jbruchon/jdupes.
+[[}]]
+
 ● Monitoring Disk I/O performance [[{storage.profiling,monitoring.storage.i/o,]] #[monitor_disk_performance]
 $*# iotop --only        * ← show only disk I/O
 
@@ -969,9 +976,93 @@ ecryptfs_enable_filename_crypto=n
   - UNIX POSIX compliant distributed storage solution with unified object
     and block storage capabilities.
 
-  - Alternatives to Cepth include GlusterFS wich creates a cluster FS and
-    offers it to apps through a NFS protocol.
-    (Cepth integrates directly with Kernel through drivers??)
+    C&P from  https://www.usenix.org/system/files/login/articles/73508-maltzahn.pdf
+    """
+    - Ceph was designed to fulfill the following goals specified by three national
+      laboratories (LLNL, LANL, and Sandia) back in 2005:
+      - Petabytes of data on one to thousands of hard drives
+      - TB/sec aggregate throughput on one to thousands of hard drives pumping
+        out data as fast as they can.
+      - Billions of files organized in one to thousands of files per directory
+      - File sizes that range from bytes to terabytes
+      - Metadata access times in μsecs
+      - High-performance direct access from thousands of clients to
+        - different files in different directories
+        - different files in the same directory
+        - the same file
+      - Mid-performance local data access
+      - Wide-area general-purpose access
+
+    - Management of data differs fundamentally from management of
+      metadata: file data storage is trivially parallelizable and is limited primar-
+      ily by the network infrastructure. Metadata management is much more
+      complex, because hierarchical directory structures impose interdependen-
+      cies (e.g., POSIX access permissions depend on parent directories) and the
+      metadata server must maintain file system consistency. Metadata servers
+      have to withstand heavy workloads: 30–80% of all file system operations
+      involve metadata, so there are lots of transactions on lots of small metadata
+      items following a variety of usage patterns. Good metadata performance is
+      therefore critical to overall system performance. Popular files and directories
+      are common, and concurrent access can overwhelm many schemes.
+      The three unique aspects of Ceph’s design are:
+      - distributed metadata management in separate metadata server (MDS) ...
+      - calculated pseudo-random data placement (very compact state)
+      - distributed object storage using a cluster of intelligent OSDs which
+        forms a reliable object store that can act autonomously and intelligently (RADOS)
+     """
+
+  - Alternatives to Cepth include:
+    - GlusterFS wich creates a cluster FS and offers it to apps through a NFS protocol.
+      (Cepth integrates directly with Kernel through drivers??)
+    - Hadoop HDFS. According to this white-paper, Ceph scalates better:
+      https://www.usenix.org/system/files/login/articles/73508-maltzahn.pdf
+      It also explain how to replace Hadoop HDFS with Ceph for Hadoop tasks.
+
+
+• Ceph Dashboard
+  https://docs.ceph.com/en/quincy/mgr/dashboard/
+  Overseedes OpenAttic (https://openattic.org/)
+  - built-in web-based Ceph management and monitoring.
+  - inspired by openATTIC, actively driven by openATTIC team@SUSE.
+  - Feature Overview:
+    - Multi-User and Role Management, Single Sign-On (SSO): using SAML 2.0 protocol, SSL/TLS support.
+    - Auditing: log all PUT, POST and DELETE API requests in Ceph audit log.
+    - Overall cluster health: performance, capacity metrics, cluster status.
+    - Embedded Grafana Dashboards.
+    - Cluster logs: Display latest updates to cluster’s event and audit log files by priority/date/keyword.
+    - Hosts: Display a list of all cluster hosts along with their storage drives, services running, Ceph version.
+    - Performance counters: Display detailed service-specific statistics for each running service.
+    - Monitors: List all Mons, their quorum status, and open sessions.
+    - Monitoring: Enable (re-)creation, edit and expiration of Prometheus’ silences, alerts,...
+    - Configuration Editor.
+    - Pools: List Ceph pools and details (applications, pg-autoscaling, placement groups,
+             replication size, EC profile, CRUSH rules, quotas etc.)
+    - OSDs: List OSDs, status, usage statistics, ...
+    - Device management:
+    - iSCSI: List all hosts runnint the TCMU runner service,...
+    - RBD: List all RBD images and their properties (size, objects, features).
+    - RBD mirroring:
+    - CephFS: List active file system clients and associated pools, including usage statistics.
+    - Object Gateway: List all active object gateways and their performance counters.
+    - NFS: Manage NFS exports of CephFS file systems and RGW S3 buckets via NFS Ganesha.
+    - Raw Capacity: Displays capacity used out of total physical capacity provided by storage nodes (OSDs).
+    - ...
+
+• openATTIC v3
+  STATUS: maintenance mode. Discontinued in favor of upstream
+          Ceph Dashboard.
+  features:
+  - Monitor/display health status, key performance metrics of cluster
+  - Ceph Pools: Create, manage, monitor individual pools
+    (both replicated and erasure coded pools)
+  - Ceph Block devices (RBDs): create, manage and monitor RBDs
+  - iSCSI: manage iSCSI targets and portals, access control
+  - NFS: create and manage NFS shares (NFS v3/v4, using CephFS|S3 buckets)
+  - Ceph Object Gateway(RGW): manage users, access keys, quotas and buckets
+  - Ceph Node management: list all cluster nodes and their roles,
+    monitor per-node key performance metrics.
+
+
 [[}]]
 
 ● FreeNAS [[{storage.block_management,storage.file_system,storage.network]]
@@ -1569,6 +1660,32 @@ WARN: (2022-10): Technology Preview feature only. not supported
   provide direct access to byte-addressable persistent memory while
   avoiding the latency associated with typical block I/O conventions.
 _______________________________
+
+• "When Ceph Isn't Enough, There's a New Kid on the Block".  You
+  can watch the replay here.
+  Lightbits disaggregated virtualized NVMe/TCP performs like local
+  flash, maximizes utilization, increases flash endurance, and improves
+  operational efficiency.
+
+  https://www.lightbitslabs.com/blog/ceph-and-the-quest-for-high-performance-low-latency-storage/?utm_source=oficina24x7.com
+
+  ... or join our next webinar, Advanced NVMe SSDs -
+  Addressing the Blast Radius Problem.
+
+• How To Map Oracle ASM Disk Against Physical Disk And LUNs
+  In Linux with the DeviceMapper:
+  https://www.2daygeek.com/shell-script-map-oracle-asm-disks-physical-disk-lun-in-linux/
+- ASMLib is an optional support library for the Automatic Storage
+  Management feature of the Oracle Database.
+- Automatic Storage Management (ASM) simplifies database
+  administration and greatly reduces kernel
+  resource usage (e.g. the number of open file descriptors).
+- It eliminates the need for the DBA to directly manage potentially
+  thousands of Oracle database files,
+  requiring only the management of groups of disks allocated to the
+  Oracle Database.
+
+
 
 [[01_PM.TODO}]]
 

@@ -723,7 +723,7 @@ Setting up a PXE system will streamline new system installs, but the
 process is lengthy and requires attention to detail. This part one of
 two articles walks you through the process.
 ______________________
-<a href0"https://www.phoronix.com/forums/forum/software/general-linux-open-source/1127076-btrfs-xfs-file-systems-see-more-fixes-with-linux-5-4">REF</a>
+- "https://www.phoronix.com/forums/forum/software/general-linux-open-source/1127076-btrfs-xfs-file-systems-see-more-fixes-with-linux-5-4
 - Btrfs & XFS File-Systems See More Fixes With Linux 5.4
 - On the Btrfs front the Linux 5.4 changes are summed up as "work on
   code refactoring, sanity checks and space handling. There are some
@@ -1255,10 +1255,292 @@ ______________________________
 - Analyze systems' performance metrics in real-time or using historical data.
 - Compare performance metrics between different hosts and different intervals.
   Observe trends and identify abnormal patterns.
-____________________________
-https://lintut.com/best-command-line-tools-for-linux-performance-monitring/
+[[}]]
+
+● https://lintut.com/best-command-line-tools-for-linux-performance-monitring/
 - 'sar' utility, which is part of the systat package, can be used to
   review history performance data on your server. System resource
   utilization can be seen for given time frames to help troubleshoot
   performance issues, or to optimize performance
+
+● RPM
+- Understanding Meta Package Handlers
+- Setting up Yum Repositories
+- Using Repositories
+- Managing Packages with yum
+- Using Yum Groups
+- Understanding yum and RPM Queries
+- Using RPM Queries
+
+────────────────────────────────
+● DNF Full command list:
+- https://dnf.readthedocs.io/en/latest/command_ref.html#clean-command-label
+    Performs cleanup of temporary files kept for repositories. This includes any
+    such data left behind from disabled or removed repositories as well as
+    for different distribution release
+    versions.
+- https://dnf.readthedocs.io/en/latest/command_ref.html#distro-sync-command-label
+    As necessary upgrades, downgrades or keeps selected installed packages to
+    match the latest version available from any enabled repository. If no
+    package is given, all installed packages are considered.
+- https://dnf.readthedocs.io/en/latest/command_ref.html#downgrade-command-label
+    Downgrades the specified packages to the highest installable package of all
+    known lower versions if possible. When version is given and is lower than
+    version of installed package then it downgrades to target version.
+- https://dnf.readthedocs.io/en/latest/command_ref.html#group-command-label
+    Groups are virtual collections of packages. DNF keeps track of groups
+    that the user selected (“marked”) installed and can manipulate the
+    comprising packages with simple commands.  (See only manual for more info)
+- https://dnf.readthedocs.io/en/latest/command_ref.html#help-command-label
+- https://dnf.readthedocs.io/en/latest/command_ref.html#history-command-label
+   The history command allows the user to view what has happened in past
+   transactions and act according to this information (assuming the
+   history_record configuration option is set).
+- https://dnf.readthedocs.io/en/latest/command_ref.html#info-command-label
+     list description and summary information about installed and available packages.
+- https://dnf.readthedocs.io/en/latest/command_ref.html#install-command-label
+    DNF makes sure that the given packages and their dependencies are
+    installed on the system. Each <spec> can be either a <package-spec>, or a
+    @<group-spec>. See Install Examples. If a given package or provide cannot
+    be (and is not already) installed, the exit code will be non-zero.
+
+    When <package-spec> that specify exact version of the package is given,
+    DNF will install the desired version, no matter which version of the
+    package is already installed. The former version of the package will be
+    removed in the case of non-installonly package.
+
+    There are also a few specific install commands install-n, install-na and
+    install-nevra that allow the specification of an exact argument in NEVRA
+    format.
+
+    dnf install tito
+        Install package tito (tito is package name).
+    dnf install ~/Downloads/tito-0.6.2-1.fc22.noarch.rpm
+        Install local rpm file tito-0.6.2-1.fc22.noarch.rpm from ~/Downloads/ directory.
+    dnf install tito-0.5.6-1.fc22
+        Install package with specific version. If the package is already
+        installed it will automatically try to downgrade or upgrade to specific version.
+    dnf --best install tito
+        Install the latest available version of package. If the package is
+        already installed it will automatically try to upgrade to the latest
+        version. If the latest version of package cannot be installed, the installation fail.
+    dnf install vim
+        DNF will automatically recognize that vim is not a package name, but
+        provide, and install a package that provides vim with all required
+        dependencies. Note: Package name match has precedence over package provides match.
+    dnf install https://.../packages/tito/0.6.0/1.fc22/noarch/tito-0.6.0-1.fc22.noarch.rpm
+        Install package directly from URL.
+    dnf install '@Web Server'
+        Install environmental group ‘Web Server’
+    dnf install /usr/bin/rpmsign
+        Install a package that provides /usr/bin/rpmsign file.
+    dnf -y install tito --setopt=install_weak_deps=False
+        Install package tito (tito is package name) without weak deps. Weak
+        deps are not required for core functionality of the package, but they
+        enhance the original package (like extended documentation, plugins,
+        additional functions, …).
+- https://dnf.readthedocs.io/en/latest/command_ref.html#list-command-label
+    Dumps lists of packages depending on the packages’ relation to the system
+    . A package is installed if it is present in the RPMDB, and it is
+    available if it is not installed but it is present in a repository that
+    DNF knows about. The list command can also limit the displayed packages
+    according to other criteria, e.g. to only those that update an installed
+    package. The exclude option in configuration file (.conf) might influence
+    the result, but if the command line option --disableexcludes is used, it
+    ensure that all installed packages will be listed
+- https://dnf.readthedocs.io/en/latest/command_ref.html#makecache-command-label
+    dnf [options] makecache
+        Downloads and caches in binary format metadata for all known repos.
+        Tries to avoid downloading whenever possible (e.g. when the local
+        metadata hasn’t expired yet or when the metadata timestamp hasn’t changed).
+    dnf [options] makecache --timer
+        Like plain makecache but instructs DNF to be more resource-aware,
+        meaning will not do anything if running on battery power and will
+        terminate immediately if it’s too soon after the last successful
+        makecache run (see dnf.conf(5), metadata_timer_sync).
+- https://dnf.readthedocs.io/en/latest/command_ref.html#mark-command-label
+    dnf mark install <package-specs>...
+        Marks the specified packages as installed by user. This can be useful
+        if any package was installed as a dependency and is desired to stay on
+        the system when Auto Remove Command or Remove Command along with
+        clean_requirements_on_remove configuration option set to True is executed.
+    dnf mark remove <package-specs>...
+        Unmarks the specified packages as installed by user....
+    dnf mark group <package-specs>...
+        Marks the specified packages as installed by group...
+- https://dnf.readthedocs.io/en/latest/command_ref.html#module-command-label
+- https://dnf.readthedocs.io/en/latest/command_ref.html#provides-command-label
+    Finds the packages providing the given <provide-spec>. This is useful
+    when one knows a filename and wants to find what package (installed or not
+    ) provides this file.
+- https://dnf.readthedocs.io/en/latest/command_ref.html#reinstall-command-label
+- https://dnf.readthedocs.io/en/latest/command_ref.html#remove-command-label
+- https://dnf.readthedocs.io/en/latest/command_ref.html#repoinfo-command-label
+- https://dnf.readthedocs.io/en/latest/command_ref.html#repolist-command-label
+- https://dnf.readthedocs.io/en/latest/command_ref.html#repoquery-command-label
+    dnf [options] repoquery [<select-options>] [<query-options>] [<pkg-spec>]
+        Searches the available DNF repositories for selected packages and
+        displays the requested information about them. It is an equivalent of rpm
+        -q for remote repositories.
+    dnf [options] repoquery --querytags
+        Provides list of recognized tags by repoquery option --queryformat
+        There are also a few specific repoquery commands repoquery-n,
+        repoquery-na and repoquery-nevra that allow the specification of an exact
+        argument in NEVRA format (does not affect arguments of options like –
+        whatprovides <arg>, …).
+- https://dnf.readthedocs.io/en/latest/command_ref.html#repository-packages-command-label
+- https://dnf.readthedocs.io/en/latest/command_ref.html#search-command-label
+    Search package metadata for the keywords. Keywords are matched as case-
+    insensitive substrings, globbing is supported. By default lists packages
+    that match all requested keys (AND operation). Keys are searched in
+    package names and summaries. If option “–all” is used, lists packages
+    that match at least one of keys (OR operation). And in addition keys are
+    searched in package descriptions and URLs. The result is sorted from the
+    most relevant results to the least.
+- https://dnf.readthedocs.io/en/latest/command_ref.html#shell-command-label
+- https://dnf.readthedocs.io/en/latest/command_ref.html#swap-command-label
+    Remove spec and install spec in one transaction. Each "spec" can be
+    either a <package-spec>, which specifies a package directly, or a
+    @"group-spec", which specifies an (environment) group which contains it.
+    Automatic conflict solving is provided in DNF by –allowerasing option
+    that provides functionality of swap command automatically
+- https://dnf.readthedocs.io/en/latest/command_ref.html#updateinfo-command-label
+    Display information about update advisories.
+    Depending on output type, DNF displays just counts of advisory types (
+    omitted or --summary), list of advisories (--list) or detailed
+    information (--info). When --info with -v option is used, the information
+    is even more detailed
+- https://dnf.readthedocs.io/en/latest/command_ref.html#upgrade-command-label
+- https://dnf.readthedocs.io/en/latest/command_ref.html#upgrade-minimal-command-label
+    Upgrade-minimal Command
+
+    $ dnf [options] upgrade-minimal
+        Updates each package to the latest version that provides bugfix, enhancement
+        or fix for security issue (security)
+    $ dnf [options] upgrade-minimal <package-installed-specs>...
+        Updates each specified package to the latest available version that provides
+        bugfix, enhancement or fix for security issue (security). Updates
+        dependencies as necessary.
+- https://dnf.readthedocs.io/en/latest/command_ref.html#upgrade-to-command-label
+
+- ADDITIONAL INFORMATION:
+  https://dnf.readthedocs.io/en/latest/command_ref.html#options-label
+  https://dnf.readthedocs.io/en/latest/command_ref.html#specifying-packages-label
+  https://dnf.readthedocs.io/en/latest/command_ref.html#specifying-packages-versions-label
+  https://dnf.readthedocs.io/en/latest/command_ref.html#specifying-provides-label
+  https://dnf.readthedocs.io/en/latest/command_ref.html#specifying-groups-label
+  https://dnf.readthedocs.io/en/latest/command_ref.html#specifying-transactions-label
+  https://dnf.readthedocs.io/en/latest/command_ref.html#metadata-synchronization-label
+  https://dnf.readthedocs.io/en/latest/command_ref.html#configuration-files-replacement-policy-label
+  https://dnf.readthedocs.io/en/latest/command_ref.html#files-label
+  https://dnf.readthedocs.io/en/latest/command_ref.html#see-also-label
+
+● https://www.flatpak.org/ Flatpack "Sandboxes" [[{app.packaging.flatpak,01_PM.TODO]]
+
+- each application is built and run in an isolated 'sandbox' environment
+  containing an application and its runtime.
+- By default, the application can only access the contents of its sandbox.
+- Access to user files, network, graphics sockets, subsystems on the bus and devices
+  have to be explicitly granted.
+- Access to other things, such as other processes, is deliberately NOT possible.
+
+-  resources inside the sandbox that need to be exposed outside are known as "exports".
+   (Ex: .desktop file and icon,...)
+
+*Portals*
+- Mechanism through which applications can interact with the host environment
+  from within a sandbox. They give the ability to interact with data, files
+  and services without the need to add sandbox permissions.
+
+- Examples of capabilities that can be accessed through portals include opening
+  files through a file chooser dialog, or printing.
+- Interface toolkits can implement transparent support for portals, so access
+  to resources outside of the sandbox will work securely and out of the box.
+
+*Repositories*
+- applications and runtimes are typically stored and published using repositories,
+ which behave very similarly to Git repositories, containing a single object or
+ multiple ones. Each object is versioned, allowing the up|down-grade.
+- Remote repository's content can be inspected and searched, and it can
+  be used as the source of applications and runtimes.
+- When an update is performed, new versions of installed applications and
+  runtimes are downloaded from the relevant remotes. (only the difference actually)
+
+● flatpak cli
+NOTE: graphical software management tools exists so command-line is optional
+
+$ flatpak install
+
+$ flatpak uninstall
+
+*Identifiers*
+- unique three-part like
+  com.company.App
+              ^^^
+      final segment is the object's name
+
+
+*Identifier triple*
+
+   com.company.App/i386/stable         com.company.App//stable       com.company.App/i386//
+   ^^^^^^^^^^^^^^^ ^^^^ ^^^^^^                        ^^                                 ^^
+    Application-ID Arch branch                   Use default                        Use default
+    or name                                      architecture                       branch
+
+
+*System versus user*
+- Flatpak commands/repositories can be used/applied:
+  - system-wide (default)
+  - per-user    (--user option)
+
+*Basic commands*
+$ flatpak remotes # ← list remotes repositores configured on the system
+(output list indicates whether remote has been added per-user or system-wide)
+
+
+$  *URL_FLATPAKREPO*="https://dl.flathub.org/repo/flathub*.flatpakrepo*
+                                                          ^^^^^^^^^^^
+                                                       a .flatpakrepo file
+                                                       contains:
+                                                       - remote details
+                                                       - remote GPG key
+$ flatpak remote-add \          ← Add a remote repository
+     --if-not-exists \
+     flathub \                  ← arbitrary local-name assigned to remote
+      *${URL_FLATPAKREPO}*
+
+$ flatpak remote-delete flathub ← Remove remote-repo from list of known remotes
+
+$ flatpak search gimp           ← return any applications matching search terms.
+(each row-result includes application ID + remote where it was found)
+
+
+$ FLATPAKREF="https://flathub.org/repo/appstream/org.gimp.GIMP.flatpakref"
+$ flatpak install ${FLATPAKREF}         ← install application from FLATPAKREF
+$ flatpak install flathub org.gimp.GIMP ← install application from remote and ID
+                  ^^^^^^^ ^^^^^^^^^^^^^
+                  remote  application ID
+  (the application runtime will also be instaled if not yet present)
+
+*$ flatpak run org.gimp.GIMP     ← Run the application*</b>
+
+$ flatpak update                ← update all your installed applications
+                                  and runtimes to the latest version
+
+$ flatpak list                  ← List installed applications and runtimes
+
+$ flatpak list --app            ← List installed applications only
+
+$ flatpak uninstall ${APP_ID}   ← Uninstall Application
+
+*Full Journey*
+# Add remote "repository"
+$ flatpak remote-add --user --from gnome https://sdk.gnome.org/gnome.flatpakrepo
+# Install monodevelop from remote repository
+$ flatpak install --user --from https://download.mono-project.com/repo/monodevelop.flatpakref
+# Run monodevelop
+$ flatpak run com.xamarin.MonoDevelop
+
+
+● /proc/sys/kernel/watchdog  [[{QA.SLA}]]
 [[}]]
