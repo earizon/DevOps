@@ -104,16 +104,16 @@
         shift 1                       # <- consume arg      ,  $# = $#-1
         ;;
       -p|--port)
-        export PORT="${2}:"
-        shift                         # <- consume arg+value,  $# = $#-2
+        export PORT="${2}"
+        shift 2                       # <- consume arg+value,  $# = $#-2
         ;;
       -h|--host)
-        export HOST="${2^^}:"         # <-  ^^ suffix: Convert ${2} to upper case
-        shift                         # <-  consume arg+value, $# = $#-2
+        export HOST="${2^^}"         # <-  ^^ suffix: Convert ${2} to upper case
+        shift 2                       # <-  consume arg+value, $# = $#-2
         ;;
       *)
         echo "non-recognised option '$1'"
-        shift                         # <- consume arg       , $# = $#-1
+        shift 1                       # <- consume arg       , $# = $#-1
     esac
   done
 
@@ -455,7 +455,7 @@
 [[}]]
 
 
-● GIT "Full Journey" [[{git.101,1_doc_type.diagram,01_PM.WiP]] #[git_summary]
+● GIT "Full Journey" [[{git.101,02_DOC_HAS.diagram,01_PM.WiP]] #[git_summary]
   #########################################################################
   # Non-normative Git server setup for N projects with M teams of L users #
   #########################################################################
@@ -1479,7 +1479,7 @@ https://github.com/awslabs/git-secrets#synopsis
   == set of software development practices that create an
      independently-verifiable path from source to binary code.
 
-• OCI Standards Specification:  [[{containerization.runtime,standards,1_doc_type.comparative]]
+• OCI Standards Specification:  [[{containerization.runtime,standards,02_DOC_HAS.comparative]]
 @[https://www.opencontainers.org/faq]
 
 - OCI mission: promote a set of common, minimal, open standards and specifications
@@ -2765,7 +2765,7 @@ it has executed before and uses the result for each new build.
 [[}]]
 
 
-● Podman (IBM/RedHat)  [[{containerization.podman,02_doc_type.comparative,01_PM.TODO]]
+● Podman (IBM/RedHat)  [[{containerization.podman,02_DOC_HAS.comparative,01_PM.TODO]]
 - No system daemon required.
 - No daemon required.
 - rootless containers.                                         [[containerization.security]]
