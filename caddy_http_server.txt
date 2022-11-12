@@ -1,0 +1,62 @@
+Caddy by Ardan Labs  https://caddyserver.com/
+- low-code/low-conf HTTP(s) server with TLS+OCSP Certificate automation.
+- Container friendly (GOlang based with no dependencies, not even libc)
+- Use-cases:
+  web server, WAF, ingress, reverse proxy,
+  TLS terminator, logging, caching, TLS Cert. Management.
+
+- File compression.
+- template evaluation
+- Markdown rendering!!!
+- HTTPS by default!!!
+
+● PRODUCTION-READY 1-LINER COMMANDS:
+
+$ caddy file-server        <··· local file server
+
+$ caddy file-server \      <··· Public HTTPS file server
+   --domain example.com         (Requires domain's public
+                                 A/AAAA DNS records to host)
+
+$ caddy reverse-proxy \    <··· HTTPS reverse proxy
+   --from example.com \
+   --to localhost:9000
+
+$ caddy run                <···· Run server with Caddyfile
+                                 in working directory (if present)
+
+● "Caddyfile" (Optional) human-readable config file for "advanced" tasks.
+  (Alternative Config RESTful API also available ( POST /config/ + JSON body))
+  ┌─ Caddyfile ──────────
+  │ localhost             <·· Serve local-files
+  │
+  │ templates             <·· give static sites some dynamic features
+  │ encode gzip zstd      <·· Compress responses according to request headers
+  │ try_files {path}.html <·· Make HTML file ext. optional
+  │   {path}
+  │ reverse_proxy /api/*  <·· Send API requests to backend
+  │   localhost:9005
+  │ file_server           <·· Serve everything else from FS
+  └───────────────────────
+
+  ┌─ Caddyfile ────────── HTTPS reverse proxy with custom
+  │ example.com           load balancing and active health checks
+  │                       between 3 backends with custom
+  │ reverse_proxy         health─checks
+  │   10.0.0.1:9000
+  │     10.0.0.2:9000
+  │       10.0.0.3:9000 {
+  │   lb_policy       random_choose 2
+  │   health_path     /ok
+  │   health_interval 10s
+  │ }
+  └───────────────────────
+
+● Docker run:
+
+  $ docker pull    caddy:2.6.2-alpine
+  $ docker inspect caddy:2.6.2-alpine
+    WorkingDir  : "/srv",
+    ExposedPorts: "2019/tcp", "443/tcp" "443/udp" "80/tcp"
+    Cmd          : caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
+  $ docker run --rm -v hostDir:/srv -p 8080:80 caddy:2.6.2-alpine
