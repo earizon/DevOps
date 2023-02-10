@@ -1,3 +1,12 @@
+●  Apropos:
+- Visit next Web site for a great experience:
+  https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/ansible.txt
+
+- If you want to contribute to great gistory of this document you can
+  take the next flight to:
+@[https://www.github.com/earizon/DevOps]
+  Your commits and pull-request will be immortalized in the Pantheon of the Unicode Gods.
+
 ● Ansible Summary: [[{ansible.101]]
 View on:
 https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/ansible.txt
@@ -320,7 +329,7 @@ Variable scope Overrinding rules:
   - Ad-Hoc allows to perform tasks without creating a playbook
     first, such as rebooting servers, managing services, editing the line
     configuration, copy a file to only one host, install only one package.
-  
+
   - An Ad-Hoc command will only have two parameters, the group of a host
     that you want to perform the task and the Ansible module to run.
   [[}]]
@@ -550,7 +559,7 @@ To copy local facts and make the usable in current play:
                                 - etcd     etcd key lookup
 
 • "Jinja2" template ex. ─────────────────────────────────────────────────────
-  nginx.conf.j2 
+  nginx.conf.j2
   server {
           listen 80 default_server;
           listen [::]:80 default_server ipv6only=on;
@@ -822,7 +831,7 @@ To copy local facts and make the usable in current play:
 │       *service*: *name*=nginx *state*=restarted
 └────────────────────────────────────────────────────── [[}]]
 
-• Ex: Insanely complet Ansible playbook: [[{]] 
+• Ex: Insanely complet Ansible playbook: [[{]]
 @[https://gist.github.com/marktheunissen/2979474]
 ---                                                                <- YAML documents must begin with doc.separator "---"
 
@@ -1296,12 +1305,12 @@ To copy local facts and make the usable in current play:
 
 • AWX GUI: [[{]]
   @[https://www.howtoforge.com/ansible-awx-guide-basic-usage-and-configuration/]
-  
+
   - AWX is an open source web application that provides a user interface, REST API,
     and task engine for Ansible. It's the open source version of the Ansible Tower.
     The AWX allows you to manage Ansible playbooks, inventories, and schedule jobs
     to run using the web interface.
-  
+
   - How to Run and Schedule Ansible Playbook Using AWX GUI
   @[https://www.linuxtechi.com/run-schedule-ansible-playbook-awx-gui/]
   [[}]]

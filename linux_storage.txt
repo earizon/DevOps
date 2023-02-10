@@ -837,7 +837,7 @@ $*$ $ keyctl setperm 27 0x1f1f1f00 *
   · Perform public-key operations with an asymmetric key (encrypt/decript, sign/verify)
 [[}]]
 
-● eCryptfs  [[{storage.*,security.encryption]] #[ecryptfs_summary]
+● eCryptfs  [[{storage,security.encryption]] #[ecryptfs_summary]
   Linux Kernel v2.6.19 and ahead
   https://www.ostechnix.com/how-to-encrypt-directories-with-ecryptfs-in-linux/
 

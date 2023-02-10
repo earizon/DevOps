@@ -232,6 +232,15 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
   └────────────────────────────────┘
 [[jenkins.101}]]
 
+● Jenkins Pipeline Builder [[{01_PM.low_code,QA.UX]]
+  @[https://jenkinspipelinegenerator.octopus.com/#/]
+  https://www.linuxtoday.com/developer/jenkins-pipeline-builder-now-available/
+  pipeline builder scans your public GitHub repository and attempts
+  to build a custom Jenkins Pipeline that you can then copy and paste
+  into a Jenkins Pipeline project.
+  Support for maven, php, node,python, .Net Core, ..
+[[}]]
+
 ────────────────────────────────────────────────────────────────────────────────
 ● Admin 101: EXPORT/IMPORT jobs [[{security.backup]]
 

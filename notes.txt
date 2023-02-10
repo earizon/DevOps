@@ -9,10 +9,10 @@
 ────────────────────────────────────────────────────────────────────────────────
 
 #############################################
-●        Shell Scripting                    # [[{dev_language.shell_script]]
+●        Shell Scripting                    # [[{dev_stack.shell_script]]
 #############################################
 
-● REFERENCE SCRIPT:  [[{dev_language.shell_script.101]] #[bash_summary]
+● REFERENCE SCRIPT:  [[{dev_stack.shell_script.101]] #[bash_summary]
 
   #!/bin/bash
   # NOTE: The Bash "syntax sugar" VAR1=$("some command") executes "some command"
@@ -171,18 +171,25 @@
     echo "All subjobs ended"
   ) &
 
-● READ-EVALUATE-PARSE-LOOP (REPL) IN BASH:
+● SIMPLIFIED READ-EVALUATE-PARSE-LOOP (REPL) IN BASH:
   REPL stands for Read-eval-print loop: More info at:
   @[https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop]
-      # Define the list of a menu item
-      select   language  in C# Java PHP Python Bash Exit
-      do
-        #Print the selected value
-        if [[   $language  == "Exit" ]] ; then
-          exit 0
-        fi
-        echo "Selected language is $language"
-      done
+
+  while  [[ ${LANGUAGE} != "EXIT" ]] ; do # {
+    select LANGUAGE in BASH CSHARP JAVA PHP PYTHON EXIT
+    do # {
+      echo "Selected language is $language"
+    done #
+  done # }
+
+  NOTE: More complex input can be done replacing the line:
+          select INPUT in OPT1 OPT2 ...
+          do
+           ...
+          done
+        by
+          read -p "PROMPT" INPUT
+          funComplexParsingAndEvaluationOver $INPUT
 
 ● 'test' CONDITIONAL BRANCHING: [[{]]
   (man test summary from GNU coreutils for more info)
@@ -325,8 +332,8 @@
         curl --list-only https://..../dir1/ ← List contents of remote dir
 [[}]]
 
-● Kapow!: Shell Script to HTTP API: [[{web_hook,01_PM.low_code,git.*,monitoring.prometheus,dev_stack.kubernetes,]]
-@[https://github.com/BBVA/kapow]    [[notifications.jira,InfraAsCode.ansible,git.*,git.github,notifications.slack,]]
+● Kapow!: Shell Script to HTTP API: [[{web_hook,01_PM.low_code,git,monitoring.prometheus,dev_stack.shell_script,dev_stack.kubernetes,]]
+@[https://github.com/BBVA/kapow]    [[notifications.jira,InfraAsCode.ansible,git,git.github,notifications.slack]]
   (by BBVA-Labs Security team members)
   " If you can script it, you can HTTP it !!!!"
 
@@ -359,7 +366,7 @@
           chroot --userspec=sandbox /some/path /bin/sh -c' \
           -c 'ls / | kapow set /response/body'
 
-● WebHook  [[{01_PM.TODO]]
+● WebHook  [[{dev_stack.shell_script,01_PM.TODO]]
 @[https://github.com/adnanh/webhook]
   - lightweight incoming webhook server to run shell commands
     You can also pass data from the HTTP request (such as headers,
@@ -386,7 +393,7 @@
       Kubernetes by Marina Kogan
     - Github Pages and Jekyll - A New Platform for LACNIC Labs by Carlos
       Martínez Cagnazzo
-    - How to Deploy React Apps Using Webhooks and Integrating Slack on     [[slack]]
+    - How to Deploy React Apps Using Webhooks and Integrating Slack on     [[{notifications.slack}]]
       Ubuntu by Arslan Ud Din Shafiq
     - Private webhooks by Thomas
     - Adventures in webhooks by Drake
@@ -394,7 +401,7 @@
     - XiaoMi Vacuum + Amazon Button = Dash Cleaning by c0mmensal
     - Set up Automated Deployments From Github With Webhook by Maxim Orlov
       VIDEO: Gitlab CI/CD configuration using Docker and adnanh/webhook
-      to deploy on VPS - Tutorial #1 by Yes! Let's Learn Software          [[}]]
+      to deploy on VPS - Tutorial #1 by Yes! Let's Learn Software
 [[}]]
 
 ● Bash-it: https://www.tecmint.com/bash-it-control-shell-scripts-aliases-in-linux/
@@ -402,7 +409,7 @@
   which comes with autocompletion, aliases, custom functions, ....
 - It offers a useful framework for developing, maintaining and
   using shell scripts and custom commands for your daily work.
-[[dev_language.shell_script}]]
+[[dev_stack.shell_script}]]
 
 ####################################
 ● GIT                              # [[{git]]
@@ -1348,6 +1355,20 @@ $ git pull  \             ←   # Verify signature at pull time
 • Git Large File Storage (LFS)targets the problem of large individual files (1GB video files, ML training data, ...).
   replacing them with text pointers inside Git, while storing the file contents on a remote server.
 @[https://git-lfs.github.com/]
+
+· Ex. real world ussage of LFS:
+  https://github.com/o3de/o3de
+
+  """ This repository uses Git LFS for storing large binary files. Verify you have Git LFS installed by running the following command to print the version number.
+  $ git lfs --version
+  Otherwise, download and run the installer from:
+  https://git-lfs.github.com/.
+
+  - Install Git LFS hooks:
+  $ git lfs install
+
+  - Clone the repository:
+  $ git clone https://github.com/o3de/o3de.git
 [[}]]
 
 • 4 secrets encryption tools [[{security.secret_management}]]
@@ -1782,7 +1803,7 @@ https://github.com/awslabs/git-secrets#synopsis
 [[}]]
 
 ● Docker  summary: [[{containerization.docker,containerization.storage.host,containerization.image.registry,]]
-                   [[containerization.runtime,containerization.security,TODO,containerization.orchestration.swarn]]
+                   [[containerization.runtime,containerization.security,01_PM.TODO,containerization.orchestration.swarn]]
   - External Links:
   - @[https://docs.docker.com/]
   - @[https://github.com/jdeiviz/docker-training] D.Peman@github
@@ -1851,16 +1872,35 @@ https://github.com/awslabs/git-secrets#synopsis
 |               (cpu-quota, shared, kernel-memory, pids-limit, ...)
 
 • docker Image Build/Image Management Commands :
-| · image       ls current (local) images.
-| · build       Build an image from a Dockerfile
-| · commit      Create a new image from a container's changes
-| · diff        Inspect changes to files or directories on a container's filesystem
-| · export      Export a container's filesystem as a tar archive
-| · history     Show the history of an image
-| · images      List images
-| · import      Import the contents from a tarball to create a filesystem image
-| · load        Load an image from a tar archive or STDIN
-| · save        Save one or more images to a tar archive (streamed to STDOUT by default)
+| docker image   ls current (local) images.
+| docker build   Build an image from a Dockerfile
+| docker commit  Create a new image from a container's changes
+| docker diff    Inspect changes to files or directories on a container's filesystem
+| docker history Show the history of an image
+| docker images  List images
+| docker export  Export a container's filesystem as a tar archive
+| docker import  Import the contents from a tarball to create a filesystem image
+| docker save    Save one or more images to a tar archive (streamed to STDOUT by default)
+|                $ docker save calc > calc.tar
+|                  ┌ (tar tf calc.tar)┴──────┘
+|                  v
+|                  ├── 41bfa732a8...      <·· busybox layer
+|                  │   ├── VERSION
+|                  │   ├── json
+|                  │   └── layer.tar
+|                  ├── 889226dbb2....json <·· cmd layer
+|                  ├── manifest.json          { ...  "config": { ...  "Cmd": ["/bin/sh", "-c", "..."], ...  }, ...  }
+|                  └── repositories
+|
+| docker load    Load an image from a tar archive or STDIN
+|                $ docker load < calc.tar
+|                0d315111b484: Loading layer [==================================>]  1.441MB/1.441MB
+|
+|   * NOTE: docker import/export vs load/save commands.
+|     docker load / save : Load/Save image from/to tar | STDIN
+|     docker export / import: Export/Import (running/stopped) container file-system.
+
+
 | · tag         Create a tag TARGET_IMAGE that refers to SOURCE_IMAGE
 
 • docker Throubleshoot/Debug Commands :
@@ -2637,7 +2677,7 @@ it has executed before and uses the result for each new build.
     cmd ["main.jar"]
 [[}]]
 
-● CNCF buildpacks.io: [[{containerization.image.build,01_pm.low_code,dev_language.java]]
+● CNCF buildpacks.io: [[{containerization.image.build,01_pm.low_code,dev_stack.java]]
 • build oci image directly from JAVA source source (Skipping Dockerfile/docker build)
 • highly modular and customizable.
 • used, among others, by spring (spring boot 2.3+) with  gradle and maven support.
@@ -3083,7 +3123,7 @@ https://www.redhat.com/sysadmin/improved-systemd-podman
     # useful to check network setup is the appropiate one.
     cont_pid=$( sudo docker inspect -f '{{.state.pid}}' $1 )
     shift 1
-    sudo*nsenter*-t ${cont_pid}*- *
+    sudo nsenter -t ${cont_pid} -n
                                 ^^
                            use network namespace of container
 
@@ -3165,7 +3205,7 @@ example: "zoom into a client":
   long term storage for prometheus.
 
 - flux:
-  - flux is the operator that  *makes gitops happen in your cluster*.
+  - flux is the operator that *MAKES GITOPS HAPPEN IN YOUR CLUSTER*.
     it ensures that the cluster config matches the one in git and
     automates your deployments.
   - continuous delivery of container images, using version control
@@ -3281,7 +3321,7 @@ https://www.infoq.com/news/2020/12/dockerhub-image-vulnerabilities/
 • Reverse Proxy  [[01_PM.TODO]]
 • Forward Proxy  [[01_PM.TODO]]
 
-• CharlesProxy: Monitor TLS/HTTPS traffic: [[{network.TLS,troubleshooting,01_PM.TODO]]
+• CharlesProxy: Monitor TLS/HTTPS traffic: [[{networking.TLS,troubleshooting,01_PM.TODO]]
 @[https://www.charlesproxy.com/]
   HTTP proxy / HTTP monitor / Reverse Proxy enabling developers to view HTTP+SSL/HTTPS
   traffic between loal machine and Internet, including requests, responses and HTTP headers
@@ -3558,134 +3598,6 @@ REF: @[https://raazkumar.com/tutorials/nginx/nginx-conf/]
  @[../Architecture/architecture_map.html]
   [[}]]
 [[}]]
-
-● Vagrant (VMs as code):[[{vagrant,01_PM.low_code,101,troubleshooting]]
-  - External Links:
-    - @[https://www.vagrantup.com/docs/index.html]
-    - @[https://www.vagrantup.com/docs/cli/]                         CLI Reference
-    - @[https://www.vagrantup.com/intro/getting-started/index.html]
-    - @[https://www.vagrantup.com/docs/providers/]                   Providers list
-    - @[https://app.vagrantup.com/boxes/search]                     *Boxes Search*
-    - @[https://www.vagrantup.com/docs/networking/]                  Networking
-
-
- - * Vagrant Boxes *
-   #################
-   - Pre-built VMs avoiding slow and tedious process.
-   - Can be used as base image to (quickly) clone an existing virtual machine.
-   - Specifying the box to use for your Vagrant environment is always the first
-     step after creating a new Vagrantfile.
-
-
- - * Vagrant Share *
-   #################
-@[https://www.vagrantup.com/intro/getting-started/share.html]
-@[https://www.vagrantup.com/docs/share]
-   - $ vagrant share   <- Quick how-to, share a Vagrant environment with anyone in the World.
-
-   - three primary modes or features (not mutually exclusive, can be combined):
-     ·*shareable URL* pointing to Vagrant environment.
-      *URL "consumer" does not need Vagrant installed, so it can be shared *
-      *with anyone. Useful for testing webhooks, demos with clients, ...   *
-
-     ·*instant SSH access*
-       $*$vagrant connect --ssh *  ← (local/remote) client
-       (pair programming, debugging ops problems, etc....)
-     · General sharing by exposing a tcp port and
-       $*$ vagrant connect      *  ← (local/remote) client
-       (pair programming, debugging ops problems, etc....)
-
- - Vagrant Command List:
-   $ vagrant "COMMAND" -h
-   $ vagrant list-commands  # Most frequently used commands
-
-- FREQUENTLY USED
-  box           manages boxes: installation, removal, etc.
-  destroy       stops and deletes all traces of the vagrant machine
-  global-status outputs status Vagrant environments for this user
-  halt          stops the vagrant machine
-  help          shows the help for a subcommand
-  init          initializes new environment (new Vagrantfile)
-  login         log in to HashiCorp's Vagrant Cloud
-  package       packages a running vagrant environment into a box
-  plugin        manages plugins: install, uninstall, update, etc.
-  port          displays information about guest port mappings
-  powershell    connects to machine via powershell remoting
-  provision     provisions the vagrant machine
-  push          deploys enviroment code → (configured) destination
-  rdp           connects to machine via RDP
-  reload        restart Vagrant VM, load new Vagrantfile config
-  resume        resume a suspended vagrant machine
-  snapshot      manages snapshots: saving, restoring, etc.
-  ssh           connects to machine via SSH
-  ssh-config    outputs OpenSSH connection config.
-  status        outputs status of the vagrant machine
-  suspend       suspends the machine
-  up            starts and provisions the vagrant environment
-  validate      validates the Vagrantfile
-  version       prints current and latest Vagrant version
-
-- OTHER COMMANDS
-  cap             checks and executes capability
-  docker-exec     attach to an already-running docker container
-  docker-logs     outputs the logs from the Docker container
-  docker-run      run a one-off command in the context of a container
-  list-commands   outputs all available Vagrant subcommands, even non-primary ones
-  provider        show provider for this environment
-  rsync           syncs rsync synced folders to remote machine
-  rsync-auto      syncs rsync synced folders automatically when files change
-
-
-- QUICK HOW-TO:
-  $ mkdir vagrant_getting_started
-  $ cd vagrant_getting_started
-  $ vagrant init                  # <- creates new Vagrantfile.
-
-
-
-- "Advanced" Vagranfile Example: 3 VM's Cluster using Virtual Box
-  ┌──────────────────────────────────────────────────────────────────────────┐
-  │ # -*- mode: ruby -*-                                                     │
-  │ # vi: set ft=ruby :                                                      │
-  │                                                                          │
-  │ VAGRANTFILE_API_VERSION = "2"                                            │
-  │                                                                          │
-  │ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|                   │
-  │    # Use the same key for each machine                                   │
-  │    config.ssh.insert_key = false                                         │
-  │                                                                          │
-  │    config.vm.define "vagrant1" do |vagrant1|                             │
-  │            vagrant1.vm.box = "ubuntu/xenial64"                           │
-  │            vagrant1.vm.provider :virtualbox do |v|                       │
-  │                    v.customize ["modifyvm", :id, "--memory", 1024]       │
-  │            end                                                           │
-  │            vagrant1.vm.network "forwarded_port", guest: 80, host: 8080   │
-  │            vagrant1.vm.network "forwarded_port", guest: 443, host: 8443  │
-  │            vagrant1.vm.network "private_network", ip: "192.168.0.1"      │
-  │            # Provision through custom bootstrap.sh script                │
-  │            config.vm.provision :shell, path: "bootstrap.sh"              │
-  │    end                                                                   │
-  │    config.vm.define "vagrant2" do |vagrant2|                             │
-  │            vagrant2.vm.box = "ubuntu/xenial64"                           │
-  │            vagrant2.vm.provider :virtualbox do |v|                       │
-  │                    v.customize ["modifyvm", :id, "--memory", 2048]       │
-  │            end                                                           │
-  │            vagrant2.vm.network "forwarded_port", guest: 80, host: 8081   │
-  │            vagrant2.vm.network "forwarded_port", guest: 443, host: 8444  │
-  │            vagrant2.vm.network "private_network", ip: "192.168.0.2"      │
-  │    end                                                                   │
-  │    config.vm.define "vagrant3" do |vagrant3|                             │
-  │            vagrant3.vm.box = "ubuntu/xenial64"                           │
-  │            vagrant3.vm.provider :virtualbox do |v|                       │
-  │                    v.customize ["modifyvm", :id, "--memory", 2048]       │
-  │            end                                                           │
-  │            vagrant3.vm.network "forwarded_port", guest: 80, host: 8082   │
-  │            vagrant3.vm.network "forwarded_port", guest: 443, host: 8445  │
-  │            vagrant3.vm.network "private_network", ip: "192.168.0.3"      │
-  │    end                                                                   │
-  │ end                                                                      │
-  └──────────────────────────────────────────────────────────────────────────┘
-[[vagrant}]]
 
 ● Yaml References: [[{yaml.101]]
 @[http://docs.ansible.com/ansible/YAMLSyntax.html]

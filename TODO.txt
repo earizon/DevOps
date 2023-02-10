@@ -21,7 +21,7 @@
   Apply quality metrics to source-code
 [[}]]
 
-• Source{d}: Large Scale Code Analysis with IA [[{qa.code_analysis,qa.testing,git.*,01_PM.TODO]]
+• Source{d}: Large Scale Code Analysis with IA [[{qa.code_analysis,qa.testing,git,01_PM.TODO]]
 @[https://www.linux.com/blog/holberton/2018/10/sourced-engine-simple-elegant-way-analyze-your-code]
 
 - source{d} offers a suite of applications that uses machine learning on code
@@ -1153,3 +1153,92 @@ $ docker container run -d \
       2_448 /usr/lib/git-core/git-sh-i18n
       2_236 /usr/lib/git-core/git-difftool--helper
         944 /usr/lib/git-core/git-merge-resolve
+
+● https://iximiuz.com/en/series/implementing-container-manager/
+
+
+● Shell Script 101
+  https://sharats.me/posts/shell-script-best-practices/
+
+● Distroless Container Images
+  https://www.linkedin.com/posts/iximiuz_what-is-a-distroless-container-image-activity-6998607273514123264-PmHT
+  hat Is a Distroless Container Image? 🤔 Go (programming language)
+  is famous for its statically linked binaries. You can take a Go
+  executable, drop it into a "FROM scratch" container, and call it a
+  day. But there is a bunch of pitfalls with this approach... 1. "FROM
+  scratch" containers lack proper user management. A "scratch" base
+  image means an empty image. So, the /etc/passwd and /etc/group files
+  will simply be missing. Most of the time, it makes the containerized
+  process run as root, and that's likely not what you need on prod. 2.
+  "FROM scratch" containers lack some much-needed folders. The typical
+  folders like /tmp, /root, /home, /var, /etc don't exist in scratch
+  containers (unless you mount them, of course). But that can make your
+  containerized app faulty - just try creating a tmp file and see what
+  happens. 3. "FROM scratch" containers lack CA certificates and
+  timezone databases. Hence, calling HTTPS endpoints won't be possible.
+  Your program does some time conversion? Won't work either. 4. "FROM
+  scratch" containers lack your language runtime. If your language's
+  static linking support is less perfect than in Go or your programs
+  require an interpreter or a runtime environment, you won't be able to
+  use a scratch base without tedious copying of app dependencies into
+  it. "FROM scratch" images are slim, fast, secure, and whatnot, but
+  apparently, they may require quite some extra work before you can put
+  them in production. Luckily, projects like Chainguard Images and
+  GoogleContainerTools' distroless automate many of these tedious
+  preparation steps for you. Read more about the pitfalls of scratch
+  container images and the GoogleContainerTools' distroless project in
+  my blog post 👇 https://lnkd.in/eyTkTX5p.
+
+● Container Tools, Tips, and Tricks - Issue #2
+  https://iximiuz.ck.page/posts/container-tools-tips-and-tricks-issue-2
+
+● DevOps: Docker without sudo @ma
+  https://docs.docker.com/engine/security/rootless/
+  Rootless mode was introduced in Docker Engine v19.03 as an experimental feature.
+  Rootless mode graduated from experimental in Docker Engine v20.10.
+
+● DevOps: Ansible Register Variable - OSTechNix
+  https://ostechnix.com/ansible-register/
+
+● DevOps: Merging two GitHub repositories without losing commit history - Mozilla Hacks - the Web developer blog
+  https://hacks.mozilla.org/2022/08/merging-two-github-repositories-without-losing-commit-history/
+DevOps Links:
+
+
+● TAXONOMY:
+1) Basic Linux commands necessary before jumping    2). Shell Scripting:
+   into shell script.                               * https://lnkd.in/da_wHgQH
+   * https://lnkd.in/dBTsJbhz                       * https://lnkd.in/d5CFPgga
+   * https://lnkd.in/dHQTiHBB
+   * https://lnkd.in/dA9pAmHa
+
+3. Python: This will help you in automation         4. Networking
+* https://lnkd.in/dFtNz_9D                          * https://lnkd.in/dqTx6jmN
+* https://lnkd.in/d6cRpFrY                          * https://lnkd.in/dRqCzbkn
+* https://lnkd.in/d-EhshQz
+
+5. Git & Github                 6. YAML                   7. Containers — Docker:
+* https://lnkd.in/d9gw-9Ds      https://lnkd.in/duvmhd5X  * https://lnkd.in/dY2ZswMZ
+* https://lnkd.in/dEp3KrTJ      https://lnkd.in/dNqrXjmV  * https://lnkd.in/d_EySpbh
+                                                          * https://lnkd.in/dPddbJTf
+
+8.CI/CD:                      9. Container Orchestration — Kubernetes:
+* https://lnkd.in/dMHv9T8U    * https://lnkd.in/duGZwHYX
+
+10. Monitoring:              11. Infrastructure Provisioning       12. CI/CD Tools: Jenkins,
+* https://lnkd.in/dpXhmVqs       & Configuration Management (IaC):   GitHub Actions, GitLab CI,
+* https://lnkd.in/dStQbpRX       Terraform, Ansible, Pulumi          Travis CI, AWS CodePipeline
+* https://lnkd.in/de4H5QVz      * https://lnkd.in/dvpzNT5M           + AWS CodeBuild, Azure DevOps, etc
+* https://lnkd.in/dEtTSsbB      * https://lnkd.in/dNugwtVW           * https://lnkd.in/dTmSXNzv
+                                * https://lnkd.in/dn5m2NKQ           * https://lnkd.in/dAnxpVTe
+                                * https://lnkd.in/dhknHJXp           * https://lnkd.in/daMFG3Hq
+                                * https://lnkd.in/ddNxd8vU           * https://lnkd.in/dqf-zzrx
+                                                                     * https://lnkd.in/diWP7Tm7
+                                                                     * https://lnkd.in/dYDCSiiC
+
+13. AWS:                    14. Learn how to SSH           Best Websites to learn Devops:
+* https://lnkd.in/dmi-TMv9  SSH using mobaxterm:           https://kodekloud.com
+* https://lnkd.in/de3-dAB6  * https://lnkd.in/gx-T_FU8     https://acloudguru.com
+* https://lnkd.in/dh2zXZAB                                 https://www.katacoda.com
+* https://lnkd.in/dQMyCBWy  15. SSH using Putty :
+                             * https://lnkd.in/gGgW7Ns9

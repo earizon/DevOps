@@ -619,7 +619,7 @@ DATA TRANSFER MODIFIERS
                  --pidfile FILE save PID of (first running) pv instance.
 [[}]]
 
-● GNU Parallel  [[{job_control.*,performance.distributed]]
+● GNU Parallel  [[{job_control,performance.distributed]]
 @[https://linux.die.net/man/1/parallel]
 @[https://www.gnu.org/software/parallel/parallel_cheat.pdf]
 @[https://www.reddit.com/r/programming/comments/ayew9r/never_got_around_to_learning_gnu_parallel_here_is/]
@@ -1400,6 +1400,16 @@ _
 [[monitoring}]]
 
 ● BACKUPS  [[{security.backup,linux.101,storage.compression]]
+• https://github.com/y-scope/clp  [[{security.audit,scalability.storage,01_PM.low_cost]]
+  C&P from https://www.uber.com/en-DE/blog/reducing-logging-cost-by-two-orders-of-magnitude-using-clp/
+    """CLP reduces log size by x169 ...
+      CLP allows to search directly on the compressed logs .... With
+    just Phase 1, this cost is reduced to $10,000/year for a one month
+    retention period. But more importantly, it now enables us to retain
+    the logs as our engineers requested: we were able to restore the
+    logging level from WARN back to INFO, increase our retention period
+    by 10x, and still reduce our storage costs by 17x."""
+  [[}]]
 ● tar (tape-archive) (man 1 tar)
   - standard tool for archiving saving a (many) files and directories to a single
     tape or disk archive.
@@ -2452,7 +2462,7 @@ Output Formats ( -o parameter )
   $ sudo journalctl --vacuum-size=500M ← Retain only last 500 MB
 [[}]]
 
-● Rsyslog [[{monitoring.*,security.audit_user,02_doc_has.comparative,]]
+● Rsyslog [[{monitoring,security.audit_user,02_doc_has.comparative,]]
 @[github.com/rsyslog/rsyslog.git]
 @[https://www.rsyslog.com]
 
@@ -3347,7 +3357,7 @@ Global average activities among all processors are also reported.
           an outstanding disk I/O request.
 [[}]]
 
-● (man 1) pidstat: Linux job/task stats  [[{monitoring.jobs,job_control.*,monitoring.i/o]]
+● (man 1) pidstat: Linux job/task stats  [[{monitoring.jobs,job_control,monitoring.i/o]]
   $ pidstat   [[{profiling.jobs.IO.block,profiling.storage,storge.profiling]]
   By Sebastien Godard (http://pagesperso-orange.fr/sebastien.godard/)
  -d Report I/O statistics
@@ -3649,7 +3659,7 @@ Extracted from:
    *internal metrics collection framework.                              * [[}]]
 [[{monitoring.kernel.counters}]]
 
-● SystemTap (stap) [[{monitoring.jobs,troubleshooting.*,01_PM.TODO]]
+● SystemTap (stap) [[{monitoring.jobs,troubleshooting,01_PM.TODO]]
 - C&P from https://lwn.net/Articles/852112/:  [[{02_doc_has.comparative]]
   SystemTap has been available since 2005, while bpftrace is a more
   recent contender that, to some, may appear to have made SystemTap
