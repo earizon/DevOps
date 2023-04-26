@@ -1,4 +1,4 @@
-●  Apropos:
+#  Apropos:
 - Visit next Web site for a great experience:
   https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/notes.txt
 - If you want to contribute to great gistory of this
@@ -9,10 +9,10 @@
 ────────────────────────────────────────────────────────────────────────────────
 
 #############################################
-●        Shell Scripting                    # [[{dev_stack.shell_script]]
+#        Shell Scripting                    # [[{dev_stack.shell_script]]
 #############################################
 
-● REFERENCE SCRIPT:  [[{dev_stack.shell_script.101]] #[bash_summary]
+# REFERENCE SCRIPT:  [[{dev_stack.shell_script.101]] #[bash_summary]
 
   #!/bin/bash
   # NOTE: The Bash "syntax sugar" VAR1=$("some command") executes "some command"
@@ -142,7 +142,7 @@
   echo "Exiting with status:$global_exit_status"
   exit $global_exit_status
 
-● INIT VARS AND CONSTANTS:
+# INIT VARS AND CONSTANTS:
   # complete Shell parameter expansion list available at:
   # - @[http://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html]
   var1=$1 # init var $1 with first param
@@ -159,7 +159,7 @@
                                    |     associative array name, the results differ.
   readonly const1=${varA}
 
-● CONCURRENT PROCESS BARRIER SYNCHRONIZATION:
+# CONCURRENT PROCESS BARRIER SYNCHRONIZATION:
   Wait for background jobs to complete example:
   (
     ( sleep 3 ; echo "job 1 ended" ) &
@@ -171,7 +171,7 @@
     echo "All subjobs ended"
   ) &
 
-● SIMPLIFIED READ-EVALUATE-PARSE-LOOP (REPL) IN BASH:
+# SIMPLIFIED READ-EVALUATE-PARSE-LOOP (REPL) IN BASH:
   REPL stands for Read-eval-print loop: More info at:
   @[https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop]
 
@@ -191,7 +191,7 @@
           read -p "PROMPT" INPUT
           funComplexParsingAndEvaluationOver $INPUT
 
-● 'test' CONDITIONAL BRANCHING: [[{]]
+# 'test' CONDITIONAL BRANCHING: [[{]]
   (man test summary from GNU coreutils for more info)
 
   test   EXPRESSION  # ← EXPRESSION true/false sets the exit status.
@@ -255,7 +255,7 @@
   Full documentation at: @[https://www.gnu.org/software/coreutils/]
 [[}]]
 
-● (KEY/VALUE) MAPS (Bash 4+) #[bash_dictionary]
+# (KEY/VALUE) MAPS (Bash 4+) #[bash_dictionary]
   (also known as associative array or hashtable)
 
   Bash Maps can be used as "low code" key-value databases.
@@ -284,7 +284,7 @@
     done                             # key2 : value2
                                      # key3 : value3
 
-● Curl (network client swiss Army nkife)  Summary: [[{networking.curl,troubleshooting,qa.testing]] #[curl_summary]
+# Curl (network client swiss Army nkife)  Summary: [[{networking.curl,troubleshooting,qa.testing]] #[curl_summary]
 - Suport for DICT, FILE, FTP, FTPS, GOPHER, HTTP GET/POST, HTTPS, HTTP2, IMAP,
              IMAPS, LDAP, LDAPS, POP3, POP3S, RTMP, RTSP, SCP, SFTP, SMB, SMBS,
              SMTP, SMTPS, TELNET,  TFTP, unix socket protocols.
@@ -297,42 +297,43 @@
 - HAProxy PROXY protocol
 - ...
 
-  HTTP Example
-  $ curl http://site.{one,two,three}.com  \
-         --silent                         \    ← Disable progress meter
-         --anyauth                        \    ← make curl figure out auth. method
-                                                 (--basic, --digest, --ntlm, and --negotiate)
-                                                 not recommended if uploading from stdin since
-                                                 data can be sent 2+ times
-                                                 - Used together with -u, --user.
-         --cacert file_used_to_verify_peer \   ← Alt: Use CURL_CA_BUNDLE
-                                                 - See also --capath dir, --cert-status,  --cert-type PEM|DER|...
-         --cert certificate[:password]     \   ← Use cert to indentify curl client
-         --ciphers list of TLS_ciphers     \
-         --compressed                      \   ← (HTTP) Request compressed response. Save uncompressed response.
-         --config text_file_with_curl_args \
-         --connect-timeout sec_number      \
-         --create-dirs                     \   ← When using --output
-         --data-binary data                \   ← HTTP POST alt 1: posts data with no extra processing whatsoever.
-                                                 Or @data_file
-         --data-urlencode data             \   ← HTTP POST alt 2
-         --data           data             \   ← HTTP POST alt 3: post data in the same way that a browser  does for formats
-                                                 (content-type application/x-www-form-urlencoded)
-         --header ...
-         --limit-rate speed
-         --location                        \  ← follow redirects
-         --include                         \  ← Include the HTTP response headers in the output.
-                                                             See also -v, --verbose.
-        --oauth2-bearer ...                \  ← (IMAP POP3 SMTP)
-        --fail-early                       \  ← Fail as soon as possible
-        --continue-at -                    \  ← Continue a partial download
-        --output out_file                  \  ← Write output to file (Defaults to stdout)
+## Curl Summary
+  $ curl http://site.{a,b}.com
+   --silent                 <·· Disable progress meter
+   --verbose                <·· Debug
+   --anyauth                <·· make curl figure out auth. method
+                               (--basic, --digest, --ntlm, and --negotiate)
+                               not recommended if uploading from STDIN since
+                               data can be sent 2+ times
+                               - Used together with -u, --user.
+   --cacert cert_file_path  <·· Alt: Use CURL_CA_BUNDLE
+                                   - See also --capath dir, --cert-status,  --cert-type PEM|DER|...
+   --cert certificate[:pass]<·· Use cert to indentify curl client
+   --ciphers TLS_ciphers_list
+   --compressed             <·· Request compressed response. Save uncompressed
+   --config curl_args_list
+   --connect-timeout secs
+                                HTTP Post Data:
+   --data-binary    data        <·· alt 1: posts data with no extra processing whatsoever.
+   --data-urlencode data        <·· alt 2: URLencoded
+   --data           data        <·· alt 3: application/x-www-form-urlencoded (browser like forms)
+                    └──┴─·········· Or @path_to_file_with_data
+                                    Or @- to use STDIN
+   --header ...
+   --limit-rate speed
+   --location                   <·· follow redirects
+   --include                    <·· Include HTTP response headers in output
+   --oauth2-bearer ...          <·· (IMAP POP3 SMTP)
+   --fail-early                 <·· Fail as soon as possible
+   --continue-at -              <·· Continue a partial download
+   --output out_file            <·· Write output to file (Defaults to stdout)
+                                    Use also --create-dirs to create unexisting dirs.
 
-
-        curl --list-only https://..../dir1/ ← List contents of remote dir
+## Curl: List remote contents
+  $ curl --list-only https://..../dir1/ ← List contents of remote dir
 [[}]]
 
-● Kapow!: Shell Script to HTTP API: [[{web_hook,01_PM.low_code,git,monitoring.prometheus,dev_stack.shell_script,dev_stack.kubernetes,]]
+# Kapow!: Shell Script to HTTP API: [[{web_hook,01_PM.low_code,git,monitoring.prometheus,dev_stack.shell_script,dev_stack.kubernetes,]]
 @[https://github.com/BBVA/kapow]    [[notifications.jira,InfraAsCode.ansible,git,git.github,notifications.slack]]
   (by BBVA-Labs Security team members)
   " If you can script it, you can HTTP it !!!!"
@@ -366,7 +367,7 @@
           chroot --userspec=sandbox /some/path /bin/sh -c' \
           -c 'ls / | kapow set /response/body'
 
-● WebHook  [[{dev_stack.shell_script,01_PM.TODO]]
+# WebHook  [[{dev_stack.shell_script,01_PM.TODO]]
 @[https://github.com/adnanh/webhook]
   - lightweight incoming webhook server to run shell commands
     You can also pass data from the HTTP request (such as headers,
@@ -404,7 +405,7 @@
       to deploy on VPS - Tutorial #1 by Yes! Let's Learn Software
 [[}]]
 
-● Bash-it: https://www.tecmint.com/bash-it-control-shell-scripts-aliases-in-linux/
+# Bash-it: https://www.tecmint.com/bash-it-control-shell-scripts-aliases-in-linux/
 - bundle of community Bash commands and scripts for Bash 3.2+,
   which comes with autocompletion, aliases, custom functions, ....
 - It offers a useful framework for developing, maintaining and
@@ -412,7 +413,7 @@
 [[dev_stack.shell_script}]]
 
 ####################################
-● GIT                              # [[{git]]
+# GIT                              # [[{git]]
 ####################################
 
 • External Links:
@@ -430,7 +431,7 @@
   - Junio C. Hamano:  lead git maintainer (+8700 commits)
     @[https://git-blame.blogspot.com/]
 
-● GIT: What's new: [[{]]
+# GIT: What's new: [[{]]
 - 2.28:
 @[https://github.blog/2020-07-27-highlights-from-git-2-28/]
 
@@ -462,7 +463,7 @@
 [[}]]
 
 
-● GIT "Full Journey" [[{git.101,02_DOC_HAS.diagram,01_PM.WiP]] #[git_summary]
+# GIT "Full Journey" [[{git.101,02_DOC_HAS.diagram,01_PM.WiP]] #[git_summary]
   #########################################################################
   # Non-normative Git server setup for N projects with M teams of L users #
   #########################################################################
@@ -589,7 +590,7 @@
   │  │                                                                                 ·  ·(QA test "OK")
   │  │                      ┌··········←·(QA Test "OK" in develop, ready for release)··┘  ·
   │  │  ...                 v                                                             v
-  │  ├─ • release/v1 ·······• merge⅋tag ┐         • merge⅋tag ┐         • merge⅋tag ······• merge⅋tag
+  │  ├─ • release/v1 ·······• merge&tag ┐         • merge&tag ┐         • merge&tag ······• merge&tag
   │  │                        v1.0.0    ·         ↑ v1.0.1    ·         ↑ v1.0.2            v1.1.0
   │  │                        *1        ↓         · *1        ·         · *1                *1
   │  │                                  └ hotfix1 •           └ hotfix2 •
@@ -832,14 +833,14 @@ $ $ git init   ← creates an initial layout containing (Alternatively $ $git cl
  └────────────────────────────────────────────────────────────────────────
  ┌ MERGE @[https://git-scm.com/docs/git-merge]────────────────────────────
  │ add changes for other branch as single "M"erge commit
- │ $ $ git checkout branch01 ⅋⅋ git merge branch02
+ │ $ $ git checkout branch01 && git merge branch02
  │ • → • → • → • → •H1 → •M  : M = changes of ( x1+x2+H2 )
  │         │             ↑
  │         └─→ •x1→ •x2→ •H2
  └────────────────────────────────────────────────────────────────────────
  ┌ REBASE @[https://git-scm.com/docs/git-rebase]──────────────────────────
  │ "replay" full list of commits to head of branch
- │ $ $ git checkout branch01 ⅋⅋ git rebase branch02
+ │ $ $ git checkout branch01 && git rebase branch02
  │ • → • → • → • →H1 •x1→ •x2→ •H2
  │         │
  │         └─→ •x1→ •x2→ •H2
@@ -865,7 +866,7 @@ $ $ git init   ← creates an initial layout containing (Alternatively $ $git cl
 
  ┌ CHERRY-PICK @[https://git-scm.com/docs/git-cherry-pick]────────────────
  │ "Pick" unique-commits from branch and apply to another branch
- │ $ $ git checkout branch02 ⅋⅋ git cherry-pick  -x branch02
+ │ $ $ git checkout branch02 && git cherry-pick  -x branch02
  │ ··· • → • →H1 → ...                          └┬┘
  │     │                  • Useful if "source" branch is public, generating
  │     └─→ • → • →H2 →      standardized commit message allowing co-workers
@@ -875,7 +876,7 @@ $ $ git init   ← creates an initial layout containing (Alternatively $ $git cl
  └────────────────────────────────────────────────────────────────────────
 [[}]]
 
-● GPG signed commits @ma [[{security.secret_management,security.signed_content,01_PM.TODO]]
+# GPG signed commits @ma [[{security.secret_management,security.signed_content,01_PM.TODO]]
 @[https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work]
 
   GPG PRESETUP
@@ -958,7 +959,7 @@ $ git pull  \             ←   # Verify signature at pull time
   --verify-signatures
 [[}]]
 
-●  Client Hooks [[{01_PM.TODO.now]]
+#  Client Hooks [[{01_PM.TODO.now]]
 @[https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks]
 
   Client-Side Hooks
@@ -1050,7 +1051,7 @@ $ git pull  \             ←   # Verify signature at pull time
         a push occurs (a non-zero exit code will abort the push).
 [[}]]
 
-● Server-Side Hooks [[{01_PM.TODO.now]]
+# Server-Side Hooks [[{01_PM.TODO.now]]
 (system administrator only)
 - Useful to enforce nearly any kind of policy in repository.
 
@@ -1114,7 +1115,7 @@ $ git pull  \             ←   # Verify signature at pull time
    client  will block until completion.
 [[}]]
 
-● GIT Commit Standard Emojis: [[{]]
+# GIT Commit Standard Emojis: [[{]]
 @[https://gist.github.com/parmentf/035de27d6ed1dce0b36a]
  Commit type               Emoji                    Graph
  Initial commit           :tada:                      🎉
@@ -1160,7 +1161,7 @@ $ git pull  \             ←   # Verify signature at pull time
  Move/rename repository  :truck:                      🚚
 [[}]]
 
-● GitHub: Custom Bug/Feature-request templates [[{git.github]]
+# GitHub: Custom Bug/Feature-request templates [[{git.github]]
   WARN : Non standard (Vendor lock-in) Microsoft extension.
  $ cat .github/ISSUE_TEMPLATE/bug_report.md
  | ---
@@ -1217,7 +1218,7 @@ $ git pull  \             ←   # Verify signature at pull time
  @[https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions]
 [[}]]
 
-● Unbreakable Branches: [[{git.bitbucket,qa,jenkins.troubleshooting]]
+# Unbreakable Branches: [[{git.bitbucket,qa,jenkins.troubleshooting]]
 @[https://github.com/AmadeusITGroup/unbreakable-branches-jenkins]
 
 - plugins for Bitbucket and Jenkins trying to fix next problem:
@@ -1339,7 +1340,7 @@ $ git pull  \             ←   # Verify signature at pull time
     - rewriting commit messages
 [[}]]
 
-● TODO: [[{01_PM.TODO]]
+# TODO: [[{01_PM.TODO]]
 • GitOps uses Git (DVCS) as single source of truth  for declarative infrastructure and [[{ci/cd.gitops]]
   applications. Every developer within a team can issue pull requests against a
   Git repository, and when merged, a "diff and sync" tool detects a difference
@@ -1492,7 +1493,7 @@ https://github.com/awslabs/git-secrets#synopsis
 [[git}]]
 
 #############################################################
-● Containerization ("Docker") Summary [[{containerization]] #
+# Containerization ("Docker") Summary [[{containerization]] #
 #############################################################
 
 @[https://reproducible-builds.org/]
@@ -1561,7 +1562,7 @@ https://github.com/awslabs/git-secrets#synopsis
     for more information.
 [[}]]
 
-● Container Ecosystem:  [[{containerization.runtime,containerization.performance]] #[runtimes_summary]
+# Container Ecosystem:  [[{containerization.runtime,containerization.performance]] #[runtimes_summary]
                         [[02_doc_has.comparative,standards]]
 - Image creation:
   Alt 1) Dockerfile -> docker build
@@ -1706,7 +1707,7 @@ https://github.com/awslabs/git-secrets#synopsis
 - 'crun' is more portable: Ex: Risc-V.
 [[}]]
 
-● Container Network Iface (CNI): [[{containerization.networking,101,01_PM.TODO]]
+# Container Network Iface (CNI): [[{containerization.networking,101,01_PM.TODO]]
 @[https://github.com/containernetworking/cni]
 - specification and libraries for writing plugins to configure network interfaces
   in Linux containers, along with a number of supported plugins.
@@ -1802,7 +1803,7 @@ https://github.com/awslabs/git-secrets#synopsis
   - https.//slack.cncf.io  - topic #cni
 [[}]]
 
-● Docker  summary: [[{containerization.docker,containerization.storage.host,containerization.image.registry,]]
+# Docker  summary: [[{containerization.docker,containerization.storage.host,containerization.image.registry,]]
                    [[containerization.runtime,containerization.security,01_PM.TODO,containerization.orchestration.swarn]]
   - External Links:
   - @[https://docs.docker.com/]
@@ -1971,7 +1972,7 @@ https://github.com/awslabs/git-secrets#synopsis
 | · version     Show the Docker version information
 
 
-● /var/run/docker.sock:
+# /var/run/docker.sock:
 @[https://medium.com/better-programming/about-var-run-docker-sock-3bfd276e12fd]
   - Unix socket the Docker daemon listens on by default,
     used to communicate with the daemon from within a container.
@@ -1980,7 +1981,7 @@ https://github.com/awslabs/git-secrets#synopsis
     "special" container (e.g: Kubernetes controlers,...)
     $ docker run -v /var/run/docker.sock:/var/run/docker.sock ....
 
-● Docker Networks: [[{containerization.networking,101]]
+# Docker Networks: [[{containerization.networking,101]]
   $ docker network create  network01     <-  Create new network
 
   $ docker run      \
@@ -2002,7 +2003,7 @@ https://github.com/awslabs/git-secrets#synopsis
 
 [[}]]
 
-● VOLUMES [[{containerization.storage]]
+# VOLUMES [[{containerization.storage]]
 
                                             REUSING VOLUMES:
   $ docker run -it  --name alpha \       <- Create new container mounting
@@ -2027,7 +2028,7 @@ https://github.com/awslabs/git-secrets#synopsis
     -it alpine vi index.html
 [[}]]
 
-● docker-compose: [[{containerization.orchestration.docker-compose]]
+# docker-compose: [[{containerization.orchestration.docker-compose]]
 - "Self documenting" YAML file defining services, networks and volumes.
   Full ref: @[https://docs.docker.com/compose/compose-file/]
   Ideal to create development/production enviroments running just on a single host
@@ -2277,7 +2278,7 @@ https://github.com/awslabs/git-secrets#synopsis
   └──────────────────────────────────────────────────┘
 [[}]]
 
-● Container Registry ("Image repository") Summary [[{containerization.image.registry,01_PM.TODO]]
+# Container Registry ("Image repository") Summary [[{containerization.image.registry,01_PM.TODO]]
 @[https://docs.docker.com/registry/#what-it-is]
 @[https://docs.docker.com/registry/introduction/]
   $ docker run -d -p 5000:5000 \  ← Start registry server
@@ -2297,7 +2298,7 @@ https://github.com/awslabs/git-secrets#synopsis
   $ docker container rm -v registry
 [[}]]
 
-● Dockerize (non-friendly container apps): [[{containerization.image.build,01_PM.low_code,containerization.troubleshooting]]
+# Dockerize (non-friendly container apps): [[{containerization.image.build,01_PM.low_code,containerization.troubleshooting]]
   @[https://github.com/jwilder/dockerize]
   Utility to simplify running applications in docker containers allowing to:
   - generate app config. files AT CONTAINER STARTUP TIME
@@ -2315,7 +2316,7 @@ https://github.com/awslabs/git-secrets#synopsis
      (Ex: nginx logs to /var/log/nginx/access.log and /var/log/nginx/error.log by default)
 [[}]]
 
-● Managing Containers:
+# Managing Containers:
 
 $ docker run \                   <- Create and run container based on imageXX
   --rm \                         <- Remove on exit (remove to see container's logs after exit)
@@ -2334,7 +2335,7 @@ $ docker stop containerXX && \   <- Try to stop container properly.
 
 $ docker container prune  <- Prune stopped containers
 
-● Monitoring running containers 101 [[{containerization.monitoring]]
+# Monitoring running containers 101 [[{containerization.monitoring]]
 List containers instances:
    $ docker ps     # only running
    $ docker ps -a  # also finished, but not yet removed (docker rm ...)
@@ -2360,7 +2361,7 @@ List containers instances:
 
 
 
-● Dockviz: [[{containerization.monitoring,gui,containerization.troubleshooting]]
+# Dockviz: [[{containerization.monitoring,gui,containerization.troubleshooting]]
 @[https://github.com/justone/dockviz]
   Show a graph of running containers-dependencies and image-dependencies.
 
@@ -2401,7 +2402,7 @@ $ dockviz images - -i *                 #  <- Show incremental size (vs cumulati
         └─316b678ddf48 Virtual Size: 70.8 MB Tags: ubuntu:13.04, ubuntu:raring
 [[}]]
 
-● Managing Images:  [[{containerization.image.registry]]
+# Managing Images:  [[{containerization.image.registry]]
   $ docker images        # ← List local ("downloaded/instaled") images
 
   $ docker search redis  # ← Search remote images @ Docker Hub:
@@ -2446,7 +2447,7 @@ $ dockviz images - -i *                 #  <- Show incremental size (vs cumulati
   $ docker pull ${REGISTRY}/${USER}/${IMG_NAME}:${IMG_VER}  <- ALT1: DOWNLOAD FROM PRIVATE REGISTRY
   $ docker pull ${IMG_NAME}:${IMG_VER} [[}]]                <- ALT2: DOWNLOAD FROM DOCKER HUB
 
-● BUILD DOCKER/OCI IMAGE 101 [[{containerization.dockerfile,containerization.image.build]]
+# BUILD DOCKER/OCI IMAGE 101 [[{containerization.dockerfile,containerization.image.build]]
   ┌─ Dockerfile ───────────────────────────────┐
   │ FROM registry.redhat.io/ubi7/ubi           <- 72.7 MB layer
   │ RUN dnf update                             <- 30.1 MB layer
@@ -2647,7 +2648,7 @@ it has executed before and uses the result for each new build.
 
 [[}]]
 
-● https://github.com/googlecontainertools/distroless  [[{containerization.image.build,qa]]
+# https://github.com/googlecontainertools/distroless  [[{containerization.image.build,qa]]
 - "distroless" images contain only your application and its runtime dependencies.
   (not package managers, shells,...)
   notice: in kubernetes we can also use init containers with non-light images
@@ -2677,7 +2678,7 @@ it has executed before and uses the result for each new build.
     cmd ["main.jar"]
 [[}]]
 
-● CNCF buildpacks.io: [[{containerization.image.build,01_pm.low_code,dev_stack.java]]
+# CNCF buildpacks.io: [[{containerization.image.build,01_pm.low_code,dev_stack.java]]
 • build oci image directly from JAVA source source (Skipping Dockerfile/docker build)
 • highly modular and customizable.
 • used, among others, by spring (spring boot 2.3+) with  gradle and maven support.
@@ -2697,7 +2698,7 @@ it has executed before and uses the result for each new build.
     unpredictable.
 [[}]]
 
-● rootless buildah: [[{containerization.image.build]]
+# rootless buildah: [[{containerization.image.build]]
 @[https://opensource.com/article/19/3/tips-tricks-rootless-buildah]
 - building containers in unprivileged environments
 - library+tool for building oci images.
@@ -2710,7 +2711,7 @@ it has executed before and uses the result for each new build.
    comments apply to both dnf and yum.
 [[}]]
 
-● appsody (prebuilt images)  [[{containerization.image.build,dev_stack.kubernetes,01_PM.low_code,01_PM.todo]]
+# appsody (prebuilt images)  [[{containerization.image.build,dev_stack.kubernetes,01_PM.low_code,01_PM.todo]]
 @[https://appsody.dev/docs]
 - pre-configured application stacks for rapid development
   of quality microservice-based applications.               [[qa]]
@@ -2805,7 +2806,7 @@ it has executed before and uses the result for each new build.
 [[}]]
 
 
-● Podman (IBM/RedHat)  [[{containerization.podman,02_DOC_HAS.comparative,01_PM.TODO]]
+# Podman (IBM/RedHat)  [[{containerization.podman,02_DOC_HAS.comparative,01_PM.TODO]]
 - No system daemon required.
 - No daemon required.
 - rootless containers.                                         [[containerization.security]]
@@ -3049,7 +3050,7 @@ https://www.redhat.com/sysadmin/improved-systemd-podman
 
 [[}]]
 
-● TODO/un-ordered/classify [[{containerization,01_PM.TODO]]
+# TODO/un-ordered/classify [[{containerization,01_PM.TODO]]
 - Kompose: docker-compose to Kubernetes convert tool.
   - https://github.com/kubernetes/kompose
   - https://github.com/tldr-pages/tldr/blob/master/pages/common/kompose.md
@@ -3137,7 +3138,7 @@ https://www.redhat.com/sysadmin/improved-systemd-podman
     * netstat installed on host (vs container).
 [[}]]
 
-● sysdig tools:  [[{containerization.monitoring,containerization.security,troubleshooting,01_PM.todo]]
+# sysdig tools:  [[{containerization.monitoring,containerization.security,troubleshooting,01_PM.todo]]
 container-focused linux troubleshooting and monitoring tool.
 
 once sysdig is installed as a process (or container) on the server,
@@ -3295,7 +3296,7 @@ https://www.infoq.com/news/2020/12/dockerhub-image-vulnerabilities/
 
 [[containerization}]]
 ##################################
-● Networking Summary for DevOps: # [[{101,01_PM.low_code,networking.load_balancer,web_balancer,01_PM.WiP]]
+# Networking Summary for DevOps: # [[{101,01_PM.low_code,networking.load_balancer,web_balancer,01_PM.WiP]]
 ##################################
 • HTTP balanced proxy Quick Setup with HAProxy
   REF: @[https://github.com/AKSarav/haproxy-nodejs-redis/blob/master/haproxy/]
@@ -3493,7 +3494,7 @@ REF: @[https://raazkumar.com/tutorials/nginx/nginx-conf/]
                         ‘cs=$upstream_cache_status’ ;
 
     access_log /dev/stdout main_ext;
-    error_log /var/log/nginx/error.log warn;   Read more on nginx error log⅋common errors
+    error_log /var/log/nginx/error.log warn;   Read more on nginx error log&common errors
 
 
     ##
@@ -3572,7 +3573,7 @@ REF: @[https://raazkumar.com/tutorials/nginx/nginx-conf/]
 [[}]]
 
 ##############################
-● Monitoring for DevOps 101  # [[{monitoring.101,]]
+# Monitoring for DevOps 101  # [[{monitoring.101,]]
 ##############################
  • Infra vs App Monitoring: [[{02_doc_has.comparative]]
  └*Infrastructure Monitoring:*
@@ -3599,7 +3600,7 @@ REF: @[https://raazkumar.com/tutorials/nginx/nginx-conf/]
   [[}]]
 [[}]]
 
-● Yaml References: [[{yaml.101]]
+# Yaml References: [[{yaml.101]]
 @[http://docs.ansible.com/ansible/YAMLSyntax.html]
 YAML                               JSON
 ---                                {

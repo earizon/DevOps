@@ -1,4 +1,4 @@
-●  Apropos:
+#  Apropos:
 - Visit next Web site for a great experience:
   https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/ansible.txt
 
@@ -7,7 +7,7 @@
 @[https://www.github.com/earizon/DevOps]
   Your commits and pull-request will be immortalized in the Pantheon of the Unicode Gods.
 
-● Ansible Summary: [[{ansible.101]]
+# Ansible Summary: [[{ansible.101]]
 View on:
 https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/ansible.txt
 - ansible-doc:  101,security.secret_management,qa #[ansible_summary]
@@ -127,7 +127,7 @@ roles/                                             ║  INPUT
 │ │ ├─ bar.txt     # ← input to   copy─resource    ║@[https://docs.ansible.com/ansible/2.4/playbooks_reuse_includes.html]
 │ │ └─ foo.sh      # ← input to script─resource    ║ "include"        ← evaluated @ playbook parsing
 │ ├─vars/          #                               ║ "import"         ← evaluated @ playbook execution
-│ │ └─ main.yml    # ← role related vars           ║ "import_playbook"← plays⅋tasks in each playbook
+│ │ └─ main.yml    # ← role related vars           ║ "import_playbook"← plays&tasks in each playbook
 │ ├─defaults/      #                               ║ "include_tasks"
 │ │ └─ main.yml    # ← role related vars           ║ "import_tasks"
 │ │                  ← with lower priority         ║
@@ -136,7 +136,7 @@ roles/                                             ║  INPUT
 │ ├─library/       # (opt) custom modules          ║. $ ansible server01 -m command -a uptime
 │ ├─module_utils/  # (opt) custom module_utils     ║                     ^^^^^^^^^^
 │ └─lookup_plugins/# (opt) a given 'lookup_plugins'║                     default module. Can be ommited
-│                          is used                 ║  testserver │ success │ rc=0 ⅋⅋
+│                          is used                 ║  testserver │ success │ rc=0 &&
     ...                                            ║  17:14:07 up  1:16,  1 user, load average: 0.16, ...
 ═══════════════════════════════════════════════════╩════════════════════════════════════════════════════════════════
 **1:*@[https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html]
@@ -171,7 +171,7 @@ roles/                                             ║  INPUT
                                                           │    *# post_tasks execute after roles *
   handlers:                ←  tasks triggered by events   │    *post_tasks*:
    - name: restart-apache2 ←  *name as a Unique-ID*       │     - name: notify Slack
-     service: name=apache2 state=restarted                │       local_action: ˃
+     service: name=apache2 state=restarted                │       local_action: >
                                                           │         slack
 - hosts: localhost                                        │         domain=acme.slack.com
   connection: local                                       │         token={{ slack_token }}
@@ -199,7 +199,7 @@ roles/                                             ║  INPUT
        when: *foo_result*.rc == 5
 
 
-● Error Handling   [[qa.error_handling]]
+# Error Handling   [[qa.error_handling]]
 -  default behavior:
    - take a host out of the play if a task fails
      and continue with the other hosts.
@@ -244,7 +244,7 @@ ntp_server=ntp.ubuntu.com                   Other patterns:A
                                             All hosts        *all*
 [ *production*:vars]                        All              ***
 db_primary_host=rhodeisland.example.com     Union           devO*:*staging
-db_replica_host=virginia.example.com        Intersection    stagingO*:⅋*database
+db_replica_host=virginia.example.com        Intersection    stagingO*:&*database
 db_name=widget_production                   Exclusion       devO*:!*queue
 rabbitmq_host=pennsylvania.example.com      Wildcard         ***.example.com
                                             Range           webO*[5:10]*
@@ -280,7 +280,7 @@ rabbitmq
 web_group01[01:20].example.com  ← ranges
 web-[a-t].example.com           ←
 
-● variable "scopes" ────────────────────────────────────────────────────────────
+# variable "scopes" ────────────────────────────────────────────────────────────
 Playbook Variable Main Scopes
 -*Global:*set by config, ENV.VARS and cli
 -*Play  :*each play and contained structures,
@@ -579,15 +579,15 @@ To copy local facts and make the usable in current play:
   }
 
   ┌─ templates/000_default.conf.tpl ───
-  │˂VirtualHost *:80˃
+  │<VirtualHost *:80>
   │    ServerAdmin webmaster@localhost
   │    DocumentRoot {{ doc_root }}
   │
-  │    ˂Directory {{ doc_root }}˃
+  │    <Directory {{ doc_root }}>
   │        AllowOverride All
   │        Require all granted
-  │    ˂/Directory˃
-  │˂/VirtualHost˃
+  │    </Directory>
+  │</VirtualHost>
 
   Task:
   |  - name: Setup default virt.host
@@ -621,7 +621,7 @@ To copy local facts and make the usable in current play:
       homepage: /usr/share/nginx/html/index.html
     tasks:
     - name: copy home page
-      copy: ˂
+      copy: <
         src={{ homepage  *| basename* }}
         dest={{ homepage }}
 
@@ -668,7 +668,7 @@ To copy local facts and make the usable in current play:
 [[}]]
 
 
-● ansible-vault: Handling secrets [[{security.secret_management]] #[ansible_handling_secrets]
+# ansible-vault: Handling secrets [[{security.secret_management]] #[ansible_handling_secrets]
   En/de-crypts values/data structures/files
 @[https://github.com/tldr-pages/tldr/blob/master/pages/common/ansible-vault.md]
 @[https://docs.ansible.com/ansible/latest/user_guide/vault.html#id17]
@@ -716,7 +716,7 @@ To copy local facts and make the usable in current play:
                         encrypt_string          into existing playbook
                                                 Ex:
                                                 → mySecretToEncrypt
-                                                → bla bla blah(Ctrl+D)→ !vault ← C⅋P to a yml file:
+                                                → bla bla blah(Ctrl+D)→ !vault ← C&P to a yml file:
                                                 →    $ANSIBLE_VAULT;1.1;AES256   - vars:
                                                 →    66386439653236336462...       - secret01: !vault |
                                                 →    64316265363035303763...                $ANSIBLE_VAULT;1.1;AES256
@@ -880,7 +880,7 @@ To copy local facts and make the usable in current play:
   #   hosts: all -- applies to all hosts
   #   hosts: hostname -- apply ONLY to the host 'hostname'
   #   hosts: groupname -- apply to all hosts in groupname
-  #   hosts: group1,group2 -- apply to hosts in group1 ⅋ group2
+  #   hosts: group1,group2 -- apply to hosts in group1 & group2
   #   hosts: group1,host1 -- mix and match hosts
   #   hosts: *.mars.nasa.gov wildcard matches work as expected
   #
@@ -926,7 +926,7 @@ To copy local facts and make the usable in current play:
   # Default: none
   # Required: no
   # Description:
-  #  Set configuration variables passed to templates ⅋ included playbooks
+  #  Set configuration variables passed to templates & included playbooks
   #  and handlers.  See below for examples.
   vars:
     color: brown
@@ -995,7 +995,7 @@ To copy local facts and make the usable in current play:
   #   A 'vars' YAML file represents a list of variables. Don't use playbook
   #   YAML for a 'vars' file.
   #
-  #   Remove the indentation ⅋ comments of course, the '---' should be at
+  #   Remove the indentation & comments of course, the '---' should be at
   #   the left margin in the variables file.
   #
   vars_files:
@@ -1054,7 +1054,7 @@ To copy local facts and make the usable in current play:
   tasks:
     ##########
     # The simplest task
-    # Each task must have a name ⅋ action.
+    # Each task must have a name & action.
     - name: Check that the server's alive
       action: ping
 
@@ -1124,7 +1124,7 @@ To copy local facts and make the usable in current play:
     #   A 'tasks' YAML file represents a list of tasks. Don't use playbook
     #   YAML for a 'tasks' file.
     #
-    #   Remove the indentation ⅋ comments of course, the '---' should be at
+    #   Remove the indentation & comments of course, the '---' should be at
     #   the left margin in the variables file.
 
     # In this example $user will be 'sklar'
@@ -1266,7 +1266,7 @@ To copy local facts and make the usable in current play:
 - include: handlers/site.yml
 [[}]]
 
-● Ansible Troubleshooting [[{troubleshooting]]
+# Ansible Troubleshooting [[{troubleshooting]]
   Problem ex:
   'django_manage' mondule always returns 'changed: False' for
   some "external" ddbb commands.
@@ -1288,7 +1288,7 @@ To copy local facts and make the usable in current play:
 [[}]]
 
 
-● TODO/Non-Classified [[{01_PM.TODO]]
+# TODO/Non-Classified [[{01_PM.TODO]]
 • Dynamic Inventory  [[{cloud]]
 @[https://docs.ansible.com/ansible/2.5/user_guide/intro_dynamic_inventory.html]
 (EC2, OpenStack,...) [[}]]

@@ -1,4 +1,4 @@
-●  Apropos:
+#  Apropos:
 - Visit next Web site for a great experience:
   https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/Jenkins.txt
 
@@ -11,7 +11,7 @@
 
 [[{jenkins]]
 #####################
-● JENKINS SUMMARY/101 [[{jenkins.101,security.backup,security.secret_management,01_PM.low_code,notifications.jenkins]]
+# JENKINS SUMMARY/101 [[{jenkins.101,security.backup,security.secret_management,01_PM.low_code,notifications.jenkins]]
 #####################
   ##################
   # External Links #
@@ -54,7 +54,7 @@
     $env.WORKSPACE      : absolute path for workspace
 
 ───────────────────────────────────────────────────────────────────────
-● Jenkinsfile
+# Jenkinsfile
 REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
      @[https://jenkins.io/doc/pipeline/steps/]
 • ┌ PIPELINE EXECUTION SUMMARY ──────────────────────┐
@@ -177,7 +177,7 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
   │   doGenerateSubmoduleConfigurations: false,                          │
   │ ])                                                                   │
   └──────────────────────────────────────────────────────────────────────┘
-● ┌─ MULTIAGENT PIPELINES COMMON BUILD ──┐  Useful for multi─target builds/tests/...
+# ┌─ MULTIAGENT PIPELINES COMMON BUILD ──┐  Useful for multi─target builds/tests/...
   │ pipeline {                           │  reusing common builds in different agents.
   │   agent none                         │
   │   stages {                           │
@@ -211,9 +211,9 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
   │ }                                    │
   └──────────────────────────────────────┘
 
-● ┌─ PARALLEL EXECUTION ───────────┐
+# ┌─ PARALLEL EXECUTION ───────────┐
   │ stage('Test') {                │
-  │   parallel                     ←·•  Execute linux⅋windows nodes
+  │   parallel                     ←·•  Execute linux&windows nodes
   │   linux: {                     │ ·  in parallel.
   │     node('linux') {            ←─┤
   │       try {                    │ ·
@@ -232,7 +232,7 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
   └────────────────────────────────┘
 [[jenkins.101}]]
 
-● Jenkins Pipeline Builder [[{01_PM.low_code,QA.UX]]
+# Jenkins Pipeline Builder [[{01_PM.low_code,QA.UX]]
   @[https://jenkinspipelinegenerator.octopus.com/#/]
   https://www.linuxtoday.com/developer/jenkins-pipeline-builder-now-available/
   pipeline builder scans your public GitHub repository and attempts
@@ -242,7 +242,7 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
 [[}]]
 
 ────────────────────────────────────────────────────────────────────────────────
-● Admin 101: EXPORT/IMPORT jobs [[{security.backup]]
+# Admin 101: EXPORT/IMPORT jobs [[{security.backup]]
 
   REF: @[https://wiki.jenkins-ci.org/display/JENKINS/Jenkins+CLI]
 
@@ -254,16 +254,16 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
 
     · Script:
       JENKINS_CLI="java -jar ${JENKINS_HOME}/war/WEB-INF/jenkins-cli.jar -s ${SERVER_URL}"
-      ${JENKINS_CLI}    get-job job01 ˃ job01.xml    ← job01.xml can be "gitted",...
-      ${JENKINS_CLI} create-job job01 ˂ job01.xml
-       WARN:  There are issues with bare naked ampersands in the XML such as when you have ⅋ in Groovy code.
+      ${JENKINS_CLI}    get-job job01 > job01.xml    ← job01.xml can be "gitted",...
+      ${JENKINS_CLI} create-job job01 < job01.xml
+       WARN:  There are issues with bare naked ampersands in the XML such as when you have & in Groovy code.
             (REF: @[https://stackoverflow.com/questions/8424228/export-import-jobs-in-jenkins])
 
   └ · ALT 2: USING CURL
     *******************
     SERVER_URL = "http://..."                                     ← Without Authentication
     SERVER_URL = "http://${USER}:${API_TOKEN}@..."                ← With    Authentication
-    $ curl -s ${SERVER_URL}/job/ JOBNAME/config.xml ˃ job01.xml   ← EXPORT
+    $ curl -s ${SERVER_URL}/job/ JOBNAME/config.xml > job01.xml   ← EXPORT
     $ curl -X POST ${SERVER_URL}/createItem?name=JOBNAME' \       ← IMPORT
            --header "Content-Type: application/xml" -d  job01.xml
 
@@ -272,7 +272,7 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
     $ tar cjf _var_lib_jenkins_jobs.tar.bz2 /var/lib/jenkins/jobs
  [[security.backup}]]
 
-● Admin 101: Dockerized Jenkins  [[{01_PM.low_code]]
+# Admin 101: Dockerized Jenkins  [[{01_PM.low_code]]
   $ docker run --rm -u root -p 8080:8080 \
       -v jenkins-data:/var/jenkins_home \             ← if 'jenkins-data' Docker volumen
       \                                                  doesn't exists it will be created
@@ -285,7 +285,7 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
       jenkinsci/blueocean                               $ docker exec -it jenkins01 bash
   [[}]]
 
-● End-to-End Multibranch Pipeline [[{jenkins.101,01_PM.TODO]]
+# End-to-End Multibranch Pipeline [[{jenkins.101,01_PM.TODO]]
   @[https://jenkins.io/doc/tutorials/build-a-multibranch-pipeline-project/]
   PREREQUISITES: Git installed, Docker installed.
   ┌──────────────┬────────────┬────────────┐
@@ -381,7 +381,7 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
         + }
 [[}]]
 
-● Jenkins Unordered:  [[{01_PM.TODO]]
+# Jenkins Unordered:  [[{01_PM.TODO]]
 • Example Pipeline script:[[{jenkins.101,01_PM.TODO]]
   @[https://jenkins.io/doc/pipeline/steps/pipeline-build-step/]
   build job: 'Pipeline01FromJenkinsfileAtGit', propagate: true, wait: false

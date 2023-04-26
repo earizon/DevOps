@@ -1,4 +1,4 @@
-● Who-is-Who: [[{]]
+# Who-is-Who: [[{]]
   (Forcibly incomplete but still quite pertinent list of core people and companies)
   - Linus Torvalds:
     - He loves C++ and Microkernels, author of a Unix like

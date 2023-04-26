@@ -1,11 +1,11 @@
-●  Apropos:
+#  Apropos:
 - Visit next Web site for a great experience:
   https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/linux_SElinux.txt
 - If you want to contribute to great gistory of this document you can
   take the next flight to:
 @[https://www.github.com/earizon/DevOps]
 
-● SElinux Summary [[{linux.security.selinux,security.aaa,linux.kernel.101]] #[selinux_summary]
+# SElinux Summary [[{linux.security.selinux,security.aaa,linux.kernel.101]] #[selinux_summary]
 - Ext.Refs
   - https://github.com/SELinuxProject/selinux/wiki
   - https://github.com/SELinuxProject/setools/wiki
@@ -242,7 +242,7 @@
 │                 │        │   Policy                                                               │
 └─────────────────┴────────┴────────────────────────────────────────────────────────────────────────┘
 
-● SELinux Kernel Object Classes:
+# SELinux Kernel Object Classes:
   Reminder:
   - For nearly every linux (kernel) object that must be protected there is a matching SELInux kernel class.
   - This class has a defined set of hardcoded actions that will be allowed/denied by a running policy.
@@ -384,7 +384,7 @@
 └──────────────────────────────────────────────────────────────────────────────────┘
 
 
-● SELINUX FS-LABELING:
+# SELINUX FS-LABELING:
 - When a new file-alike object is created its contexts
   is copied (by default) from its parent's directory
   by default.
@@ -423,7 +423,7 @@ NOTE: SELinux context for remote FS can be specified *at mount time*.
                   /www/html/index.html has context unconfined_u:object_r:default_t:s0,
                                          should be     system_u:object_r:httpd_sys_content_t:s0
 
-● SELINUX login objects:
+# SELINUX login objects:
 - SELinux users are not created with a command,
   nor does they have its own login access to the server.
 - SELinux users are*defined in the policy*loaded into
@@ -514,7 +514,7 @@ Examples:
 └──────────────────────────────────────────────┘
 
 
-● SELINUX PROCESS CONTEXT-SWITCH
+# SELINUX PROCESS CONTEXT-SWITCH
 - Kernel takes care of automatic process-context-labeling once
   a policy has been loaded.
 
@@ -564,7 +564,7 @@ Examples:
      -p execute           -p entrypoint        -p transition    ← action requite for class
      -Ad                  -Ad                  -Ad                (See [[selinux object classes?]])
 
-● SELINUX Booleans
+# SELINUX Booleans
 <a href="https://linux.die.net/man/8/booleans">man 8 booleans</a>
 - Allow to customize a given policy at runtime.
 - Common to-many-apps actions that can be allowed/denied are "grouped"
@@ -591,7 +591,7 @@ Examples:
 $ sudO*setsebool* -P nis_enabled 0
 $ sudO*setsebool* -P httpd_can_network_connect 1
 
-● SELINUX TROUBLESHOOTING:
+# SELINUX TROUBLESHOOTING:
 ┌─────────────────────────────────┐                                  ┌──────────────────────────────┐
 │*Q: What an SELinux error means?*│                                  │*BUG FIXING GENERAL PROCEDURE*│
 ├─────────────────────────────────┴────────────────────────────────┐ ├──────────────────────────────┴───────────────────────────────┐

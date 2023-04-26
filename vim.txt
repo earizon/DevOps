@@ -1,8 +1,8 @@
-Vim Cheat Sheet [[{text_utils.vim]]
+Vim Cheat Sheet
 vim History: @[https://begriffs.com/posts/2019-07-19-history-use-vim.html]
    - Core Author: Bram Moolenaar (Bram@Vim.org)
 
-● CONCEPTS:
+# CONCEPTS:
   ===========
   vim buffer: in-memory buffer of file on disk.
   vim window: graphical viewport on a buffer.
@@ -29,7 +29,7 @@ vim History: @[https://begriffs.com/posts/2019-07-19-history-use-vim.html]
 
   TIP: Learn to use :b and :sb to switch buffers instead of cycling! (See :h :b)
 
-● BASICS:                                       │  *VISUAL("EASY") MODE*:             │
+# BASICS:                                       │  *VISUAL("EASY") MODE*:             │
  ───────────────────────────────────────────────┼─────────────────────────────────────┤
   [Esc]  key      ← exit edit/visual/... mode   │   v: start V. (mark) mode           │
   :help "keyword" ← open help for keyword       │     (then apply command on it)      │
@@ -37,8 +37,8 @@ vim History: @[https://begriffs.com/posts/2019-07-19-history-use-vim.html]
   :b 3            ← edit buffer 3               │ + v  powerful to draw ASII diagrams,│
   u | Ctrl + r    ← Undo | Redo                 │      edit tabbed data, repetitive   │
   .               ← repeat last command         │      "switch-case like" code,...    │
-  ...!            ← '!' forces cmd ...          │    ˃ ← shift text right             │
-                         execution              │    ˂ ← shift text left              │
+  ...!            ← '!' forces cmd ...          │    > ← shift text right             │
+                         execution              │    < ← shift text left              │
   :!sh ← pass visual-block/range as STDIN to
          sh/python/... and replace block/range
          with STDOUT from sh/python/... execution
@@ -109,7 +109,7 @@ vim History: @[https://begriffs.com/posts/2019-07-19-history-use-vim.html]
                                                                                      │   zw : remove from dict
 
 
-● Package Manager (vim 8.0+/Neovim):
+# Package Manager (vim 8.0+/Neovim):
 - Package manager: Replaces ad-hoc plugin managers before 8.0
                   (bundler, vim-plug,... *not needed anymore*)
   │Package│ 1 ←···→ 1+ │plugin│ 1 ←····→ 1+ │vimscript│
@@ -120,8 +120,63 @@ $*$ mkdir -p ~/.vim/pack/$name/start* ← $name : arbitrary name, ussually local
 $*$ cd ~/.vim/pack/$name/start*
 $*$ git clone $url_git_repo   *       ← use $*$ git pull ...* to update/swith package version
 
-● CoC Plugin: Intellisense support. Reuse all Visual Code plugins thanks to LSP:
+# ALE: (A)synchronous (L)int (E)ngine -> """lint while you type""".
+- Vim Script Plugin (vs CoC NodeJS)
+- Install:
+  $ mkdir -p ~/.vim/pack/git-plugins/start
+  $ git clone --depth 1 \
+    https://github.com/dense-analysis/ale.git \
+    ~/.vim/pack/git-plugins/start/ale
+
+
+
+- :help ale-options             <·· help on global options
+- :help ale-integration-options <·· help on options for particular linters.
+- :help ale-fix                 <·· help on how to fix files with ALE.
+  Ctrl+k: ale_previous_wrap (nmap <silent> <C-k> <Plug>)
+  Ctrl+j: ale_next_wrap     (nmap <silent> <C-j> <Plug>)
+
+- :ALEFix   "Fixing"
+- :ALEFixSuggest  ··> suggest some supported tools for fixing code.
+- :ALEGoToDefinition  (with LSP enabled)
+- :ALEFindReferences  (with LSP enabled)
+- :ALEHover           (with LSP enabled, show "brief info about symbol 'down' the cursor)
+- : ALESymbolSearch   (with LSP enabled)
+- :ALERename          (LSP? refactor)
+- :ALEFileRename      (LSP? rename file + fix import paths : tsserver only).
+- : ALECodeAction     (execute actions on cursor or visual range like automatically fixing errors).
+- :ALEInfo            Show linters configured for current file
+
+- ALE makes use of job control functions and timers  (NeoVim 0.2 and Vim 8+)
+  to run linters in the contents of text-buffers (in memory "real-time"
+  buffers vs saved-to-disk).
+
+
+
+
+# CoC Plugin: Visual Code Intellisense support:  [[{]]
 @[https://github.com/neoclide/coc.nvim]
+- popular Vim plugin written in TypeScript.
+  WARN: dependent on the npm ecosystem for providing full IDE features to Vim.
+- Both ALE and coc.nvim implement Language Server Protocol (LSP) clients for
+  upporting diagnostics (linting with a live server),
+- easiest way to using 'ALE' and coc.nvim together:
+  REF: @[https://github.com/dense-analysis/ale#faq-coc-nvim]
+  1) :CocConfig                        <··· Will open 'coc.nvim' config file
+   + "diagnostic.displayByAle": true   <··· add this line to inform coc.nvim to send diagnostics to ALE
+                                            so ALE controls how all problems are presented to you.
+                                            You can further configure how problems appear
+                                            by using all of the settings mentioned in ALE's
+                                            help file, including how often diagnostics are
+                                            requested. See :help ale-lint.
+
+  2) Edit ~/.vimrc and add:
+   + let g:ale_disable_lsp = 1         <··· Disable LSP features in ALE (let coc.nvim in charge of it)
+     ^^^^^^^^^^^^^^^^^^^^^^^^^
+     WARN: before plugins are loaded!!!
+
+   Optional:
+   'b:ale_disable_lsp' can also be set/unset in 'ftplugin' files to en/dis-able LSP features in ALE for different filetypes.
 - add support for Language Server Protocol (LSP) allowing to  reuse "Visual Studio Plugins"
 
  *CoC Tunning*                                   *CoC Troubleshooting*
@@ -133,10 +188,10 @@ $*$ git clone $url_git_repo   *       ← use $*$ git pull ...* to update/swith 
                                                  │      → :CocCommand java.clean.workspace
                                                  │        → restart coc
                                                  │- :CocDisable
-[[text_utils.vim}]]
+[[}]]
 
 
-- Vim 9.0 (2022-06) [[{01_PM.NEW]]
+# Vim 9.0 (2022-06) [[{01_PM.NEW]]
   - many small additions.
   - Vim9 script.
     - Much better performance by compiling commands  (up to x10/x100)
@@ -156,8 +211,6 @@ Vim is Charityware. You can use and copy it as much as you like, but
 you are encouraged to make a donation for needy children in Uganda.
 Please visit the ICCF web site for more information:
 https://iccf-holland.org
-
-
 [[01_PM.NEW}]]
 
 [[{01_PM.TODO]]

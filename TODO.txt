@@ -1,4 +1,4 @@
-●  Apropos:
+#  Apropos:
 - Visit next Web site for a great experience:
   https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/TODO.txt
 
@@ -10,7 +10,11 @@
 ────────────────────────────────────────────────────────────────────────────────
 
 
-● TODO [[{01_PM.TODO]]
+# TODO [[{01_PM.TODO]]
+
+• https://github.com/NostrGit/NostrGit
+
+ A truly censorship-resistant alternative to GitHub that has a chance of working
 
 
 • Kayenta Canary Testing [[{qa.testing.canary,dev_stack.kayenta,01_PM.TODO]]
@@ -265,7 +269,7 @@ receives a die event it checks if the dead container produced any
 core dump or java heap dump.
 [[}]]
 
-● KVM Kata containers:[[{01_PM.TODO]
+# KVM Kata containers:[[{01_PM.TODO]
 @[https://katacontainers.io/]
 - Security: Runs in a dedicated kernel, providing isolation of
   network, I/O and memory and can utilize hardware-enforced isolation
@@ -528,7 +532,7 @@ https://github.com/charmbracelet/glow
 
   $ git big init                  ← Init repo
 
-  $ git big add bigfile.iso       ← Add big file, sha256 hash generated⅋recorded in the index
+  $ git big add bigfile.iso       ← Add big file, sha256 hash generated&recorded in the index
   $ git big status
   → ...
   →[ W C   ] 993328d6 bigfile.iso
@@ -541,7 +545,7 @@ https://github.com/charmbracelet/glow
       "version": 1
   }
   $ ls -l bigfile.iso             ← original big file is now a symlink
-  ... bigfile.iso -˃ .gitbig-anchors/99/33/e99f32a...
+  ... bigfile.iso -> .gitbig-anchors/99/33/e99f32a...
                      └─────────────┬────────────────┘
                        Final file is read-only
   $ git big push                  ←*Push pending big files to depos*
@@ -1098,14 +1102,14 @@ This is like a Swiss Army knife for DevSecOps engineers.
   - See also: Artifactory by JFrog
 [[}]]
 
-● Portainer UI:[[{]]
+# Portainer UI:[[{]]
 (See also LazyDocker)
 • Portainer, an open-source management interface used to manage a
   Docker host, Swarm and k8s cluster.
 • It's used by software engineers and DevOps teams to simplify and
   speed up software deployments.
 
-Available on LINUX, WINDOWS ⅋ OSX
+Available on LINUX, WINDOWS & OSX
 $ docker container run -d \
   -p 9000:9000 \
   -v /var/run/docker.sock:/var/run/docker.sock portainer/portainer
@@ -1116,7 +1120,7 @@ $ docker container run -d \
 
 [[01_PM.TODO}]]
 
-● Git modules @ /usr/lib/git-core
+# Git modules @ /usr/lib/git-core
   3_097_168 /usr/lib/git-core/git
   1_839_328 /usr/lib/git-core/git-remote-http
   1_835_232 /usr/lib/git-core/git-http-push
@@ -1154,13 +1158,13 @@ $ docker container run -d \
       2_236 /usr/lib/git-core/git-difftool--helper
         944 /usr/lib/git-core/git-merge-resolve
 
-● https://iximiuz.com/en/series/implementing-container-manager/
+# https://iximiuz.com/en/series/implementing-container-manager/
 
 
-● Shell Script 101
+# Shell Script 101
   https://sharats.me/posts/shell-script-best-practices/
 
-● Distroless Container Images
+# Distroless Container Images
   https://www.linkedin.com/posts/iximiuz_what-is-a-distroless-container-image-activity-6998607273514123264-PmHT
   hat Is a Distroless Container Image? 🤔 Go (programming language)
   is famous for its statically linked binaries. You can take a Go
@@ -1189,23 +1193,23 @@ $ docker container run -d \
   container images and the GoogleContainerTools' distroless project in
   my blog post 👇 https://lnkd.in/eyTkTX5p.
 
-● Container Tools, Tips, and Tricks - Issue #2
+# Container Tools, Tips, and Tricks - Issue #2
   https://iximiuz.ck.page/posts/container-tools-tips-and-tricks-issue-2
 
-● DevOps: Docker without sudo @ma
+# DevOps: Docker without sudo @ma
   https://docs.docker.com/engine/security/rootless/
   Rootless mode was introduced in Docker Engine v19.03 as an experimental feature.
   Rootless mode graduated from experimental in Docker Engine v20.10.
 
-● DevOps: Ansible Register Variable - OSTechNix
+# DevOps: Ansible Register Variable - OSTechNix
   https://ostechnix.com/ansible-register/
 
-● DevOps: Merging two GitHub repositories without losing commit history - Mozilla Hacks - the Web developer blog
+# DevOps: Merging two GitHub repositories without losing commit history - Mozilla Hacks - the Web developer blog
   https://hacks.mozilla.org/2022/08/merging-two-github-repositories-without-losing-commit-history/
 DevOps Links:
 
 
-● TAXONOMY:
+# TAXONOMY:
 1) Basic Linux commands necessary before jumping    2). Shell Scripting:
    into shell script.                               * https://lnkd.in/da_wHgQH
    * https://lnkd.in/dBTsJbhz                       * https://lnkd.in/d5CFPgga
@@ -1242,3 +1246,31 @@ DevOps Links:
 * https://lnkd.in/dh2zXZAB                                 https://www.katacoda.com
 * https://lnkd.in/dQMyCBWy  15. SSH using Putty :
                              * https://lnkd.in/gGgW7Ns9
+
+# DevOps: Open Source Git Project Releases Version 2.40 [[{]]
+  https://www.infoq.com/news/2023/04/git-releases-version-2-40/
+[[}]]
+
+# Vim documentation: windows
+https://vimdoc.sourceforge.net/htmldoc/windows.html#window
+
+# Git: Octosuite: a GitHub Open Source Intelligence Framework [[{]]
+
+  https://www.infoq.com/news/2023/02/octosuite-github-osint-framework/?itm_source=infoq
+
+Octosuite, an open-source intelligence (OSINT) framework, recently
+released its latest version 3.1.0. Octosuite provides a wide range of
+commands to investigate publicly-visible GitHub accounts and
+repositories through GitHub’s Public APIs.
+
+Written in Python, Octosuite provides a secure and user-friendly
+interface to easily search and explore data related to a repository,
+organization, or user. The search feature also looks for topics,
+commits, and issues to quickly locate relevant data. All the results
+of searches are exported in a comma-separated value (CSV) readable
+format.
+[[}]]
+
+# DevOps Git: BurntSushi/ripgrep: recursively searches directories for
+  a regex pattern while respecting your gitignore
+  https://github.com/BurntSushi/ripgrep

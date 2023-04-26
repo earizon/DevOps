@@ -1,4 +1,4 @@
-●  Apropos:
+#  Apropos:
 - Visit next Web site for a great experience:
   https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/linux.txt
 - If you want to contribute to great gistory of this document you can
@@ -11,7 +11,7 @@
 # Linux Administration # [[{linux]]
 ########################
 
-● External Links: [[{]]
+# External Links: [[{]]
 - @[https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/]
 - @[http://www.linuxfromscratch.org/]
 - @[https://linux.die.net/man/]
@@ -21,7 +21,7 @@
 - @[https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/]
 [[}]]
 
-● Linux Basics: [[{linux.101]]
+# Linux Basics: [[{linux.101]]
 - Linux itself is just an OS kernel in charge of sharing the LIMITED hardware
   resources amongst potentially many running tasks and users working simultaneously
   on the systems. More preciselly, the main tasks in charge of kernel control are:
@@ -102,18 +102,18 @@
   associated terminal (the console where the user has been logged).
   The shell allows also to redirect STDOUT/STDERR to any other
   file in our file system. Ex:
-  $ command1 1˃output.log         2˃error.log
+  $ command1 1>output.log         2>error.log
              ^^^^^^^^^^^^         ^^^^^^^^^^^
              redirects STDOUT(1)  redirects STDERR
              to output.log        to error.log
 
-  $ command1 1˃output.log         2˃&1
+  $ command1 1>output.log         2>&1
              ^^^^^^^^^^^^         ^^^^
              redirects STDOUT(1)  redirects STDERR
              to output.log        to STDOUT (&1, aka output.log)
 [[}]]
 
-● Process model: [[{linux.101.process_model,job_control.101,]]
+# Process model: [[{linux.101.process_model,job_control.101,]]
 
 - Linux follows a parent-child process model.
 
@@ -170,7 +170,7 @@
       run with  *"alice"* privileges/permissions.
 
 
-● Executable file vs in-memory process: [[{linux.101]]
+# Executable file vs in-memory process: [[{linux.101]]
 - Applications are stored on disk drives as files or "bunch-of-instructions and initial data".
 
 - When the kernel executes and application it will read the executable file, load
@@ -180,7 +180,7 @@
   [[}]]
 
 
-● Basic file permissions:  [[{linux.101,security.aaa]]
+# Basic file permissions:  [[{linux.101,security.aaa]]
 Standar file permissions allows to assign different access permissions to
 the owner of the file, the group owner of the file and anyone else.
 
@@ -236,7 +236,7 @@ Permissions │Symbol│      FILE                   │     DIRECTORY          
 └───────────┴──────┴───────────────────────────────────────────────────────────┘
 [[}]]
 
-● Network Time Protocol 101: [[{configuration.clock,troubleshooting]]
+# Network Time Protocol 101: [[{configuration.clock,troubleshooting]]
 
    # REF:@[https://www.server-world.info/en/note?os=Fedora_25&p=ntp&f=2]
    $ sudo dnf -y install ntp                       # <- STEP 1) Install ntp client on RedHat flavours
@@ -259,7 +259,7 @@ Permissions │Symbol│      FILE                   │     DIRECTORY          
    $ sudo timedatectl set-timezone Europe/London   # <- STEP 5) Set timezone
 [[}]]
 
-● User Management 101 [[{linux.101,security.aaa]]  #[linux_users_groups_summary]
+# User Management 101 [[{linux.101,security.aaa]]  #[linux_users_groups_summary]
 
   $ useradd -D                       ← display (D)efault values to apply when creating new uses.
                                         (Default group / HOME, SHELL, ...)
@@ -326,11 +326,11 @@ Permissions │Symbol│      FILE                   │     DIRECTORY          
   $ su  # Change to root user
 [[}]]
 
-● Linux ACLs:  [[{security.aaa,01_PM.TODO]]
+# Linux ACLs:  [[{security.aaa,01_PM.TODO]]
 @[https://wiki.archlinux.org/index.php/Access_Control_Lists]
 [[}]]
 
-● Kernel Tunning: [[{configuration.sysctl,configuration.network,storage.fs,troubleshooting.performance,]] #[sysctl_summary]
+# Kernel Tunning: [[{configuration.sysctl,configuration.network,storage.fs,troubleshooting.performance,]] #[sysctl_summary]
 • sysctl
   - Cli app to view/modify kernel parameters affecting the runtime behavior
     of network, file-systems, kernel logging, ...
@@ -399,7 +399,7 @@ Permissions │Symbol│      FILE                   │     DIRECTORY          
   └ vm/... (48 tunnable params)
 [[configuration.sysctl}]]
 
-● Linux Kernel Tunning with 'tuned': [[{linux.101,monitoring.101,configuration.kernel,01_PM.TODO,qa.UX]]
+# Linux Kernel Tunning with 'tuned': [[{linux.101,monitoring.101,configuration.kernel,01_PM.TODO,qa.UX]]
   /proc/sys/vm/ Kernel FS "control pannel"   [[{01_PM.TODO}]]
   https://tuned-project.org/
 - About tuned:
@@ -470,7 +470,7 @@ $ *sudo tuned-adm profile  powersave* # ←  select profile
 
 [[}]]
 
-● Job/Process control: Scheduling Tasks  [[{101,job_control.task_scheduling,01_PM.TODO]]
+# Job/Process control: Scheduling Tasks  [[{101,job_control.task_scheduling,01_PM.TODO]]
   Officially in Linux/UNIX/Posix, a Job or task is a running process.
   - cron    : program task to be run periodically
   - at
@@ -487,7 +487,7 @@ $ *sudo tuned-adm profile  powersave* # ←  select profile
           from 07:30  local  time  to 23:30  local time through cron job
 
 
-● Job control++
+# Job control++
   - nice      : run a process with modified scheduling priority.
   - STOP/CONT : kill -STOP $pid "freezes" a process.
   -             kill -CONT $pid un-freezes it.
@@ -509,7 +509,7 @@ $ *sudo tuned-adm profile  powersave* # ←  select profile
   ...
 [[}]]
 
-● basic process monit/control [[{job_control.101,linux.101,monitoring.jobs,monitoring.i/o]]
+# basic process monit/control [[{job_control.101,linux.101,monitoring.jobs,monitoring.i/o]]
 $ *ps*   ← shows list of the processes running. i
          Without options: processes belonging to current user&amp;with a controlling terminal
   Ex. options include:
@@ -584,11 +584,11 @@ $ *nice -20 make* ← Sets make priority to -20
 $ *renice 10 "pid"* ← Changes priority of running process.
 [[}]]
 
-● pv monit data pipe progress: [[{monitoring.pipes,monitoring.i/o,profiling.storage.FS,storage.profiling]]
+# pv monit data pipe progress: [[{monitoring.pipes,monitoring.i/o,profiling.storage.FS,storage.profiling]]
 • pv provides time elasped, %compl., progressbar, throughput, ETA, ...on STDERR.
-• cat /dev/zero | pv | cat ˃ /dev/null  # Check CPU/memory perf.
+• cat /dev/zero | pv | cat > /dev/null  # Check CPU/memory perf.
 • pv file | nc -w 1 somewhere.com 3000  # Check network perf.
-• pv -EE /dev/sda ˃ disk-image.img      # Check disk image (skip errors)
+• pv -EE /dev/sda > disk-image.img      # Check disk image (skip errors)
 
   man pv summary
 OUTPUT MODIFIERS
@@ -619,7 +619,7 @@ DATA TRANSFER MODIFIERS
                  --pidfile FILE save PID of (first running) pv instance.
 [[}]]
 
-● GNU Parallel  [[{job_control,performance.distributed]]
+# GNU Parallel  [[{job_control,performance.distributed]]
 @[https://linux.die.net/man/1/parallel]
 @[https://www.gnu.org/software/parallel/parallel_cheat.pdf]
 @[https://www.reddit.com/r/programming/comments/ayew9r/never_got_around_to_learning_gnu_parallel_here_is/]
@@ -674,8 +674,8 @@ $ parallel -a bigfile --pipepart --block -1 grep foobar # ← Chop bigfile into 
 [[linux.101.process_model}]]
 
 
-● Network  [[{network]]
-● NetworkManager [[{configuration.network,troubleshooting.network]]
+# Network  [[{network]]
+# NetworkManager [[{configuration.network,troubleshooting.network]]
 @[https://www.redhat.com/sysadmin/becoming-friends-networkmanager]
 @[https://linux.die.net/man/8/networkmanager]
 @[https://linux.die.net/man/5/networkmanager.conf]
@@ -825,7 +825,7 @@ TODO:
 → 0                      --quiet            Don't print anything
                          --wait-for-startup Wait for nm startup instead of a connection
 
-● Troubleshooting
+# Troubleshooting
 
 *bypass network manager* by manually launching dhcp client:
   $ sudo dhclient eth0 # execute 'ip link' to show
@@ -838,7 +838,7 @@ $ sudo systemctl stop    ModemManager.service
 $ sudo systemctl disable ModemManager.service
 [[}]]
 
-● BASIC NETWORK AUDIT/CONTROL [[{monitoring.network,troubleshooting]]
+# BASIC NETWORK AUDIT/CONTROL [[{monitoring.network,troubleshooting]]
 • Socket Statistics ss: (replaces 'netstat'),  man 8 ss
 
  $ sudo ss -ntlp     <···-n : Do not resolve IP to DNS (much) faster.
@@ -883,9 +883,9 @@ $ sudo systemctl disable ModemManager.service
   ...
 
  $ ip link         <···· DISPLAY IP DEVICE STATUS
-1: lo:     ˂LOOPBACK,           UP,LOWER_UP˃ ...  state UNKNOWN mode DEFAULT ...
+1: lo:     <LOOPBACK,           UP,LOWER_UP> ...  state UNKNOWN mode DEFAULT ...
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-2: eth0:   ˂BROADCAST,MULTICAST,UP,LOWER_UP˃ ...  state UP      mode DEFAULT ...
+2: eth0:   <BROADCAST,MULTICAST,UP,LOWER_UP> ...  state UP      mode DEFAULT ...
     link/ether    00:0d:3a:26:bb:2b brd ff:ff:ff:ff:ff:ff
 ...
 
@@ -932,7 +932,7 @@ $ sudo tcpdump \    "snif" IP traffic
 $ sudo nmap -nt remote_machine    ← (try to) query remote machine for open ports
 [[monitoring.network}]]
 
-● basic network traffic shaping [[{monitoring.network,troubleshooting.network]]
+# basic network traffic shaping [[{monitoring.network,troubleshooting.network]]
 *Network interface shaping with Wondershaper*
 @[https://github.com/magnific0/wondershaper/]
 $ sudo ./wondershaper -a eth0 -u 4096 -d 8192 ← limit upload: 4Mbps, download:8Mbs
@@ -944,7 +944,7 @@ $ firejail --list | grep 'firefox' | awk -F: '{print$1}'
 $ firejail  --bandwidth=PID set interface-name down-speed up-speed
 [[}]]
 
-● Internet Utility commands [[{linux.101,configuration.network,]]
+# Internet Utility commands [[{linux.101,configuration.network,]]
 $ *host (ip_address|domain_name)*  ← Performs lookup of an internet address (using the Domain Name System, DNS). Simply type:
 or
 **
@@ -969,7 +969,7 @@ $ *curl*  ← Script oriented HTTP client.
 $ curl -M : To access the full/huge manual
 $ curl -u username:password http://www.placetodownload/file
 [[}]]
-● Nethogs: bandwidth "top" per ps [[{monitoring.network,monitoring.jobs,troubleshooting.network]]
+# Nethogs: bandwidth "top" per ps [[{monitoring.network,monitoring.jobs,troubleshooting.network]]
 - Nethogs is a command line utility for linux that displays the network
   bandwidth used by each application or process in realtime.
 
@@ -990,8 +990,8 @@ $*$ sudo nethogs                                                                
 [[}]]
 [[network}]]
 
-● Remote access  [[{security.remote_access]]
-● ssh (text console)  [[{security.aaa,security.audit_user]]
+# Remote access  [[{security.remote_access]]
+# ssh (text console)  [[{security.aaa,security.audit_user]]
   @[https://en.wikipedia.org/wiki/Secure_Shell]:
   standard way to access Linux&Other OSes remotely.
   A running "sshd" (ssh daemon) must be instaled and running
@@ -1067,7 +1067,7 @@ $*$ sudo nethogs                                                                
 @[https://www.reddit.com/r/linuxadmin/comments/b9c7lw/using_a_yubikey_as_smartcard_for_ssh_public_key/]
 [[}]]
 
-● VNC Remote Desktop [[{security.aaa,security.remote_access,]]
+# VNC Remote Desktop [[{security.aaa,security.remote_access,]]
 - The VNC protocol allows to launch a graphical system in a
   remote system using the VNC server and access it remotely
   using the VNC clients.
@@ -1088,7 +1088,7 @@ $*$ sudo nethogs                                                                
 @[https://github.com/earizon/tigervnc_remote_desktop]
 [[}]]
 
-● Knockd ("Invisible Linux")  [[{security.aaa,security.remote_access]] #[knockd_summary]
+# Knockd ("Invisible Linux")  [[{security.aaa,security.remote_access]] #[knockd_summary]
 @[https://www.maketecheasier.com/make-linux-server-invisible-knockd/]
  REF(Michael Aboagye @ MakeTechEasier.com)
   - Knockd allows to  listen to traffic on an network interface/port
@@ -1165,7 +1165,7 @@ $ ssh my-server-ip
 $ knock -v my-server-ip 9000 8000 7000
 [[security.remote_access}]]
 
-● SYSTEM INFO [[{linux.101,monitoring.101]]
+# SYSTEM INFO [[{linux.101,monitoring.101]]
 
 $ uptime  ← shows how long the computer has been "up" since last reboot.
             number of users and the processor load
@@ -1287,7 +1287,7 @@ $ sudo dmidecode -t 17  <··· Show physical mem.banks
 |     Configured Memory Speed: 1333 MT/s      |
 [[}]]
 
-●   $ vmstat [options] [delay [count]] (global stats) [[{monitoring.101,monitoring.memory,monitoring.i/o]] (man 8 vmstat)
+#   $ vmstat [options] [delay [count]] (global stats) [[{monitoring.101,monitoring.memory,monitoring.i/o]] (man 8 vmstat)
   Display real-time stats of procs., mem, paging, block IO, traps, disks and cpu activity.
 
   The first report produced gives averages since the last reboot.
@@ -1366,7 +1366,7 @@ CPU (percentages of total CPU time)             |   cache: Cache name
       no more free memory for apps.
 [[}]]
 
-● Accurate mem.use [[{monitoring.memory,troubleshooting.memory]]
+# Accurate mem.use [[{monitoring.memory,troubleshooting.memory]]
   REF: https://github.com/pixelb/ps_mem/:
 
 $ sudo pip install ps_mem  <··· PIP (P)ackage (I)nstaler for (P)ython
@@ -1391,7 +1391,7 @@ $ sudo pip install ps_mem  <··· PIP (P)ackage (I)nstaler for (P)ython
 
 [[}]]
 
-● SysV shared memory [[{linux.101,configuration.memory,monitoring.memory,]]
+# SysV shared memory [[{linux.101,configuration.memory,monitoring.memory,]]
 - SysV shared memory segments are accounted as a cache,
   though they do not represent any data on the disks.
 _
@@ -1399,7 +1399,7 @@ _
 [[}]]
 [[monitoring}]]
 
-● BACKUPS  [[{security.backup,linux.101,storage.compression]]
+# BACKUPS  [[{security.backup,linux.101,storage.compression]]
 • https://github.com/y-scope/clp  [[{security.audit,scalability.storage,01_PM.low_cost]]
   C&P from https://www.uber.com/en-DE/blog/reducing-logging-cost-by-two-orders-of-magnitude-using-clp/
     """CLP reduces log size by x169 ...
@@ -1410,7 +1410,7 @@ _
     logging level from WARN back to INFO, increase our retention period
     by 10x, and still reduce our storage costs by 17x."""
   [[}]]
-● tar (tape-archive) (man 1 tar)
+# tar (tape-archive) (man 1 tar)
   - standard tool for archiving saving a (many) files and directories to a single
     tape or disk archive.
   - Individual files can be restored from the .tar file when needed.
@@ -1444,7 +1444,7 @@ $ tar tzf _home_myUser_myProject_01.tar.gz
       │└─── use gzip for de-compression
       └──── *list*
 
-● Remote Incremental [[{security.backup.incremental,storage.network]]
+# Remote Incremental [[{security.backup.incremental,storage.network]]
 - EasyUp: KISS incremental remote backup around rsync+ssh
 @[https://github.com/earizon/easyup]
 - Rsnapshot: filesystem snapshot utility on top of rsync.
@@ -1492,7 +1492,7 @@ $ tar tzf _home_myUser_myProject_01.tar.gz
 [[}]]
 
 #[multicore_compression_tools_summary]
-● multi-core compression tools [[{storage.compression,performance.CPU,02_doc_has.comparative]]
+# multi-core compression tools [[{storage.compression,performance.CPU,02_doc_has.comparative]]
   NOTE: bzip2 offers a much better compression than gz when source
   files have low entropy (many repeated words, white spaces,...) while
   consuming (much) more CPU.
@@ -1516,14 +1516,14 @@ $ tar tzf _home_myUser_myProject_01.tar.gz
   GZIP                                    |   PIGZ (DEF.OPTIONS, 4 CORES)
   ==================================      |   ==============================
   $ sudo tar cf - dir1 | \                |   $ sudo tar cf - directory1 | \
-     gzip  ˃ output.tar.gz                |         pigz  ˃ /dev/null
+     gzip  > output.tar.gz                |         pigz  > /dev/null
   TIME: 13,5s                             |   TIME:  5,0s
   OUTPUT SIZE: 337M                       |   OUTPUT SIZE: 337M
 
   BZIP2                                   |   PBZIP2 (DEF.OPTIONS, 4 CORES)
   ==============================          |   =================================
   $ sudo tar cf dir1 | \                  |   $ sudo tar cf - dir1 | \
-     bzip2 ˃ output.tar.bz2               |    pbzip2 ˃ output.tar.bz2
+     bzip2 > output.tar.bz2               |    pbzip2 > output.tar.bz2
   TIME: 66,0s                             |   TIME: 31,8s
   OUTPUT SIZE: 331M                       |   OUTPUT SIZE: 332M
 
@@ -1531,7 +1531,7 @@ $ tar tzf _home_myUser_myProject_01.tar.gz
   XZ                                      |   PIXZ  (DEFAULT OPTIONS, 4 CORES)
   ==============================          |   =================================
   $ sudo tar cf dir1 | \                  |   $ sudo tar cf - dir1 | \
-     xz    ˃ output.tar.bz2               |     pbzip2 ˃ output.tar.bz2
+     xz    > output.tar.bz2               |     pbzip2 > output.tar.bz2
   TIME: 151,7s                            |   TIME: 46,8s
   sys     0m2,179s                        |   sys     0m1,706s
   OUTPUT SIZE: 313M                       |   OUTPUT SIZE: 317M
@@ -1547,11 +1547,11 @@ From: @[https://www.linuxlinks.com/best-linux-multi-core-compression-tools/]
 [[}]]
 
 
-● Zstandard  [[{01_PM.TODO]]
+# Zstandard  [[{01_PM.TODO]]
 @[https://www.2daygeek.com/zstandard-a-super-faster-data-compression-tool-for-linux/]
 - super-fast compression tool [[}]]
 
-● Android 2 Linux Backups  [[{storage.android,]]
+# Android 2 Linux Backups  [[{storage.android,]]
 @[https://github.com/FlamingTuri/android-file-backup]
 
 Script solving common problems when transferring files/folders from/to Android.
@@ -1579,8 +1579,8 @@ Execution Example:
   [[storage.android}]]
 [[security.backup,}]]
 
-● Audit  [[{security.audit_user,101,security.aaa]]
-● basic user audit
+# Audit  [[{security.audit_user,101,security.aaa]]
+# basic user audit
 $ who     ← Displays current users logged in + logged-in time
 $ w       ← Displays who is logged into the system and WHAT THEY ARE DOING
             (procs. they are running).
@@ -1621,7 +1621,7 @@ $ ac      ← Tell how much time users are logged in.
     - Example asciinema recording "embedded" in github markdown:
       https://github.com/mvndaemon/mvnd
 
-● Audit framework  [[{monitoring.audit_framework,02_doc_has.diagram]]
+# Audit framework  [[{monitoring.audit_framework,02_doc_has.diagram]]
   REF: @[https://www.youtube.com/watch?v=x2u_prS2HmM]
 *ARCHITECTURE:*                                   *LOG "TOPICS":*
                                                   ┌───────────────────
@@ -1679,7 +1679,7 @@ process     │    ║        │
   In RHEL 8+ it has been integrated into auditd.
   (REF https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8-beta/html/8.0_beta_release_notes/new-features)
 
-● Audit Daemon "Full Journey":
+# Audit Daemon "Full Journey":
 └ INITIAL SETUP:
  1) Audit Daemon Configuration -→  /etc/audit/auditd.conf
     Defines how the audit system works once the daemon is running.
@@ -1778,7 +1778,7 @@ $ sudo aureport -s -i | \                        <- Show relationship among user
 [[monitoring.audit_framework}]]
 
 
-● Tiger: Kiss-IDS [[{security.IDS01_PM.low_code,qa.UX,security.audit_user,]]
+# Tiger: Kiss-IDS [[{security.IDS01_PM.low_code,qa.UX,security.audit_user,]]
 @[https://www.nongnu.org/tiger/]
 (Unix/Linux)
 - open source shell-scripts collection for security audit and host intrusion detection.
@@ -1794,7 +1794,7 @@ $ sudo aureport -s -i | \                        <- Show relationship among user
   →│ Tripwire uses a pair of keys to sign various files, thus ensuring their ... │
   →│ ...                                                                         │
   →│                                                                             │
-  →│        ˂Yes˃                                                          ˂No˃  │
+  →│        <Yes>                                                          <No>  │
   →└─────────────────────────────────────────────────────────────────────────────┘
   (Pressing Yes)
   →┌────────────────────────┤ Tripwire Configuration ├────────────────────────┐
@@ -1916,7 +1916,7 @@ For example, to get more information about the following messages, where [acc001
 --WARN-- [path009w] /etc/profile does not export an initial setting for PATH.
 [[security.IDS}]]
 
-● Sending eMail with CURL (Cross-platform) :  [[{monitoring.notifications,security.notifications,01_PM.low_code]]
+# Sending eMail with CURL (Cross-platform) :  [[{monitoring.notifications,security.notifications,01_PM.low_code]]
   https://blog.edmdesigner.com/send-email-from-linux-command-line/
 
   $ curl -sv --user 'api:key-7e55d003b...f79accd31a' \  [[{monitoring.notifications.mailgun]]
@@ -1929,7 +1929,7 @@ For example, to get more information about the following messages, where [acc001
      --form-string html='<h1>EDMdesigner Blog</h1><br /><cite>This tutorial helps me understand email sending from Linux console</cite>' \
       -F attachment=@logo2yellow.jpg                    [[}]]
 
-● SENDING eMail WITH 'sendmail' + Gmail (SSMTP Package) [[{monitoring.notifications.gmail]]
+# SENDING eMail WITH 'sendmail' + Gmail (SSMTP Package) [[{monitoring.notifications.gmail]]
 
   $ sudo apt install ssmtp                             <- PRESETUP) Install "lightweight"
                                                           (sendonly) ssmtp 'sendmail'
@@ -1966,7 +1966,7 @@ For example, to get more information about the following messages, where [acc001
 
   NOTE: smtp.gmail.com limits: 100 recipients max per message, 500 messages/day.
 [[}]]
-● Telegram Notifications  [[{monitoring.notifications.telegram]]
+# Telegram Notifications  [[{monitoring.notifications.telegram]]
   REF: https://ugeek.github.io/blog/post/2019-03-14-crea-un-bot-de-telegram-con-bash-y-una-sola-linea-de-terminal.html (ES)
 - Telegram API allows to easely craete bots to notify any event in
   our server (someone logged-in through ssh, ...)
@@ -2020,7 +2020,7 @@ URL="https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage"
 # The match only exists if our parent process is sshd (real ssh access)
 # Using the regex "$PPID.*[s]shd" instead of just "$PPID.*sshd" filters out the egrep command
 ps -ef | egrep "$PPID.*[s]shd" &amp;&amp; \
-  curl -s -X POST $URL -d chat_id=${TELEGRAM_ID} -d text="New ssh connection to $HOSTNAME from IP $SSH_CLIENT " 1˃/dev/null 2˃&1 &
+  curl -s -X POST $URL -d chat_id=${TELEGRAM_ID} -d text="New ssh connection to $HOSTNAME from IP $SSH_CLIENT " 1>/dev/null 2>&1 &
 
 
 *Example use 2: Notify server restarts*
@@ -2033,7 +2033,7 @@ $ crontab -e
 [[monitoring.notifications.telegram}]]
 [[monitoring.notifications}]]
 
-● Pushover (iOS/Android push) [[{security.notifications]]
+# Pushover (iOS/Android push) [[{security.notifications]]
 REF: @[https://www.cyberciti.biz/mobile-devices/android/how-to-push-send-message-to-ios-and-android-from-linux-cli/]
 • Pushover Service with no need for AWS/Azure/GCP accounts:
   - $5 ONE-TIME purchase. !!!!
@@ -2059,7 +2059,7 @@ REF: @[https://www.cyberciti.biz/mobile-devices/android/how-to-push-send-message
     }
 [[}]]
 
-● logwatch [[{security.audit_user,security.aaa]]
+# logwatch [[{security.audit_user,security.aaa]]
   - perl script utility to summarize logs. Ussage:
     (Doesn't look to work on Fedora, works on Debian)
 
@@ -2148,14 +2148,14 @@ $ sudo logwatch --detail Low --range today
 →  ###################### Logwatch End #########################
 [[}]]
 
-● Logreduce(IA)filter [[{security.audit_user.IA,QA.UX,01_PM.TODO]]
+# Logreduce(IA)filter [[{security.audit_user.IA,QA.UX,01_PM.TODO]]
 @[https://opensource.com/article/18/9/quiet-log-noise-python-and-machine-learning]
 @[https://pypi.org/project/logreduce/] logreduce@pypi
   - Quiet log noise with Python and machine learning
 [[}]]
 [[security.audit_user}]]
 
-● logrotate  [[{security.backup,security.secret_management,storage.troubleshooting]]
+# logrotate  [[{security.backup,security.secret_management,storage.troubleshooting]]
   Avoid filling disks with logs
 - automatic rotation, compression, removal, and mailing of log files.
   (daily, weekly, monthly, or when size is exceeded)
@@ -2266,7 +2266,7 @@ $ logrotate --state "file" option_flags config_file ..
 [[}]]
 
 Text Search and processing [[{101.text_utils]]
-● TEXT VIEW TOOLS:
+# TEXT VIEW TOOLS:
   Displaying text:
 $ head -n 20 /path/to/textFile # shows first 20 lines (-n 20). 10 lines by default if -n not provided.
 $ tail -n 20 /path/to/textFile # shows last  20 lines (-n 20). 10 lines by default if -n not provided.
@@ -2292,7 +2292,7 @@ $ COLUMNS=100 column -t -s, input.csv # ← -t(able):
 a     b     c                                          (white space by default)
 x     y     z
 
-● TEXT INFO TOOLS:
+# TEXT INFO TOOLS:
 $ wc /path/to/textFile  ← Display total count of words, lines and bytes
                           Options:
                             -w count only words
@@ -2301,12 +2301,12 @@ $ wc /path/to/textFile  ← Display total count of words, lines and bytes
 
 
 $ diff file1 file2     ← Compares two text files and output a difference report indicating:
-                         '˃ line_in_file2_not_in_file1
-                         '˂ line_in_file1_not_in_file2
+                         '> line_in_file2_not_in_file1
+                         '< line_in_file1_not_in_file2
 $ sdiff                ← Similar to diff but with report in colum mode (more human readable)
 $ diff3                ← diff for three files
 
-● SORTING FILE CONTENT !!!!
+# SORTING FILE CONTENT !!!!
   $ sort file1       <-·· Sorting alphabetically lines in file
                          (-r to reverse, -g for numerical sort)
 
@@ -2327,7 +2327,7 @@ $ diff3                ← diff for three files
                           at least one common value on the relevant line,
                           skiping lines withouth common value.
 
-● TEXT MODIFICATION TOOLS  [[{]]
+# TEXT MODIFICATION TOOLS  [[{]]
   By default we can use the following tools like:
   $ tool inputFile   # Apply to given file
    or
@@ -2342,7 +2342,7 @@ $ diff3                ← diff for three files
                                      from 20 to the end
 
 $ tr "u" "d" file1  ← translate all instances of characters in a text file
-$  cat some_file | tr '[A-Z]' '[a-z]' ˃ new_file  ← Convert all capital letters to lowercase
+$  cat some_file | tr '[A-Z]' '[a-z]' > new_file  ← Convert all capital letters to lowercase
 
 $ nl file1.txt  ← Display file1.txt to STDOUT prefixing with line numbers
 
@@ -2353,7 +2353,7 @@ sed stays for "Stream editor", and has a lot of powerful flags like searching fo
 
 [[101.text_utils}]]
 
-● SystemD System Start and Service Configuration [{configuration.systemd]] #[systemd_summary]
+# SystemD System Start and Service Configuration [{configuration.systemd]] #[systemd_summary]
 @[http://freedesktop.org/wiki/Software/systemd/]
 @[https://www.freedesktop.org/software/systemd/man/systemd.service.html]
 @[http://www.tecmint.com/create-new-service-units-in-systemd/]
@@ -2402,7 +2402,7 @@ $ sudo systemctl \
   · user sessiona :
 [[}]]
 
-● FILE NAME EXTENSIONS FOR UNIT TYPES:  [[{configuration.systemd]]
+# FILE NAME EXTENSIONS FOR UNIT TYPES:  [[{configuration.systemd]]
 * *.target     *: define groups of units. They achieve little themselves and serve to call
   *            *  other units that are responsible for services, filesystems ...
   *            *  (equivalent to the classical SysV runlevels)
@@ -2415,7 +2415,7 @@ $ sudo systemctl \
   *            *  service unit associated will start the service when a connection request
   *            *  is received.
 
-● CONFIG. FILE LAYOUT:
+# CONFIG. FILE LAYOUT:
 (NOTE: /etc takes precedence over /usr)
  *Maintainer   *: /usr/lib/systemd/system              ( + $ systemctl daemon-reload)
  *Administrator*: /etc/systemd/system/[name.type.d]/ ) ( + $ systemctl daemon-reload)
@@ -2426,7 +2426,7 @@ $ sudo systemctl \
 @[https://github.com/linuxenko/chkservice]
 [[}]]
 
-● Journalctl(find logs)  [[{configuration.systemd,monitoring.101,security.audit_user]]
+# Journalctl(find logs)  [[{configuration.systemd,monitoring.101,security.audit_user]]
 - Display/filter/search system logs
 # journalctl                      # ← all logs
 # journalctl -b                   # ← Boot Messages
@@ -2462,7 +2462,7 @@ Output Formats ( -o parameter )
   $ sudo journalctl --vacuum-size=500M ← Retain only last 500 MB
 [[}]]
 
-● Rsyslog [[{monitoring,security.audit_user,02_doc_has.comparative,]]
+# Rsyslog [[{monitoring,security.audit_user,02_doc_has.comparative,]]
 @[github.com/rsyslog/rsyslog.git]
 @[https://www.rsyslog.com]
 
@@ -2488,7 +2488,7 @@ Important extensions include:
 - "Infinite" logs. Can store years of logs from
                    hundreds of machines.
 
-● Journald
+# Journald
 @[https://www.loggly.com/blog/why-journald/]
 @[https://docs.google.com/document/pub?id=1IC9yOXj7j6cdLLxWEBAGRL6wl97tFxgjLUEHIX3MSTs]
 - system service for collecting and storing log data,
@@ -2524,8 +2524,8 @@ journalctl:
   date, emitting program, program PID, UID, service, ...
 - Can also access backups in single files or directories of other systems.
 
-● Modern
-● logging
+# Modern
+# logging
 ●
 - Modern architectures use many systems where it becomes impractical to
   read logs on individual machines.
@@ -2540,7 +2540,7 @@ journalctl:
 [[configuration.systemd}]]
 
 APPLICATION PACKAGE MANAGERS  [[{packaging]]
-● DNF  ("yum++") [[{packaging.rpm,01_PM.WiP]]
+# DNF  ("yum++") [[{packaging.rpm,01_PM.WiP]]
 @[https://dnf.readthedocs.io/en/latest/]
 @[https://github.com/rpm-software-management]
 *MOST COMMONLY USED:*
@@ -2599,7 +2599,7 @@ $ dnf repolist
 → pgdg94                   PostgreSQL 9.4 7 - x86_64
 → updates                  CentOS-7 - Updates
 
-● SCL (Software Collections): https://www.softwarecollections.org/en/
+# SCL (Software Collections): https://www.softwarecollections.org/en/
   $ python --version
   Python 2.7.5
 
@@ -2630,7 +2630,7 @@ $ sudo yum --disablerepo=\* \            <·····  Install from a given repos
     ...
 [[}]]
 
-● apt (Debian/Ubuntu/...)  [[{packaging.apt]]
+# apt (Debian/Ubuntu/...)  [[{packaging.apt]]
   (o 'aptitude' ncurses variant)
 - @[https://help.ubuntu.com/community/AptGet/Howto#Maintenance_commands]
 
@@ -2706,12 +2706,12 @@ $*$ dpkg -S $search_pattern * ← "what package provides this file/package?" rev
                                 (but not installed by default) alternative.
                                 'apt-file' also allows to search over all available packages,
 
-● APT Sources: [[01_PM.TODO]]
+# APT Sources: [[01_PM.TODO]]
   - /etc/apt/sources.list file
     @[https://help.ubuntu.com/community/SourcesList]
 [[{packaging.apt}]]
 
-● apk (Alpine)  [[{packaging,01_PM.TODO]]
+# apk (Alpine)  [[{packaging,01_PM.TODO]]
 @[https://wiki.alpinelinux.org/wiki/Alpine_Linux_package_management]
 - Alpine Linux is designed to run from RAM, implying that package management
   involves two phases:
@@ -2816,7 +2816,7 @@ Information on Packages
 [[packaging}]]
 
 
-● LINUX ALERT/MONITORING BEST-PATTERNS [[{security.notifications,monitoring.notifications]]
+# LINUX ALERT/MONITORING BEST-PATTERNS [[{security.notifications,monitoring.notifications]]
 - Simple e-mail/telegram do NOT scale
   You will receive many useless notification from proper behaviour
   (correct logins, ...)
@@ -2843,7 +2843,7 @@ Information on Packages
     "I wrote handlers that alert to Slack, Jira and a pager."
 [[}]]
 
-● Glances [[{monitoring.101,01_PM.low_code,QA.UX,troubleshooting]]
+# Glances [[{monitoring.101,01_PM.low_code,QA.UX,troubleshooting]]
 @[https://www.tecmint.com/glances-an-advanced-real-time-system-monitoring-tool-for-linux/]
 @[https://github.com/tldr-pages/tldr/blob/master/pages/common/glances.md]
 - Alternative to top
@@ -2913,7 +2913,7 @@ $*# glances -s -B $ADDRESS -p $PORT *          $*# glances -c -P 172.16.27.56 *
   Glances server is running on 0.0.0.0:61209
 [[}]]
 
-● Dynamic Tracing Tools [[{monitoring.jobs,profiling,security.encryption]]
+# Dynamic Tracing Tools [[{monitoring.jobs,profiling,security.encryption]]
                         [[dev_stack.mysql,dev_stack.postgresql,dev_stack.java]]
 @[https://www.tecmint.com/bcc-best-linux-performance-monitoring-tools/]
  *"Tool Collection"*
@@ -3114,7 +3114,7 @@ $*# glances -s -B $ADDRESS -p $PORT *          $*# glances -c -P 172.16.27.56 *
   threads that performed the wakeup, along with the process names of the waker
   and target processes, and the total blocked time.                  [[}]]
 
-● Python,Java,NodeJS
+# Python,Java,NodeJS
   -*ugc*                                                                  [[{profiling.java,profiling.python,profiling.nodejs]]
   @[https://github.com/iovisor/bcc/blob/master/tools/lib/ugc_example.txt] [[{monitoring.java,monitoring.python,monitoring.nodejs]]
     traces garbage collection events in high-level languages, including Java,
@@ -3161,55 +3161,53 @@ $*# glances -s -B $ADDRESS -p $PORT *          $*# glances -c -P 172.16.27.56 *
   - dcstat, ...
 [[}]]
 
-● KERNEL MONITORIZATION [[{monitoring.kernel]]
-● Kernel Monit.Diagram [[{monitoring,troubleshooting,02_doc_has.diagram]]
-  ↑        ┌───────────────────────────────────────────────────────────────────┐
-  │        │                    APPLICATIONS                                   |
-  │        ├───────────────────────────────────────────────────────────────────┤
-  │        │[ltrace][ldd]      System Libraries [gethostlatency]         [perf]│
-  │        ├───────────────────────────────────────────────────────────────────┤
-  │        │[strace][sydgid]     System Call Interface [*3]              [perf]|     CPU
-[perf]   ↑ ├─────────────────┬───────┬──────────────┬───────┬──────────────────┤Interconnect  ┌──────────┐
-[dtrace] │ │ VFS             │       │SOCKETS  [ss] │       │SCHEDULER   [perf]├──────────────┤CPU1[perf]├───┐
-[stap]  L K├─────────────────┤       │──────────────┤       │[perf][latencytop] ←───[top]     └──────────┘   │
-[lttnp] I E│ FILE SYSTEMS    │       │TCP/UPD  [*2] │       │[mpstat]          │  ╱[ps]      Memory│         │
-[ktap]  N R├─────────────────┤       │──────────────┤       ├──────────────────┤ ╱ [pidstat]    BUS│  [perf] │
-  │     U N│ VOLUME MANAGERS │       │IP            │       │VIRTUAL MEMORY    │╱                  │         │
-  │     X E├─────────────────┤       │[ip]          │       │[vmstat]          ←                 ┌───┐       │
-  │       L│ BLOCK DEVICE    │       │[route]       │       │[slabtop]         ├────────────────→│RAM│       │
-  │      │ │ Interface       │       │[iptables]    │       │[free]            │                 └───┘       │
-  │      │ │ [*1] [pidstat]  │       │              │       │[memleak]         │                 [numastat]  │
-  │      │ │                 │       │              │       │[comkill]         │                 [lstopop]   │
-  │      │ │                 │       │              │       │[slabratetop]     │                             │
-  │      │ │                 │       │──────────────│       ├──────────────────┤                             │
-  │      │ │                 │       │Ethernet [ss] │       │CLOCKSOURCE       │                             │
-  │      │ │                 │       │[tcpdump]     │       │[/sys/...]        │                             │
-  │      │ ├─────────────────┴───────┴──────────────┴───────┴──────────────────┤                             │
-  │      │ │                       Device Drivers                              │                             │
-  ↓      ↓ └───────────────────────────────────────────────────────────────────┘             I/O [perf]      │
-                           Expander-Interconnect                           ┌──────────┐     BUS  [tiptop]    │
-                   ─┬────────────────────────────────────────┬─────────────┤I/O Bridge├──────────────────────┘
-                    │                                        │             └──────────┘
-                    │                                        │
-              ┌─────┴───────────┐                    ┌───────┴───────────┐[nicstat]
-              │I/O Controller *1│                    │ Network Controller│[ss]
-              └─────────────────┘                    └───────────────────┘[ip]
-             ┬──────┴───────┬                         ┬──────┴────┬
-             │              │                         │           │
-            Disk[*1]       Swap [swapon]             Port        Port
-                                                     [ping] [traceroute]
-                                                     [ethtool] [snmpget]
-                                                     [lldptool]
+# KERNEL MONITORIZATION [[{monitoring.kernel,monitoring.I/O,monitoring.network,monitoring.jobs]]
+  Kernel Monit.Diagram [[{monitoring,troubleshooting,02_doc_has.diagram]]
+  ↑        ┌─────────────────────────────────────────────────────────────────────────┐
+  │        │                          APPLICATIONS                                   |
+  │        ├─────────────────────────────────────────────────────────────────────────┤
+  │        │[ltrace][ldd]            System Libraries [gethostlatency]         [perf]│
+  │        ├─────────────────────────────────────────────────────────────────────────┤
+  │        │[strace][sydgid]           System Call Interface [*3]              [perf]│
+  │        │[opensnoop] [statsnoop] [syncsnoop]                                      │     CPU
+[perf]   ↑ ├───────────────────────┬───────┬─────────────────────┬┬──────────────────┤Interconnect  ┌───────────────┐
+[dtrace] │ │ VFS [opensnoop]       │       │SOCKETS  [ss]        ││SCHEDULER   [perf]|              |CPU1[perf]     |
+         │ │                       │       │                     ││                  ├──────────────┤               ├───┐
+[stap]  L K├───────────────────────┤       │─────────────────────┤│[perf][latencytop] ←───[top]     └───────────────┘   │
+[lttnp] I E│ FS [lsof][fstrace]    │       │TCP/UPD  [*2]        ││[mpstat]          │   [ps]      Memory│              │
+[lttnp] N R│ [filelie][pcstat]     │       │[tcptop] [tcplife]   ││                  │  ╱[pidstat]    BUS│ [tiptop]     │
+[ktap]  U N├───────────────────────┤       │tcpconnect,tcpaccept │├──────────────────┤ ╱                 │ [perf]       │
+  │     X E│ VOLUME MANAGERS       │       │tcpconnlat,tcpretrans││VIRTUAL MEMORY    │╱                  │              │
+  │      │L│ [mdflush]             │       │                     ││[vmstat]          ←                 ┌───┐            │
+  │      │ │                       │       │─────────────────────┤│[slabtop]         ├────────────────→│RAM│            │
+  │      │ ├───────────────────────┤       │IP                   ││[free]            │                 └───┘            │
+  │      │ │ BLOCK DEVICE          │       │[ip]                 ││[memleak]         │                 [numastat]       │
+  │      │ │ Interface             │       │[route]              ││[comkill]         │                 [lstop]          │
+  │      │ │ [iostat] [iotop]      │       │[iptables]           ││[slabratetop]     │                                  │
+  │      │ │ [blktrace] [pidstat]  │       │─────────────────────│├──────────────────┤                                  │
+  │      │ │ [biosnoop][biolatency]│       │Ethernet [ss]        ││CLOCKSOURCE       │                                  │
+  │      │ │ [biotop][blktrace]    │       │[tcpdump]            ││[/sys/...]        │                                  │
+  │      │ ├──·────────────────────┴───────┴─────────────────────┴┴──────────────────┤                                  │
+  │      │ │  ·[hardirqs][criticalstat]  Device Drivers                              │                                  │
+  ↓      ↓ └──·──────────────────────────────────────────────────────────────────────┘             I/O [perf]           │
+              ·                  Expander-Interconnect                           ┌──────────┐     BUS  [tiptop]         │
+              ·    ─┬──────────────────────────────────────────────┬─────────────┤I/O Bridge├───────────────────────────┘
+              ·     │                                              │             └──────────┘
+              └┐    │                                              │
+              ┌v────┴───────────┐                          ┌───────┴───────────┐[nicstat]
+              │I/O Controller *1│                          │ Network Controller│[ss]
+              └─────────────────┘                          └───────────────────┘[ip]
+             ┬──────┴───────┬                               ┬──────┴────┬
+             │              │                               │           │
+            Disk[*1]       Swap [swapon]                   Port        Port
+                                                           [ping] [traceroute]
+                                                           [ethtool] [snmpget]
+                                                           [lldptool]
+  OTHERS: [sar] [dstat] [/proc]
 
-*1: [iostat] [iotop] [blktrace]                                             [[monitoring.I/O]]
-*2: [tcptop] [tcplife] [tcpconnect] [tcpaccept] [tcpconnlat] [tcpretrans]   [[monitoring.network]]
-*3: [opensnoop] [statsnoop] [syncsnoop]                                     [[monitoring.jobs]]
-
-OTHERS: [sar] [dstat] [/proc]
-
- ┌───┐[sar -m FAN]       ┌────────────┐[ipmitool]
- │FAN│                   │POWER SUPPLY│[dmidecode]
- └───┘                   └────────────┘
+   ┌───┐[sar -m FAN]       ┌────────────┐[ipmitool]
+   │FAN│                   │POWER SUPPLY│[dmidecode]
+   └───┘                   └────────────┘
 
 • BCC – Dynamic Tracing toolkit for creating efficient Linux kernel tracing, [[{01_PM.TODO]]
   performance Monitoring, networking and much more.
@@ -3221,7 +3219,7 @@ OTHERS: [sar] [dstat] [/proc]
 [[}]]
 [[}]]
 
-● ltrace: Library Call Tracer [[{monitoring.jobs]]
+# ltrace: Library Call Tracer [[{monitoring.jobs]]
 @[https://linux.die.net/man/1/ltrace]
 Summary:
 *ltrace                           | ltrace -c  # ← Count time and calls for each library call*
@@ -3260,7 +3258,7 @@ Summary:
 
 [[}]]
 
-● strace: System call tracer [[{monitoring.jobs]] (man 1 strace)
+# strace: System call tracer [[{monitoring.jobs]] (man 1 strace)
 SUMMARY
 strace                    | strace -c  ← -c: Count time, calls, and errors
                           |                  for each system call and report summary on exit.
@@ -3290,7 +3288,7 @@ strace runs specified command until it exits intercepting:
        Ex output:
        $ strace sleep 111
        → ...
-       → sigsuspend([] ˂unfinished ...˃
+       → sigsuspend([] <unfinished ...>
        → --- SIGINT (Interrupt) ---     ← Signal received
        → +++ killed by SIGINT +++
 
@@ -3300,7 +3298,7 @@ of those events and mark the ongoing call as being unfinished.
 When the call returns it will be marked as resumed. Ex. output:
   → [pid 28772] select(4, [3], NULL, NULL, NULL  *unfinished ... *
   → [pid 28779] clock_gettime(CLOCK_REALTIME, {1130322148, 939977000}) = 0
-  → [pid 28772] *˂... select resumed˃* )      = 1 (in [3])
+  → [pid 28772] *<... select resumed>* )      = 1 (in [3])
 
 Interruption of a (restartable) system call by a signal delivery is
 processed differently as kernel terminates the system call and also
@@ -3316,7 +3314,7 @@ read(0, ""..., 1)                       = 0
 [[}]]
 
 
-● Dstat  [[{monitoring.101,monitoring.memory,monitoring.I/O,monitoring.network,monitoring.cpu]]
+# Dstat  [[{monitoring.101,monitoring.memory,monitoring.I/O,monitoring.network,monitoring.cpu]]
 @[https://linux.die.net/man/1/dstat]
 - Dstat: versatile replacement joining the info from:   [[{02_doc_has.comparative]]
   vmstat, iostat, ifstat an mpstat.                     [[}]]
@@ -3326,7 +3324,7 @@ read(0, ""..., 1)                       = 0
   your IDE controller, or compare the network bandwidth numbers directly
   with the disk throughput (in the same interval).
 [[}]]
-● mpstat-CPU stats (ints., hypervisor...) [[{monitoring.cpu,monitoring.hypervisor]]
+# mpstat-CPU stats (ints., hypervisor...) [[{monitoring.cpu,monitoring.hypervisor]]
 @[https://linux.die.net/man/1/mpstat]
 mpstat
   [ -A ]                        ==  -I ALL -u -P ALL
@@ -3335,7 +3333,7 @@ mpstat
   [ -P { cpu [,...] | ON | ALL } ]  Indicates the processor number
   [ -V ]
   [ secs_interval [ count ] ]
-    secs_interval = 0 =˃ Report from times system startup (boot)
+    secs_interval = 0 => Report from times system startup (boot)
 
 mpstat writes to standard output activities for each available processor,
 Global average activities among all processors are also reported.
@@ -3357,7 +3355,7 @@ Global average activities among all processors are also reported.
           an outstanding disk I/O request.
 [[}]]
 
-● (man 1) pidstat: Linux job/task stats  [[{monitoring.jobs,job_control,monitoring.i/o]]
+# (man 1) pidstat: Linux job/task stats  [[{monitoring.jobs,job_control,monitoring.i/o]]
   $ pidstat   [[{profiling.jobs.IO.block,profiling.storage,storge.profiling]]
   By Sebastien Godard (http://pagesperso-orange.fr/sebastien.godard/)
  -d Report I/O statistics
@@ -3432,7 +3430,7 @@ EXAMPLES
               values are displayed.
 [[}]]
 
-● iostat(CPU, I/O, FS)  [[{MONITORING.I/O,MONITORING.STORAGE,01_PM.TODO]]
+# iostat(CPU, I/O, FS)  [[{MONITORING.I/O,MONITORING.STORAGE,01_PM.TODO]]
 @[https://linux.die.net/man/1/iostat]
 $ iostat -xt 2  # -x Show extended statistics
                 # -t Print time
@@ -3457,7 +3455,7 @@ dm-2   0.00 7.50  0.00 30.00   0.00   0.00  0.00  0.00    0.00     0.47   0.00  
                                                                                                         USSAGE
 [[}]]
 
-● blktrace (block I/O traffic) [[{monitoring.storage.blocks]] (man 8 blktrace)
+# blktrace (block I/O traffic) [[{monitoring.storage.blocks]] (man 8 blktrace)
   generate traces of the i/o traffic on (low-level) block devices vs (high-level) File Systems.
  $ sudo blktrace -d /dev/sda -o - | blkparse -i -   <··· trace i/o for /dev/sda
                                                          Alt. using btrace script:
@@ -3510,7 +3508,7 @@ OPTIONS
   - SCSI commands: blktrace sends the command data block as a payload so that blkparse can decode it.
 [[}]]
 
-● perf (kernel counters) [[{monitoring.kernel.counters,profiling.jobs,dev_stack.java,profiling.locks,01_PM.TODO]]
+# perf (kernel counters) [[{monitoring.kernel.counters,profiling.jobs,dev_stack.java,profiling.locks,01_PM.TODO]]
 TODO @[http://www.brendangregg.com/perf.html]
 TODO @[http://www.brendangregg.com/flamegraphs.html]
 - Perf: new kernel-based subsystem that provide a framework for all things performance analysis.
@@ -3612,13 +3610,13 @@ Overhead  Shared Object              Symbol
    691.446 (1000.105 ms): JS Watchdog/15347 futex(uaddr: 0x7f6c829550b0, op: WAIT_BITSET|PRIVATE_FLAG|CLOCK_REALTIME, utime: 0x7f6c942a0df0, val3: MATCH_ANY) = -1 ETIMEDOUT (Connection timed out)
    755.478 (1000.029 ms): Timer/15227 futex(uaddr: 0x7f3eb5b5cc80, op: WAIT|PRIVATE_FLAG, utime: 0x7f3e9c2c1a60) = -1 ETIMEDOUT (Connection timed out)
    755.609 (1000.017 ms): Web Content/15215 poll(ufds: 0x7f3e9bd04760, nfds: 3, timeout_msecs: 4294967295)        = 1
-   311.581 (1527.461 ms): Gecko_IOThread/15157 epoll_wait(epfd: 8˂anon_inode:[eventpoll]˃, events: 0x7f3d6d1f5200, maxevents: 32, timeout: 4294967295) = 1
+   311.581 (1527.461 ms): Gecko_IOThread/15157 epoll_wait(epfd: 8<anon_inode:[eventpoll]>, events: 0x7f3d6d1f5200, maxevents: 32, timeout: 4294967295) = 1
    311.955 (1527.194 ms): firefox/15132 poll(ufds: 0x7f3d1ebd5610, nfds: 5, timeout_msecs: 4294967295)        = 1
    876.905 (1000.146 ms): dockerd/32491 futex(uaddr: 0x561e1da0b920, utime: 0xc42045bed8)                     = -1 ETIMEDOUT (Connection timed out)
    877.069 (1000.064 ms): dockerd/27832 futex(uaddr: 0x561e1da07950, utime: 0x7f50e7c61b90)                   = 0
    877.025 (1000.145 ms): dockerd/27904 futex(uaddr: 0xc420c82548)                                            = 0
    912.964 (1000.133 ms): JS Watchdog/15158 futex(uaddr: 0x7f3d57c4c0f0, op: WAIT_BITSET|PRIVATE_FLAG|CLOCK_REALTIME, utime: 0x7f3d65a41df0, val3: MATCH_ANY) = -1 ETIMEDOUT (Connection timed out)
-   311.586 (1607.337 ms): Chrome_~dThrea/15346 epoll_wait(epfd: 11˂anon_inode:[eventpoll]˃, events: 0x7f6c9b9cd080, maxevents: 32, timeout: 4294967295) = 1
+   311.586 (1607.337 ms): Chrome_~dThrea/15346 epoll_wait(epfd: 11<anon_inode:[eventpoll]>, events: 0x7f6c9b9cd080, maxevents: 32, timeout: 4294967295) = 1
    937.245 (1000.102 ms): JS Watchdog/15276 futex(uaddr: 0x7feca361bbf0, op: WAIT_BITSET|PRIVATE_FLAG|CLOCK_REALTIME, utime: 0x7fecb4e27df0, val3: MATCH_ANY) = -1 ETIMEDOUT (Connection timed out)
    214.944 (1927.025 ms): Timer/15164 futex(uaddr: 0x7f3d6d165be0, op: WAIT|PRIVATE_FLAG, utime: 0x7f3d542a1a60) = -1 ETIMEDOUT (Connection timed out)
    215.042 (1927.063 ms): Socket Thread/15166 poll(ufds: 0x7f3d539028f0, nfds: 8, timeout_msecs: 4294967295)        = 1
@@ -3659,7 +3657,7 @@ Extracted from:
    *internal metrics collection framework.                              * [[}]]
 [[{monitoring.kernel.counters}]]
 
-● SystemTap (stap) [[{monitoring.jobs,troubleshooting,01_PM.TODO]]
+# SystemTap (stap) [[{monitoring.jobs,troubleshooting,01_PM.TODO]]
 - C&P from https://lwn.net/Articles/852112/:  [[{02_doc_has.comparative]]
   SystemTap has been available since 2005, while bpftrace is a more
   recent contender that, to some, may appear to have made SystemTap
@@ -3680,7 +3678,7 @@ Extracted from:
   @[https://developers.redhat.com/blog/2019/07/24/probing-golang-runtime-using-systemtap/]
 [[}]]
 
-● (x)latencytop [[{profiling.locks,troubleshooting.jobs,QA.UX]] #[latencytop]
+# (x)latencytop [[{profiling.locks,troubleshooting.jobs,QA.UX]] #[latencytop]
 @[https://linux.die.net/man/8/xlatencytop]
 - aimed at:
   - identifying and visualizing where (kernel and userspace) latencies are happening
@@ -3708,7 +3706,7 @@ NOTE: See also the more advanced TimeChart:
     @[http://blog.fenrus.org/?p=5]
 [[}]]
 
-● latrace [[{monitoring.jobs,monitoring.libc,troubleshooting,01_PM.TODO]] (man 1 latrace
+# latrace [[{monitoring.jobs,monitoring.libc,troubleshooting,01_PM.TODO]] (man 1 latrace
 - LD_AUDIT 2.4+ libc frontend
 
 $ latrace [-ltfsbcCpADaoyIiBdvTFELVh] command [arg ... ]
@@ -3728,7 +3726,7 @@ $ latrace [-ltfsbcCpADaoyIiBdvTFELVh] command [arg ... ]
 
 [[monitoring.kernel}]]
 
-● powertop  [[{monitoring.hardware]]
+# powertop  [[{monitoring.hardware]]
 Allows to:
   - diagnose device/CPU power consumption issues
   - Tune/control device/CPU power management.
@@ -3784,7 +3782,7 @@ OTHER PERTINENT OPTIONS:
 ....
 [[}]]
 
-● ZSwap 4 low-mem systems  [[{configuration.memory,troubleshooting.memory,storage.compression]]
+# ZSwap 4 low-mem systems  [[{configuration.memory,troubleshooting.memory,storage.compression]]
 - Increase system performance in systems with memory-preasure
 @[https://www.maketecheasier.com/use-zswap-improve-old-linux-performance/]
 
@@ -3826,13 +3824,13 @@ OTHER PERTINENT OPTIONS:
 [[}]]
 
 
-● Integrated Admin Tools [[{configuration.foreman,QA.UX,01_PM.TODO]]
-● Foreman Server Lifecycle Mng. [[{]]
+# Integrated Admin Tools [[{configuration.foreman,QA.UX,01_PM.TODO]]
+# Foreman Server Lifecycle Mng. [[{]]
 @[https://theforeman.org/introduction.html]
 @[https://github.com/theforeman/foreman_bootdisk]
 [[}]]
 
-● cockpit Web UI [[{QA.UX,configuration.cockpit,monitoring,security.aaa,security.selinux]]
+# cockpit Web UI [[{QA.UX,configuration.cockpit,monitoring,security.aaa,security.selinux]]
                  [[troubleshooting]]
 @[https://cockpit-project.org/]
 - easy-to-use, integrated, "glanceable", web-based interface for servers.
@@ -3848,4 +3846,15 @@ OTHER PERTINENT OPTIONS:
   - diagnostic reports.
 [[}]]
 [[}]]
+
+# Disk Space : [[{troubleshooting.disk_full]]
+$ df -kh
+$ du -sch *
+$ ls -ld .*
+$ du -sch .npm .nvm .cache .android
+$ sudo journalctl --vacuum-size=500M
+$ docker images
+$ sudo docker volume prune
+[[}]]
+
 [[linux}]]

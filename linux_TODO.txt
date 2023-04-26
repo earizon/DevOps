@@ -327,7 +327,7 @@ _________________________
 https://www.reddit.com/r/linuxadmin/comments/bp0f3g/how_do_i_force_centos7_to_recognize_new_ad_users/
 ____________________
 <pre zoom labels="">
-● Install OpenLDAP
+# Install OpenLDAP
 @[https://www.tecmint.com/install-openldap-server-for-centralized-authentication/]
 @[https://www.tecmint.com/configure-ldap-client-to-connect-external-authentication/]
 
@@ -349,7 +349,7 @@ ______________________
 https://www.ostechnix.com/kmdr-display-cli-commands-explanation-in-terminal/
 _________________________
 <pre zoom labels="">
-● XXX
+# XXX
 https://thenewstack.io/a-new-linux-memory-controller-promises-to-save-lots-of-ram/
 The Linux kernel is the core of the operating system that controls
 access to the system resources, such as CPU, I/O devices, physical
@@ -523,7 +523,7 @@ Type man dmesg in your terminal for information about all available dmesg option
 If you have any questions or feedback, feel free to leave a comment.
 </pre>
 <pre zoom labels="persistence">
-● ZFS@Ubuntu 19.10
+# ZFS@Ubuntu 19.10
 @[https://www.techrepublic.com/article/something-exciting-is-coming-with-ubuntu-19-10/]
 </pre>
 ________________________________
@@ -658,8 +658,8 @@ through, how long it has taken, how near to completion it is, and an estimate
 of how long it will be until completion.
 
 $ sudo apt install pv
-$ head -c 5000M /dev/urandom | pv -s 5000M ˃ /dev/null
-2,01GiB 0:00:15 [ 206MiB/s] [================˃               ] 61% ETA 0:00:09
+$ head -c 5000M /dev/urandom | pv -s 5000M > /dev/null
+2,01GiB 0:00:15 [ 206MiB/s] [================>               ] 61% ETA 0:00:09
 ______________________
 https://unix.stackexchange.com/questions/4460/why-is-debian-not-creating-the-wheel-group-by-default
 ___________________
@@ -691,7 +691,7 @@ New hardware temperature monitoring in kernel 5.5
 https://www.phoronix.com/scan.php?page=news_item&px=Linux-5.6-HWMON-Changes
 
 <pre zoom labels="configuration.laptop,monitoring.hardware,01_PM.TODO">
-● Laptop Recipes
+# Laptop Recipes
 @[https://www.linuxuprising.com/2020/02/tlp-13-linux-laptop-battery-extender.html]
 </pre>
 _______________________
@@ -981,12 +981,12 @@ https://discordapp.com/invite/fedora
 https://telegram.me/fedoranews
 #####################
 <pre zoom labels="storage.file_system,storage.block_management,configuration.storage,01_PM.TODO">
-● Partition drives
+# Partition drives
 @[https://opensource.com/article/18/11/partition-format-drive-linux]
 </pre>
 ########################
 <pre zoom labels="desktop,01_PM.TODO">
-● DBus
+# DBus
 </pre>
 ########################
 <pre zoom  labels="01_PM.TODO">
@@ -1047,14 +1047,14 @@ https://9to5linux.com/obs-studio-open-source-live-streaming-and-screen-recording
 Top (GNU Coreutils 9.0)
 https://www.gnu.org/software/coreutils/manual/html_node/index.html
 ############################
-● Tmux
+# Tmux
 REF: https://www.sitepoint.com/10-killer-tmux-tips/
 
 - tmux Plugin Manager:
   - PRE-SETUP install:
     $ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
-    $ cat ˂˂ EOF ˃˃ ~/.tmux.conf
+    $ cat << EOF >> ~/.tmux.conf
     # Init plugin manager.
     run -b '~/.tmux/plugins/tpm/tpm'    ←  keep line at the
     EOF                                    "very bottom"
@@ -1239,7 +1239,7 @@ ______________________________
 Linux Barrier keyboard/mouse sharing (software KVM)  [[{desktop]]
 https://www.youtube.com/watch?v=mAGTFAeA2Bo [[}]]
 ______________________________
-● apt-get vs apt vs aptitude
+# apt-get vs apt vs aptitude
 https://juncotic.com/apt-vs-apt-get-vs-aptitude-algunas-notas/
 
 • Linux FS Hierarchy  [[{storage.file_system,linux.101,02_doc_has.standards,01_PM.backlog]]
@@ -1248,22 +1248,22 @@ https://juncotic.com/apt-vs-apt-get-vs-aptitude-algunas-notas/
 - /etc
 @[http://www.tldp.org/LDP/Linux-Filesystem-Hierarchy/html/etc.html]
 ______________________________
-● Avahi,ZeroConf Linux impl. Desktop
+# Avahi,ZeroConf Linux impl. Desktop
 @[https://en.wikipedia.org/wiki/Avahi_(software)]
 ────────────────────────────────
-● https://pcp.io/ [[{monitoring.*,distributed.metrics,troubleshooting.*,01_PM.TODO]]
+# https://pcp.io/ [[{monitoring.*,distributed.metrics,troubleshooting.*,01_PM.TODO]]
 - Analyze systems' performance metrics in real-time or using historical data.
 - Compare performance metrics between different hosts and different intervals.
   Observe trends and identify abnormal patterns.
 [[}]]
 
-● https://lintut.com/best-command-line-tools-for-linux-performance-monitring/
+# https://lintut.com/best-command-line-tools-for-linux-performance-monitring/
 - 'sar' utility, which is part of the systat package, can be used to
   review history performance data on your server. System resource
   utilization can be seen for given time frames to help troubleshoot
   performance issues, or to optimize performance
 
-● RPM
+# RPM
 - Understanding Meta Package Handlers
 - Setting up Yum Repositories
 - Using Repositories
@@ -1273,7 +1273,7 @@ ______________________________
 - Using RPM Queries
 
 ────────────────────────────────
-● DNF Full command list:
+# DNF Full command list:
 - https://dnf.readthedocs.io/en/latest/command_ref.html#clean-command-label
     Performs cleanup of temporary files kept for repositories. This includes any
     such data left behind from disabled or removed repositories as well as
@@ -1435,7 +1435,7 @@ ______________________________
   https://dnf.readthedocs.io/en/latest/command_ref.html#files-label
   https://dnf.readthedocs.io/en/latest/command_ref.html#see-also-label
 
-● https://www.flatpak.org/ Flatpack "Sandboxes" [[{app.packaging.flatpak,01_PM.TODO]]
+# https://www.flatpak.org/ Flatpack "Sandboxes" [[{app.packaging.flatpak,01_PM.TODO]]
 
 - each application is built and run in an isolated 'sandbox' environment
   containing an application and its runtime.
@@ -1466,7 +1466,7 @@ ______________________________
 - When an update is performed, new versions of installed applications and
   runtimes are downloaded from the relevant remotes. (only the difference actually)
 
-● flatpak cli
+# flatpak cli
 NOTE: graphical software management tools exists so command-line is optional
 
 $ flatpak install
@@ -1542,5 +1542,39 @@ $ flatpak install --user --from https://download.mono-project.com/repo/monodevel
 $ flatpak run com.xamarin.MonoDevelop
 
 
-● /proc/sys/kernel/watchdog  [[{QA.SLA}]]
+# /proc/sys/kernel/watchdog  [[{QA.SLA}]]
 [[}]]
+
+101 Command Library: Para aprender comandos de GNU/Linux | Ubunloghttps://ubunlog.com/linux-command-library/
+
+# protection against DMA attacks
+  https://www.linkedin.com/posts/shlomi-boutnaru-ba781811a_linux-hardware-dma-activity-7007724440046178305-4miD
+
+# Linux profiling: Parca - Open Source infrastructure-wide continuous profilinghttps://www.parca.dev/
+
+# Tanel Poder Consultinghttps://tanelpoder.com/categories/linux/
+
+# storage: Formating Drives larger than 2TBs
+  https://www.reddit.com/r/linuxquestions/comments/xpr4n1/formating_drives_larger_than_2tbs/
+# 101 The Difference Between Su, Sudo Su, Sudo -i, and Sudo -s - TREND OCEANS
+  https://trendoceans.com/difference-between-su-sudo-su-sudo-i-and-sudo-s/
+
+# Fedora Devs Plans to Replace DNF with DNF5 in Fedora Linux 39
+  https://linuxiac.com/fedora-devs-plans-to-replace-dnf-with-dnf5-in-fedora-39/
+
+# 101 Monitor Linux Users Activity with psacct or acct Tools
+  https://www.tecmint.com/monitor-linux-user-activity-psacct-acct/ 
+   These utilities run in the background and keep track of each
+  user’s activity on your system as well as what resources are being
+  consumed.
+
+# Los 8 discos de rescate y sistemas operativos que he elegido para crear una 'navaja suiza' en un pendrive USB 'multiboot'
+  https://www.genbeta.com/herramientas/8-discos-rescate-sistemas-operativos-que-he-elegido-para-crear-navaja-suiza-pendrive-usb-multiboot 
+Para hacer los discos multi arranque Ventoy es muchísimo mejor
+opción. Basta con instalar ventoy en el pendrive (te creará una
+partición) y te dejará el resto del pendrive libre. Para añadir
+nuevos discos, simplemente copias y pegas la iso (tal cual) en el
+espacio libre y al reiniciar te aparecerán todas las isos para la
+que quieras.
+No necesitarás ningún software para añadir nuevas isos: Copiar y pegar
+

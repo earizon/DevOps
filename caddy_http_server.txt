@@ -10,7 +10,7 @@ Caddy by Ardan Labs  https://caddyserver.com/
 - Markdown rendering!!!
 - HTTPS by default!!!
 
-● PRODUCTION-READY 1-LINER COMMANDS:
+# PRODUCTION-READY 1-LINER COMMANDS:
 
 $ caddy file-server        <··· local file server
 
@@ -25,7 +25,7 @@ $ caddy reverse-proxy \    <··· HTTPS reverse proxy
 $ caddy run                <···· Run server with Caddyfile
                                  in working directory (if present)
 
-● "Caddyfile" (Optional) human-readable config file for "advanced" tasks.
+# "Caddyfile" (Optional) human-readable config file for "advanced" tasks.
   (Alternative Config RESTful API also available ( POST /config/ + JSON body))
   ┌─ Caddyfile ──────────
   │ localhost             <·· Serve local-files
@@ -52,7 +52,7 @@ $ caddy run                <···· Run server with Caddyfile
   │ }
   └───────────────────────
 
-● Docker run:
+# Docker run:
 
   $ docker pull    caddy:2.6.2-alpine
   $ docker inspect caddy:2.6.2-alpine
