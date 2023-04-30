@@ -1,4 +1,4 @@
-#  Apropos:
+##  Apropos:
 - Visit next Web site for a great experience:
   https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/notes.txt
 - If you want to contribute to great gistory of this
@@ -8,11 +8,11 @@
   in the Pantheon of the Unicode Gods.
 ────────────────────────────────────────────────────────────────────────────────
 
-#############################################
-#        Shell Scripting                    # [[{dev_stack.shell_script]]
-#############################################
 
-# REFERENCE SCRIPT:  [[{dev_stack.shell_script.101]] #[bash_summary]
+# Shell Scripting [[{dev_stack.shell_script]]
+
+  #[bash_summary]
+## REFERENCE SCRIPT:  [[{dev_stack.shell_script.101]]
 
   #!/bin/bash
   # NOTE: The Bash "syntax sugar" VAR1=$("some command") executes "some command"
@@ -41,6 +41,10 @@
                                            # Recommended to see errors in the context of normal execution.
   echo "message logged to file & console"
   # }}}
+
+                                           # Bash syntax sugar.
+  [[ `hostname` =~ -([0-9]+)$ ]] || exit 1 # <·· Check hostname match -[0-9] or exit.
+  SERVER_NUMBER=${BASH_REMATCH[1]}         # <·· Otherwise asing match to var.
 
   global_exit_status=0
   readonly WD=$(pwd)    # Best Practice: write down current work dir are use it
@@ -142,7 +146,7 @@
   echo "Exiting with status:$global_exit_status"
   exit $global_exit_status
 
-# INIT VARS AND CONSTANTS:
+## INIT VARS AND CONSTANTS:
   # complete Shell parameter expansion list available at:
   # - @[http://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html]
   var1=$1 # init var $1 with first param
@@ -159,7 +163,7 @@
                                    |     associative array name, the results differ.
   readonly const1=${varA}
 
-# CONCURRENT PROCESS BARRIER SYNCHRONIZATION:
+## CONCURRENT PROCESS BARRIER SYNCHRONIZATION
   Wait for background jobs to complete example:
   (
     ( sleep 3 ; echo "job 1 ended" ) &
@@ -171,7 +175,7 @@
     echo "All subjobs ended"
   ) &
 
-# SIMPLIFIED READ-EVALUATE-PARSE-LOOP (REPL) IN BASH:
+## SIMPLIFIED READ-EVALUATE-PARSE-LOOP (REPL) IN BASH
   REPL stands for Read-eval-print loop: More info at:
   @[https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop]
 
@@ -191,7 +195,7 @@
           read -p "PROMPT" INPUT
           funComplexParsingAndEvaluationOver $INPUT
 
-# 'test' CONDITIONAL BRANCHING: [[{]]
+## 'test' CONDITIONAL BRANCHING [[{]]
   (man test summary from GNU coreutils for more info)
 
   test   EXPRESSION  # ← EXPRESSION true/false sets the exit status.
@@ -255,7 +259,7 @@
   Full documentation at: @[https://www.gnu.org/software/coreutils/]
 [[}]]
 
-# (KEY/VALUE) MAPS (Bash 4+) #[bash_dictionary]
+## (KEY/VALUE) MAPS (Bash 4+)
   (also known as associative array or hashtable)
 
   Bash Maps can be used as "low code" key-value databases.
@@ -284,7 +288,8 @@
     done                             # key2 : value2
                                      # key3 : value3
 
-# Curl (network client swiss Army nkife)  Summary: [[{networking.curl,troubleshooting,qa.testing]] #[curl_summary]
+  #[curl_summary]
+## Curl (network client swiss Army nkife) [[{networking.curl,troubleshooting,qa.testing]]
 - Suport for DICT, FILE, FTP, FTPS, GOPHER, HTTP GET/POST, HTTPS, HTTP2, IMAP,
              IMAPS, LDAP, LDAPS, POP3, POP3S, RTMP, RTSP, SCP, SFTP, SMB, SMBS,
              SMTP, SMTPS, TELNET,  TFTP, unix socket protocols.
@@ -297,7 +302,7 @@
 - HAProxy PROXY protocol
 - ...
 
-## Curl Summary
+### Ussage Summary:
   $ curl http://site.{a,b}.com
    --silent                 <·· Disable progress meter
    --verbose                <·· Debug
@@ -329,11 +334,11 @@
    --output out_file            <·· Write output to file (Defaults to stdout)
                                     Use also --create-dirs to create unexisting dirs.
 
-## Curl: List remote contents
+### Curl: List remote contents
   $ curl --list-only https://..../dir1/ ← List contents of remote dir
 [[}]]
 
-# Kapow!: Shell Script to HTTP API: [[{web_hook,01_PM.low_code,git,monitoring.prometheus,dev_stack.shell_script,dev_stack.kubernetes,]]
+## Kapow! Shell Script to HTTP API [[{web_hook,01_PM.low_code,git,monitoring.prometheus,dev_stack.shell_script,dev_stack.kubernetes,]]
 @[https://github.com/BBVA/kapow]    [[notifications.jira,InfraAsCode.ansible,git,git.github,notifications.slack]]
   (by BBVA-Labs Security team members)
   " If you can script it, you can HTTP it !!!!"
@@ -366,8 +371,9 @@
       -e 'sudo --preserve-env=KAPOW_HANDLER_ID,KAPOW_DATA_URL \
           chroot --userspec=sandbox /some/path /bin/sh -c' \
           -c 'ls / | kapow set /response/body'
+[[}]]
 
-# WebHook  [[{dev_stack.shell_script,01_PM.TODO]]
+## WebHook  [[{dev_stack.shell_script,01_PM.TODO]]
 @[https://github.com/adnanh/webhook]
   - lightweight incoming webhook server to run shell commands
     You can also pass data from the HTTP request (such as headers,
@@ -405,39 +411,40 @@
       to deploy on VPS - Tutorial #1 by Yes! Let's Learn Software
 [[}]]
 
-# Bash-it: https://www.tecmint.com/bash-it-control-shell-scripts-aliases-in-linux/
-- bundle of community Bash commands and scripts for Bash 3.2+,
+## Bash-it: community bash commands [[{]]
+ https://www.tecmint.com/bash-it-control-shell-scripts-aliases-in-linux/
+- bundle of community bash commands and scripts for Bash 3.2+,
   which comes with autocompletion, aliases, custom functions, ....
 - It offers a useful framework for developing, maintaining and
   using shell scripts and custom commands for your daily work.
+[[}]]
+
+## Best Practices [[{01_PM.TODO]]
+@[https://sharats.me/posts/shell-script-best-practices/]
+[[}]]
 [[dev_stack.shell_script}]]
 
-####################################
-# GIT                              # [[{git]]
-####################################
-
-• External Links:
-  - @[https://git-scm.com/book/en/v2]
-  - @[https://learnxinyminutes.com/docs/git/]
-  - @[https://learngitbranching.js.org/?demo]
-  - Related:
-    See UStore: Distributed Storage with rich semantics!!!
-    @[https://arxiv.org/pdf/1702.02799.pdf]
-• Who-is-who:
+# GIT [[{git]]
+### External Links:
+* @[https://git-scm.com/book/en/v2]
+* @[https://learnxinyminutes.com/docs/git/]
+* @[https://learngitbranching.js.org/?demo]
+* Related:
+  See UStore: Distributed Storage with rich semantics!!!
+  @[https://arxiv.org/pdf/1702.02799.pdf]
+### Who-is-who:
   (Forcibly incomplete but still quite pertinent list of core people and companies)
-  - Linus Torvald:
-     L.T. initiated the project to fix problems with distributed
-     development of the Linux Kernel.
-  - Junio C. Hamano:  lead git maintainer (+8700 commits)
-    @[https://git-blame.blogspot.com/]
+* Linus Torvald: He initiated the project to fix problems
+  with distributed development of the Linux Kernel
+* Junio C. Hamano:  lead git maintainer (+8700 commits)
+  @[https://git-blame.blogspot.com/]
 
-# GIT: What's new: [[{]]
+### What's new: [[{]]
 - 2.28:
 @[https://github.blog/2020-07-27-highlights-from-git-2-28/]
 
  - Git 2.28 takes advantage of 2.27 commit-graph optimizations to  [[performance]]
    deliver a handful of sizeable performance improvements.
-
 
 - 2.27:
  - commit-graph file format was extended to store changed-path Bloom
@@ -462,18 +469,19 @@
   https://github.blog/2019-08-16-highlights-from-git-2-23
 [[}]]
 
+  #[git_summary]
+## GIT "Full Journey" [[{git.101,02_DOC_HAS.diagram,01_PM.WiP]]
 
-# GIT "Full Journey" [[{git.101,02_DOC_HAS.diagram,01_PM.WiP]] #[git_summary]
-  #########################################################################
-  # Non-normative Git server setup for N projects with M teams of L users #
-  #########################################################################
- · CONTEXT:
-   · ssh access has been enabled to server (e.g: $ $ sudo apt install openssh-server   )
-   · Ideally ssh is protected. See for example:
+  Non-normative Git server setup for N projects with M teams of L users
+  ─────────────────────────────────────────────────────────────────────
+
+### CONTEXT:
+- ssh access has been enabled to server (e.g: $ $ sudo apt install openssh-server   )
+- Ideally ssh is protected. See for example:
    @[../DevOps/linux_administration_summary.html#knockd_summary]
    (Alternatives include using GitHub,GitLab,BitBucket, AWS/Scaleway/Azure/... )
 
- · We want to configure linux users and groups to match a "permissions layout" similar to:
+-  We want to configure linux users and groups to match a "permissions layout" similar to:
     GIT_PROJECT1 ···→ Linux Group teamA ····→ R/W permssions to /var/lib/teamA/project01 *1
     GIT_PROJECT2 ···→ Linux Group teamA ····→ R/W permssions to /var/lib/teamA/project02
                       └───────┬────────┘
@@ -497,10 +505,10 @@
     Finally add the desired linux-users to the 'teamA' linux-group at will. More info at:
     @[../DevOps/linux_administration_summary.html#linux_users_groups_summary] )
 
-  ######################################################################
-  # Non-normative ssh client access to Git remote repository using ssh #
-  ######################################################################
-• PRE-SETUP) Edit ~/.bashrc to tune the ssh options for git ading lines similar to:
+
+  Non-normative ssh client access to Git remote repository using ssh
+  ──────────────────────────────────────────────────────────────────
+### PRE-SETUP) Edit ~/.bashrc to tune the ssh options for git ading lines similar to:
   + GIT_SSH_COMMAND=""
   + GIT_SSH_COMMAND="${GIT_SSH_COMMAND} -oPort=1234 "                 ← connect to port 1234 (22 by default)
   + GIT_SSH_COMMAND="${GIT_SSH_COMMAND} -i ~/.ssh/privKeyServer.pem " ← private key to use when authenticating to server
@@ -512,7 +520,7 @@
   $ + export GIT_URL="${GIT_URL}/var/lib/my_git_team   ← Must match path in server (BASE_GIT_DIR)
   $ + export GIT_URL="${GIT_URL}/ourFirstProject"      ← Must match name in server (PROJECT_NAME)
 
-• PRE-SETUP) Modify PS1 prompt (Editing $HOME/.bashrc) to look like:
+* PRE-SETUP) Modify PS1 prompt (Editing $HOME/.bashrc) to look like:
   PS1="\h[\$(git branch 2>/dev/null | grep ^\* | sed 's/\*/branch:/')]"               $( ... ) ==   exec. ... as script.
            └─────────────     show git branch    ───────────────────┘                            + Assign STDOUT to var.
   export PS1="${PS1}@\$(pwd |rev| awk -F / '{print \$1,\$2}' | rev | sed s_\ _/_) \$ "           (bash "syntax sugar")
@@ -521,16 +529,16 @@
   host1 $                           ← PROMPT BEFORE
   host01[branch: master]@dir1/dir2  ← PROMPT AFTER
 
-• Finally clone the repo like:
-  $ $ git clone   myUser1 @${GIT_URL}                  ← execution will warn about cloning empty directory.
-  $ $ cd ourFirstProject                               ← move to local clone.
-  $ $ ...                                              ← Continue with standards git work flows.
-  $ $ git add ...
-  $ $ git commit ...
+* Finally clone the repo like:
+  $ git clone   myUser1 @${GIT_URL}   # <·· execution will warn about cloning empty directory.
+  $ cd ourFirstProject                # <·· move to local clone.
+  $ ...                               # <·· Continue with standards git work flows.
+  $ git add ...
+  $ git commit ...
 
-  #############################
-  # COMMON (SIMPLE) GIT FLOWS #
-  #############################
+
+## COMMON (SIMPLE) GIT FLOWS
+
   ┌─ FLOWS 1: (Simplest flow) no one else pushed changes before our push.────────────────────────────────────
   │           NO CONFLICTS CAN EXISTS BETWEEN LOCAL AND REMOTE WORK
   │  local ─→ git status ─→ git add . ─→ git commit ··································→ git push \
@@ -601,8 +609,7 @@
      triggering new Acceptance tests. Notice also that deployments can follow different strategies
      (canary deployments to selected users first, ...).
 
-<hr/>
-<span xsmall>RECIPES</span>
+## Git Recipes
                                             PLAYING WITH BRANCHES
   $ git checkout    newBranch             ← swith to local branch (use -b to create if not yet created)
   $ git branch -av                        ←  List (-a)ll existing branches
@@ -681,12 +688,12 @@
                                             (implicit by previous --depth=... option)
         --branch '1.3' \                  ← branch to clone (defaults to HEAD)
         ${GIT_URL}                        To clone submodules shallowly, use also --shallow-submodules.
-<hr/>
-<span xsmall>Track code changes</span>
+
+## Track code changes
 REF: @[https://git-scm.com/book/en/v2/Appendix-C:-Git-Commands-Debugging]
 
 Methods to track who changed and/or when a change(bug) was introduced include:
-• git bisect : find first commit introducing a change(bug, problem, ...) through automatic binary search .
+### git bisect : find first commit introducing a change(bug, problem, ...) through automatic binary search .
 @[https://git-scm.com/book/en/v2/Git-Tools-Debugging-with-Git#_binary_search]
   · git-blame helps to find recently introduced bugs.
   · git-bisect helps find bugs digged many commits down in history.
@@ -711,7 +718,7 @@ Methods to track who changed and/or when a change(bug) was introduced include:
   $ git bisect run test.sh   ← test.sh must return 0 for "OK" results
                                non-zero otherwise.
 
-• git blame : annotates lines-of-files with:
+### git blame : annotates lines-of-files with:
 @[https://git-scm.com/book/en/v2/Git-Tools-Debugging-with-Git#_file_annotation]
   $ git blame -L 69,82 -C path2file  ← display last commit+committer for a given line
                                        -C: try to figure out where snippets of code
@@ -723,9 +730,7 @@ Methods to track who changed and/or when a change(bug) was introduced include:
   prefix '^' marks initial commit for line    line
 
 
-
-
-• git grep : find any string/regex in any file in any commit, working directory (default) or index.
+### git grep : find any string/regex in any file in any commit, working directory (default) or index.
 @[https://git-scm.com/book/en/v2/Git-Tools-Searching#_git_grep]
   •  Much faster than standard 'grep' UNIX command!!!
   $ git grep -n      regex01  ← display file:line   matching regex01 in working dir.
@@ -740,12 +745,16 @@ Methods to track who changed and/or when a change(bug) was introduced include:
       --break --heading \     ← split up output into more readable format
       "v1.8.0"                      ← search only in commit with tag "v1.8.0"
 
-• Git Log Searching:
+  See also ripgrep, claiming to be faster than `git grep`
+
+  https://github.com/BurntSushi/ripgrep
+
+### Git Log Searching:
   $ git log -S ABC --oneline ← log only commits changing the number-of-occurrences of "ABC"
   e01503b commit msg ...       Replace -S by -G for REGEX (vs string).
   ef49a7a commit msg ...
 
-• Line history Search:
+### Line history Search:
   $ git log -L :funABC:file.c ← git will try to figure out what the bounds of
                                 function funABC are, then look through history and
                                 display every change made.
@@ -753,15 +762,15 @@ Methods to track who changed and/or when a change(bug) was introduced include:
                                 used like {: -L '/int funABC/',/^[}]/:file.c
                                 range-of-lines or single-line-number can be used to
                                 filter out non interesting results.
-<hr/>
-<span xsmall>Plumbings Summary</span>
-• Summary extracted from:
+
+## Git Plumbings
+* Summary extracted from:
   @[https://alexwlchan.net/a-plumbers-guide-to-git/1-the-git-object-store/]
   @[https://alexwlchan.net/a-plumbers-guide-to-git/2-blobs-and-trees/]
   @[https://alexwlchan.net/a-plumbers-guide-to-git/3-context-from-commits/]
   @[https://alexwlchan.net/a-plumbers-guide-to-git/4-refs-and-branches/]
 
-$ $ git init   ← creates an initial layout containing (Alternatively $ $git clone ... ª from existing remote repo )
+$ git init   ← creates an initial layout containing (Alternatively $ $git clone ... ª from existing remote repo )
   ✓.git/objects/, ✓ .git/refs/heads/master, ✓ .git/HEAD (pointing to heads/master initially)
   ✓.git/description (used by UIs), ✓.git/info/exclude (local/non-commited .gitignore),
   ✓.git/config, ✓.git/hooks/
@@ -876,7 +885,7 @@ $ $ git init   ← creates an initial layout containing (Alternatively $ $git cl
  └────────────────────────────────────────────────────────────────────────
 [[}]]
 
-# GPG signed commits @ma [[{security.secret_management,security.signed_content,01_PM.TODO]]
+## GPG signed commits [[{security.secret_management,security.signed_content,01_PM.TODO.now]]
 @[https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work]
 
   GPG PRESETUP
@@ -959,7 +968,7 @@ $ git pull  \             ←   # Verify signature at pull time
   --verify-signatures
 [[}]]
 
-#  Client Hooks [[{01_PM.TODO.now]]
+## Client Hooks [[{01_PM.TODO.now]]
 @[https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks]
 
   Client-Side Hooks
@@ -1051,7 +1060,7 @@ $ git pull  \             ←   # Verify signature at pull time
         a push occurs (a non-zero exit code will abort the push).
 [[}]]
 
-# Server-Side Hooks [[{01_PM.TODO.now]]
+## Server-Side Hooks [[{01_PM.TODO.now]]
 (system administrator only)
 - Useful to enforce nearly any kind of policy in repository.
 
@@ -1115,7 +1124,7 @@ $ git pull  \             ←   # Verify signature at pull time
    client  will block until completion.
 [[}]]
 
-# GIT Commit Standard Emojis: [[{]]
+## GIT Commit Standard Emojis: [[{]]
 @[https://gist.github.com/parmentf/035de27d6ed1dce0b36a]
  Commit type               Emoji                    Graph
  Initial commit           :tada:                      🎉
@@ -1161,7 +1170,7 @@ $ git pull  \             ←   # Verify signature at pull time
  Move/rename repository  :truck:                      🚚
 [[}]]
 
-# GitHub: Custom Bug/Feature-request templates [[{git.github]]
+## GitHub Custom Bug/Feat-req templates [[{git.github]]
   WARN : Non standard (Vendor lock-in) Microsoft extension.
  $ cat .github/ISSUE_TEMPLATE/bug_report.md
  | ---
@@ -1218,7 +1227,7 @@ $ git pull  \             ←   # Verify signature at pull time
  @[https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions]
 [[}]]
 
-# Unbreakable Branches: [[{git.bitbucket,qa,jenkins.troubleshooting]]
+## Unbreakable Branches: [[{git.bitbucket,qa,jenkins.troubleshooting]]
 @[https://github.com/AmadeusITGroup/unbreakable-branches-jenkins]
 
 - plugins for Bitbucket and Jenkins trying to fix next problem:
@@ -1340,43 +1349,84 @@ $ git pull  \             ←   # Verify signature at pull time
     - rewriting commit messages
 [[}]]
 
-# TODO: [[{01_PM.TODO]]
-• GitOps uses Git (DVCS) as single source of truth  for declarative infrastructure and [[{ci/cd.gitops]]
+## What's new [[{]]
+### 2.40
+  https://www.infoq.com/news/2023/04/git-releases-version-2-40/
+
+## Git 2.37 Brings Built-in File Monitor, Improved Pruning, and More
+  https://www.infoq.com/news/2022/06/git-2-37-released/ 
+  According to Jeff Hostetler, the author of the patches for git's new
+  file monitor, the implementation relies mostly on cross-platform code
+  with custom backends leveraging OS-native features, i.e. FSEvents on
+  macOS and ReadDirectoryChangesW on Windows. A Linux backend would
+  probably use either inotify or fanotify, Hostetler says, but that
+  work has not started yet.
+
+### 2.35 [[{]]
+  SSH signing you to use SSH-keys to sign certain kinds of objects in Git.
+  - Git 2.35 includes a couple of new additions to SSH signing.
+    -  To track which SSH keys you trust, you use the ALLOWED SIGNERS FILE
+       to store the identities and public keys of signers you trust.
+       PROBLEM: NOW suppose one commiter rotates their key.
+       - You could update their entry in the allowed signers file
+         but that would make it impossible to validate objects signed with
+         the older key.
+       - You could store both keys, but that would mean that you
+         would accept new objects signed with the old key.
+       SOLUTION: Git 2.35 lets you take advantage of OpenSSH’s
+                 valid-before and valid-after directives.
+   - Git 2.35 also supports new key types in the user.signingKey
+     configuration when you include the key verbatim (instead of storing
+     the path of a file that contains the signing key). Previously, the
+     rule for interpreting user.signingKey was to treat its value as a
+     literal SSH key if it began with “ssh-“, and to treat it as
+     filepath otherwise. You can now specify literal SSH keys with
+     keytypes that don’t begin with “ssh-” (like ECDSA
+     keys).[source, source]
+[[}]]
+
+[[}]]
+
+
+[[}]]
+
+
+
+# Git TODO [[{01_PM.TODO]]
+## GitOps Git as single source of truth
+  for declarative infrastructure and [[{ci/cd.gitops]]
   applications. Every developer within a team can issue pull requests against a
   Git repository, and when merged, a "diff and sync" tool detects a difference
   between the intended and actual state of the system. Tooling can then be
   triggered to update and synchronise the infrastructure to the intended state.
  @[https://www.weave.works/blog/gitops-operations-by-pull-request]             [[}]]
 
-• Scaling Git with LFS/VFS [[{git.scalability,scalability.storage]]
-• VFS is designed to scale for projects with many files/branches and long commit history
- with Git Object data store up to hundreds of Gigabytes .
-@[https://github.com/Microsoft/VFSForGit]
-@[https://vfsforgit.org/]
-• Git Large File Storage (LFS)targets the problem of large individual files (1GB video files, ML training data, ...).
-  replacing them with text pointers inside Git, while storing the file contents on a remote server.
-@[https://git-lfs.github.com/]
+## Scalar (Git v2.38+) [[{git.scalability,scalability.storage]]
+@[https://git-scm.com/docs/scalar]
+* Replace previous Git LFS/VFS support for "big files and repositories
+  with a native Git integration.
 
-· Ex. real world ussage of LFS:
-  https://github.com/o3de/o3de
+* Scalar improves performance by configuring advanced Git settings,
+ maintaining repositories in the background, and helping to reduce
+ data sent across the network.
 
-  """ This repository uses Git LFS for storing large binary files. Verify you have Git LFS installed by running the following command to print the version number.
-  $ git lfs --version
-  Otherwise, download and run the installer from:
-  https://git-lfs.github.com/.
 
-  - Install Git LFS hooks:
-  $ git lfs install
-
-  - Clone the repository:
-  $ git clone https://github.com/o3de/o3de.git
+@[https://github.blog/2022-10-13-the-story-of-scalar/]
 [[}]]
 
-• 4 secrets encryption tools [[{security.secret_management}]]
+## NostrGit [[{git.nostr]]
+@[https://github.com/NostrGit/NostrGit]
+
+ A truly censorship-resistant alternative to GitHub that has a chance of working
+[[}]]
+
+
+
+## 4 secrets encryption tools [[{security.secret_management}]]
 @[https://www.linuxtoday.com/security/4-secrets-management-tools-for-git-encryption-190219145031.html]
 @[https://www.atareao.es/como/cifrado-de-repositorios-git/]
 
-• Garbage Collector:[[{performance]]
+## Garbage Collector [[{performance]]
 -  Git occasionally does garbage collection as part of its normal operation,
 by invoking git gc --auto. The pre-auto-gc hook is invoked just before the
 garbage collection takes place, and can be used to notify you that this is
@@ -1384,12 +1434,12 @@ happening, or to abort the collection if now isn’t a good time.
 [[}]]
 
 
-• sparse-checkout (Git v2.25+) allows to checkout just a subset [[{scalability]]
+## sparse-checkout (Git v2.25+) allows to checkout just a subset [[{scalability]]
   of a given monorepo, speeding up commands like git pull and
   git status.
 @[https://github.blog/2020-01-17-bring-your-monorepo-down-to-size-with-sparse-checkout/] [[}]]
 
-• Advanced Git:
+## Advanced Git:
   - revert/rerere:
   - Submodules:
   - Subtrees:
@@ -1407,7 +1457,8 @@ happening, or to abort the collection if now isn’t a good time.
   cregit: Token-Level Blame Information for the Linux Kernel
   Blame tracks lines not tokens, cgregit blames on tokens (inside a line)
 
-• Gitea painless self-hosted Git service(Gogs) [[{01_PM.TODO,01_PM.low_code]]
+## Gitea painless self-hosted Git ) [[{01_PM.TODO,01_PM.low_code]]
+("replaced" unmaitained Gogs)
 @[https://gitea.io/]
 - Fork of gogs, since it was unmaintained.
 
@@ -1492,16 +1543,14 @@ https://github.com/awslabs/git-secrets#synopsis
 [[}]]
 [[git}]]
 
-#############################################################
-# Containerization ("Docker") Summary [[{containerization]] #
-#############################################################
+# Containerization ("Docker") [[{containerization]]
 
 @[https://reproducible-builds.org/]
   Containerization == "Reproducible Builds"
   == set of software development practices that create an
      independently-verifiable path from source to binary code.
 
-• OCI Standards Specification:  [[{containerization.runtime,standards,02_DOC_HAS.comparative]]
+## OCI Standards Specification:  [[{containerization.runtime,standards,02_DOC_HAS.comparative]]
 @[https://www.opencontainers.org/faq]
 
 - OCI mission: promote a set of common, minimal, open standards and specifications
@@ -1562,8 +1611,9 @@ https://github.com/awslabs/git-secrets#synopsis
     for more information.
 [[}]]
 
-# Container Ecosystem:  [[{containerization.runtime,containerization.performance]] #[runtimes_summary]
+## Container Ecosystem  [[{containerization.runtime,containerization.performance]]
                         [[02_doc_has.comparative,standards]]
+#[runtimes_summary]
 - Image creation:
   Alt 1) Dockerfile -> docker build
   Alt 2) buildah: Similar to docker build, it also allow to
@@ -1587,7 +1637,7 @@ https://github.com/awslabs/git-secrets#synopsis
 
 - Container Orchestration "==" Kubernetes, AWS EC2, ...
 ────────────────────────────────────────────────────────────────────────────────
-• runc runtime:
+### runc runtime:
 @[https://github.com/opencontainers/runc]
 - Reference runtime and cli tool donated by Docker for spawning and
   running containers according to the OCI specification:
@@ -1611,7 +1661,7 @@ https://github.com/awslabs/git-secrets#synopsis
 
 - reference implementation of the OCI runtime specification.
 
-• crun ────────────────────────────────────────────────────────────────────────
+### crun
 @[https://github.com/containers/crun/issues]
 @[https://www.redhat.com/sysadmin/introduction-crun]
 - fast, low-memory footprint container runtime by Giuseppe Scrivanoby
@@ -1707,7 +1757,7 @@ https://github.com/awslabs/git-secrets#synopsis
 - 'crun' is more portable: Ex: Risc-V.
 [[}]]
 
-# Container Network Iface (CNI): [[{containerization.networking,101,01_PM.TODO]]
+## Container Network Iface (CNI): [[{containerization.networking,101,01_PM.TODO]]
 @[https://github.com/containernetworking/cni]
 - specification and libraries for writing plugins to configure network interfaces
   in Linux containers, along with a number of supported plugins.
@@ -1803,7 +1853,7 @@ https://github.com/awslabs/git-secrets#synopsis
   - https.//slack.cncf.io  - topic #cni
 [[}]]
 
-# Docker  summary: [[{containerization.docker,containerization.storage.host,containerization.image.registry,]]
+## Docker  summary: [[{containerization.docker,containerization.storage.host,containerization.image.registry,]]
                    [[containerization.runtime,containerization.security,01_PM.TODO,containerization.orchestration.swarn]]
   - External Links:
   - @[https://docs.docker.com/]
@@ -1972,7 +2022,7 @@ https://github.com/awslabs/git-secrets#synopsis
 | · version     Show the Docker version information
 
 
-# /var/run/docker.sock:
+### /var/run/docker.sock:
 @[https://medium.com/better-programming/about-var-run-docker-sock-3bfd276e12fd]
   - Unix socket the Docker daemon listens on by default,
     used to communicate with the daemon from within a container.
@@ -1981,7 +2031,7 @@ https://github.com/awslabs/git-secrets#synopsis
     "special" container (e.g: Kubernetes controlers,...)
     $ docker run -v /var/run/docker.sock:/var/run/docker.sock ....
 
-# Docker Networks: [[{containerization.networking,101]]
+## Docker Networks: [[{containerization.networking,101]]
   $ docker network create  network01     <-  Create new network
 
   $ docker run      \
@@ -2003,7 +2053,7 @@ https://github.com/awslabs/git-secrets#synopsis
 
 [[}]]
 
-# VOLUMES [[{containerization.storage]]
+## Docker Volumes [[{containerization.storage]]
 
                                             REUSING VOLUMES:
   $ docker run -it  --name alpha \       <- Create new container mounting
@@ -2028,7 +2078,7 @@ https://github.com/awslabs/git-secrets#synopsis
     -it alpine vi index.html
 [[}]]
 
-# docker-compose: [[{containerization.orchestration.docker-compose]]
+## docker compose [[{containerization.orchestration.docker-compose]]
 - "Self documenting" YAML file defining services, networks and volumes.
   Full ref: @[https://docs.docker.com/compose/compose-file/]
   Ideal to create development/production enviroments running just on a single host
@@ -2222,7 +2272,7 @@ https://github.com/awslabs/git-secrets#synopsis
         config:
           - subnet: 172.16.239.0/24
 
-• docker-compose SystemD Integration:
+### docker compose SystemD Integration:
 
   STEP 1) Create some config at /etc/compose/docker-compose.yml
 
@@ -2278,7 +2328,7 @@ https://github.com/awslabs/git-secrets#synopsis
   └──────────────────────────────────────────────────┘
 [[}]]
 
-# Container Registry ("Image repository") Summary [[{containerization.image.registry,01_PM.TODO]]
+## Container Registry ("Image repo") [[{containerization.image.registry,01_PM.TODO]]
 @[https://docs.docker.com/registry/#what-it-is]
 @[https://docs.docker.com/registry/introduction/]
   $ docker run -d -p 5000:5000 \  ← Start registry server
@@ -2298,7 +2348,7 @@ https://github.com/awslabs/git-secrets#synopsis
   $ docker container rm -v registry
 [[}]]
 
-# Dockerize (non-friendly container apps): [[{containerization.image.build,01_PM.low_code,containerization.troubleshooting]]
+## Dockerize (non-friendly container apps): [[{containerization.image.build,01_PM.low_code,containerization.troubleshooting]]
   @[https://github.com/jwilder/dockerize]
   Utility to simplify running applications in docker containers allowing to:
   - generate app config. files AT CONTAINER STARTUP TIME
@@ -2316,8 +2366,7 @@ https://github.com/awslabs/git-secrets#synopsis
      (Ex: nginx logs to /var/log/nginx/access.log and /var/log/nginx/error.log by default)
 [[}]]
 
-# Managing Containers:
-
+## Managing Containers [[{]]
 $ docker run \                   <- Create and run container based on imageXX
   --rm \                         <- Remove on exit (remove to see container's logs after exit)
   --name name01 \                <- assign name (or fail if name already assigned)
@@ -2334,8 +2383,9 @@ $ docker stop containerXX && \   <- Try to stop container properly.
   docker kill containerXX        <- Finally if it doesn't respond in 30 secs.
 
 $ docker container prune  <- Prune stopped containers
+[[}]]
 
-# Monitoring running containers 101 [[{containerization.monitoring]]
+## Monitoring running containers [[{containerization.monitoring]]
 List containers instances:
    $ docker ps     # only running
    $ docker ps -a  # also finished, but not yet removed (docker rm ...)
@@ -2359,9 +2409,7 @@ List containers instances:
    | systemd+  121469  121423  0  Jul06  ?     00:00:57 postgres: stats collector process
 [[}]]
 
-
-
-# Dockviz: [[{containerization.monitoring,gui,containerization.troubleshooting]]
+## Dockviz: Dump container deps and image deps [[{containerization.monitoring,gui,containerization.troubleshooting]]
 @[https://github.com/justone/dockviz]
   Show a graph of running containers-dependencies and image-dependencies.
 
@@ -2402,7 +2450,15 @@ $ dockviz images - -i *                 #  <- Show incremental size (vs cumulati
         └─316b678ddf48 Virtual Size: 70.8 MB Tags: ubuntu:13.04, ubuntu:raring
 [[}]]
 
-# Managing Images:  [[{containerization.image.registry]]
+# Rootless ("sudo"less) Docker (v20.10+) [[{01_PM.TODO,security]]
+- https://docs.docker.com/engine/security/rootless/
+- Rootless mode introduced in v19.03 as experimental feature.
+  and graduated in Docker Engine v20.10.
+[[}]]
+
+
+
+# containerization, Managing Images [[{containerization.image.registry]]
   $ docker images        # ← List local ("downloaded/instaled") images
 
   $ docker search redis  # ← Search remote images @ Docker Hub:
@@ -2445,9 +2501,10 @@ $ dockviz images - -i *                 #  <- Show incremental size (vs cumulati
 
   DOWNLOAD IMAGE)
   $ docker pull ${REGISTRY}/${USER}/${IMG_NAME}:${IMG_VER}  <- ALT1: DOWNLOAD FROM PRIVATE REGISTRY
-  $ docker pull ${IMG_NAME}:${IMG_VER} [[}]]                <- ALT2: DOWNLOAD FROM DOCKER HUB
+  $ docker pull ${IMG_NAME}:${IMG_VER}                      <- ALT2: DOWNLOAD FROM DOCKER HUB
+[[}]]
 
-# BUILD DOCKER/OCI IMAGE 101 [[{containerization.dockerfile,containerization.image.build]]
+## Build oci image [[{containerization.dockerfile,containerization.image.build]]
   ┌─ Dockerfile ───────────────────────────────┐
   │ FROM registry.redhat.io/ubi7/ubi           <- 72.7 MB layer
   │ RUN dnf update                             <- 30.1 MB layer
@@ -2495,7 +2552,7 @@ it has executed before and uses the result for each new build.
    wasteful to use this argument all the time when building images.
    (--no-cache can also be useful)
 
-• Dockerfile : ARG vs ENV:
+### Dockerfile : ARG vs ENV:
 
   ARG : Vaules are consumed/used at build time. Not available at runtime.
   ENV : Values are consumed/used at runtime by final app.
@@ -2566,7 +2623,7 @@ it has executed before and uses the result for each new build.
  *4 Modify base image adding "ONBUILD" in places that are executed just during
     build in the image extending base image
 
-• Image Build: MultiStage Builds  [[{qa,performance]]
+### Image Build: MultiStage Builds  [[{qa,performance]]
 @[https://docs.docker.com/develop/develop-images/multistage-build/]
 
 - Example 1: Go multistage build:
@@ -2645,15 +2702,47 @@ it has executed before and uses the result for each new build.
      (Check alternatives in other languages)
 
  [[}]]
+[[containerization.dockerfile}]]
 
 [[}]]
 
-# https://github.com/googlecontainertools/distroless  [[{containerization.image.build,qa]]
-- "distroless" images contain only your application and its runtime dependencies.
-  (not package managers, shells,...)
+## dive Exploring/shrink Images  [[{qa,containarization.qa]]
+  https://github.com/tldr-pages/tldr/blob/master/pages/common/dive.md
+[[}]]
+
+## distroless  [[{containerization.image.build,security,qa]]
+@[https://github.com/googlecontainertools/distroless]
+- "distroless" images contain only application and its runtime dependencies.
+  (not package managers, shells, /tmp, /etc/passwd, ...)
   notice: in kubernetes we can also use init containers with non-light images
           containing all set of tools (sed, grep,...) for pre-setup, avoiding
           any need to include in the final image.
+
+- C&P from:  https://www.linkedin.com/posts/iximiuz_what-is-a-distroless-container-image-activity-6998607273514123264-PmHT
+  hat Is a Distroless Container Image? 🤔 Go (programming language)
+  is famous for its statically linked binaries. You can take a Go
+  executable, drop it into a "FROM scratch" container, and call it a
+  day. But there is a bunch of pitfalls with this approach... 1. "FROM
+  scratch" containers lack proper user management. A "scratch" base
+  image means an empty image. So, the /etc/passwd and /etc/group files
+  will simply be missing.  /var, /etc don't exist in scratch
+  containers (unless you mount them, of course). But that can make your
+  containerized app faulty - just try creating a tmp file and see what
+  happens. 3. "FROM scratch" containers lack CA certificates and
+  timezone databases. Hence, calling HTTPS endpoints won't be possible.
+  Your program does some time conversion? Won't work either. 4. "FROM
+  scratch" containers lack your language runtime. If your language's
+  static linking support is less perfect than in Go or your programs
+  require an interpreter or a runtime environment, you won't be able to
+  use a scratch base without tedious copying of app dependencies into
+  it. "FROM scratch" images are slim, fast, secure, and whatnot, but
+  apparently, they may require quite some extra work before you can put
+  them in production. Luckily, projects like Chainguard Images and
+  GoogleContainerTools' distroless automate many of these tedious
+  preparation steps for you. Read more about the pitfalls of scratch
+  container images and the GoogleContainerTools' distroless project in
+  my blog post 👇 https://lnkd.in/eyTkTX5p.
+
 
   stable:                      experimental (2019-06)
   gcr.io/distroless/static     gcr.io/distroless/python2.7
@@ -2678,8 +2767,31 @@ it has executed before and uses the result for each new build.
     cmd ["main.jar"]
 [[}]]
 
-# CNCF buildpacks.io: [[{containerization.image.build,01_pm.low_code,dev_stack.java]]
-• build oci image directly from JAVA source source (Skipping Dockerfile/docker build)
+## Kaniko (rootless builds) [[{containerization.image.build,01_PM.TODO]
+☞ NOTE: To build *JAVA images* see also @[/JAVA/java_map.html?query=jib]
+
+@[https://github.com/GoogleContainerTools/kaniko]
+- tool to build container images inside an unprivileged container or
+  Kubernetes cluster.
+- Although kaniko builds the image from a supplied Dockerfile, it does
+  not depend on a Docker daemon, and instead executes each command completely
+  in userspace and snapshots the resulting filesystem changes.
+- The majority of Dockerfile commands can be executed with kaniko, with
+  the current exception of SHELL, HEALTHCHECK, STOPSIGNAL, and ARG.
+  Multi-Stage Dockerfiles are also unsupported currently. The kaniko team
+  have stated that work is underway on both of these current limitations.
+[[}]]
+
+## buildpacks.io source ···> image  [[{containerization.image.build,01_pm.low_code,dev_stack.java]]
+@[buildpacks.io]
+* CNFC project
+* Compared to Kaniko:
+  Kaniko:
+  source + Dockerfile + BuildTemplate(optional)  ···> OCI image
+  buildpacks: (No Dockerfile needed at all)
+  source                                            ···> OCI image
+• build oci image directly from source source (Skipping Dockerfile/docker build)
+  (with dev stack -Java/Go/...- and dependencies autodetection )
 • highly modular and customizable.
 • used, among others, by spring (spring boot 2.3+) with  gradle and maven support.
   e.g.: springboot gradle integration:
@@ -2687,18 +2799,18 @@ it has executed before and uses the result for each new build.
     imagename = "${docker.username}/${project.name}:${project.version}"
     environment = ["bp_jvm_version" : "11.*"]
   }
-  • promotes best practices in terms of security;
-  • defining cpu and memory limits for jvm containers is critical
-    because they will be used to size properly items like jvm thread pools,
-    heap memory and  non-heap  memory. tunning manually is challenging,
-    fortunately, if using paketo implementation of cloud native buildpacks
-    (included for example in spring boot), java memory calculator is included
-    automatically and the component  will configure jvm memory based on the
-    resource limits assigned to the container. otherwise, results are
-    unpredictable.
+• promotes best practices in terms of security;
+• defining cpu and memory limits for jvm containers is critical
+  because they will be used to size properly items like jvm thread pools,
+  heap memory and  non-heap  memory. tunning manually is challenging,
+  fortunately, if using paketo implementation of cloud native buildpacks
+  (included for example in spring boot), java memory calculator is included
+  automatically and the component  will configure jvm memory based on the
+  resource limits assigned to the container. otherwise, results are
+  unpredictable.
 [[}]]
 
-# rootless buildah: [[{containerization.image.build]]
+## rootless buildah [[{containerization.image.build,security]]
 @[https://opensource.com/article/19/3/tips-tricks-rootless-buildah]
 - building containers in unprivileged environments
 - library+tool for building oci images.
@@ -2711,10 +2823,10 @@ it has executed before and uses the result for each new build.
    comments apply to both dnf and yum.
 [[}]]
 
-# appsody (prebuilt images)  [[{containerization.image.build,dev_stack.kubernetes,01_PM.low_code,01_PM.todo]]
+## appsody (prebuilt base image) [[{containerization.image.build,dev_stack.kubernetes,qa,01_PM.low_code,01_PM.todo]]
 @[https://appsody.dev/docs]
 - pre-configured application stacks for rapid development
-  of quality microservice-based applications.               [[qa]]
+  of quality microservice-based applications.
 
 - Stacks include language runtimes, frameworks, additional libraries and tools
   NEEDED FOR LOCAL DEVELOPMENT, providing consistency and best practices.
@@ -2731,21 +2843,21 @@ it has executed before and uses the result for each new build.
 
 - stack layout example, my-stack:
   my-stack
-  ├── readme.md               # describes stack and how to use it
-  ├── stack.yaml              # different attributes and which template
-  ├── image/                  # to use by default
-  |   ├── config/
-  |   |   └── app-deploy.yaml # deploy config using appsody operator
-  |   ├── project/
-  |   |   ├── php/java/...stack artifacts
-  |   |   └── dockerfile      # final   (run) image ("appsody build")
-  │   ├── dockerfile-stack    # initial (dev) image and env.vars
-  |   └── license             # for local dev.cycle. it is independent
-  └── templates/              # of dockerfile
-      ├── my-template-1/
-      |       └── "hello world"
-      └── my-template-2/
-              └── "complex application"
+  ├ readme.md               # describes stack and how to use it
+  ├ stack.yaml              # different attributes and which template
+  ├ image/                  # to use by default
+  | ├ config/
+  | | └ app-deploy.yaml     # deploy config using appsody operator
+  | ├ project/
+  | | ├ php/java/...stack artifacts
+  | | └ dockerfile          # final   (run) image ("appsody build")
+  │ ├ dockerfile-stack      # initial (dev) image and env.vars
+  | └ license               # for local dev.cycle. it is independent
+  └ templates/              # of dockerfile
+    ├ my-template-1/
+    |     └ "hello world"
+    └ my-template-2/
+          └ "complex application"
 
 - GENERATED FILES:
   -*".appsody-config.yaml"*. generated by $*$ appsody init*
@@ -2805,11 +2917,13 @@ it has executed before and uses the result for each new build.
   $ appsody repo
 [[}]]
 
+# Podman (Docker alternative) [[{containerization.podman,02_DOC_HAS.comparative,01_PM.TODO]]
+- No system daemon required and daemon required running
+  "at native Linux speeds".
+  (no daemon getting in the way of handling client/server requests)
 
-# Podman (IBM/RedHat)  [[{containerization.podman,02_DOC_HAS.comparative,01_PM.TODO]]
-- No system daemon required.
-- No daemon required.
-- rootless containers.                                         [[containerization.security]]
+- "rootless" enviroment. No need for root / sudo.               [[{containerization.security}]]
+  TODO: Looks like newer versions of Docker are also root. Review.
 - Podman is set to be the default container engine for the single-node
   use case in Red Hat Enterprise Linux 8.
   (CRI-O for OpenShift clusters)
@@ -2820,11 +2934,6 @@ it has executed before and uses the result for each new build.
 - '$ podman generate kube' creates a Pod that can then be exported as Kubernetes-compatible YAML.
 
 - enables users to run different containers in different user namespaces
-
-
-- Runs at native Linux speeds.
-  (no daemon getting in the way of handling client/server requests)
-
 
 -  OCI compliant Container Runtime (runc, crun, runv, etc)
   to interface with the OS.
@@ -2866,9 +2975,9 @@ it has executed before and uses the result for each new build.
     - quay.io
     - docker.io
 
-$*$ podman login quay.io                            * ← Login into quay.io
-$*$ podman tag localhost/nginx quay.io/${USER}/nginx* ← re-tag the image
-$*$ podman push quay.io/${USER}/nginx               * ← push the image
+  $ podman login quay.io                            # <·· Login into quay.io
+  $ podman tag localhost/nginx quay.io/${USER}/nginx# <·· re-tag the image
+  $ podman push quay.io/${USER}/nginx               # <·· push the image
 → Getting image source signatures
 → Copying blob 38c40d6c2c85 done
 → ..
@@ -2890,7 +2999,7 @@ $*$ podman inspect quay.io/${USER}/nginx            * ← Inspect image
 → ]
 
 
-• Podman commands:
+### Podman commands:
 @[https://podman.readthedocs.io/en/latest/Commands.html]
  *Image Management:*
   build        Build an image using instructions from Containerfiles
@@ -2984,11 +3093,13 @@ $*$ podman inspect quay.io/${USER}/nginx            * ← Inspect image
     systemd    systemd Generate a  *SystemD unit file* for a Podman container
 
 
-• SystemD Integration:
+### Podman SystemD Integration:
 https://www.redhat.com/sysadmin/improved-systemd-podman
 - auto-updates help to make managing containers even more straightforward.
 
-- SystemD is used in Linux to  managing services (background long-running jobs listening for client requests) and their dependencies.
+- SystemD is used in Linux to  managing services (background
+  long-running jobs listening for client requests) and their
+  dependencies.
 
  *Podman running SystemD inside a container*
   └ /run               ← tmpfs
@@ -3050,132 +3161,147 @@ https://www.redhat.com/sysadmin/improved-systemd-podman
 
 [[}]]
 
-# TODO/un-ordered/classify [[{containerization,01_PM.TODO]]
-- Kompose: docker-compose to Kubernetes convert tool.
-  - https://github.com/kubernetes/kompose
-  - https://github.com/tldr-pages/tldr/blob/master/pages/common/kompose.md
+# CONTAINERIZATION TROUBLESHOOTING [[{containerization.troubleshooting]]
 
-- CONTAINERIZATION TROUBLESHOOTING 101: [[{containerization.troubleshooting]]
+## Create global `ulimit` for containers  [[{01_PM.TODO}]]
 
-  - PROBLEM: /var/lib/docker/devicemapper/devicemapper/data consumes too much space
-    $ sudo du -sch /var/lib/docker/devicemapper/devicemapper/data
-    14g     /var/lib/docker/devicemapper/devicemapper/data
+## /var/lib/docker/.../data consumes too much space
+$ sudo du -sch /var/lib/docker/devicemapper/devicemapper/data
+14g     /var/lib/docker/devicemapper/devicemapper/data
 
-    ($ docker logs 'container' knocks down the host server when output is processed)
+($ docker logs 'container' knocks down the host server when output is processed)
 
-    SOLUTION 1: Possible logs are not configured to be rotated creating "huge" file.
-    Fix:
-    1) "create/modify" /etc/docker/daemon.json  to look like:
-       {
-         "log-driver": "json-file",
-         "log-opts": {
-           "max-size": "10m",
-           "max-file": "3"
-         }
+* Probably logs are not configured to be rotated creating "huge" files.
+  Fix:
+  1) "create/modify" /etc/docker/daemon.json  to look like:
+     {
+       "log-driver": "json-file",
+       "log-opts": {
+         "max-size": "10m",
+         "max-file": "3"
        }
-    2) $ sudo systemctl restart docker.service
+     }
+  2) $ sudo systemctl restart docker.service
 
-    SOLUTION 2: NOTE: maybe ulimit can fix it at global (Linux OS) scope. [[{01_PM.TODO}]]
+## DNS works on host, fails at build and/or in running containers:
+* SOLUTION 1) ALT 1:
+  1) Add next lines to /etc/docker/daemon.json:
+      {
+    +   "dns": ["8.8.8.8","4.4.4.4"],
+    +   "dns-search": ["companydomain",...]
+      }
+  2) $ sudo systemctl restart docker.service
+  3) $ journalctl -u docker.service --since "1m ago"  # Check logs for related errors.
 
-  - PROBLEM: dns works on host, fails during builds or in running containers:
-    └ SOLUTION 1) ALT 1:
-      1) Add next lines to /etc/docker/daemon.json:
-          {
-        +   "dns": ["8.8.8.8","4.4.4.4"],
-        +   "dns-search": ["companydomain",...]
-          }
-      2) $ sudo systemctl restart docker.service
-      3) $ journalctl -u docker.service --since "1m ago"  # Check logs for related errors.
+* SOLUTION 1) ALT 2:
+  1) Edit     /lib/systemd/system/docker.service
+         (/usr/lib/systemd/system/docker.service)
+     to look somthing like:
+     ...
+  +  ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock \
+        --dns 8.8.8.8 --dns 8.8.4.4  --dns-search default.svc.cluster.local \
+        --dns-search svc.cluster.local --dns-opt ndots:2 \
+        --dns-opt timeout:2 --dns-opt attempts:2
 
-    └ SOLUTION 1) ALT 2:
-      1) Edit     /lib/systemd/system/docker.service
-             (/usr/lib/systemd/system/docker.service)
-         to look somthing like:
-         ...
-      +  ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock \
-            --dns 8.8.8.8 --dns 8.8.4.4  --dns-search default.svc.cluster.local \
-            --dns-search svc.cluster.local --dns-opt ndots:2 \
-            --dns-opt timeout:2 --dns-opt attempts:2
+   NOTE/WARN!!!: This configuration can be overriden by values in:
+   /etc/systemd/system/docker.service.d/*.conf
 
-       NOTE/WARN!!!: This configuration can be overriden by values in:
-       /etc/systemd/system/docker.service.d/*.conf
+  2) $ sudo systemctl daemon-reload
+  3) $ sudo systemctl restart docker.service
+  4) $ journalctl -u docker.service --since "1m ago"  # Check logs for related errors.
 
-      2) $ sudo systemctl daemon-reload
-      3) $ sudo systemctl restart docker.service
-      4) $ journalctl -u docker.service --since "1m ago"  # Check logs for related errors.
-
-    SOLUTION 2)  try to launch with --network host flag. ex.:
+* SOLUTION 2)  try to launch with --network host flag. ex.:
       ...
       docker_opts="${docker_opts} *--network host*"
       script="wget https://repo.maven.apache.org/maven2" # ← dns can fail with bridge
       echo "${mvn_script}" | docker run ${docker_opts} ${script}
 
-  - INSPECTING LINUX NAMESPACES OF RUNNING CONTAINER:
-    use nsenter ( util-linux package) to "enter" into the
-    container (network, filesystem, ipc, ...) namespace.
+## Debug running container  [[{]]
+* If the container contains a shell (discouraged for security
+  reasons, but quite normal in practice) we can just
+  `docker exec -ti $containerId /bin/sh`.
 
-    $ cat enternetworknamespace.sh
-    #!/bin/bash
+  The first problem is that, once inside the container,  we are limited
+  to the shell and the few utilities prepackaged into the container.
+  Possible we lack curl, tcpdump, vi, ... to debug any issue as we
+  will do normally "outside" the container.
 
-    # ref: man nsenter
-    # run shell with network namespace of container.
-    # allows to use ping, ss/netstat, wget, trace,.. in
-    # in contect of the container.
-    # useful to check network setup is the appropiate one.
-    cont_pid=$( sudo docker inspect -f '{{.state.pid}}' $1 )
-    shift 1
-    sudo nsenter -t ${cont_pid} -n
-                                ^^
-                           use network namespace of container
+  Solution: Instead of `docker exec ...`  use `nsenter`( util-linux
+  package) to "switch" to the container (network, filesystem, ipc, ...)
+  namespace while keeping all the standard tooling of the host Linux
+  system (editors, scanners, diagnostic tools, ...)
 
-    ex ussage:
-    $ ./enternetworknamespace.sh mywebcontainer01
-    $ netstat -ntlp
-    active internet connections (only servers)
-    proto recv-q send-q local address           foreign address         state
-    tcp        0      0 0.0.0.0:80              0.0.0.0:*               listen
+  $ cat enternetworknamespace.sh
+  #!/bin/bash
 
-    * netstat installed on host (vs container).
+  # ref: man nsenter
+  # run shell with network namespace of container.
+  # allows to use ping, ss/netstat, wget, trace,.. in
+  # in contect of the container.
+  # useful to check network setup is the appropiate one.
+  cont_pid=$( sudo docker inspect -f '{{.state.pid}}' $1 )
+  shift 1
+  sudo nsenter -t ${cont_pid} -n
+                              ^^
+                         use network namespace of container
+
+  ex ussage:
+  $ ./enternetworknamespace.sh mywebcontainer01
+  $ netstat -ntlp
+  active internet connections (only servers)
+  proto recv-q send-q local address           foreign address         state
+  tcp        0      0 0.0.0.0:80              0.0.0.0:*               listen
+
+  * netstat installed on host (vs container).
+[[}]]
+[[containerization.troubleshooting}]]
+
+## Containerization: TODO/un-ordered/classify [[{containerization,01_PM.TODO]]
+## security tunning [[{containerization.security,101]]
+@[https://opensource.com/business/15/3/docker-security-tuning]
 [[}]]
 
-# sysdig tools:  [[{containerization.monitoring,containerization.security,troubleshooting,01_PM.todo]]
-container-focused linux troubleshooting and monitoring tool.
+## sysdig troubleshooting&monitoring tools  [[{containerization.monitoring,containerization.security,troubleshooting,01_PM.TODO]]
+"""... once sysdig is installed as a process (or container) on the server,
+  it sees every process, every network action, and every file action
+  on the host. you can use sysdig "live" or view any amount of historical
+  data via a system capture file.
 
-once sysdig is installed as a process (or container) on the server,
-it sees every process, every network action, and every file action
-on the host. you can use sysdig "live" or view any amount of historical
-data via a system capture file.
+  example: take a look at the total cpu usage of each running container:
+     $ sudo sysdig -c topcontainers\_cpu
+     | cpu% container.name
+     | ----------------------------------------------------
+     | 80.10% postgres
+     | 0.14% httpd
+     | ...
+     |
 
-example: take a look at the total cpu usage of each running container:
-   $ sudo sysdig -c topcontainers\_cpu
-   | cpu% container.name
-   | ----------------------------------------------------
-   | 80.10% postgres
-   | 0.14% httpd
-   | ...
-   |
+  example: capture historical data:
+     $ sudo sysdig -w historical.scap
 
-example: capture historical data:
-   $ sudo sysdig -w historical.scap
-
-example: "zoom into a client":
-   $ sudo sysdig -pc -c topprocs\_cpu container. name=client
-   | cpu% process container.name
-   | ----------------------------------------------
-   | 02.69% bash client
-   | 31.04%curl client
-   | 0.74% sleep client
+  example: "zoom into a client":
+     $ sudo sysdig -pc -c topprocs\_cpu container. name=client
+     | cpu% process container.name
+     | ----------------------------------------------
+     | 02.69% bash client
+     | 31.04%curl client
+     | 0.74% sleep client
 [[}]]
 
-• cadvisor+prometheus+grafana: [[{containerization.monitoring]]
+## cadvisor [[{containerization.monitoring]]
+* cadvisor analyzes resource usage and performance characteristics of
+  running containers.
+
+### cadvisor+prometheus+grafana
 @[https://blog.couchbase.com/monitoring-docker-containers-docker-stats-cadvisor-universal-control-plane/]
 @[https://dzone.com/refcardz/intro-to-docker-monitoring?chapter=6]
 @[https://github.com/google/cadvisor/blob/master/docs/running.md#standalone]
 [[}]]
 
-• live restore:
+• live restore [[{]]
  @[https://docs.docker.com/config/containers/live-restore/]
  keep containers alive during daemon downtime
+[[}]]
 
 • weave: [[{ci/cd.gitops,containerization.monitoring,01_pm.low_code,gui,01_PM.todo]]
 @[https://github.com/weaveworks/weave]
@@ -3218,7 +3344,7 @@ example: "zoom into a client":
   @[https://www.weave.works/technologies/gitops/]
 [[}]]
 
-• clair  [[{containerization.security,qa,01_PM.todo]]
+• clair vulnerabilities static analysis [[{containerization.security,qa,01_PM.todo]]
 @[https://coreos.com/clair/docs/latest/]
 open source project for the static analysis of vulnerabilities in
 appc and docker containers.
@@ -3232,7 +3358,7 @@ all major components can be customized programmatically at compile-time
 without forking the project.
 [[}]]
 
-• skopeo:  [[{containerization.image.registry,containerization.troubleshooting]]
+## skopeo [[{containerization.image.registry,containerization.troubleshooting]]
 @[https://github.com/containers/skopeo]
 @[https://www.redhat.com/en/blog/skopeo-10-released]
 - command line utility for moving/copying container images between different types
@@ -3243,22 +3369,18 @@ without forking the project.
 - compatible with oci images (standards) and original docker v2 images.
 [[}]]
 
-• security tunning:  [[{containerization.security,101]]
-@[https://opensource.com/business/15/3/docker-security-tuning]
+## lazydocker UI  [[{qa.UX]]
+@[https://github.com/jesseduffield/lazydocker]
+a simple terminal ui for both docker and docker-compose, written in
+go with the gocui library.
 [[}]]
 
-• lazydocker:  [[{qa.UX,]]
-  @[https://github.com/jesseduffield/lazydocker]
-  a simple terminal ui for both docker and docker-compose, written in
-  go with the gocui library.
-[[}]]
-
-• convoy (volume driver for backups) : [[{containerization.storage.host,containerization,security.backups]]
+## convoy (backups volume driver) [[{containerization.storage.host,containerization,security.backups]]
 @[https://rancher.com/introducing-convoy-a-docker-volume-driver-for-backup-and-recovery-of-persistent-data/]
-introducing convoy a docker storage driver for backup and recovery of volumes
+- convoy: docker storage driver for backup and recovery of volumes.
 [[}]]
 
-• Setup Insecure HTTP registry  [[{containerization.image.registry,containerization.security]]
+## Setup Insecure HTTP registry  [[{containerization.image.registry,containerization.security]]
 @[https://www.projectatomic.io/blog/2018/05/podman-tls/]
 
    /etc/containers/registries.conf.
@@ -3277,28 +3399,27 @@ introducing convoy a docker storage driver for backup and recovery of volumes
   *registries = ['localhost:5000']*
 [[}]]
 
-• Protecting against Doki malware: [[{containerization.security,qa,01_PM.TODO]]
-  https://containerjournal.com/topics/container-security/protecting-containers-against-doki-malware/
+## Protect from Doki malware [[{containerization.security,qa,01_PM.TODO]]
+https://containerjournal.com/topics/container-security/protecting-containers-against-doki-malware/
+[[}]]
 
-• 2+Millions images with Critical Sec.Holes
+### 2+Millions images with Critical Sec.Holes !!!  [[{]]
 https://www.infoq.com/news/2020/12/dockerhub-image-vulnerabilities/
+[[}]]
 
-• OpenSCAP: Scanning Vulnerabilities: [[{containerization.security.openscap}]]
+
+## OpenSCAP: Scanning Vulnerabilities [[{containerization.security.openscap]]
 - Scanning Containers for Vulnerabilities on RHEL 8.2 With OpenSCAP and Podman:
 @[https://www.youtube.com/watch?v=nQmIcK1vvYc]
 [[}]]
 
-
-
 [[containerization,01_PM.TODO}]]
 
-[[}]]
-
 [[containerization}]]
-##################################
-# Networking Summary for DevOps: # [[{101,01_PM.low_code,networking.load_balancer,web_balancer,01_PM.WiP]]
-##################################
-• HTTP balanced proxy Quick Setup with HAProxy
+
+# Networking Summary for DevOps [[{networking.101,01_PM.low_code,networking.load_balancer,web_balancer]]
+
+## HTTP balanced proxy Quick Setup with HAProxy [[{]]
   REF: @[https://github.com/AKSarav/haproxy-nodejs-redis/blob/master/haproxy/]
   ┌──haproxy/haproxy.cfg ────────────  ┌ haproxy/Dockerfile ──────────────────────────
   │ global                             │ FROM haproxy
@@ -3321,15 +3442,17 @@ https://www.infoq.com/news/2020/12/dockerhub-image-vulnerabilities/
   └─────────────────────────────────────────
 • Reverse Proxy  [[01_PM.TODO]]
 • Forward Proxy  [[01_PM.TODO]]
+[[}]]
 
-• CharlesProxy: Monitor TLS/HTTPS traffic: [[{networking.TLS,troubleshooting,01_PM.TODO]]
+## CharlesProxy: Monitor TLS/HTTPS traffic [[{networking.TLS,troubleshooting,01_PM.TODO]]
 @[https://www.charlesproxy.com/]
   HTTP proxy / HTTP monitor / Reverse Proxy enabling developers to view HTTP+SSL/HTTPS
   traffic between loal machine and Internet, including requests, responses and HTTP headers
   (which contain the cookies and caching information).
   [[}]]
 
-• ┌ DNS Records ────────────────────────────────┐
+## DNS Records [[{]]
+  ┌ DNS Records ────────────────────────────────┐
   │ A       root domain name IP address         │
   │         Ex: mydomain.com → 1.2.3.4          │
   │         Not recomended for changing IPs     │
@@ -3346,8 +3469,9 @@ https://www.infoq.com/news/2020/12/dockerhub-image-vulnerabilities/
   ├─────────────────────────────────────────────┤
   │ AAAA    A record for IPv6 addresses         │
   └─────────────────────────────────────────────┘
+[[}]]
 
-• SERVICE MESH EVOLUTION  [[{01_PM.low_code]]
+## SERVICE MESH EVOLUTION  [[{01_PM.low_code]]
 
   Summary extracted from @[https://isovalent.com/blog/post/2021-12-08-ebpf-servicemesh]
                          @[https://www.infoq.com/news/2022/01/ebpf-wasm-service-mesh/]
@@ -3380,7 +3504,7 @@ https://www.infoq.com/news/2020/12/dockerhub-image-vulnerabilities/
                                 Sidecar2 ←→ App2
    [[}]]
 
-• nginx.conf summary [[{networking.nginx,web_balancer,01_PM.WiP]] #[nginx_conf_summary]
+## nginx.conf summary [[{networking.nginx,web_balancer,01_PM.WiP]] #[nginx_conf_summary]
 REF: @[https://raazkumar.com/tutorials/nginx/nginx-conf/]
 
 • nginx ==   fast HTTP reverse proxy
@@ -3570,37 +3694,38 @@ REF: @[https://raazkumar.com/tutorials/nginx/nginx-conf/]
   @[https://github.com/tldr-devops/nginx-common-configuration]
 [[networking.nginx}]]
 
-[[}]]
+[[networking.101}]]
 
-##############################
-# Monitoring for DevOps 101  # [[{monitoring.101,]]
-##############################
- • Infra vs App Monitoring: [[{02_doc_has.comparative]]
- └*Infrastructure Monitoring:*
+# Monitoring for DevOps 101 [[{monitoring.101,]]
+
+## Infra vs App Monitoring [[{02_doc_has.comparative]]
+### *Infrastructure Monitoring*
    · Prometheus + Grafana (Opinionated)
      Prometheus periodically pulls multidimensional data from different apps/components.
      Grafana allows to visualize Prometheus data in custom dashboards.
      (Alternatives include Monit, Datadog, Nagios, Zabbix, ...)
 
- └*Application Monitoring*:
+### *Application Monitoring*
    · OpenTelemetry: replaces OpenTracing and OpenCensus.
      Cloud Native Foundation projects.
      It also serves as ¿front-end? for Jaeger and others.
    · Jaeger, New Relic: (Very opinionated)
    (Other alternatives include AppDynamics, Instana, ...)
 
- └ Log Management: (Opinionated)
+### *Log Management* (Opinionated)
    · Elastic Stack
      (Alternative include Graylog, Splunk, Papertrail, ...)
      Elastic search has evolved throught the years to become a
      full analytical platform.
 
-   MUCH MORE DETAILED INFORMATION IS AVAILABLE AT:
- @[../Architecture/architecture_map.html]
-  [[}]]
-[[}]]
+* MUCH MORE DETAILED INFORMATION IS AVAILABLE AT:
+ @[../../txt_world_domination/viewer.html?payload=../SoftwareArchitecture/ddbb_engines.txt]
 
-# Yaml References: [[{yaml.101]]
+[[}]]
+[[monitoring.101}]]
+
+# Non-Classified/TODO/Backlog [[{01_PM.TODO]]
+## Yaml References [[{yaml.101]]
 @[http://docs.ansible.com/ansible/YAMLSyntax.html]
 YAML                               JSON
 ---                                {
@@ -3662,3 +3787,22 @@ key2:                                 "key2": [
            only maps/dictionaries with the '<<' operator:
            '<<' "inserts" values of referenced map into
            current one being defined.
+[[}]]
+
+# Source{d}: Large Scale Code Analysis with IA [[{security,qa.code_analysis,qa.testing,git,01_PM.TODO]]
+@[https://www.linux.com/blog/holberton/2018/10/sourced-engine-simple-elegant-way-analyze-your-code]
+
+- source{d} offers a suite of applications that uses machine learning on code
+  to complete source code analysis and assisted code reviews. Chief among them
+  is the source{d} Engine, now in public beta; it uses a suite of open source
+  tools (such as Gitbase, Babelfish, and Enry) to enable large-scale source
+  code analysis. Some key uses of the source{d} Engine include language
+  identification, parsing code into abstract syntax trees, and performing SQL
+  Queries on your source code such as:
+    - What are the top repositories in a codebase based on number of commits?
+    - What is the most recent commit message in a given repository?
+    - Who are the most prolific contributors in a repository
+[[}]]
+
+
+[[}]]

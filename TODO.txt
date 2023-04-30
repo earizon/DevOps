@@ -1,47 +1,7 @@
-#  Apropos:
-- Visit next Web site for a great experience:
-  https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/TODO.txt
-
-- If you want to contribute to great gistory of this
-  document you can take the next flight to:
-@[https://www.github.com/earizon/DevOps]
-  Your commits and pull-request will be immortalized
-  in the Pantheon of the Unicode Gods.
-────────────────────────────────────────────────────────────────────────────────
 
 
-# TODO [[{01_PM.TODO]]
 
-• https://github.com/NostrGit/NostrGit
-
- A truly censorship-resistant alternative to GitHub that has a chance of working
-
-
-• Kayenta Canary Testing [[{qa.testing.canary,dev_stack.kayenta,01_PM.TODO]]
-@[https://github.com/spinnaker/kayenta]
-- Kayenta platform:  Automated Canary Analysis (ACA) [[}]]
-
-• SonarQube (QA)  [[{qa.testing,dev_stack.sonarqube,01_PM.TODO]]
-  Apply quality metrics to source-code
-[[}]]
-
-• Source{d}: Large Scale Code Analysis with IA [[{qa.code_analysis,qa.testing,git,01_PM.TODO]]
-@[https://www.linux.com/blog/holberton/2018/10/sourced-engine-simple-elegant-way-analyze-your-code]
-
-- source{d} offers a suite of applications that uses machine learning on code
-  to complete source code analysis and assisted code reviews. Chief among them
-  is the source{d} Engine, now in public beta; it uses a suite of open source
-  tools (such as Gitbase, Babelfish, and Enry) to enable large-scale source
-  code analysis. Some key uses of the source{d} Engine include language
-  identification, parsing code into abstract syntax trees, and performing SQL
-  Queries on your source code such as:
-    - What are the top repositories in a codebase based on number of commits?
-    - What is the most recent commit message in a given repository?
-    - Who are the most prolific contributors in a repository
-[[}]]
-
-
-• Container Networking: [[{101,containerization.networking,networking.sdn.calico,networking.sdn.flannel,01_PM.TODO]]
+## Container Networking [[{networking.101,containerization.networking,networking.sdn.calico,networking.sdn.flannel,01_PM.TODO]]
 @[https://jvns.ca/blog/2016/12/22/container-networking/]
 By Julia Evans
 
@@ -141,27 +101,11 @@ By Julia Evans
     from other hosts. (etcd is  not used for distributing routes).
 [[}]]
 
-• CRI-O: container runtime for K8s / OpenShift.[[{]
+## CRI-O: container runtime for K8s / OpenShift.[[{]
 - OCI compliant Container Runtime Engines:
 [[}]]
 
-• Kaniko (rootless builds): [[{containerization.image.build,01_PM.TODO]
-☞ NOTE: To build *JAVA images* see also @[/JAVA/java_map.html?query=jib]
-
-@[https://github.com/GoogleContainerTools/kaniko]
-- tool to build container images inside an unprivileged container or
-  Kubernetes cluster.
-- Although kaniko builds the image from a supplied Dockerfile, it does
-  not depend on a Docker daemon, and instead executes each command completely
-  in userspace and snapshots the resulting filesystem changes.
-- The majority of Dockerfile commands can be executed with kaniko, with
-  the current exception of SHELL, HEALTHCHECK, STOPSIGNAL, and ARG.
-  Multi-Stage Dockerfiles are also unsupported currently. The kaniko team
-  have stated that work is underway on both of these current limitations.
-[[}]]
-
-
-• Testcontainers: [[{qa.testing,dev_language.java,qa,01_PM.TODO]
+## Testcontainers: [[{qa.testing,dev_language.java,qa,01_PM.TODO]
 @[https://www.testcontainers.org/#who-is-using-testcontainers]
 - Testcontainers is a Java library that supports JUnit tests,
   providing lightweight, throwaway instances of common databases,
@@ -188,9 +132,9 @@ By Julia Evans
   - Much more!
     Testing Modules
     - Databases
-      JDBC, R2DBC, Cassandra, CockroachDB, Couchbase, Clickhouse, DB2, Dynalite, InfluxDB, MariaDB, MongoDB,
-      MS SQL Server, MySQL, Neo4j, Oracle-XE, OrientDB, Postgres, Presto
-
+      JDBC, R2DBC, Cassandra, CockroachDB, Couchbase, Clickhouse,
+      DB2, Dynalite, InfluxDB, MariaDB, MongoDB, MS SQL Server, MySQL,
+      Neo4j, Oracle-XE, OrientDB, Postgres, Presto
     - Docker Compose Module
     - Elasticsearch container
     - Kafka Containers
@@ -238,12 +182,12 @@ Who is using Testcontainers?
 -   jOOQ - Integration testing all of jOOQ with a variety of RDBMS
 [[}]]
 
-• docker-compose: dev vs pro  [[{]
+## docker-compose: dev vs pro  [[{]
   https://stackoverflow.com/questions/60604539/how-to-use-docker-in-the-development-phase-of-a-devops-life-cycle/60780840#60780840
   Modify your Compose file for production
 [[}]]
 
-• CRIU.org: Container Live Migration : [[{]
+## CRIU.org: Container Live Migration : [[{]
 @[https://criu.org/Main_Page]
 
 CRIU: project to implement checkpoint/restore functionality for Linux.
@@ -260,8 +204,7 @@ this functionality, application or container live migration,
 snapshots, remote debugging, and many other things are now possible.
 [[}]]
 
-
-• ContainerCoreInterceptor:  [[{troubleshooting,01_PM.TODO]
+## ContainerCoreInterceptor:  [[{troubleshooting,01_PM.TODO]
 https://github.com/AmadeusITGroup/ContainerCoreInterceptor 
 Core_interceptor can be used to handle core dumps in a dockerized environment.
 It listens on the local docker daemon socket for events. When it
@@ -285,65 +228,23 @@ core dump or java heap dump.
   to plug in and get started.
 [[}]]
 
-• avoid "sudo" docker [[{containerization.docker]]
+## avoid "sudo" docker [[{containerization.docker]]
 $* $ sudo usermod -a -G docker "myUser"*
 $ newgrp docker  (take new group without re-login)
 [[}]]
 
-• test images in 0.5 secs  [[{troubleshooting,qa,01_PM.TODO]]
-@[https://medium.com/@aelsabbahy/tutorial-how-to-test-your-docker-image-in-half-a-second-bbd13e06a4a9]
-
-...When you’re done with this tutorial you’ll have a small YAML
-file that describes your docker image’s desired state. This will
-allow you to test this:
-
-  $ docker run -p 8080:80 nginx
-
-  With this:
-
-  $ dgoss run -p 8080:80 nginx
-
-- Goss is a YAML based serverspec alternative tool for validating a
-  server’s configuration. It eases the process of writing tests by
-  allowing the user to generate tests from the current system state.
-  Once the test suite is written they can be executed, waited-on, or
-  served as a health endpoint.
-[[}]]
-
-• https://github.com/dbohdan/structured-text-tools/blob/master/sql-based.md
+## https://github.com/dbohdan/structured-text-tools/blob/master/sql-based.md
   https://github.com/dbohdan/structured-text-tools#sql-based-tools
 
-• lefthook: powerful Git hooks for Node.js, Ruby, Python PIP, ... [[{]]
-  https://github.com/Arkweid/lefthook
-  git, hooks, node.js, go, Python pip, ...
-
-  Fast. It is written in Go. Can run commands in parallel.
-  Powerful. With a few lines in the config you can check only the changed files on pre-push hook.
-  Simple. It is single dependency-free binary which can work in any environment.
-
-  book Read the introduction post
-
-  # On `git push` lefthook will run spelling and links check for all of the changed files
-  pre-push:
-    parallel: true
-    commands:
-      spelling:
-        files: git diff --name-only HEAD @{push}
-        glob: "*.md"
-        run: npx yaspeller {files}
-      check-links:
-        files: git diff --name-only HEAD @{push}
-        glob: "*.md"
-        run: npx markdown-link-check {files}
+## GraphDash: web-based dashboard built on graphs and their metadata. [[{]]
+https://github.com/AmadeusITGroup/GraphDash
 [[}]]
 
-• GraphDash: web-based dashboard built on graphs and their metadata.
-https://github.com/AmadeusITGroup/GraphDash
-
-• Use libguestfs to manage virtual machine disk images
+## Use libguestfs to manage virtual machine disk images [[{]]
   https://www.redhat.com/sysadmin/libguestfs-manage-vm
+[[}]]
 
-• workflow-cps-global-lib-http-plugin  [[{jenkins.jenkinsfile]]
+## workflow-cps-global-lib-http-plugin  [[{jenkins.jenkinsfile]]
 https://github.com/AmadeusITGroup/workflow-cps-global-lib-http-plugin
   retrieve shared libraries through a SCM, such as Git.
   The goal of this plugin is to provide another way to retrieve
@@ -358,27 +259,26 @@ https://github.com/AmadeusITGroup/workflow-cps-global-lib-http-plugin
   repository close limitsr latency and limits network issues.
 [[}]]
 
-• OOSS Tool to Automatically Clean Up Stale Code
-  https://www.infoq.com/news/2020/06/uber-piranha/
 
-• GIT: Part 3: Context from commits
+## GIT: Part 3: Context from commits  [[{]]
   https://alexwlchan.net/a-plumbers-guide-to-git/3-context-from-commits/ 
+[[}]]
 
-• https://github.blog/author/dstolee/  [[{git,scalability]]
+## https://github.blog/author/dstolee/  [[{git,scalability]]
   Git’s database internals V: scalability
   This fifth and final part of our blog series exploring Git's
   internals shows several strategies for scaling your Git repositories
   that match related database sharding techniques.
 [[}]]
 
-• 4 lines of code to improve your Ansible play [[{ansible,qa.billion_dollar_mistake]]
+## 4 lines of code to improve your Ansible play [[{ansible,qa.billion_dollar_mistake]]
   With a tiny bit of effort, you can help the next person by not just
   mapping the safe path but leaving warnings about the dangers
 [[}]]
 
-• https://docs.docker.com/network/bridge/
+## https://docs.docker.com/network/bridge/
 
-• Gerrit: Git server built on top of git with voting mechanism:
+## Gerrit: Git server with voting mechanism [[{]]
 https://docs.google.com/presentation/d/1C73UgQdzZDw0gzpaEqIC6SPujZJhqamyqO1XOHjH-uk/edit#slide=id.g4d6c16487b_1_844
 - Submit Type / Submit Strategy:
   - FAST_FORWARD_ONLY:
@@ -399,15 +299,16 @@ https://docs.google.com/presentation/d/1C73UgQdzZDw0gzpaEqIC6SPujZJhqamyqO1XOHjH
     (Reviewed-On, Reviewed-By, Tested-By).
   - ALLOW CONTENT MERGES:
     whether Gerrit should do a content merge if the same files have been touched
+[[}]]
 
-• Building rootless containers for JavaScript front ends  [[{containerization.security.101]]
+## Building rootless containers for JavaScript front ends  [[{containerization.security.101]]
 https://developers.redhat.com/blog/2021/03/04/building-rootless-containers-for-javascript-front-ends/?sc_cid=7013a000002vsMVAAY
 [[}]]
 
-• Git: What's new 2.31
+## Git: What's new 2.31
   https://github.blog/2021-03-15-highlights-from-git-2-31/
 
-• https://space.sh,  Server apps and automation in a nutshell   [[{01_PM.low_code]]
+## https://space.sh,  Server apps and automation in a nutshell   [[{01_PM.low_code]]
    very, very non-intrusive. If you want to manage servers
    remotely Space would SSH into those servers to run your tasks and
    never upload anything to the server, nor have any dependencies other
@@ -415,47 +316,11 @@ https://developers.redhat.com/blog/2021/03/04/building-rootless-containers-for-j
    - Used as the base from simplenetes.
 [[}]]
 
-• https://github.com/nektos/act
-  Run your GitHub Actions locally rocket
 
 
-• batch:  Execute commands at a later time when system load levels goes down.
-  https://github.com/tldr-pages/tldr/blob/master/pages/common/batch.md
-  Execute commands at a later time when the system load levels permit.
-  Service atd (or atrun) should be running for the actual executions.
-  More information: https://man.archlinux.org/man/at.1.
 
-• beanstalkd:  [[{01_PM.low_code]]
-  https://beanstalkd.github.io/.
-  https://github.com/tldr-pages/tldr/blob/master/pages/common/beanstalkd.md
-  A simple and generic work-queue server. [[}]]
 
-• https://github.com/tldr-pages/tldr/blob/master/pages/common/bmaptool.md
-  Create or copy block maps intelligently (designed to be faster than cp or dd).
-  https://source.tizen.org/documentation/reference/bmaptool.
-
-• https://github.com/bup/backup:  Very efficient backup system based on git packfile format,
-  providing fast incremental saves and global deduplication (among and
-  within files, including virtual machine images). Current release is
-  0.31, and the development branch is master. Please post problems or
-  patches to the mailing list for discussion (see the end of the README
-  below).
-
-• https://github.com/tldr-pages/tldr/blob/master/pages/common/csvclean.md
-  https://github.com/tldr-pages/tldr/blob/master/pages/common/csvcut.md
-  https://github.com/tldr-pages/tldr/blob/master/pages/common/csvformat.md
-  https://github.com/tldr-pages/tldr/blob/master/pages/common/csvgrep.md
-  https://github.com/tldr-pages/tldr/blob/master/pages/common/csvkit.md
-  https://github.com/tldr-pages/tldr/blob/master/pages/common/csvlook.md
-  https://github.com/tldr-pages/tldr/blob/master/pages/common/csvsort.md
-  https://github.com/tldr-pages/tldr/blob/master/pages/common/csvsql.md
-  https://github.com/tldr-pages/tldr/blob/master/pages/common/csvstat.md
-  https://github.com/tldr-pages/tldr/blob/master/pages/common/csvtool.md
-
-• Exploring docker images, discovering ways to shrink it.  [[{qa,containarization.qa]]
-  https://github.com/tldr-pages/tldr/blob/master/pages/common/dive.md
-
-• dolt: Git + SQL!!!
+## dolt: Git + SQL!!!
   https://github.com/tldr-pages/tldr/blob/master/pages/common/dolt-add.md
   https://github.com/tldr-pages/tldr/blob/master/pages/common/dolt.md
   https://github.com/tldr-pages/tldr/blob/master/pages/common/dolt-blame.md
@@ -468,11 +333,11 @@ https://developers.redhat.com/blog/2021/03/04/building-rootless-containers-for-j
     Use the command line interface to import CSV files, commit your
     changes, push them to a remote, or merge your teammate's changes.
 
-• Fetch gitignore boilerplates.
+## Fetch gitignore boilerplates.
   https://github.com/tldr-pages/tldr/blob/master/pages/common/gibo.md
   More info: https://github.com/simonwhitaker/gibo.
 
-• https://github.com/tldr-pages/tldr/tree/master/pages/common/git-*.md
+## https://github.com/tldr-pages/tldr/tree/master/pages/common/git-*.md
   git-stage              git-am.md                git-annex.md          git-annotate.md      git-annotate
   git-apply.md           git-apply                git-archive.md        git-archive          git-bisect.md
   git-blame.md           git-branch.md            git-bugreport.md      git-bugreport
@@ -504,30 +369,32 @@ https://developers.redhat.com/blog/2021/03/04/building-rootless-containers-for-j
   git-update-index       git-update-ref.md        git-var.md            git-var              git-worktree.md
   git.md
 
-• Analyze nginx configuration files.
+## Analyze nginx configuration files.
   https://github.com/yandex/gixy.
   https://github.com/tldr-pages/tldr/blob/master/pages/common/gixy.md
 
-• Render markdown on terminal.
+## Render markdown on terminal.
 https://github.com/charmbracelet/glow
 
-• Gnomon: pipeline utility to prepend timestamp information from STDOUT.  [[{101]]
+## Gnomon: pipeline utility to prepend timestamp information from STDOUT.  [[{101]]
   https://github.com/paypal/gnomon
   https://github.com/tldr-pages/tldr/blob/master/pages/common/gnomon.md
 
   Useful for long-running processes where you'd like a historical
   record of what's taking so long. [[}]]
 
-• gource: Renders an animated tree diagram of Git, SVN, Mercurial and Bazaar
+## gource:  [[{]]
+  Renders an animated tree diagram of Git, SVN, Mercurial and Bazaar
   https://gource.io/
   Shows files and directories being created, modified
+[[}]]
 
 
-• Molecule helps testing ansible roles.
+## Molecule helps testing ansible roles.
   https://github.com/tldr-pages/tldr/blob/master/pages/common/molecule.md
   More information: https://molecule.readthedocs.io.
 
-• Git-big: cli extension for managing Write Once Read Many (WORM) files.  [[{git,scalability]]
+## Git-big: cli extension for managing Write Once Read Many (WORM) files.  [[{git,scalability]]
   https://github.com/vertexai/git-big
 
   $ git big init                  ← Init repo
@@ -589,13 +456,13 @@ https://github.com/charmbracelet/glow
 [[}]]
 
 
-• set -o pipefail   bash flag  @[[{bash,qa.error_control]]
+## set -o pipefail   bash flag  @[[{bash,qa.error_control]]
   https://linuxtect.com/make-bash-shell-safe-with-set-euxo-pipefail/
 ...By default, if a commands in a pipe fails,  pipe continues to
    execute,  makes it fail instead.
 [[}]]
 
-• volatile overlay mounts and containers: [[{containerization]]
+## volatile overlay mounts and containers: [[{containerization]]
   https://www.redhat.com/sysadmin/container-volatile-overlay-mounts
   Recent versions of Podman, Buildah, and CRI-O have started to take
   advantage of a new kernel feature, volatile overlay mounts. This
@@ -616,7 +483,7 @@ https://github.com/charmbracelet/glow
   post introducing the concept of overlay mounts inside of builds.
 [[}]]
 
-• Git merge strategies:                     [[{]]
+## Git merge strategies:                     [[{]]
   https://git-scm.com/docs/merge-strategies
   resolve: This can only resolve current-branch and another pulled-branch
   recursive:
@@ -671,7 +538,7 @@ https://github.com/charmbracelet/glow
     non-merge commit on the target branch.
 [[}]]
 
-• GitLab CI to publish HTML pages:  [[{]]
+## GitLab CI to publish HTML pages:  [[{]]
   https://roneo.org/en/framagit-render-html/
 
   You can render HTML using the Gitlab CI. This doc was redacted for
@@ -683,7 +550,7 @@ https://github.com/charmbracelet/glow
 [[}]]
 
 
-• bash "$-" read-variable:  [[{]]
+## bash "$-" read-variable:  [[{]]
   · prints/reports current set-of-options in current shell.
     ex.: "im...." outputs means following options are enabled:
           m - monitor     : (set -m),
@@ -703,19 +570,19 @@ https://github.com/charmbracelet/glow
  sudo ${SUDO_OPTS} ...
 [[}]]
 
-• Resizing containers with the Device Mapper: [[{containerization.image,storage,01_PM.TODO]]
+## Resizing containers with the Device Mapper: [[{containerization.image,storage,01_PM.TODO]]
 @[http://jpetazzo.github.io/2014/01/29/docker-device-mapper-resize/]
 [[}]]
 
-• Rootless Docker: [[{containerization.docker,qa,containerization.security,01_PM.TODO]]
+## Rootless Docker: [[{containerization.docker,qa,containerization.security,01_PM.TODO]]
 @[https://docs.docker.com/engine/security/rootless/]
 [[}]]
 
-• Show image change history: [[{containerization.image.build]]
+## Show image change history: [[{containerization.image.build]]
    $ docker history /clock:1.0
 [[}]]
 
-• Commit image modifications [[{containerization.image.build]]
+## Commit image modifications [[{containerization.image.build]]
 (Discouraged most of the time, modify Dockerbuild instead)
 host-mach $ docker run -it ubuntu bash     # Boot up existing image
 container # apt-get install ...            # Apply changes to running instance
@@ -725,12 +592,12 @@ host-mach $ docker tag figlet              # Tage new image
 host-mach $ docker run -it figlet          # Boot new image instance
 [[}]]
 
-• Selenium Browser test automation [[{ci/cd,qa,testing,selenium,web,_PM.low_code,01_PM.TODO]]
+## Selenium Browser test automation [[{ci/cd,qa,testing,selenium,web,_PM.low_code,01_PM.TODO]]
 See also QAWolf:
 [[}]]
 
 
-• Packaging Apps:  [[{containerization.image.build,InfraAsCode.pulumi,02_doc_has.comparative,]]
+## Packaging Apps:  [[{containerization.image.build,InfraAsCode.pulumi,02_doc_has.comparative,]]
                    [[dev_stack.kubernetes.ballerina,dev_stack.metaparticle,dev_language.java]]
 @[https://www.infoq.com/articles/metaparticle-pulumi-ballerina/]
 - Packaging Applications for Docker and Kubernetes approaches comparative.
@@ -755,7 +622,7 @@ See also QAWolf:
 [[}]]
 
 
-• Bash: Search&Replace with regexs:
+## Bash: Search&Replace with regexs:
   https://stackoverflow.com/questions/13043344/search-and-replace-in-bash-using-regular-expressions
 
   hello=ho02123ware38384you443d34o3434ingtod38384day
@@ -765,12 +632,12 @@ See also QAWolf:
   done
   echo "$hello"
 
-• https://stackoverflow.com/questions/19758915/keeping-a-branch-up-to-date-with-master @ma [[{git.101}]]
+## https://stackoverflow.com/questions/19758915/keeping-a-branch-up-to-date-with-master @ma [[{git.101}]]
 
-• DevOps pipelines DONT's:
+## DevOps pipelines DONT's:
   https://jamesjoshuahill.github.io/talk/2018/12/06/how-not-to-build-a-pipeline/
 
-• git update branches:
+## git update branches:
 https://jamesjoshuahill.github.io/note/2015/02/07/is-your-branch-up-to-date/  [[{Git.101]]
 Nearly everything you do with git happens on your machine. Don’t
 take my word for it. Turn off your wifi and see how many git commands
@@ -787,13 +654,13 @@ one of the safest git commands you can run. You can fetch as much as
 you like.
 [[}]]
 
-• An Interview With Linus Torvalds: Linux and Git
+## An Interview With Linus Torvalds: Linux and Git
   https://www.tag1consulting.com/blog/interview-linus-torvalds-linux-and-git
 
-• DevOps, ansible: what ansible is not  [[{ansible.101]]
+## DevOps, ansible: what ansible is not  [[{ansible.101]]
   https://www.linkedin.com/pulse/ansible-what-marcel-koert/ [[}]]
 
-• https://www.30secondsofcode.org/git/p/1
+## https://www.30secondsofcode.org/git/p/1
   30 secs recipes:
   · How does Git's fast-forward mode work?
   · Prints a list of all local branches sorted by date.
@@ -808,13 +675,13 @@ you like.
   · Prints a list of lost files and commits.
   · ...
 
-• 5 tips for configuring virtualenvs with Ansible Tower
+## 5 tips for configuring virtualenvs with Ansible Tower
   https://www.redhat.com/sysadmin/virtualenvs-ansible-tower
 
-• How to Create Your Own Repositories for Packages
+## How to Create Your Own Repositories for Packages
   https://www.percona.com/blog/2020/01/02/how-to-create-your-own-repositories-for-packages/
 
-• This is how a #GitOps pipeline looks like.
+## This is how a #GitOps pipeline looks like.
 NEXT) Firstly, the user changes the code in the Git repository.
 NEXT) Then a container image gets created, and it is pushed to the container registry.
 NEXT) It gets updated into a config updater.
@@ -837,13 +704,13 @@ NEXT) Once you create a pull request, it will deploy to that test
 
     https://geekflare.com/gitops-introduction/
 
-• Chuletario de pócimas y recetas: Monitoring uninterruptible system calls.
+## Chuletario de pócimas y recetas: Monitoring uninterruptible system calls.
   http://chuletario.blogspot.com/2011/05/monitoring-uninterruptible-system-calls.html?m=1
 
-• DevSecOps: Image scanning in your pipelines using quay.io scanner
+## DevSecOps: Image scanning in your pipelines using quay.io scanner
   https://www.redhat.com/sysadmin/using-quayio-scanner
 
-• git-pw:  [[{]]
+## git-pw:  [[{]]
 @[http://jk.ozlabs.org/projects/patchwork/]
 @[https://www.collabora.com/news-and-blog/blog/2019/04/18/quick-hack-git-pw/]
 - git-pw requires patchwork v2.0, since it uses the
@@ -901,7 +768,7 @@ NEXT) Once you create a pull request, it will deploy to that test
     fetch all the patches in the series, and apply them in the right order.
 [[}]]
 
-• SaST-scan [[{devops.security.101]]
+## SaST-scan [[{devops.security.101]]
 https://github.com/AppThreat/sast-scan
 This repo builds appthreat/sast-scan (and
 quay.io/appthreat/sast-scan), a container image with a number of
@@ -942,34 +809,18 @@ This is like a Swiss Army knife for DevSecOps engineers.
    yaml                    yamllint
 [[}]]
 
-• red-hat-universal-base-images
-  https://developers.redhat.com/e-books/red-hat-universal-base-images-ubi
-  - Alternative to Alpine Linux??
+## @[http://alblue.bandlem.com/2011/11/git-tip-of-week-git-notes.html]
 
-• @[http://alblue.bandlem.com/2011/11/git-tip-of-week-git-notes.html]
-
-• Managing "many-branches" Git projects:
+## Managing "many-branches" Git projects:
   - sync all local/remote branches:
   https://stackoverflow.com/questions/27157166/sync-all-branches-with-git
 
-• git 101 recipes: git Comparing diffs: @ma
-
-• gitbase: Query Git with SQL
+## gitbase: Query Git with SQL [[{]]
   https://opensource.com/article/18/11/gitbase
-
-• Kaniko, Container Build: [[{container,application.development,TODO]]
-- Kaniko performs container builds inside a container environment,
- *without relying on a container daemon (Docker Daemon)*.
-- Kaniko extracts the file system from the base image,
-  executes the build commands in user space atop the extracted
-  file system, taking a snapshot of the file system after each command.
 [[}]]
 
-• Bash syntax Sugar. Check hostname match -[0-9] or exit. Otherwise asing match to var.
-  [[ `hostname` =~ -([0-9]+)$ ]] || exit 1
-  ordinal=${BASH_REMATCH[1]}
-
-• https://github.com/smallstep/certificates
+## online SSH Certificate Authority  [[{]]
+https://github.com/smallstep/certificates
   An online SSH Certificate Authority
   · Delegate SSH authentication to step-ca by using SSH
     certificates instead of public keys and authorized_keys files
@@ -978,9 +829,10 @@ This is like a Swiss Army knife for DevSecOps engineers.
     (or other security policies) via any OAuth OIDC provider.
   · For host certificates, improve security, eliminate TOFU
     warnings, and set up automated host certificate renewal
+[[}]]
 
 
-• https://docs.ipfs.io/how-to/host-git-style-repo/ [[{]]]
+## https://docs.ipfs.io/how-to/host-git-style-repo/ [[{]]]
   serve a read-only Git repository through the IPFS network.
   end result: git cloneable url served through IPFS!
 
@@ -1009,70 +861,14 @@ This is like a Swiss Army knife for DevSecOps engineers.
   AT A SPECIFIC REVISION, TAG, OR BRANCH,
 [[}]]
 
-• Git 2.37 Brings Built-in File Monitor, Improved Pruning, and More    @ma
-  https://www.infoq.com/news/2022/06/git-2-37-released/ 
-  According to Jeff Hostetler, the author of the patches for git's new
-  file monitor, the implementation relies mostly on cross-platform code
-  with custom backends leveraging OS-native features, i.e. FSEvents on
-  macOS and ReadDirectoryChangesW on Windows. A Linux backend would
-  probably use either inotify or fanotify, Hostetler says, but that
-  work has not started yet.
-• Infra As DDBB: IaSQL
-  https://iasql.com/
-• Top 10 container guides for sysadmins | Enable Sysadmin
+## Top 10 container guides for sysadmins | Enable Sysadmin
   https://www.redhat.com/sysadmin/containers-articles-2021
-• bash: Parse Arguments in Bash Scripts With getopts
+## bash: Parse Arguments in Bash Scripts With getopts
   https://ostechnix.com/parse-arguments-in-bash-scripts-using-getopts/
-• Dockerfile Linter Hadolint Brings Fixes and Improvements, and Support for ARM64 Binaries
+## Dockerfile Linter Hadolint Brings Fixes and Improvements, and Support for ARM64 Binaries
   https://www.infoq.com/news/2022/04/hadolint-dockerfile-linter/
 
-• Git and ssh keys
-  SSH signing you to use SSH-keys to sign certain kinds of objects in Git.
-  - Git 2.35 includes a couple of new additions to SSH signing.
-    -  To track which SSH keys you trust, you use the ALLOWED SIGNERS FILE
-       to store the identities and public keys of signers you trust.
-       PROBLEM: NOW suppose one commiter rotates their key.
-       - You could update their entry in the allowed signers file
-         but that would make it impossible to validate objects signed with
-         the older key.
-       - You could store both keys, but that would mean that you
-         would accept new objects signed with the old key.
-       SOLUTION: Git 2.35 lets you take advantage of OpenSSH’s
-                 valid-before and valid-after directives.
-   - Git 2.35 also supports new key types in the user.signingKey
-     configuration when you include the key verbatim (instead of storing
-     the path of a file that contains the signing key). Previously, the
-     rule for interpreting user.signingKey was to treat its value as a
-     literal SSH key if it began with “ssh-“, and to treat it as
-     filepath otherwise. You can now specify literal SSH keys with
-     keytypes that don’t begin with “ssh-” (like ECDSA
-     keys).[source, source]
-
-• [[{containerization.101,devops.101]]
-
-  PROBLEM : developers write code that is impossible to deploy because ...
-            it's a BBS (Big Bull ...)
-            Manytime they can not even execute in their own laptops or explain
-            random configuration errors after any small change.
-  SOLUTION: "We encapsulate into containers, emulating their own machine!!!!"
-
-  PROBLEM : Now we have 500 containers!!. Everything is ridicously hard to manage.
-  SOLUTION: "We solve it using containers orchestrators!!!"
-
-  PROBLEM : Container orchestrators are ridicously complex to manage and they
-            are adding another layer of complexity, not to mention the source
-            of exotic problems they have become.
-            (Kubernetes, anyone?)
-  SOLUTION: "We are on it! sure they will surprise us!!!"
-
-  REAL SOLUTION: Force developers to create FAIL-FAST code.
-  https://en.wikipedia.org/wiki/Fail-fast
-
-  KEY-POINT: REAL PROBLEMS REQUIRE REAL SOLUTIONS
-
-[[}]]
-
-• How to Use S3 as a Private Git Repository
+## How to Use S3 as a Private Git Repository
   https://fancybeans.com/2012/08/24/how-to-use-s3-as-a-private-git-repository/
   Basically, use git for local commands that manipulate the local
   repository (adding, committing, merging) and jgit for any
@@ -1095,27 +891,14 @@ This is like a Swiss Army knife for DevSecOps engineers.
   Gitolite installation is pretty straightforward:
 
 
-• Nexus Repository Management:[[{containerization.image.registry]]
+## Nexus Repository Management:[[{containerization.image.registry]]
   https://blog.sonatype.com/using-nexus-3-as-your-repository-part-1-maven-artifacts
   https://blog.sonatype.com/using-nexus-3-as-your-repository-part-2-npm-packages
   https://blog.sonatype.com/using-nexus-3-as-your-repository-part-3-docker-images
   - See also: Artifactory by JFrog
 [[}]]
 
-# Portainer UI:[[{]]
-(See also LazyDocker)
-• Portainer, an open-source management interface used to manage a
-  Docker host, Swarm and k8s cluster.
-• It's used by software engineers and DevOps teams to simplify and
-  speed up software deployments.
-
-Available on LINUX, WINDOWS & OSX
-$ docker container run -d \
-  -p 9000:9000 \
-  -v /var/run/docker.sock:/var/run/docker.sock portainer/portainer
-[[}]]
-
-• Run docker container as current user:
+## Run docker container as current user:
   https://jtreminio.com/blog/running-docker-containers-as-current-host-user/
 
 [[01_PM.TODO}]]
@@ -1161,52 +944,14 @@ $ docker container run -d \
 # https://iximiuz.com/en/series/implementing-container-manager/
 
 
-# Shell Script 101
-  https://sharats.me/posts/shell-script-best-practices/
-
-# Distroless Container Images
-  https://www.linkedin.com/posts/iximiuz_what-is-a-distroless-container-image-activity-6998607273514123264-PmHT
-  hat Is a Distroless Container Image? 🤔 Go (programming language)
-  is famous for its statically linked binaries. You can take a Go
-  executable, drop it into a "FROM scratch" container, and call it a
-  day. But there is a bunch of pitfalls with this approach... 1. "FROM
-  scratch" containers lack proper user management. A "scratch" base
-  image means an empty image. So, the /etc/passwd and /etc/group files
-  will simply be missing. Most of the time, it makes the containerized
-  process run as root, and that's likely not what you need on prod. 2.
-  "FROM scratch" containers lack some much-needed folders. The typical
-  folders like /tmp, /root, /home, /var, /etc don't exist in scratch
-  containers (unless you mount them, of course). But that can make your
-  containerized app faulty - just try creating a tmp file and see what
-  happens. 3. "FROM scratch" containers lack CA certificates and
-  timezone databases. Hence, calling HTTPS endpoints won't be possible.
-  Your program does some time conversion? Won't work either. 4. "FROM
-  scratch" containers lack your language runtime. If your language's
-  static linking support is less perfect than in Go or your programs
-  require an interpreter or a runtime environment, you won't be able to
-  use a scratch base without tedious copying of app dependencies into
-  it. "FROM scratch" images are slim, fast, secure, and whatnot, but
-  apparently, they may require quite some extra work before you can put
-  them in production. Luckily, projects like Chainguard Images and
-  GoogleContainerTools' distroless automate many of these tedious
-  preparation steps for you. Read more about the pitfalls of scratch
-  container images and the GoogleContainerTools' distroless project in
-  my blog post 👇 https://lnkd.in/eyTkTX5p.
-
 # Container Tools, Tips, and Tricks - Issue #2
   https://iximiuz.ck.page/posts/container-tools-tips-and-tricks-issue-2
-
-# DevOps: Docker without sudo @ma
-  https://docs.docker.com/engine/security/rootless/
-  Rootless mode was introduced in Docker Engine v19.03 as an experimental feature.
-  Rootless mode graduated from experimental in Docker Engine v20.10.
 
 # DevOps: Ansible Register Variable - OSTechNix
   https://ostechnix.com/ansible-register/
 
 # DevOps: Merging two GitHub repositories without losing commit history - Mozilla Hacks - the Web developer blog
   https://hacks.mozilla.org/2022/08/merging-two-github-repositories-without-losing-commit-history/
-DevOps Links:
 
 
 # TAXONOMY:
@@ -1247,30 +992,8 @@ DevOps Links:
 * https://lnkd.in/dQMyCBWy  15. SSH using Putty :
                              * https://lnkd.in/gGgW7Ns9
 
-# DevOps: Open Source Git Project Releases Version 2.40 [[{]]
-  https://www.infoq.com/news/2023/04/git-releases-version-2-40/
-[[}]]
 
 # Vim documentation: windows
 https://vimdoc.sourceforge.net/htmldoc/windows.html#window
 
-# Git: Octosuite: a GitHub Open Source Intelligence Framework [[{]]
 
-  https://www.infoq.com/news/2023/02/octosuite-github-osint-framework/?itm_source=infoq
-
-Octosuite, an open-source intelligence (OSINT) framework, recently
-released its latest version 3.1.0. Octosuite provides a wide range of
-commands to investigate publicly-visible GitHub accounts and
-repositories through GitHub’s Public APIs.
-
-Written in Python, Octosuite provides a secure and user-friendly
-interface to easily search and explore data related to a repository,
-organization, or user. The search feature also looks for topics,
-commits, and issues to quickly locate relevant data. All the results
-of searches are exported in a comma-separated value (CSV) readable
-format.
-[[}]]
-
-# DevOps Git: BurntSushi/ripgrep: recursively searches directories for
-  a regex pattern while respecting your gitignore
-  https://github.com/BurntSushi/ripgrep

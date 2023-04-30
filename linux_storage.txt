@@ -1,6 +1,24 @@
 [[{linux]]
 LINUX STORAGE [[{storage]]
 
+## bmaptool dd++ [[{]]
+ https://github.com/tldr-pages/tldr/blob/master/pages/common/bmaptool.md
+  Create or copy block maps intelligently (designed to be faster than cp or dd).
+  https://source.tizen.org/documentation/reference/bmaptool
+[[}]]
+
+## bup backup: Fast incremental backups with deduplication "a la git" [[{]]
+  https://github.com/bup/backup
+  Very efficient backup system based on git packfile format,
+  providing fast incremental saves and global deduplication (among and
+  within files, including virtual machine images). Current release is
+  0.31, and the development branch is master. Please post problems or
+  patches to the mailing list for discussion (see the end of the README
+  below).
+[[}]]
+
+
+
 # Find duplicate files: [[{]]
   https://github.com/tldr-pages/tldr/blob/master/pages/common/fdupes.md
   https://github.com/tldr-pages/tldr/blob/master/pages/common/jdupes.md
