@@ -303,7 +303,7 @@ Permissions │Symbol│      FILE                   │     DIRECTORY          
    --selinux-user SEUSER : SELinux user for the user's login
 
 
-• su/sudo: Switch user:  [[{security.aaa,linux.101,01_PM.WiP]]
+## su/sudo: Switch user:  [[{security.aaa,linux.101,01_PM.WiP]]
 - su and sudo are mostly used to allow temporal root/superuser access
   to standard users for administrative tasks like installing new applications,
   re-configuring the network, ...
@@ -330,7 +330,7 @@ Permissions │Symbol│      FILE                   │     DIRECTORY          
 
 #[sysctl_summary]
 ## Kernel Tunning [[{configuration.sysctl,configuration.network,storage.fs,troubleshooting.performance,]]
-• sysctl
+## sysctl
   - Cli app to view/modify kernel parameters affecting the runtime behavior
     of network, file-systems, kernel logging, ...
   - Not to be confused with (SystemD) 'systemctl' used to add/remove/modify/...
@@ -649,10 +649,10 @@ $ *renice 10 "pid"* ← Changes priority of running process.
 [[}]]
 
 ## `pv` monit data pipe progress [[{monitoring.pipes,monitoring.i/o,profiling.storage.FS,storage.profiling]]
-• pv provides time elasped, %compl., progressbar, throughput, ETA, ...on STDERR.
-• cat /dev/zero | pv | cat > /dev/null  # Check CPU/memory perf.
-• pv file | nc -w 1 somewhere.com 3000  # Check network perf.
-• pv -EE /dev/sda > disk-image.img      # Check disk image (skip errors)
+## pv provides time elasped, %compl., progressbar, throughput, ETA, ...on STDERR.
+## cat /dev/zero | pv | cat > /dev/null  # Check CPU/memory perf.
+## pv file | nc -w 1 somewhere.com 3000  # Check network perf.
+## pv -EE /dev/sda > disk-image.img      # Check disk image (skip errors)
 
   man pv summary
 OUTPUT MODIFIERS
@@ -681,6 +681,12 @@ DATA TRANSFER MODIFIERS
   --remote PID : where PID is an running instance of pv already running.
                  Add other commands to such instance.
                  --pidfile FILE save PID of (first running) pv instance.
+[[}]]
+
+## Netdata (Glances++) [[{]]
+ https://github.com/netdata/netdata
+
+(Used by AWS, ..)
 [[}]]
 
 ## Glances [[{monitoring.101,01_PM.low_code,QA.UX,troubleshooting]]
@@ -1062,7 +1068,7 @@ Overhead  Shared Object              Symbol
  2.90%    perf                       [.] symbols__insert
 ...
 
-• https://github.com/flamegraph-rs/flamegraph
+## https://github.com/flamegraph-rs/flamegraph
   perf+dtrace flamegraph generator with additional support for Cargo projects! (Rust based)
   It can be used to profile anything, not just Rust projects!
 
@@ -1109,7 +1115,7 @@ Overhead  Shared Object              Symbol
 - Analyze lock events:                   [[{profiling.locks]]
   https://linux.die.net/man/1/perf-lock  [[}]]
 
-• Example Profiling with Perf (FB 60 TB+ input data)              [[{]]
+## Example Profiling with Perf (FB 60 TB+ input data)              [[{]]
 Extracted from:
   "Apache Spark @Scale: A  production use case"
 @[https://engineering.fb.com/core-data/apache-spark-scale-a-60-tb-production-use-case/]
@@ -1360,7 +1366,7 @@ $ sudo systemctl disable ModemManager.service
 [[}]]
 
 ## Network audit/control [[{monitoring.network,troubleshooting]]
-• Socket Statistics ss: (replaces 'netstat'),  man 8 ss
+## Socket Statistics ss: (replaces 'netstat'),  man 8 ss
 
  $ sudo ss -ntlp     <···-n : Do not resolve IP to DNS (much) faster.
                          -t : Show tcp (filter out UNIX, UDP, ...)
@@ -1410,7 +1416,7 @@ $ sudo systemctl disable ModemManager.service
     link/ether    00:0d:3a:26:bb:2b brd ff:ff:ff:ff:ff:ff
 ...
 
-• SNIFF network traffic with tcpdump:
+## SNIFF network traffic with tcpdump:
 $ sudo tcpdump \    "snif" IP traffic
    -i eth0     \     <- in network interface eth0
    port 8090   \     <- filter by IP packets to/from port 8090
@@ -1421,7 +1427,7 @@ $ sudo tcpdump \    "snif" IP traffic
                      This file can then be replay again tcpdump or with the
                      more advanced Wireshark.
 
-• WireShark: [[{qa.UX]]
+## WireShark: [[{qa.UX]]
   - world’s most popular and widely-used open-source and cross-platform
     network protocol analyzer.
   - Previously known as Ethereal.
@@ -1926,7 +1932,7 @@ _
 
 
 # BACKUPS  [[{security.backup,linux.101,storage.compression]]
-• https://github.com/y-scope/clp  [[{security.audit,scalability.storage,01_PM.low_cost]]
+## https://github.com/y-scope/clp  [[{security.audit,scalability.storage,01_PM.low_cost]]
   C&P from https://www.uber.com/en-DE/blog/reducing-logging-cost-by-two-orders-of-magnitude-using-clp/
     """CLP reduces log size by x169 ...
       CLP allows to search directly on the compressed logs .... With
@@ -2063,13 +2069,13 @@ $ tar tzf _home_myUser_myProject_01.tar.gz
   OUTPUT SIZE: 313M                       |   OUTPUT SIZE: 317M
 
 From: @[https://www.linuxlinks.com/best-linux-multi-core-compression-tools/]
-• pigz    Parallel implementation of gzip. It's a fully functional replacement for gzip
-• PBZIP2  Parallel implementation of the bzip2 block-sorting file compressor
-• PXZ     Runs LZMA compression on multiple cores and processors
-• lbzip2  Parallel bzip2 compression utility, suited for serial and parallel processing
-• plzip   Massively parallel (multi-threaded) lossless data compressor based on lzlib
-• lrzip   Compression utility that excels at compressing large files
-• pixz    Parallel indexing XZ compression, fully compatible with XZ. LZMA and LZMA2
+## pigz    Parallel implementation of gzip. It's a fully functional replacement for gzip
+## PBZIP2  Parallel implementation of the bzip2 block-sorting file compressor
+## PXZ     Runs LZMA compression on multiple cores and processors
+## lbzip2  Parallel bzip2 compression utility, suited for serial and parallel processing
+## plzip   Massively parallel (multi-threaded) lossless data compressor based on lzlib
+## lrzip   Compression utility that excels at compressing large files
+## pixz    Parallel indexing XZ compression, fully compatible with XZ. LZMA and LZMA2
 [[}]]
 
 
@@ -2109,35 +2115,42 @@ Execution Example:
 # Audit  [[{security.audit]]
 
 ## basic user audit  [[{security.audit.user,101,security.aaa]]
-$ who     ← Displays current users logged in + logged-in time
-$ w       ← Displays who is logged into the system and WHAT THEY ARE DOING
-            (procs. they are running).
-$ users   ← Displays only user names who are currently logged in
-$ last    ← Displays records of users-logged-in time, remote IP or PTTY, reboot time,
-$ lastlog ← Displays list of users and what day/time they logged into the system.
-$ whoami  ← Tells the user who they are currently logged in as
-$ ac      ← Tell how much time users are logged in.
-            (sudo apt install acct, sudo dnf install psacct, ...)
-            It pulls its data from the current wtmp file.
-            Ex:
-            $ ac
-            → total     1261.72
-            $ ac -              <··· total hours by user
-            → shark        5.24
-            → nemo         5.52
-            → shs       1251.00
-            → total     1261.76
-            $ ac -d | tail -10  <··· daily counts of how many hours users were logged in
-            → Jan 11  total        0.05
-            → Jan 12  total        1.36
-            → Jan 13  total       16.39
-            → Jan 15  total       55.33
-            → Jan 16  total       38.02
-            → Jan 17  total       28.51
-            → Jan 19  total       48.66
-            → Jan 20  total        1.37
-            → Jan 22  total       23.48
-            → Today   total        9.83
+  $ sudo last -f /var/run/utmp  <·· audit of present users logins at which terminals, logouts
+                                    system events and current status of the system,
+                                    system boot time (used by uptime) etc.
+  $ who
+  $ w
+  $ sudo last -f /var/log/wtmp   <·· historical data of utmp.
+  $ sudo last -f /var/log/btmp   <·· failed login attempts
+  $ sudo lastb
+                 └─────┬─────┘
+                binary compact format.
+                Use `utmpdump` to dump to
+                text friendly format.
+
+  $ who     <· Displays current users logged in + logged-in time
+  $ w       <· Displays who is logged into the system and WHAT THEY ARE DOING
+              (procs. they are running).
+  $ users   <· Displays only user names who are currently logged in
+  $ last    <· Displays records of users-logged-in time, remote IP or PTTY, reboot time,
+  $ lastlog <· Displays list of users and what day/time they logged into the system.
+  $ whoami  <· Tells the user who they are currently logged in as
+  $ ac      <· Tell how much time users are logged in.
+              (sudo apt install acct, sudo dnf install psacct, ...)
+              It pulls its data from the current wtmp file.
+              Ex:
+              $ ac
+              → total     1261.72
+              $ ac -              <··· total hours by user
+              → shark        5.24
+              → nemo         5.52
+              → shs       1251.00
+              → total     1261.76
+              $ ac -d | tail -10  <··· daily counts of how many hours users were logged in
+              → Jan 11  total        0.05
+              → Jan 12  total        1.36
+              → ...
+              → Today   total        9.83
 [[security.audit.user}]]
 
 
@@ -2747,17 +2760,17 @@ $ crontab -e
 
 ## Pushover (iOS/Android push) [[{security.notifications]]
 REF: @[https://www.cyberciti.biz/mobile-devices/android/how-to-push-send-message-to-ios-and-android-from-linux-cli/]
-• Pushover Service with no need for AWS/Azure/GCP accounts:
+## Pushover Service with no need for AWS/Azure/GCP accounts:
   - $5 ONE-TIME purchase. !!!!
   - Up to 7500 messages/month.
   - (More options exists for IT teams)
-• PRESETUP)
+## PRESETUP)
   - Sign up for Pushover.
   - download Pushover for Android/iOS.
   - subscribe to service (7-day trial account).
   - Once logged in, register cli application.
     to retrieve a  *secret API token*.
-• Ussage:
+## Ussage:
   - Integrate Pushover API into (monitoring) scripts. Ex. script:
     push_to_mobile(){        # ← Ussage push_to_mobile $title $message
       local t="${1:cli-app}"
@@ -2961,8 +2974,7 @@ $ sudo systemctl \
  *Administrator*: /etc/systemd/system/[name.type.d]/ ) ( + $ systemctl daemon-reload)
  *runtime      *: /runtime/systemd/system
 
-• chkservice UI ncurses tool for managing systemd
-  units in terminal.
+## chkservice systemd ncurses (UI in terminal)
 @[https://github.com/linuxenko/chkservice]
 [[}]]
 
@@ -3250,7 +3262,7 @@ $*$ dpkg -S $search_pattern * ← "what package provides this file/package?" rev
 ### APT Sources [[01_PM.TODO]]
   - /etc/apt/sources.list file
     @[https://help.ubuntu.com/community/SourcesList]
-[[{packaging.apt}]]
+[[packaging.apt}]]
 
 ## apk (Alpine)  [[{packaging,01_PM.TODO]]
 @[https://wiki.alpinelinux.org/wiki/Alpine_Linux_package_management]

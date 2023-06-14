@@ -1,4 +1,4 @@
-#  Apropos:
+##  Apropos:
 - Visit next Web site for a great experience:
   https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/ansible.txt
 
@@ -6,6 +6,64 @@
   take the next flight to:
 @[https://www.github.com/earizon/DevOps]
   Your commits and pull-request will be immortalized in the Pantheon of the Unicode Gods.
+
+## Ansible External Links: [[{]]
+- https://docs.ansible.com/ansible/latest/user_guide/index.html
+- Ansible in practice[Video]
+@[https://sysadmincasts.com/episodes/46-configuration-management-with-ansible-part-3-4]
+- Playbooks best practices:
+@[https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html]
+
+- Ronald Kurr has lot of very-useful and professional Ansible powered code to
+  provide JVM, Python, Desktops, ... machines. For example:
+ - Ansible Study Group Labs: https://github.com/kurron/ansible-study-group-labs
+ - An OpenVPN server in the cloud:
+   https://github.com/kurron/aws-open-vpn/blob/master/ansible/playbook.yml
+ - Installation of tools than any self-respecting Operation person loves and needs:
+   https://github.com/kurron/ansible-role-operations/blob/master/tasks/main.yml
+ - Installation of tools than any self-respecting JVM developer loves and needs.
+   https://github.com/kurron/ansible-role-jvm-developer/blob/master/tasks/main.yml
+ - Installation of tools than any self-respecting AWS command-line user loves and needs.
+   https://github.com/kurron/ansible-role-aws/blob/master/tasks/main.yml
+ - Connect to a Juniper VPN under Ubuntu.
+   https://github.com/kurron/ansible-role-jvpn/blob/master/tasks/main.yml
+ - Installation of tools than any self-respecting Atlassian user loves and needs.
+   https://github.com/kurron/ansible-role-atlassian/blob/master/tasks/main.yml
+ - Installation of tools than any self-respecting cross-platform .NET developer loves and needs.
+   https://github.com/kurron/ansible-role-dot-net-developer/blob/master/tasks/main.yml
+ - Docker container that launches a pipeline of Docker containers that
+   ultimately deploy Docker containes via Ansible into EC2 instances
+   https://github.com/kurron/docker-ec2-pipeline
+ - Increase operating system limits for Database workloads.
+   https://github.com/kurron/ansible-role-os-limits/blob/master/tasks/main.yml
+ - Creation of an Amazon VPC. Public and private subnets are created
+   in all availability zones.
+   https://github.com/kurron/ansible-role-vpc
+
+- Command line tools
+@[https://docs.ansible.com/ansible/latest/user_guide/command_line_tools.html]
+
+- run a single task 'playbook' against a set of hosts
+@[https://docs.ansible.com/ansible/latest/cli/ansible.html]
+
+- ansible-config view, edit, and manage ansible configuration
+@[https://docs.ansible.com/ansible/latest/cli/ansible-config.html]
+
+- ansible-console  interactive console for executing ansible tasks
+@[https://docs.ansible.com/ansible/latest/cli/ansible-console.html]
+
+- manage Ansible roles in shared repostories (default to [https://galaxy.ansible.com] )
+@[https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html]
+
+- display/dump configured inventory:
+@[https://docs.ansible.com/ansible/latest/cli/ansible-inventory.html]
+
+- ansible-pull pulls playbooks from a VCS repo and executes them for the local host:
+@[https://docs.ansible.com/ansible/latest/cli/ansible-pull.html]
+- ansible-vault  encryption/decryption utility for Ansible data files:
+ @[https://docs.ansible.com/ansible/latest/cli/ansible-vault.html]
+
+[[}]]
 
 # Ansible Summary: [[{ansible.101]]
 View on:
@@ -142,7 +200,7 @@ roles/                                             ║  INPUT
 **1:*@[https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html]
 
 ────────────────────────────────────────────────────────────────────────────────
-• playbook-layout:
+## playbook-layout
                                            *TASK vs ROLES PLAYBOOK LAYOUT*
 ──────────────────────────────────────────────────────────┬───────────────────────────────────────────────────────────────────
  PLAYBOOK YAML LAYOUT WITH*TASKS*                         │ PLAYBOOK YAML LAYOUT WITH*ROLES*
@@ -199,7 +257,7 @@ roles/                                             ║  INPUT
        when: *foo_result*.rc == 5
 
 
-# Error Handling   [[qa.error_handling]]
+## Error Handling   [[qa.error_handling]]
 -  default behavior:
    - take a host out of the play if a task fails
      and continue with the other hosts.
@@ -229,7 +287,8 @@ roles/                                             ║  INPUT
 
 ────────────────────────────────────────────────────────────────────────────────
 
-• inventory file: ( defaults to /etc/ansible/hosts)
+## inventory file
+ (defaults to /etc/ansible/hosts)
 - if marked as executable (+x) it's executed
   and the json-output taken as effective-inventory.
   - script must then support '--host=' and '--list=' flags
@@ -280,7 +339,7 @@ rabbitmq
 web_group01[01:20].example.com  ← ranges
 web-[a-t].example.com           ←
 
-# variable "scopes" ────────────────────────────────────────────────────────────
+## variable "scopes"
 Playbook Variable Main Scopes
 -*Global:*set by config, ENV.VARS and cli
 -*Play  :*each play and contained structures,
@@ -334,8 +393,8 @@ Variable scope Overrinding rules:
     that you want to perform the task and the Ansible module to run.
   [[}]]
 
-• MUST-KNOW MODULES:
-1) Package management
+# MUST-KNOW MODULES:
+## Package management
 - module for major package managers (DNF, APT, ...)
   - install, upgrade, downgrade, remove, and list packages.
   - dnf_module
@@ -351,7 +410,7 @@ Variable scope Overrinding rules:
     |      - mariadb-server
     |    state: latest     # ← !=latest|present|...
 
-2) 'service' module
+## 'service' module
   - start, stop, and reload installed packages;
   - Ex:
     |- name: Start service foo, based on running process /usr/bin/foo
@@ -361,7 +420,7 @@ Variable scope Overrinding rules:
     |    state: started     # ← started|restarted|...
     |    args: arg0value
 
-3) 'copy' module
+## 'copy' module
   - copies file: local_machine → remote_machine
   |- name: Copy a new "ntp.conf file into place,
   |  copy:
@@ -372,7 +431,7 @@ Variable scope Overrinding rules:
   |    mode: '0644'  # or u=rw,g=r,o=r
   |    backup: yes   # back-up original if different to new
 
-4) 'debug' module (print values to STDOUT/file during execution)
+## 'debug' module (print values to STDOUT/file during execution)
   |- name: Display all variables/facts known for a host
   |  debug:
   |    var: hostvars[inventory_hostname]
@@ -381,7 +440,7 @@ Variable scope Overrinding rules:
   |    verbosity: 2         # ← optional. Display only with
                                 $ ansible-playbook demo.yaml*-vv*
 
-5) 'file' module: manage file and its properties.
+## 'file' module: manage file and its properties.
     - set attributes of files, symlinks, or directories.
     - removes files, symlinks, or directories.
 - Ex:
@@ -393,7 +452,7 @@ Variable scope Overrinding rules:
   |    mode: '0644'
   |    state: file ← file*|directory|...
 
-6) 'lineinfile' module
+## 'lineinfile' module
    - ensures that particular line is in file
    - replaces existing line using regex.
    - Ex:
@@ -403,8 +462,7 @@ Variable scope Overrinding rules:
      |    regexp: '^SELINUX='       # ← (optional) creates if not found.
      |    line: SELINUX=enforcing   # new value, do nothing if found
 
-
-7) 'git' module
+## 'git' module
    - manages git checkouts of repositories to deploy files or software.
    - Ex: Create git archive from repo
      |- git:
@@ -412,7 +470,7 @@ Variable scope Overrinding rules:
      |    dest: /src/ansible-examples
      |    archive: /tmp/ansible-examples.zip
 
-8) 'cli_config'
+## 'cli_config'
   -  platform-agnostic way of pushing text-based configurations
      to network devices
      - Ex1:
@@ -431,8 +489,7 @@ Variable scope Overrinding rules:
        |      filename: backup.cfg
        |      dir_path: /home/user
 
-
-9) 'archive' module
+## 'archive' module
    - create compressed archive of 1+ files.
    - Ex:
    |- name: Compress directory /path/to/foo/ into /path/to/foo.tgz
@@ -443,7 +500,7 @@ Variable scope Overrinding rules:
    |    dest: /path/to/foo.tar.bz2
    |    format: bz2
 
-10) Command
+## Command
    - takes the command name followed by a list of space-delimited arguments.
 Ex1:
 - name: return motd to registered var
@@ -456,7 +513,7 @@ Ex1:
     chdir: somedir/      # ← change to dir
     creates: /etc/a/b    # ← Execute command if path doesn't exists
 
-• host fact ─> Play Vars ────────────────────────────────────────────────────
+# host facts to Play Vars
 @[https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html]
 - UsingO*setup* module at play/run-time. Ex:
 
@@ -513,7 +570,7 @@ Next facts are available with:
     ...
 }
 
-• /etc/ansible/facts.d ──────────────────────────────────────────────────────
+## /etc/ansible/facts.d
 (Local provided facts, 1.3+)
 Way to provide "locally supplied user values" as opposed to
                "centrally supplied user values"  or
@@ -541,7 +598,7 @@ To copy local facts and make the usable in current play:
      *setup:*filter=ansible_local   ← re-run  *setup module* to make
                                     ← locals facts available in current play
 
-• Lookups: Query ext.data: file sh KeyValDB .. ──────────────────────────────────
+## Lookups: Query ext.data: file sh KeyValDB .. ──────────────────────────────────
 @[https://docs.ansible.com/ansible/latest/user_guide/playbooks_lookups.html]
   ...
   vars:
@@ -558,7 +615,7 @@ To copy local facts and make the usable in current play:
                                 - redis_kv Redis key lookup
                                 - etcd     etcd key lookup
 
-• "Jinja2" template ex. ─────────────────────────────────────────────────────
+# "Jinja2" template ex.
   nginx.conf.j2
   server {
           listen 80 default_server;
@@ -636,7 +693,7 @@ To copy local facts and make the usable in current play:
           return {'surround_by_quote': surround_by_quote}
 
 
-• notify vs register: [[{02_doc_has.comparative]]
+# notify vs register [[{02_doc_has.comparative]]
 @[https://stackoverflow.com/questions/33931610/ansible-handler-notify-vs-register]
 
   some tasks ...                         |     some tasks ...
@@ -667,8 +724,8 @@ To copy local facts and make the usable in current play:
           times it was notified.
 [[}]]
 
-
-# ansible-vault: Handling secrets [[{security.secret_management]] #[ansible_handling_secrets]
+#[ansible_handling_secrets]
+# ansible-vault Handling secrets [[{security.secret_management]]
   En/de-crypts values/data structures/files
 @[https://github.com/tldr-pages/tldr/blob/master/pages/common/ansible-vault.md]
 @[https://docs.ansible.com/ansible/latest/user_guide/vault.html#id17]
@@ -725,7 +782,7 @@ To copy local facts and make the usable in current play:
 *1:  *WARN:* Currently requires all files to be encrypted with same password
 [[}]]
 
-• Ex. (yum install) [[{]]
+## Ex. (yum install) [[{]]
 ┌ apache@localhost ─────────────────────
 │ ---
 │ # file: ansible.yml
@@ -770,7 +827,7 @@ To copy local facts and make the usable in current play:
 │     service: name=httpd state=restarted
 └────────────────────────────────────────── [[}]]
 
-• Ex: Installing nginx [[{]]
+## Ex: Installing nginx [[{]]
 ┌ web-tls.yml
 │ - name: wait in control host for ssh server to be running
 │   local_action: wait_for port=22 host="{{ inventory_hostname }}"
@@ -831,43 +888,43 @@ To copy local facts and make the usable in current play:
 │       *service*: *name*=nginx *state*=restarted
 └────────────────────────────────────────────────────── [[}]]
 
-• Ex: Insanely complet Ansible playbook: [[{]]
+## Ex: Insanely complet Ansible playbook [[{]]
 @[https://gist.github.com/marktheunissen/2979474]
 ---                                                                <- YAML documents must begin with doc.separator "---"
 
-####
-#### descriptive comment at the top of my playbooks.
-####
-#
-# Overview: Playbook to bootstrap a new host for configuration management.
-# Applies to: production
-# Description:
-#   Ensures that a host is configured for management with Ansible.
-###########
-#
-# Note:
-#  *YAML, like Python, cares about whitespace*: *Indent consistently*  .
-# Be aware! Unlike Python, YAML refuses to allow the tab character for
-# indentation, so always use spaces.
-#
-# Two-space indents feel comfortable to me, but do whatever you like.
-# vim:ff=unix ts=2 sw=2 ai expandtab
-#
-# If you're new to YAML, keep in mind that YAML documents, like XML
-# documents, represent a tree-like structure of nodes and text. More
-# familiar with JSON?  Think of YAML as a strict and more flexible JSON
-# with fewer significant characters (e.g., :, "", {}, [])
-#
-# The curious may read more about YAML at:
-# http://www.yaml.org/spec/1.2/spec.html
-#
+  ####
+  #### descriptive comment at the top of my playbooks.
+  ####
+  #
+  # Overview: Playbook to bootstrap a new host for configuration management.
+  # Applies to: production
+  # Description:
+  #   Ensures that a host is configured for management with Ansible.
+  ###########
+  #
+  # Note:
+  #  *YAML, like Python, cares about whitespace*: *Indent consistently*  .
+  # Be aware! Unlike Python, YAML refuses to allow the tab character for
+  # indentation, so always use spaces.
+  #
+  # Two-space indents feel comfortable to me, but do whatever you like.
+  # vim:ff=unix ts=2 sw=2 ai expandtab
+  #
+  # If you're new to YAML, keep in mind that YAML documents, like XML
+  # documents, represent a tree-like structure of nodes and text. More
+  # familiar with JSON?  Think of YAML as a strict and more flexible JSON
+  # with fewer significant characters (e.g., :, "", {}, [])
+  #
+  # The curious may read more about YAML at:
+  # http://www.yaml.org/spec/1.2/spec.html
+  #
 
 
-###
-# Notice the minus on the line below -- this starts the playbook's record
-# in the YAML document. Only one playbook is allowed per YAML file.  Indent
-# the body of the playbook.
--
+  ###
+  # Notice the minus on the line below -- this starts the playbook's record
+  # in the YAML document. Only one playbook is allowed per YAML file.  Indent
+  # the body of the playbook.
+  -
 
   hosts: all
   ###########
@@ -1289,11 +1346,11 @@ To copy local facts and make the usable in current play:
 
 
 # TODO/Non-Classified [[{01_PM.TODO]]
-• Dynamic Inventory  [[{cloud]]
+## Dynamic Inventory  [[{cloud]]
 @[https://docs.ansible.com/ansible/2.5/user_guide/intro_dynamic_inventory.html]
 (EC2, OpenStack,...) [[}]]
 
-• Fact Caching:
+## Fact Caching:
 @[https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#fact-caching]
   - To benefit from cached facts you will set gather_facts to False in most plays.
   - Ansible ships with two persistent cache plugins: redis and jsonfile.
@@ -1303,7 +1360,7 @@ To copy local facts and make the usable in current play:
   fact_caching = redis
   fact_caching_timeout = 86400
 
-• AWX GUI: [[{]]
+## AWX GUI: [[{]]
   @[https://www.howtoforge.com/ansible-awx-guide-basic-usage-and-configuration/]
 
   - AWX is an open source web application that provides a user interface, REST API,
@@ -1316,63 +1373,7 @@ To copy local facts and make the usable in current play:
   [[}]]
 [[}]]
 
-- Ansible External Links: [[{]]
-- https://docs.ansible.com/ansible/latest/user_guide/index.html
-- Ansible in practice[Video]
-@[https://sysadmincasts.com/episodes/46-configuration-management-with-ansible-part-3-4]
-- Playbooks best practices:
-@[https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html]
 
-- Ronald Kurr has lot of very-useful and professional Ansible powered code to
-  provide JVM, Python, Desktops, ... machines. For example:
- - Ansible Study Group Labs: https://github.com/kurron/ansible-study-group-labs
- - An OpenVPN server in the cloud:
-   https://github.com/kurron/aws-open-vpn/blob/master/ansible/playbook.yml
- - Installation of tools than any self-respecting Operation person loves and needs:
-   https://github.com/kurron/ansible-role-operations/blob/master/tasks/main.yml
- - Installation of tools than any self-respecting JVM developer loves and needs.
-   https://github.com/kurron/ansible-role-jvm-developer/blob/master/tasks/main.yml
- - Installation of tools than any self-respecting AWS command-line user loves and needs.
-   https://github.com/kurron/ansible-role-aws/blob/master/tasks/main.yml
- - Connect to a Juniper VPN under Ubuntu.
-   https://github.com/kurron/ansible-role-jvpn/blob/master/tasks/main.yml
- - Installation of tools than any self-respecting Atlassian user loves and needs.
-   https://github.com/kurron/ansible-role-atlassian/blob/master/tasks/main.yml
- - Installation of tools than any self-respecting cross-platform .NET developer loves and needs.
-   https://github.com/kurron/ansible-role-dot-net-developer/blob/master/tasks/main.yml
- - Docker container that launches a pipeline of Docker containers that
-   ultimately deploy Docker containes via Ansible into EC2 instances
-   https://github.com/kurron/docker-ec2-pipeline
- - Increase operating system limits for Database workloads.
-   https://github.com/kurron/ansible-role-os-limits/blob/master/tasks/main.yml
- - Creation of an Amazon VPC. Public and private subnets are created
-   in all availability zones.
-   https://github.com/kurron/ansible-role-vpc
-
-- Command line tools
-@[https://docs.ansible.com/ansible/latest/user_guide/command_line_tools.html]
-
-- run a single task 'playbook' against a set of hosts
-@[https://docs.ansible.com/ansible/latest/cli/ansible.html]
-
-- ansible-config view, edit, and manage ansible configuration
-@[https://docs.ansible.com/ansible/latest/cli/ansible-config.html]
-
-- ansible-console  interactive console for executing ansible tasks
-@[https://docs.ansible.com/ansible/latest/cli/ansible-console.html]
-
-- manage Ansible roles in shared repostories (default to [https://galaxy.ansible.com] )
-@[https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html]
-
-- display/dump configured inventory:
-@[https://docs.ansible.com/ansible/latest/cli/ansible-inventory.html]
-
-- ansible-pull pulls playbooks from a VCS repo and executes them for the local host:
-@[https://docs.ansible.com/ansible/latest/cli/ansible-pull.html]
-- ansible-vault  encryption/decryption utility for Ansible data files:
- @[https://docs.ansible.com/ansible/latest/cli/ansible-vault.html]
-
-[[}]]
 
 [[ansible}]]
 

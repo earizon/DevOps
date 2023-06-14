@@ -831,7 +831,7 @@ $ git init   ← creates an initial layout containing (Alternatively $ $git clon
                                      ref: refs/heads/master                $ git symbolic-ref HEAD refs/heads/dev
 <hr/>
 <span title>merge/rebase/cherry-pick</span>
-• REF:
+## REF:
 @[https://stackoverflow.com/questions/9339429/what-does-cherry-picking-a-commit-with-git-mean]
 @[https://git-scm.com/docs/git-cherry-pick]
 
@@ -1462,7 +1462,7 @@ happening, or to abort the collection if now isn’t a good time.
 @[https://gitea.io/]
 - Fork of gogs, since it was unmaintained.
 
-• Gerrit (by Google)</span>
+## Gerrit (by Google)</span>
 @[https://www.gerritcodereview.com/index.html]
 Gerrit is a Git Server that provides:
 - Code Review:
@@ -1488,17 +1488,17 @@ Gerrit does NOT provide:
 - Style Checkers
 [[}]]
 
-• Git Secrets: [[{qa,security.secret_management}]]
+## Git Secrets: [[{qa,security.secret_management}]]
 https://github.com/awslabs/git-secrets#synopsis
 - Prevents you from committing passwords and other sensitive
   information to a git repository.
 
-• Forgit: Interactive Fuzzy Finder:[[{dev_stack.forgit,qa.UX,01_PM.TODO]]
+## Forgit: Interactive Fuzzy Finder:[[{dev_stack.forgit,qa.UX,01_PM.TODO]]
 @[https://www.linuxuprising.com/2019/11/forgit-interactive-git-commands-with.html]
 - It takes advantage of the popular "fzf" fuzzy finder to provide
   interactive git commands, with previews. [[}]]
 
-• Isomorphic Git: 100% JS client [[{security.gpg]]
+## Isomorphic Git: 100% JS client [[{security.gpg]]
 @[https://isomorphic-git.org/] !!!
 
 - Features:
@@ -1516,22 +1516,22 @@ https://github.com/awslabs/git-secrets#synopsis
   - merge branches
 [[}]]
 
-• Git Monorepos: [[{qa.UX]]
+## Git Monorepos: [[{qa.UX]]
   (Big) Monorepos in Git:
   https://www.infoq.com/presentations/monorepos/
   https://www.atlassian.com/git/tutorials/big-repositories [[}]]
 
 
-• Git: Symbolic Ref best-patterns
+## Git: Symbolic Ref best-patterns
 @[https://stackoverflow.com/questions/4986000/whats-the-recommended-usage-of-a-git-symbolic-reference]
 
-• GitHub: Search by topic: [[{git.github}]]
+## GitHub: Search by topic: [[{git.github}]]
   https://help.github.com/en/github/searching-for-information-on-github/searching-topics
   Ex:search by topic ex "troubleshooting" and language "java"
   https://github.com/topics/troubleshooting?l=java
 
 
-• Gitsec: [[{security.secret_management,qa]]
+## Gitsec: [[{security.secret_management,qa]]
   @[https://github.com/BBVA/gitsec]
   gitsec is an automated secret discovery service for git that helps
   you detect sensitive data leaks.
@@ -1882,7 +1882,7 @@ https://github.com/awslabs/git-secrets#synopsis
   --tlsverify          Use TLS and verify the remote
   --version            Print version information and quit
 
-• Management Commands:
+## Management Commands:
               Manage ...
   config      Docker configs
   container   containers
@@ -1898,7 +1898,7 @@ https://github.com/awslabs/git-secrets#synopsis
   volume      volumes
 
 
-• docker  running containers commands :
+## docker  running containers commands :
 | · attach      Attach local STDIN/OUT/ERR streams to a running container
 | · cp          Copy files/folders between a container and the local filesystem
 | · create      Create a new container
@@ -1922,7 +1922,7 @@ https://github.com/awslabs/git-secrets#synopsis
 | · update      Update configuration of 1+ containers
 |               (cpu-quota, shared, kernel-memory, pids-limit, ...)
 
-• docker Image Build/Image Management Commands :
+## docker Image Build/Image Management Commands :
 | docker image   ls current (local) images.
 | docker build   Build an image from a Dockerfile
 | docker commit  Create a new image from a container's changes
@@ -1954,7 +1954,7 @@ https://github.com/awslabs/git-secrets#synopsis
 
 | · tag         Create a tag TARGET_IMAGE that refers to SOURCE_IMAGE
 
-• docker Throubleshoot/Debug Commands :
+## docker Throubleshoot/Debug Commands :
 | · events      Get real time events from the server
   ┌─ $ sudo docker info ─(Global Info) ────────
   │ Containers: 23
@@ -2561,7 +2561,7 @@ it has executed before and uses the result for each new build.
   ARG buildAppParam1=default_value
   ENV appParam1=$buildAppParam1
 
-• Dockerfile : ENTRYPOINT vs COMMAND
+## Dockerfile : ENTRYPOINT vs COMMAND
 
   └ ENTRYPOINT:
     - Defaults to '/bin/sh -c'.
@@ -2790,17 +2790,17 @@ it has executed before and uses the result for each new build.
   source + Dockerfile + BuildTemplate(optional)  ···> OCI image
   buildpacks: (No Dockerfile needed at all)
   source                                            ···> OCI image
-• build oci image directly from source source (Skipping Dockerfile/docker build)
+## build oci image directly from source source (Skipping Dockerfile/docker build)
   (with dev stack -Java/Go/...- and dependencies autodetection )
-• highly modular and customizable.
-• used, among others, by spring (spring boot 2.3+) with  gradle and maven support.
+## highly modular and customizable.
+## used, among others, by spring (spring boot 2.3+) with  gradle and maven support.
   e.g.: springboot gradle integration:
   bootbuildimage {
     imagename = "${docker.username}/${project.name}:${project.version}"
     environment = ["bp_jvm_version" : "11.*"]
   }
-• promotes best practices in terms of security;
-• defining cpu and memory limits for jvm containers is critical
+## promotes best practices in terms of security;
+## defining cpu and memory limits for jvm containers is critical
   because they will be used to size properly items like jvm thread pools,
   heap memory and  non-heap  memory. tunning manually is challenging,
   fortunately, if using paketo implementation of cloud native buildpacks
@@ -3298,12 +3298,12 @@ $ sudo du -sch /var/lib/docker/devicemapper/devicemapper/data
 @[https://github.com/google/cadvisor/blob/master/docs/running.md#standalone]
 [[}]]
 
-• live restore [[{]]
+## live restore [[{]]
  @[https://docs.docker.com/config/containers/live-restore/]
  keep containers alive during daemon downtime
 [[}]]
 
-• weave: [[{ci/cd.gitops,containerization.monitoring,01_pm.low_code,gui,01_PM.todo]]
+## weave: [[{ci/cd.gitops,containerization.monitoring,01_pm.low_code,gui,01_PM.todo]]
 @[https://github.com/weaveworks/weave]
 - weaveworks company: """ delivers the most productive way for developers
   to connect, observe and control docker containers. """"
@@ -3344,7 +3344,7 @@ $ sudo du -sch /var/lib/docker/devicemapper/devicemapper/data
   @[https://www.weave.works/technologies/gitops/]
 [[}]]
 
-• clair vulnerabilities static analysis [[{containerization.security,qa,01_PM.todo]]
+## clair vulnerabilities static analysis [[{containerization.security,qa,01_PM.todo]]
 @[https://coreos.com/clair/docs/latest/]
 open source project for the static analysis of vulnerabilities in
 appc and docker containers.
@@ -3440,8 +3440,8 @@ https://www.infoq.com/news/2020/12/dockerhub-image-vulnerabilities/
   │   server server1 host01:8081 maxconn 32 ←  composed of (single server) "server1"
   │                                            at host01:8081
   └─────────────────────────────────────────
-• Reverse Proxy  [[01_PM.TODO]]
-• Forward Proxy  [[01_PM.TODO]]
+## Reverse Proxy  [[01_PM.TODO]]
+## Forward Proxy  [[01_PM.TODO]]
 [[}]]
 
 ## CharlesProxy: Monitor TLS/HTTPS traffic [[{networking.TLS,troubleshooting,01_PM.TODO]]
@@ -3507,7 +3507,7 @@ https://www.infoq.com/news/2020/12/dockerhub-image-vulnerabilities/
 ## nginx.conf summary [[{networking.nginx,web_balancer,01_PM.WiP]] #[nginx_conf_summary]
 REF: @[https://raazkumar.com/tutorials/nginx/nginx-conf/]
 
-• nginx ==   fast HTTP reverse proxy
+## nginx ==   fast HTTP reverse proxy
            + reliable load balancer
            + high performance caching server
            + full-fledged web platform
