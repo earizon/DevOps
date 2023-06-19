@@ -1,7 +1,7 @@
 
 
 
-## Container Networking [[{networking.101,containerization.networking,networking.sdn.calico,networking.sdn.flannel,01_PM.TODO]]
+## Container Networking [[{networking.101,containerization.networking,01_PM.TODO]]
 @[https://jvns.ca/blog/2016/12/22/container-networking/]
 By Julia Evans
 

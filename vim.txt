@@ -213,6 +213,6 @@ Please visit the ICCF web site for more information:
 https://iccf-holland.org
 [[01_PM.NEW}]]
 
-[[{01_PM.TODO]]
-• http://rayninfo.co.uk/vimtips.html
+## vim tips [[{01_PM.TODO]]
+ http://rayninfo.co.uk/vimtips.html
 [[01_PM.TODO}]]

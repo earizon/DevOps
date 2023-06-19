@@ -19,15 +19,15 @@
   #  and assigns execution (STDOUT) output as effective value to VAR1
 
   # SETUP STDERR/STDOUT logging to file and console {{{
-  readonly LOG_DIR="LOGS.gitingore"
-  if [ ! -d ${LOG_DIR}.gitignore ] ; then
-     mkdir ${LOG_DIR}.gitignore
+  readonly LOG_DIR="LOGS.gitignore"
+  if [ ! -d ${LOG_DIR} ] ; then
+     mkdir ${LOG_DIR}
   fi
   # $(whoami) will avoid collisions  among different users even if writing to the
   # same directory and serves as audit trail. # This happens frequently in DevOps when
   # executing in sudo/non-sudo contexts.
-  readonly OUTPUT="${LOG_DIR}.gitignore/$(basename $0).$(whoami).$(date +%Y%m%d_%Hh%Mm%Ss).log"
-  ln -sf ${OUTPUT} link_last_log.$(basename $0).gitignore  # (opinionated) Improve UX, create link to latest log
+  readonly OUTPUT="${LOG_DIR}/$(basename $0).$(whoami).$(date +%Y%m%d_%Hh%Mm%Ss).log"
+  ln -sf ${OUTPUT} link_last_log.$(basename $0)  # (opinionated) Improve UX, create link to latest log
   exec 3>&1
   exec 4>&2
   echo "Cloning STDOUT/STDERR to ${PWD}/${OUTPUT}"
