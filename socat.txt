@@ -1,0 +1,356 @@
+# socat Multipurpose relay (SOcket CAT).  [[{]]
+- ESTABLISHES TWO BIDIRECTIONAL BYTE STREAMS
+
+  src ···> dst        src ···> dst             src <··· dst
+  src <··· dst
+
+
+  bidirectional       -u                       -U
+  by default
+
+-b<size>: Sets the data transfer block <size> [size_t].  Default: 8192 bytes.
+-s      : Do not terminate on error (be "sloppy")
+-t<timeout>: If channel reached EOF, write part of the other channel is shut down.
+             Then, socat waits <timeout> [timeval] seconds before terminating. Default is 0.5  seconds.
+             It only applies to addresses where write and read part can be closed independently.
+
+-T<timeout>: Total inactivity timeout (no data arrived, no interrupt occurred...)
+             Useful with protocols like UDP that cannot transfer EOF.
+
+-L<lockfile>: If lockfile exists, exits with error otherwise creates it.
+-W<lockfile>: If lockfile exists, waits until it disappears otherwise creates it.
+
+ADDRESS SPECIFICATIONS
+An address specification usually
+address type keyword + 0+ required address-parameters-separated by ’:’  + 0+ address-options-separated-by-’,’
+└──┬─────────────────┘
+TCP4|OPEN|EXEC|....:
+
+CREATE:<filename> (create for writing).  It requires write-only context (file can not be read from)
+EXEC:<command-line>: Forks sub process that establishes communication with its parent process and
+                     invokes the specified program with execvp()
+FD:<fdnum>
+GOPEN:<filename> (Generic  open)  try to handle any file system entry except directories usefully.
+IP-SENDTO:<host>:<protocol> : Open raw-IP socket.
+IP4-SENDTO:<host>:<protocol>
+IP6-SENDTO:<host>:<protocol>
+IP-DATAGRAM:<address>:<protocol>
+INTERFACE:<interface>   Communicates with network connected on interface using raw packets including link level data.
+IP4-DATAGRAM:<host>:<protocol>
+IP6-DATAGRAM:<host>:<protocol>
+IP-RECVFROM:<protocol>  : receive one packet from unspecified peer and may send one or more answer packets to that peer.
+                          particularly useful with fork option where each arriving  packet-from arbitrary peers-  is handled
+                          by its own sub process.
+IP4-RECVFROM:<protocol>
+IP6-RECVFROM:<protocol>
+IP-RECV:<protocol>:   receives packets from multiple unspecified peers and merges the data. No replies are possible.
+IP4-RECV:<protocol>
+IP6-RECV:<protocol>
+OPEN:<filename>       : (rarely useful in bidirectional mode)
+OPENSSL:<host>:<port>
+OPENSSL-LISTEN:<port>
+PIPE:<filename>
+PIPE
+PROXY:<proxy>:<hostname>:<port>  Connects to HTTP proxy server on port 8080 using TCP/IP and sends a CONNECT request for hostname:port.
+PTY:  Generates pseudo terminal (pty) and uses its master side.
+      Another process may open the pty’s slave side using it like a serial line or terminal.
+READLINE: Uses GNU readline and history on stdio to allow editing and reusing input lines (example).
+SCTP-CONNECT:<host>:<port>
+SCTP4-CONNECT:<host>:<port>
+SCTP6-CONNECT:<host>:<port>
+SCTP-LISTEN:<port>
+SCTP4-LISTEN:<port>
+SCTP6-LISTEN:<port>
+SOCKET-CONNECT:<domain>:<protocol>:<remote-address>
+SOCKET-DATAGRAM:<domain>:<type>:<protocol>:<remote-address>
+SOCKET-LISTEN:<domain>:<protocol>:<local-address>
+SOCKET-RECV:<domain>:<type>:<protocol>:<local-address>
+SOCKET-RECVFROM:<domain>:<type>:<protocol>:<local-address>
+SOCKET-SENDTO:<domain>:<type>:<protocol>:<remote-address>
+SOCKS4:<socks-server>:<host>:<port>
+SOCKS4A:<socks-server>:<host>:<port>
+STDERR Uses file descriptor 2.
+STDIO
+STDOUT
+SYSTEM:<shell-command>: Forks sub-process that establishes communication with parent process and invokes the specified program with system() .
+TCP:<host>:<port>    : Connects  to <host>:<port>
+TCP4:<host>:<port>
+TCP6:<host>:<port>
+TCP-LISTEN:<port>: Listens and accepts a TCP/IP connection.
+TCP4-LISTEN:<port>
+TCP6-LISTEN:<port>
+TUN[:<if-addr>/<bits>]
+UDP:<host>:<port> UDP4:<host>:<port> UDP6:<host>:<port> UDP-DATAGRAM:<address>:<port> UDP4-DATAGRAM:<address>:<port>
+UDP6-DATAGRAM:<address>:<port> UDP-LISTEN:<port> UDP4-LISTEN:<port> UDP6-LISTEN:<port> UDP-SENDTO:<host>:<port>
+UDP4-SENDTO:<host>:<port> UDP6-SENDTO:<host>:<port> UDP-RECVFROM:<port> UDP4-RECVFROM:<port>
+UDP6-RECVFROM:<port> UDP-RECV:<port> UDP4-RECV:<port> UDP6-RECV:<port>
+UNIX-CONNECT:<filename> UNIX-LISTEN:<filename> UNIX-SENDTO:<filename> UNIX-RECVFROM:<filename> UNIX-RECV:<filename> UNIX-CLIENT:<filename>
+ABSTRACT-CONNECT:<string> ABSTRACT-LISTEN:<string> ABSTRACT-SENDTO:<string> ABSTRACT-RECVFROM:<string>
+  ABSTRACT-RECV:<string> ABSTRACT-CLIENT:<string>
+
+ADDRESS OPTIONS
+- FD option group
+       cloexec=<bool>
+       setlk setlkw setlk-rd setlkw-rd
+       flock-ex flock-ex-nb flock-sh flock-sh-nb lock
+       user=<user> user-late=<user> group=<group> group-late=<group>
+       mode=<mode> perm-late=<mode> append=<bool> nonblock=<bool>
+       binary text noinherit cool-write end-close shut-none shut-down shut-close shut-null null-eof
+       ioctl-void=<request> ioctl-int=<request>:<value> ioctl-intp=<request>:<value> ioctl-bin=<request>:<value> ioctl-string=<request>:<value>
+- NAMED option group
+       user-early=<user>
+       group-early=<group>
+       perm-early=<mode>
+       umask=<mode>
+       unlink-early
+       unlink Unlinks (removes) the file before accessing it, but after user-early etc.
+       unlink-late
+       unlink-close
+- OPEN option group
+       creat=<bool> dsync=<bool> excl=<bool> largefile=<bool> noatime noctty=<bool>
+       nofollow=<bool> nshare=<bool> rshare=<bool> rsync=<bool> sync=<bool>
+       rdonly=<bool> wronly=<bool> trunc
+- REG and BLK option group
+       seek=<offset> seek-cur=<offset> seek-end=<offset> ftruncate=<offset> secrm=<bool>
+       unrm=<bool> compr=<bool> ext2-sync=<bool> immutable=<bool> ext2-append=<bool>
+       nodump=<bool> ext2-noatime=<bool> journal-data=<bool> notail=<bool> dirsync=<bool>
+- PROCESS option group:
+       chroot=<directory> chroot-early=<directory> setgid=<group> setgid-early=<group> setuid=<user> setuid-early=<user>
+       su=<user> su-d=<user> setpgid=<pid_t> setsid
+- READLINE option group
+       history=<filename> noprompt noecho=<pattern> prompt=<string>
+- APPLICATION option group:
+       This group contains options that work at data level.  Note that these options only apply to the "raw" data transferred by socat, but  not  to
+       protocol data used by addresses like PROXY.
+       cr     Converts the default line termination character NL (’\n’, 0x0a) to/from CR (’\r’, 0x0d) when writing/reading on this channel.
+       crnl   Converts  the  default  line  termination character NL (’\n’, 0x0a) to/from CRNL ("\r\n", 0x0d0a) when writing/reading on this channel
+              (example).  Note: socat simply strips all CR characters.
+       ignoreeof
+              When EOF occurs on this channel, socat ignores it and tries to read more data (like "tail -f") (example).
+       readbytes=<bytes>
+              socat reads only so many bytes from this address (the address provides only so many bytes for transfer and pretends to be at  EOF  af‐
+              terwards).  Must be greater than 0.
+       lockfile=<filename>
+              If lockfile exists, exits with error. If lockfile does not exist, creates it and continues, unlinks lockfile on exit.
+       waitlock=<filename>
+              If lockfile exists, waits until it disappears. When lockfile does not exist, creates it and continues, unlinks lockfile on exit.
+       escape=<int>
+              Specifies the numeric code of a character that triggers EOF on the input stream. It is useful with a terminal in raw mode (example).
+
+- SOCKET option group:
+       bind=<sockname> connect-timeout=<seconds> so-bindtodevice=<interface>
+       broadcast debug dontroute keepalive linger=<seconds> oobinline priority=<priority>
+       rcvbuf=<bytes> rcvbuf-late=<bytes> rcvlowat=<bytes>
+       reuseaddr sndbuf=<bytes> sndbuf-late=<bytes> sndlowat=<bytes> pf=<string> type=<type>
+       prototype reuseport so-timestamp setsockopt-int=<level>:<optname>:<optval>
+       setsockopt-bin=<level>:<optname>:<optval>
+       setsockopt-string=<level>:<optname>:<optval>
+- UNIX option group:
+      unix-tightsocklen=[0|1]
+- IP4 and IP6 option groups
+       tos=<tos> ttl=<ttl> ip-options=<data> mtudiscover=<0|1|2> ip-pktinfo ip-recverr ip-recvopts
+       ip-recvtos ip-recvttl ip-recvdstaddr ip-recvif
+       ip-add-membership=<multicast-address:interface-address>
+       ip-add-membership=<multicast-address:interface-name>
+       ip-add-membership=<multicast-address:interface-index>
+       ip-add-membership=<multicast-address:interface-address:interface-name>
+       ip-add-membership=<multicast-address:interface-address:interface-index>
+       ip-multicast-if=<hostname> ip-multicast-loop=<bool> ip-multicast-ttl=<byte> res-debug
+       res-aaonly res-usevc res-primary res-igntc res-recurse res-defnames res-stayopen
+       res-dnsrch
+- IP6 option group:
+       ...
+- SOCKS option group:
+       socksport=<tcp service> socksuser=<user>
+- HTTP option group:
+       proxyport=<TCP service> ignorecr proxyauth=<username>:<password> resolve
+- RANGE option group : These options check if a connecting client should be granted access.
+       range=<address-range> tcpwrap[=<name>] allow-table=<filename> deny-table=<filename> tcpwrap-etc=<directoryname>
+- LISTEN option group
+       backlog=<count>. Default 5
+       max-children=<count>.  Default is no limit.
+- CHILD option group:
+       fork   After connection handles in child process, keeps parent process attempting to produce  more  connections
+- EXEC option group:
+       path=<string> login
+- FORK option group:
+       nofork Does not fork a subprocess for executing the program, instead calls execvp() or system() directly from the actual socat instance. This
+              avoids the overhead of another process between the program and its peer, but introduces a lot of restrictions:
+       pipes  Creates a pair of unnamed pipes for interprocess communication instead of a socket pair.
+       openpty ptmx   pty   ctty   stderr
+       fdin=<fdnum> (def: stdin(0)) fdout=<fdnum> (def: stdout(1))
+       sighup, sigint, sigquit
+- TERMIOS option group:
+       b0 b19200 echo=<bool> icanon=<bool> raw rawer cfmakeraw ignbrk=<bool> brkint=<bool>
+       bs0 bs1 bsdly=<0|1> clocal=<bool> cr0 cr1 cr2 cr3
+       crdly=<0|1|2|3> cread=<bool> crtscts=<bool>
+       cs5 cs6 cs7 cs8 csize=<0|1|2|3> cstopb=<bool> dsusp=<byte> echoctl=<bool>
+       echoe=<bool> echok=<bool> echoke=<bool> echonl=<bool> echoprt=<bool> eof=<byte> eol=<byte>
+       eol2=<byte> ...
+       i-pop-all i-push=<string>
+- PTY option group:
+       link=<filename> wait-slave pty-interval=<seconds>
+- OPENSSL option group:
+       ...
+- RETRY option group:
+       retry=<num> interval=<timespec> forever
+- TUN option group:
+       ...
+
+EXAMPLES:
+$ socat -                                    TCP4:www.domain.org:80   STDIO <··> TCP4 connection to port 80 of host www.domain.org. == sort of telnet to www.domain.org:80
+
+$ socat READLINE,history=$HOME/.http_history TCP4:www.domain.org:www,crnl  <·· similar to previous one but using READLINE, ...
+$ socat TCP4-LISTEN:www   <···  simple TCP port forwarder. waits for connection on port "www",  accepts  it,  then forwards to remote host (TCP4)
+        TCP4:www.domain.org:www
+$ socat TCP4-LISTEN:80,bind=myaddr1,reuseaddr,fork,su=nobody,range=10.0.0.0/8 \
+        TCP4:www.domain.org:80,bind=myaddr2
+        TCP port forwarder handling an almost arbitrary number of parallel or consecutive
+        connections by fork’ing a new process after each accept().
+
+$ socat TCP4-LISTEN:5555,fork,tcpwrap=script \
+  EXEC:/bin/myscript,chroot=/home/sandbox,su-d=sandbox,pty,stderr
+
+$ socat EXEC:"mail.sh target@domain.com",fdin=3,fdout=4 \
+  TCP4:mail.relay.org:25,crnl,bind=alias1.server.org,mss=512
+
+$ socat -,escape=0x0f /dev/ttyS0,rawer,crnl
+
+$ socat UNIX-LISTEN:/tmp/.X11-unix/X1,fork \
+  SOCKS4:host.victim.org:127.0.0.1:6000,socksuser=nobody,sourceport=20
+
+$ socat -u /tmp/readdata,seek-end=0,ignoreeof -
+
+$ (sleep 5; echo PASSWORD; sleep 5; echo ls; sleep 1) |
+  socat - EXEC:'ssh -l user server',pty,setsid,ctty
+
+$ socat -u TCP4-LISTEN:3334,reuseaddr,fork \
+  OPEN:/tmp/in.log,creat,append
+
+$ socat PTY,link=$HOME/dev/vmodem0,rawer,wait-slave \
+  EXEC:"ssh modemserver.us.org socat - /dev/ttyS0,nonblock,rawer"
+
+$ socat TCP4-LISTEN:2022,reuseaddr,fork \
+  PROXY:proxy:www.domain.org:22,proxyport=3128,proxyauth=user:pass
+
+$ socat - OPENSSL:server:4443,cafile=server.crt,cert=client.pem
+
+$ socat OPENSSL-LISTEN:4443,reuseaddr,pf=ip4,fork,cert=server.pem,cafile=client.crt PIPE
+
+$ echo |socat -u - file:/tmp/bigfile,create,largefile,seek=100000000000
+$ socat tcp-l:7777,reuseaddr,fork system:’filan -i 0 -s >&2’,nofork
+$ echo -en "\0\14\0\0\c" |socat -u - file:/usr/bin/squid.exe,seek=0x00074420
+$ socat - tcp:www.blackhat.org:31337,readbytes=1000
+$ socat -U TCP:target:9999,end-close TCP-L:8888,reuseaddr,fork
+$ socat - UDP4-DATAGRAM:192.168.1.0:123,sp=123,broadcast,range=192.168.1.0/24
+$ socat - SOCKET-DATAGRAM:2:2:17:x007bxc0a80100x0000000000000000,bind=x007bx00000000x0000000000000000,setsockopt-int=1:6:1,r‐
+          ange=x0000xc0a80100x0000000000000000:x0000xffffff00x0000000000000000
+$ socat - IP4-DATAGRAM:255.255.255.255:44,broadcast,range=10.0.0.0/8
+$ socat - UDP4-DATAGRAM:224.255.0.1:6666,bind=:6666,ip-add-membership=224.255.0.1:eth0
+$ socat TCP:host2:4443 TUN:192.168.255.1/24,up
+$ socat PTY,link=/var/run/ppp,rawer INTERFACE:hdlc0
+$ socat -T 1 -d -d TCP-L:10081,reuseaddr,fork,crlf SYSTEM:"echo -e \"\\\"HTTP/1.0 200 OK\\\nDocumentType: text/plain\\\n\\\ndate:
+  \$\(date\)\\\nserver:\$SOCAT_SOCKADDR:\$SOCAT_SOCKPORT\\\nclient: \$SOCAT_PEERADDR:\$SOCAT_PEERPORT\\\n\\\"\"; cat; echo -e \"\\\"\\\n\\\"\""
+
+$ socat -d -d UDP4-RECVFROM:9999,so-broadcast,so-timestamp,ip-pktinfo,ip-recverr,ip-recvopts,ip-recvtos,ip-recvttl!!- SYSTEM:’export; sleep 1’
+       |grep SOCAT
+
+## ENVIRONMENT VARIABLES
+       Input variables carry information from the environment to socat, output variables are set by socat for use in executed scripts and programs.
+
+       In the output variables beginning with "SOCAT" this prefix is actually replaced by the upper case name of the executable or the value of op‐
+       tion -lp.
+
+       SOCAT_DEFAULT_LISTEN_IP (input)
+              (Values 4 or 6) Sets the IP version to be used for listen, recv, and recvfrom addresses if no pf (protocol-family) option is given. Is
+              overridden by socat options -4 or -6.
+
+       SOCAT_PREFERRED_RESOLVE_IP (input)
+              (Values 0, 4, or 6) Sets the IP version to be used when resolving target host names when version is not specified by address type, op‐
+              tion pf (protocol-family), or address format. If name resolution does not return a matching entry, the first result (with differing IP
+              version) is taken. With value 0, socat always selects the first record and its IP version.
+
+       SOCAT_FORK_WAIT (input)
+              Specifies the time (seconds) to sleep the parent and child processes after successful fork(). Useful for debugging.
+
+       SOCAT_VERSION (output)
+              Socat sets this variable to its version string, e.g. "1.7.0.0" for released versions or e.g. "1.6.0.1+envvar" for temporary versions;
+              can be used in scripts invoked by socat.
+
+       SOCAT_PID (output)
+              Socat sets this variable to its process id. In case of fork address option, SOCAT_PID gets the child processes id. Forking for exec
+              and system does not change SOCAT_PID.
+
+       SOCAT_PPID (output)
+              Socat sets this variable to its process id. In case of fork, SOCAT_PPID keeps the pid of the master process.
+
+       SOCAT_PEERADDR (output)
+              With passive socket addresses (all LISTEN and RECVFROM addresses), this variable is set to a string describing the peers socket ad‐
+              dress. Port information is not included.
+
+       SOCAT_PEERPORT (output)
+              With appropriate passive socket addresses (TCP, UDP, and SCTP - LISTEN and RECVFROM), this variable is set to a string containing the
+              number of the peer port.
+
+       SOCAT_SOCKADDR (output)
+              With all LISTEN addresses, this variable is set to a string describing the local socket address. Port information is not included ex‐
+              ample
+
+       SOCAT_SOCKPORT (output)
+              With TCP-LISTEN, UDP-LISTEN, and SCTP-LISTEN addresses, this variable is set to the local port.
+
+       SOCAT_TIMESTAMP (output)
+              With all RECVFROM addresses where address option so-timestamp is applied, socat sets this variable to the resulting timestamp.
+
+       SOCAT_IP_OPTIONS (output)
+              With all IPv4 based RECVFROM addresses where address option ip-recvopts is applied, socat fills this variable with the IP options of
+              the received packet.
+
+       SOCAT_IP_DSTADDR (output)
+              With all IPv4 based RECVFROM addresses where address option ip-recvdstaddr (BSD) or ip-pktinfo (other platforms) is applied, socat
+              sets this variable to the destination address of the received packet. This is particularly useful to identify broadcast and multicast
+              addressed packets.
+
+       SOCAT_IP_IF (output)
+              With all IPv4 based RECVFROM addresses where address option ip-recvif (BSD) or ip-pktinfo (other platforms) is applied, socat sets
+              this variable to the name of the interface where the packet was received.
+
+       SOCAT_IP_LOCADDR (output)
+              With all IPv4 based RECVFROM addresses where address option ip-pktinfo is applied, socat sets this variable to the address of the in‐
+              terface where the packet was received.
+
+       SOCAT_IP_TOS (output)
+              With all IPv4 based RECVFROM addresses where address option ip-recvtos is applied, socat sets this variable to the TOS (type of ser‐
+              vice) of the received packet.
+
+       SOCAT_IP_TTL (output)
+              With all IPv4 based RECVFROM addresses where address option ip-recvttl is applied, socat sets this variable to the TTL (time to live)
+              of the received packet.
+
+       SOCAT_IPV6_HOPLIMIT (output)
+              With all IPv6 based RECVFROM addresses where address option ipv6-recvhoplimit is applied, socat sets this variable to the hoplimit
+              value of the received packet.
+
+       SOCAT_IPV6_DSTADDR (output)
+              With all IPv6 based RECVFROM addresses where address option ipv6-recvpktinfo is applied, socat sets this variable to the destination
+              address of the received packet.
+
+       SOCAT_IPV6_TCLASS (output)
+              With all IPv6 based RECVFROM addresses where address option ipv6-recvtclass is applied, socat sets this variable to the transfer class
+              of the received packet.
+
+       SOCAT_OPENSSL_X509_ISSUER (output)
+              Issuer field from peer certificate
+
+       SOCAT_OPENSSL_X509_SUBJECT (output)
+              Subject field from peer certificate
+
+       SOCAT_OPENSSL_X509_COMMONNAME (output)
+              commonName entries from peer certificates subject. Multiple values are separated by " // ".
+
+       SOCAT_OPENSSL_X509_* (output)
+              all other entries from peer certificates subject
+
+       SOCAT_OPENSSL_X509V3_DNS (output)
+              DNS entries from peer certificates extensions - subjectAltName field. Multiple values are separated by " // ".
+[[}]]
