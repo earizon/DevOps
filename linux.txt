@@ -1,11 +1,6 @@
-##  Apropos:
-- Visit next Web site for a great experience:
-  https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/linux.txt
-- If you want to contribute to great gistory of this document you can
-  take the next flight to:
+## Apropos:
+  Content is versioned in git.  commits, issues and pull-requests welcome!
 @[https://www.github.com/earizon/DevOps]
-  Your commits and pull-request will be immortalized in the Pantheon of the Unicode Gods.
-
 
 LINUX ADMINISTRATION RECIPES
 

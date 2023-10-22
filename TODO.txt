@@ -1,6 +1,3 @@
-
-
-
 ## Container Networking [[{networking.101,containerization.networking,01_PM.TODO]]
 @[https://jvns.ca/blog/2016/12/22/container-networking/]
 By Julia Evans

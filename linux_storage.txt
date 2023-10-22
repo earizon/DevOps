@@ -1756,6 +1756,11 @@ https://en.wikipedia.org/wiki/NVM_Express
 http://manpages.org/nvme-format
 
 
+## try: try and abort/commit using overlays file-system [[{]]
+https://github.com/binpash/try
+try lets you run a command and inspect its effects before changing your live system. try uses Linux's namespaces (via unshare) and the overlayfs union filesystem.
+
+[[}]]
 [[01_PM.TODO}]]
 
 [[storage}]]
