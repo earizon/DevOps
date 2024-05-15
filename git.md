@@ -584,163 +584,147 @@ $ git pull  \             ←   # Verify signature at pull time
   ```
 [[}]]
 
-## Client Hooks [[{01_PM.TODO.now]]
+## Client-Side Hooks [[{01_PM.TODO.now]]
 @[https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks]
 
-Client-Side Hooks
-- not copied when you clone a repository
-  - to enforce a policy do on the server side
-- committing-workflow hooks:
-  - pre-commit hook:
-    - First script to be executed.
-    - used to inspect the snapshot that's about to be committed.
-      - Check you’ve NOT forgotten something
-      - make sure tests run
-      - Exiting non-zero from this hook aborts the commit
-    (can be bypassed with git commit --no-verify flag)
-  - prepare-commit-msg hook:
-    - Params:
-      - commit_message_path (template for final commit message)
-      - type of commit
-      - commit SHA-1 (if this is an amended commit)
-    - run before the commit message editor is fired up
-      but after the default message is created.
-    - It lets you edit the default message before the
-      commit author sees it.
-    - Used for non-normal-commits with auto-generated messages
-      - templated commit messages
-      - merge commits
-      - squashed commits
-      - amended commits
-  - commit-msg hook:
-      - commit_message_path (written by the developer)
-  - post-commit hook:
-    - (you can easily get the last commit by running git log -1 HEAD)
-    - Generally, this script is used for notification or something similar.
-
-- email-workflow  hooks:
-  - invoked by  git am
-                ^^^^^^
-                Apply a series of patches from a mailbox
-                prepared by git format-patch
-
-  - applypatch-msg :
-    - Params:
-      - temp_file_path containing the proposed commit message.
-  - pre-applypatch :
-    - confusingly, it is run after the patch is
-      applied but before a commit is made.
-    - can be used it to inspect the snapshot before making the commit,
-      run tests,  inspect the working tree with this script.
-  - post-applypatch :
-    - runs after the commit is made.
-    - Useful to notify a group or the author of the patch
-      you pulled in that you’ve done so.
-
-- Others:
-  - pre-rebase hook:
-    - runs before you rebase anything
-    - Can be used to disallow rebasing any commits
+* Hook: Script execute before/after commiting.
+* Client-Hook: hooks executed in every client to force some global policy.
+* pre-commit hook:
+  * First script to be executed.
+  * used to inspect the snapshot that's about to be committed.
+    * Check you’ve NOT forgotten something
+    * make sure tests run
+    * Exiting non-zero from this hook aborts the commit
+  (can be bypassed with git commit *-no-verify flag)
+* prepare-commit-msg hook:
+  * Params:
+    * commit_message_path (template for final commit message)
+    * type of commit
+    * commit SHA-1 (if this is an amended commit)
+  * run before the commit message editor is fired up
+    but after the default message is created.
+  * It lets you edit the default message before the
+    commit author sees it.
+  * Used for non-normal-commits with auto-generated messages
+    * templated commit messages
+    * merge commits
+    * squashed commits
+    * amended commits
+* commit-msg hook:
+    * commit_message_path (written by the developer)
+* post-commit hook:
+  * (you can easily get the last commit by running git log -1 HEAD)
+  * Generally, this script is used for notification or something similar.
+* email-workflow  hooks:
+  * invoked by
+    ```
+    $ git am  # <·· Apply a series of (git-formated) serieds of patches 
+                    Sending patches by mail and then patching manually
+                    was the way to work before the existence of source
+                    control management systems (git, subversions, ...)
+    ```
+* applypatch-msg :
+  * Params:
+    * temp_file_path containing the proposed commit message.
+* pre-applypatch :
+  * confusingly, it is run after the patch is
+    applied but before a commit is made.
+  * can be used it to inspect the snapshot before making the commit,
+    run tests,  inspect the working tree with this script.
+* post-applypatch :
+  * runs after the commit is made.
+  * Useful to notify a group or the author of the patch
+    you pulled in that you’ve done so.
+* Others:
+  * pre-rebase hook:
+    * runs before you rebase anything
+    * Can be used to disallow rebasing any commits
       that have already been pushed.
-  - post-rewrite hook:
-    - Params:
-      - command_that_triggered_the_rewrite:
-        - It receives a list of rewrites on stdin.
-    - run by commands that replace commits
-      such as 'git commit --amend' and 'git rebase'
-      (though not by git filter-branch).
-    - This hook has many of the same uses as the
-      post-checkout and post-merge hooks.
-  - post-checkout hook:
-    - Runs after successful checkout
-    - you can use it to set up your working directory
+  * post-rewrite hook:
+    * Params:
+      * command_that_triggered_the_rewrite:
+        * It receives a list of rewrites on stdin.
+    * run by commands that replace commits
+      such as 'git commit *-amend' and 'git rebase'
+      (though not by git filter*branch).
+    * This hook has many of the same uses as the
+      post*checkout and post-merge hooks.
+  * post-checkout hook:
+    * Runs after successful checkout
+    * you can use it to set up your working directory
       properly for your project environment.
       This may mean moving in large binary files that
-      you don't want source controlled, auto-generating
+      you don't want source controlled, auto*generating
       documentation, or something along those lines.
-  - post-merge hook:
-    - runs after a successful merge command.
-    - You can use it to restore data in the working tree
+  * post-merge hook:
+    * runs after a successful merge command.
+    * You can use it to restore data in the working tree
       that Git can't track, such as permissions data.
       It can likewise validate the presence of files
       external to Git control that you may want copied
       in when the working tree changes.
-  - pre-push hook:
-    - runs during git push, after the remote refs
+  * pre-push hook:
+    * runs during git push, after the remote refs
       have been updated but before any objects have
       been transferred.
-    - It receives the name and location of the remote
-      as parameters, and a list of to-be-updated refs
+    * It receives the name and location of the remote
+      as parameters, and a list of to*be-updated refs
       through stdin.
-    - You can use it to validate a set of ref updates before
-      a push occurs (a non-zero exit code will abort the push).
+    * You can use it to validate a set of ref updates before
+      a push occurs (a non*zero exit code will abort the push).
 [[}]]
 
 ## Server-Side Hooks [[{01_PM.TODO.now]]
-(system administrator only)
 
-- Useful to enforce nearly any kind of policy in repository.
-
-- exit non-zero to rollback/reject push
-  and print error message back to the client.
-
-Pre-receive hook :
-```
- - first script to run
- - INPUT: STDIN reference list
- - Rollback all references on non-zero exit
-
- - Ex.
-   - Ensure none of the updated references are non-fast-forwards.
-   - do access control for all the refs and files being modifying
-     by the push.
-
- update hook :
- - similar to pre-receive hook.but  run once for each branch the
-   push is trying to update  (ussually just one branch is updated)
-
- - INPUT arguments:
-   - reference name (for branch),
-   - SHA-1
-   - SHA-1
-     refname= ARGV[0] ← ref.name for current branch
-     oldrev = ARGV[1] ←  (SHA-1)  original (current-in-server)      ref. *1
-     newrev = ARGV[2] ←  (SHA-1)  new      (intention to)      push ref. *1
-     user   = $USER   ← "Injected" by git when using ssh.
-
-     *1: We can run over all commit from $oldrev to $newrev like
-         git rev-list \                        ← display a (sha1)commit per line to STDOUT
-             oldrev..$newrev \                 ← from $oldrev to $newrev
-             while read SHA_COMMIT ; do
-            git cat-file commit $SHA_COMMIT \  ← *1
-            | sed '1,/^$/d'                    ← Delete from line 1 to first match of
-                                                 empty-line (^$).
-
-  *1 output format is similar to:
-  | tree      ...
-  | parent    ...
-  | committer ...
-  |
-  | My commit Message
-  | tree      ...
-
-  - user-name (if accesing through ssh) based on ssh public-key.
- - Exit  0: Update
-   Exit !0: Rollback reference, continue with next one.
-```
-
- post-receive
-```
- - can be used to update other services or notify users.
- - INPUT: STDIN reference list
- - Useful for:
-   - emailing a list.
-   - trigger CI/CD.
-   - update ticket system
-     (commit messages can be parsed for "open/closed/..."
- -   WARN : can't stop the push process.
-   client  will block until completion.
-```
+* Only a git system administrator can setup them.
+* Useful to enforce nearly any kind of policy in repository.
+* exit non-zero to rollback/reject any push and print error messages
+  back to the client.
+* Pre-receive hook:
+  * first script to run
+  * INPUT: STDIN reference list
+  * Rollback all references on non-zero exit
+  * Ex. Ussage: Ensure none of the updated references are non-fast-forwards.
+    do access control for all the refs and files being modifying by the push.
+* update hook : similar to pre-receive hook.but  run once for each branch the
+  push is trying to update  (ussually just one branch is updated).
+  * INPUT arguments:
+    * reference name (for branch),
+    * SHA-1
+    * SHA-1
+      ```
+      | refname= ARGV[0] ← ref.name for current branch
+      | oldrev = ARGV[1] ←  (SHA*1)  original (current-in-server)      ref. *1
+      | newrev = ARGV[2] ←  (SHA*1)  new      (intention to)      push ref. *1
+      | user   = $USER   ← "Injected" by git when using ssh.
+      | ¹: We can run over all commit from $oldrev to $newrev like
+      |    git rev*list \                        ← display a (sha1)commit per line to STDOUT
+      |        oldrev..$newrev \                 ← from $oldrev to $newrev
+      |        while read SHA_COMMIT ; do
+      |       git cat*file commit $SHA_COMMIT \  ← *1
+      |       | sed '1,/^$/d'                    ← Delete from line 1 to first match of
+      |                                            empty*line (^$).
+      |
+      | ¹ output format is similar to:
+      | tree      ...
+      | parent    ...
+      | committer ...
+      | 
+      | My commit Message
+      | tree      ...
+      ```
+   * user-name (if accesing through ssh) based on ssh public-key.
+   * Exit  0: Update
+     Exit !0: Rollback reference, continue with next one.
+* Post-receive hook:
+  * can be used to update other services or notify users.
+  * INPUT: STDIN reference list.
+  * Useful for:
+    * emailing a list.
+    * trigger CI/CD.
+    * update ticket system (commit messages can be parsed
+      for "open/closed/...")
+  * WARN : can't stop the push process. Client will block until completion.
 [[}]]
 
 ## GIT Commit Standard Emojis: [[{]]
@@ -792,35 +776,39 @@ Pre-receive hook :
 [[}]]
 
 ## GitHub Custom Bug/Feat-req templates [[{git.github]]
-```
-  WARN : Non standard (Vendor lock-in) Microsoft extension.
- $ cat .github/ISSUE_TEMPLATE/bug_report.md
- | ---
- | name: Bug report
- | about: Create a report to help us improve
- | title: ''
- | labels: ''
- | assignees: ''
- |
- | ---
- |
- | **Describe the bug**
- | A clear and concise description of what the bug is.
- |
- | **To Reproduce**
- | Steps to reproduce the behavior:
- | 1. Go to '...'
- | 2. Click on '....'
- | 3. Scroll down to '....'
- | 4. See error
- |
- | **Expected behavior**
- | A clear and concise description of what you expected to happen.
- |
- | ...
+
+* WARN: Non standard (Vendor lock-in) Microsoft extension.
+
+  ```
+  $ cat .github/ISSUE_TEMPLATE/bug_report.md
+  | ---
+  | name: Bug report
+  | about: Create a report to help us improve
+  | title: ''
+  | labels: ''
+  | assignees: ''
+  |
+  | ---
+  |
+  | **Describe the bug**
+  | A clear and concise description of what the bug is.
+  |
+  | **To Reproduce**
+  | Steps to reproduce the behavior:
+  | 1. Go to '...'
+  | 2. Click on '....'
+  | 3. Scroll down to '....'
+  | 4. See error
+  |
+  | **Expected behavior**
+  | A clear and concise description of what you expected to happen.
+  |
+  | ...
+  ```
 
 
- $ cat .github/ISSUE_TEMPLATE/feature_request.md
+  ```
+  | $ cat .github/ISSUE_TEMPLATE/feature_request.md
   | ---
   | name: Feature request
   | about: Suggest an idea for this project
@@ -841,169 +829,161 @@ Pre-receive hook :
   |
   | **Additional context**
   | Add any other context or screenshots about the feature request here.
+  ```
 
- $ cat ./.github/pull_request_template.md
- ...
+  ```
+  | $ cat ./.github/pull_request_template.md
+  | ...
+  ```
 
- $ ./.github/workflows/*
-  WARN : Non standard (Vendor lock-in) Microsoft extension.
- @[https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions]
-```
+  ```
+  | $ ./.github/workflows/*
+  | WARN : Non standard (Vendor lock-in) Microsoft extension.
+  | <https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions>
+  ```
 [[}]]
 
-## Unbreakable Branches: [[{git.bitbucket,qa,jenkins.troubleshooting]]
-@[https://github.com/AmadeusITGroup/unbreakable-branches-jenkins]
-
-- plugins for Bitbucket and Jenkins trying to fix next problem:
-
+## Unbreakable Branches [[{git.bitbucket,qa,jenkins.troubleshooting]]
+* <https://github.com/AmadeusITGroup/unbreakable-branches-jenkins>
+* plugins for Bitbucket and Jenkins trying to fix next problem:
   ```
-  Normal Pull Request workflow:
-  Open pull-request (PR) to merge changes in target-branch
-    → (build automatically triggered)
-      → build OK
-        repo.owner merges PR
-         → second build triggered on target-branch
-           →  second build randomnly fails
-              leading to broken targeted branch
-              └───────────────┬───────────────┘
-               Reasons include:
-               - Race condition: Parallel PR was merged in-between
-               - Environment issue (must never happens)
-               - lenient dependency declaration got another version
-                 leading to a build break
+  | Normal Pull Request workflow:
+  | Open pull-request (PR) to merge changes in target-branch
+  |   → (build automatically triggered)
+  |     → build OK
+  |       repo.owner merges PR
+  |        → second build triggered on target-branch
+  |          →  second build randomnly fails
+  |             leading to broken targeted branch
+  |             └───────────────┬───────────────┘
+  |              Reasons include:
+  |              - Race condition: Parallel PR was merged in-between
+  |              - Environment issue (must never happens)
+  |              - lenient dependency declaration got another version
+  |                leading to a build break
   ```
-
-- If the Jenkins job is eligible to unbreakable build
+* If the Jenkins job is eligible to unbreakable build
   (by having environment variables such as UB_BRANCH_REF)
   at the end of the build a notification to Bitbucket is
   sent according to the build status.
   (or  manually through two verbs: ubValidate|ubFail)
-
-- Difference stashnotifier-plugin:
-  - stashplugin reports status-on-a-commit
-  - unbreakable build a different API is dedicated on Bitbucket.
-
-- On the Bitbucket side:
-  - GIT HEAD@target-branch moved to  top-of-code to be validated in PR
+* Difference stashnotifier-plugin:
+  * stashplugin reports status-on-a-commit
+  * unbreakable build a different API is dedicated on Bitbucket.
+* On the Bitbucket side:
+  * GIT HEAD@target-branch moved to  top-of-code to be validated in PR
     (target-branch can then always have a successful build status).
-
-- Security restrictions added to Bitbucket:
+* Security restrictions added to Bitbucket:
   (once you activate the unbreakable build on a branch for your repository)
-  -  merge button replaced by merge-request-button to queue the build.
-  -  The merge will happen automatically at the end of the build if the build succeeds
-  -  direct push on the branch is forbidden
-  -  Merge requests on different PRs will process the builds sequentially
-
-- Prerequisites to run the code locally:
-  - Maven (tested agains 3.5)
-  - Git should be installed
-
-- PRE-SETUP:
-  - Install UnbreakableBranch plugin at Bitbucket
-  - bitbucketBranch source plugin Jenkins plugin should be
+  * merge button replaced by merge-request-button to queue the build.
+  * The merge will happen automatically at the end of the build if the build succeeds
+  * direct push on the branch is forbidden
+  * Merge requests on different PRs will process the builds sequentially
+* Prerequisites to run the code locally:
+  * Maven (tested agains 3.5)
+  * Git should be installed
+* PRE-SETUP:
+  * Install UnbreakableBranch plugin at Bitbucket
+  * bitbucketBranch source plugin Jenkins plugin should be
     a patched so that mandatory environment variables are
     injected.   Note that this plugin hasn't been released yet
 
-
-@[https://github.com/newren/git-filter-repo/]
-- Create new repository from old ones, keeping just the
+## Git Filter Repo: 
+* <https://github.com/newren/git-filter-repo/>
+* Create new repository from old ones, keeping just the
   history of a given subset of directories.
 
-(Replace: (buggy)filter-branch @[https://git-scm.com/docs/git-filter-branch])
-- Python script for rewriting history:
-  - cli for simple use cases.
-  - library for writing complex tools.
-
-- Presetup:
+## git-filter-branch 
+* Replace: (buggy)filter-branch <https://git-scm.com/docs/git-filter-branch>
+* Python script for rewriting history:
+  * cli for simple use cases.
+  * library for writing complex tools.
+* Presetup:
+  * git 2.22.0+  (2.24.0+ for some features)
+  * python 3.5+
+  * Example:
   ```
-  - git 2.22.0+  (2.24.0+ for some features)
-  - python 3.5+
-
-  $ git filter-repo \
-       --path src/ \                         ← commits not touching src/ removed
-       --to-subdirectory-filter my-module \  ← rename  src/** → my-module/src/**
-       --tag-rename '':'my-module-'            add 'my-module-' prefix to any tags
-                                               (avoid any conflicts later merging
-                                                into something else)
-
-  Design rationale behind filter-repo :
-  - None existing tools with similr features.
-  - [Starting report] Provide analysis before pruning/renaming.
-  - [Keep vs. remove] Do not just allow to remove selected paths
-                      but to keep certain ones.
+  | $ git filter-repo \
+  |      --path src/ \                         ← commits not touching src/ removed
+  |      --to-subdirectory-filter my-module \  ← rename  src/** → my-module/src/**
+  |      --tag-rename '':'my-module-'            add 'my-module-' prefix to any tags
+  |                                              (avoid any conflicts later merging
+  |                                               into something else)
+  ```
+* Design rationale behind filter-repo :
+  * None existing tools with similr features.
+  * [Starting report] Provide analysis before pruning/renaming.
+  * [Keep vs. remove] Do not just allow to remove selected paths
+                      but to keep certain ones.<br/>
     (removing all paths except a subset can be painful.
      We need to specify all paths that ever existed in
      any version of the repository)
-  - [Renaming] It should be easy to rename paths:
-  - [More intelligent safety].
-  - [Auto shrink] Automatically remove old cruft and repack the
+  * [Renaming] It should be easy to rename paths:
+  * [More intelligent safety].
+  * [Auto shrink] Automatically remove old cruft and repack the
     repository for the user after filtering (unless overridden);
-  - [Clean separation] Avoid confusing users (and prevent accidental
+  * [Clean separation] Avoid confusing users (and prevent accidental
     re-pushing of old stuff) due to mixing old repo and rewritten repo
     together.
-  - [Versatility] Provide the user the ability to extend the tool
+  * [Versatility] Provide the user the ability to extend the tool
     ... rich data structures (vs hashes, dicts, lists, and arrays
         difficult to manage in shell)
     ... reasonable string manipulation capabilities
-  - [Old commit references] Provide a way for users to use old commit
+  * [Old commit references] Provide a way for users to use old commit
     IDs with the new repository.
-  - [Commit message consistency] Rewrite commit messages pointing to other
+  * [Commit message consistency] Rewrite commit messages pointing to other
     commits by ID.
-  - [Become-empty pruning] empty commits should be pruned.
-  - [Speed]
-  ```
-
-- Work on filter-repo and predecessor has driven
+  * [Become-empty pruning] empty commits should be pruned.
+  * [Speed]
+* Work on filter-repo and predecessor has driven
   improvements to fast-export|import (and occasionally other
   commands) in core git, based on things filter-repo needs to do its
   work:
-
-  Manual Summary :
-@[https://htmlpreview.github.io/?https://github.com/newren/git-filter-repo/blob/docs/html/git-filter-repo.html]
-- Overwrite entire repository history using user-specified filters.
+* Manual Summary :
+  * <https://htmlpreview.github.io/?https://github.com/newren/git-filter-repo/blob/docs/html/git-filter-repo.html>
+* Overwrite entire repository history using user-specified filters.
   (WARN: deletes original history)
-  - Use cases:
-    - stripping large files (or large directories or large extensions)
-    - stripping unwanted files by path (sensitive secrests) [secret]
-    - Keep just an interesting subset of paths, remove anything else.
-    - restructuring file layout. Ex:
-      - move all files subdirectory
-      - making subdirectory as new toplevel.
-      - Merging two directories with independent filenames.
-      - ...
-    - renaming tags
-    - making mailmap rewriting of user names or emails permanent
-    - making grafts or replacement refs permanent
-    - rewriting commit messages
+  * Use cases:
+    * stripping large files (or large directories or large extensions)
+    * stripping unwanted files by path (sensitive secrests) [secret]
+    * Keep just an interesting subset of paths, remove anything else.
+    * restructuring file layout. Ex:
+      * move all files subdirectory
+      * making subdirectory as new toplevel.
+      * Merging two directories with independent filenames.
+      * ...
+    * renaming tags
+    * making mailmap rewriting of user names or emails permanent
+    * making grafts or replacement refs permanent
+    * rewriting commit messages
 [[}]]
 
-## What's new [[{]]
-### 2.40
-  https://www.infoq.com/news/2023/04/git-releases-version-2-40/
+# What's new <!-- { --> 
 
-## Git 2.37 Brings Built-in File Monitor, Improved Pruning, and More
-  https://www.infoq.com/news/2022/06/git-2-37-released/ 
+* 2.40
+  * <https://www.infoq.com/news/2023/04/git-releases-version-2-40/>
+* Git 2.37 Brings Built-in File Monitor, Improved Pruning, and More
+* <https://www.infoq.com/news/2022/06/git-2-37-released/>
   According to Jeff Hostetler, the author of the patches for git's new
   file monitor, the implementation relies mostly on cross-platform code
   with custom backends leveraging OS-native features, i.e. FSEvents on
   macOS and ReadDirectoryChangesW on Windows. A Linux backend would
   probably use either inotify or fanotify, Hostetler says, but that
   work has not started yet.
-
-### 2.35 [[{]]
+* 2.35
   SSH signing you to use SSH-keys to sign certain kinds of objects in Git.
-  - Git 2.35 includes a couple of new additions to SSH signing.
-    -  To track which SSH keys you trust, you use the ALLOWED SIGNERS FILE
-       to store the identities and public keys of signers you trust.
-       PROBLEM: NOW suppose one commiter rotates their key.
-       - You could update their entry in the allowed signers file
-         but that would make it impossible to validate objects signed with
-         the older key.
-       - You could store both keys, but that would mean that you
-         would accept new objects signed with the old key.
-       SOLUTION: Git 2.35 lets you take advantage of OpenSSH’s
+  * Git 2.35 includes a couple of new additions to SSH signing.
+    * To track which SSH keys you trust, you use the ALLOWED SIGNERS FILE
+      to store the identities and public keys of signers you trust.
+      PROBLEM: NOW suppose one commiter rotates their key.
+      * You could update their entry in the allowed signers file
+        but that would make it impossible to validate objects signed with
+        the older key.
+      * You could store both keys, but that would mean that you
+        would accept new objects signed with the old key.
+      SOLUTION: Git 2.35 lets you take advantage of OpenSSH’s
                  valid-before and valid-after directives.
-   - Git 2.35 also supports new key types in the user.signingKey
+   * Git 2.35 also supports new key types in the user.signingKey
      configuration when you include the key verbatim (instead of storing
      the path of a file that contains the signing key). Previously, the
      rule for interpreting user.signingKey was to treat its value as a
@@ -1011,55 +991,42 @@ Pre-receive hook :
      filepath otherwise. You can now specify literal SSH keys with
      keytypes that don’t begin with “ssh-” (like ECDSA
      keys).[source, source]
-[[}]]
-
-[[}]]
+<!-- } -->
 
 
-[[}]]
-
-
-
-# Git TODO [[{01_PM.TODO]]
-## GitOps Git as single source of truth
-  for declarative infrastructure and [[{ci/cd.gitops]]
+# TODO [[{01_PM.TODO]]
+## GitOps: Git as single source of truth
+* for declarative infrastructure and 
   applications. Every developer within a team can issue pull requests against a
   Git repository, and when merged, a "diff and sync" tool detects a difference
   between the intended and actual state of the system. Tooling can then be
   triggered to update and synchronise the infrastructure to the intended state.
- @[https://www.weave.works/blog/gitops-operations-by-pull-request]             [[}]]
+  <https://www.weave.works/blog/gitops-operations-by-pull-request>
+[[{ci/cd.gitops}]]
 
-## Scalar (Git v2.38+) [[{git.scalability,scalability.storage]]
-@[https://git-scm.com/docs/scalar]
+## Scalar (Git v2.38+) [[{git.scalability,scalability.storage>]]
+* <https://git-scm.com/docs/scalar>
 * Replace previous Git LFS/VFS support for "big files and repositories
   with a native Git integration.
-
 * Scalar improves performance by configuring advanced Git settings,
- maintaining repositories in the background, and helping to reduce
- data sent across the network.
-
-
-@[https://github.blog/2022-10-13-the-story-of-scalar/]
-[[}]]
+  maintaining repositories in the background, and helping to reduce
+  data sent across the network.
+* <https://github.blog/2022-10-13-the-story-of-scalar/>
 
 ## NostrGit [[{git.nostr]]
-@[https://github.com/NostrGit/NostrGit]
-
- A truly censorship-resistant alternative to GitHub that has a chance of working
+* <https://github.com/NostrGit/NostrGit>
+  A truly censorship-resistant alternative to GitHub that has a chance of working
 [[}]]
 
-
-
 ## 4 secrets encryption tools [[{security.secret_management}]]
-@[https://www.linuxtoday.com/security/4-secrets-management-tools-for-git-encryption-190219145031.html]
-@[https://www.atareao.es/como/cifrado-de-repositorios-git/]
+* <https://www.linuxtoday.com/security/4-secrets-management-tools-for-git-encryption-190219145031.html>
+* <https://www.atareao.es/como/cifrado-de-repositorios-git/>
 
-## Garbage Collector [[{performance]]
--  Git occasionally does garbage collection as part of its normal operation,
+## Garbage Collector [[{performance}]]
+*  Git occasionally does garbage collection as part of its normal operation,
 by invoking git gc --auto. The pre-auto-gc hook is invoked just before the
 garbage collection takes place, and can be used to notify you that this is
 happening, or to abort the collection if now isn’t a good time.
-[[}]]
 
 
 ## sparse-checkout (Git v2.25+) allows to checkout just a subset [[{scalability]]
@@ -1068,107 +1035,100 @@ happening, or to abort the collection if now isn’t a good time.
 @[https://github.blog/2020-01-17-bring-your-monorepo-down-to-size-with-sparse-checkout/] [[}]]
 
 ## Advanced Git:
-  - revert/rerere:
-  - Submodules:
-  - Subtrees:
-    - TODO: how subtrees differ from submodules
-    - how to use the subtree to create a new project from split content
-  - Interactive rebase:
-    - how to rebase functionality to alter commits in various ways.
-    - how to squash multiple commits down into one.
-  - Supporting files:
-    - Git attributes file and how it can be used to identify binary files,
-      specify line endings for file types, implement custom filters, and
-      have Git ignore specific file paths during merging.
-  - Cregit token level blame:
-  @[https://www.linux.com/blog/2018/11/cregit-token-level-blame-information-linux-kernel]
-  cregit: Token-Level Blame Information for the Linux Kernel
-  Blame tracks lines not tokens, cgregit blames on tokens (inside a line)
+* revert/rerere:
+* Submodules:
+* Subtrees:
+  * TODO: how subtrees differ from submodules
+  * how to use the subtree to create a new project from split content
+* Interactive rebase:
+  * how to rebase functionality to alter commits in various ways.
+  * how to squash multiple commits down into one.
+* Supporting files:
+  * Git attributes file and how it can be used to identify binary files,
+    specify line endings for file types, implement custom filters, and
+    have Git ignore specific file paths during merging.
+* Cregit token level blame:
+@[https://www.linux.com/blog/2018/11/cregit*token-level-blame-information-linux-kernel]
+cregit: Token*Level Blame Information for the Linux Kernel
+Blame tracks lines not tokens, cgregit blames on tokens (inside a line)
 
-## Gitea painless self-hosted Git ) [[{01_PM.TODO,01_PM.low_code]]
+## Gitea painless self-hosted Git) [[{01_PM.TODO,01_PM.low_code]]
 ("replaced" unmaitained Gogs)
-@[https://gitea.io/]
-- Fork of gogs, since it was unmaintained.
+* <https://gitea.io/>
+* Fork of gogs, since it was unmaintained.
 
 ## Gerrit (by Google)</span>
-@[https://www.gerritcodereview.com/index.html]
+* <https://www.gerritcodereview.com/index.html>
 Gerrit is a Git Server that provides:
-- Code Review:
-  - One dev. writes code, another one is asked to review it.
+* Code Review:
+  * One dev. writes code, another one is asked to review it.
     (Goal is cooperation, not fauilt-finding)
-  @[https://docs.google.com/presentation/d/1C73UgQdzZDw0gzpaEqIC6SPujZJhqamyqO1XOHjH-uk/]
-  - UI for seing changes.
-  - Voting pannel.
+  * <https://docs.google.com/presentation/d/1C73UgQdzZDw0gzpaEqIC6SPujZJhqamyqO1XOHjH*uk/>
+  * UI for seing changes.
+  * Voting pannel.
+* Access Control on the Git Repositories.
+* Extensibility through Java plugins.
+  <https://www.gerritcodereview.com/plugins.html>
 
-
-- Access Control on the Git Repositories.
-- Extensibility through Java plugins.
-@[https://www.gerritcodereview.com/plugins.html]
-
-
-Gerrit does NOT provide:
-- Code Browsing
-- Code SEarch
-- Project Wiki
-- Issue Tracking
-- Continuous Build
-- Code Analyzers
-- Style Checkers
+* Gerrit does NOT provide:
+  * Code Browsing
+  * Code Search
+  * Project Wiki
+  * Issue Tracking
+  * Continuous Build
+  * Code Analyzers
+  * Style Checkers
 [[}]]
 
 ## Git Secrets: [[{qa,security.secret_management}]]
-https://github.com/awslabs/git-secrets#synopsis
-- Prevents you from committing passwords and other sensitive
+* <https://github.com/awslabs/git-secrets#synopsis>
+  Prevents you from committing passwords and other sensitive
   information to a git repository.
 
 ## Forgit: Interactive Fuzzy Finder:[[{dev_stack.forgit,qa.UX,01_PM.TODO]]
-@[https://www.linuxuprising.com/2019/11/forgit-interactive-git-commands-with.html]
-- It takes advantage of the popular "fzf" fuzzy finder to provide
+* <https://www.linuxuprising.com/2019/11/forgit-interactive-git-commands-with.html>
+* It takes advantage of the popular "fzf" fuzzy finder to provide
   interactive git commands, with previews. [[}]]
 
 ## Isomorphic Git: 100% JS client [[{security.gpg]]
 @[https://isomorphic-git.org/] !!!
 
-- Features:
-  - clone repos
-  - init new repos
-  - list branches and tags
-  - list commit history
-  - checkout branches
-  - push branches to remotes
-  - create new commits
-  - git config
-  - read+write raw git objects
-  - PGP (GPG) signing
-  - file status
-  - merge branches
+* Features:
+  * clone repos
+  * init new repos
+  * list branches and tags
+  * list commit history
+  * checkout branches
+  * push branches to remotes
+  * create new commits
+  * git config
+  * read+write raw git objects
+  * PGP (GPG) signing
+  * file status
+  * merge branches
 [[}]]
 
-## Git Monorepos: [[{qa.UX]]
-  (Big) Monorepos in Git:
-  https://www.infoq.com/presentations/monorepos/
-  https://www.atlassian.com/git/tutorials/big-repositories [[}]]
-
+## Git Monorepos: [[{qa.UX,scalability}]]
+* (Big) Monorepos in Git:
+  * <https://www.infoq.com/presentations/monorepos/>
+  * <https://www.atlassian.com/git/tutorials/big-repositories>
 
 ## Git: Symbolic Ref best-patterns
-@[https://stackoverflow.com/questions/4986000/whats-the-recommended-usage-of-a-git-symbolic-reference]
+* <https://stackoverflow.com/questions/4986000/whats-the-recommended-usage-of-a-git-symbolic-reference>
 
 ## GitHub: Search by topic: [[{git.github}]]
-  https://help.github.com/en/github/searching-for-information-on-github/searching-topics
-  Ex:search by topic ex "troubleshooting" and language "java"
-  https://github.com/topics/troubleshooting?l=java
+* <https://help.github.com/en/github/searching-for-information-on-github/searching-topics>
+* Ex:search by topic ex "troubleshooting" and language "java"
+  <https://github.com/topics/troubleshooting?l=java>
 
-
-## Gitsec: [[{security.secret_management,qa]]
-  @[https://github.com/BBVA/gitsec]
+## Gitsec: [[{security.secret_management,qa}]]
+* <https://github.com/BBVA/gitsec>
   gitsec is an automated secret discovery service for git that helps
   you detect sensitive data leaks.
   gitsec doesn't directly detect sensitive data but uses already
   available open source tools with this purpose and provides a
   framework to run them as one.
-[[}]]
 
-[[}]]
 [[git}]]
 
 
