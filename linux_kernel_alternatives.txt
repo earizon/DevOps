@@ -63,7 +63,7 @@
       of code.
 [[}]]
 
-# Real Time OSes: @[https://www.osrtos.com/] [[{]]
+# Real Time OSes: <https://www.osrtos.com/> [[{]]
   Name      Platforms  Built─in  Description
   -------   Platforms  Built─in  Description
 

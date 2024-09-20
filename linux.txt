@@ -1,927 +1,1004 @@
 ## Apropos:
   Content is versioned in git.  commits, issues and pull-requests welcome!
-@[https://www.github.com/earizon/DevOps]
+<https://www.github.com/earizon/DevOps>
 
-LINUX ADMINISTRATION RECIPES
+# LINUX ADMINISTRATION RECIPES
 
 ## External Links: [[{]]
-- @[https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/]
-- @[http://www.linuxfromscratch.org/]
-- @[https://linux.die.net/man/]
-- @[https://linux.die.net/Linux-CLI/]
-- @[https://en.wikipedia.org/wiki/Linux_Standard_Base]
-- @[https://docs.fedoraproject.org/en-US/fedora/f34/system-administrators-guide/]
-- @[https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/]
+* <https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/>
+* <http://www.linuxfromscratch.org/>
+* <https://linux.die.net/man/>
+* <https://linux.die.net/Linux-CLI/>
+* <https://en.wikipedia.org/wiki/Linux_Standard_Base>
+* <https://docs.fedoraproject.org/en-US/fedora/f34/system-administrators-guide/>
+* <https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/>
 [[}]]
 
 # Linux Basics [[{linux.101]]
-- Linux itself is just an OS kernel in charge of sharing the LIMITED hardware
-  resources amongst potentially many running tasks and users working simultaneously
-  on the systems. More preciselly, the main tasks in charge of kernel control are:
-
-  - Orchestate(schedule) how much time each running-task is allowed to
-    run on each CPU before such task is put on stand-by to let
-    another task proffit from such CPU.
-
-  - Assign which process has access to the (limited)
-    RAM memory on the system and move data on RAM used by stand-by processes
-    to secondory storage (disks) in case of RAM space shortage.
-
-  - Provide support for users and permissions, so that different users will
-    be able to isolate and protect its data from other users.
+Linux itself is just an OS kernel in charge of sharing the LIMITED hardware
+resources amongst potentially many running tasks and users working simultaneously
+on the systems. More preciselly, the main tasks in charge of kernel control are:
+* Orchestate(schedule) how much time each running-task is allowed to
+  run on each CPU before such task is put on stand-by to let
+  another task proffit from such CPU.
+* Assign which process has access to the (limited)
+  RAM memory on the system and move data on RAM used by stand-by processes
+  to secondory storage (disks) in case of RAM space shortage.
+* Provide support for users and permissions, so that different users will
+  be able to isolate and protect its data from other users.
 
   Kernel control is transparent to running tasks or processes, so user-space task
-  will run with the perception that they run alone in its own CPU and with
-  all available memory for themself. When the kernel puts them on-hold
-  such tasks will be freezed and once restarted it will NOT notice any
-  change to the state before being put on-hold. Only the kernel is aware of
-  the complex trickeries needed to make tasks run in parallel and isolated
-  from each other.
+will run with the perception that they run alone in its own CPU and with
+all available memory for themself. When the kernel puts them on-hold
+such tasks will be freezed and once restarted it will NOT notice any
+change to the state before being put on-hold. Only the kernel is aware of
+the complex trickeries needed to make tasks run in parallel and isolated
+from each other.<br>
 
-  Other important tasks offered by the kernel are:
+Other important tasks offered by the kernel are:
+* Abstract the running hardware into standarized interfaces, so
+  user application will not need to work differently with different hardware.
+  For example an application will ask the kernel to write data to the disk and
+  the kernel will take care of the internal difference between the miriads
+  of diferent disk hardware technologies.
+* Provide an easy-to-use file-system to work with data on disk, so that apps
+  can orginized data in terms of files and directories, instead of just
+  bunch-of-bytes on the hard-disk.
+* Provide network communication and support for standard network protocols
+  like TCP/UP, bluetooth, WiFI, ... so that each app does not need to reimplement
+  them.
+* Provide mechanisms to allow two running tasks to communicate with each other
+  at will.
 
- - Abstract the running hardware into standarized interfaces, so
-   user application will not need to work differently with different hardware.
-   For example an application will ask the kernel to write data to the disk and
-   the kernel will take care of the internal difference between the miriads
-   of diferent disk hardware technologies.
-
- - Provide an easy-to-use file-system to work with data on disk, so that apps
-   can orginized data in terms of files and directories, instead of just
-   bunch-of-bytes on the hard-disk.
-
- - Provide network communication and support for standard network protocols
-   like TCP/UP, bluetooth, WiFI, ... so that each app does not need to reimplement
-   them.
-
- - Provide mechanisms to allow two running tasks to communicate with each other
-   at will.
-
-*Kernel mode vs User mode*
-- When the CPU is executing kernel code it's running with elevated privileges.
+## Kernel mode vs User mode
+* When the CPU is executing kernel code it's running with elevated privileges.
   The software has full control of the hardware and can do "anything" on
   the system and access all RAM, disk, network resources at will.
-
-- Standard applications will run in user-mode and will have limited access
+* Standard applications will run in user-mode and will have limited access
   to only the RAM memory assigned by the kernel. They will not be able to
   inspect the memory of other processes running on the system. In fact they
   are not aware of such memory due to the many trickeries done by the kernel
   to isolate each task.
 
-*Files, files and more files*
-- Any running process needs some incomming data to work with and
-  produced new data that must be stored somewhere.
+## Files, files and more files
+
+  Any running process needs some incomming data to work with and
+produced new data that must be stored somewhere.
+
    This data can be provided by some storage system (hard-disk,
   usb, tape, ...), arrive (continuosly) from the network,
   or be generated by another concurrent process.
+
    Linux (UNIX actually) treats all input data sources and
   output data sinks as *"file devices"*.
+
   Internally there can be many differences (block devices with
-  random access vs char devices with just sequential access), but
-  running processes mostly always use the file methaphor to access
-  all of them.
+random access vs char devices with just sequential access), but
+running processes mostly always use the file methaphor to access
+all of them.
+
    Any running process will have 3 devices available "for free":
-  - STDIN : The standard input  file.
-  - STDOUT: The standard output file
-  - STDERR: The standard error  file
+* STDIN : The standard input  file.
+* STDOUT: The standard output file
+* STDERR: The standard error  file
+
    The standard shell provides many utilities to juggle with those
-  three standard files. In particular it allows to easely forward
-  the STDOUT output from a running-process to the STDIN input of
-  another running process using the "|" pipe syntax:
-  $ command1 *|*command2  # ← Send STDOUT output from command1 to
-                                        STDIN   input   of command2
+three standard files. In particular it allows to easely forward
+the STDOUT output from a running-process to the STDIN input of
+another running process using the "|" pipe syntax:
+```
+| $ command1  | command2  # 
+|             ^
+|             └─ Send STDOUT output from command1 to
+|                 STDIN   input   of command2
+```
 
   STDOUT and STDERR by default are assigned to the running-process
-  associated terminal (the console where the user has been logged).
-  The shell allows also to redirect STDOUT/STDERR to any other
-  file in our file system. Ex:
-  $ command1 1>output.log         2>error.log
-             ^^^^^^^^^^^^         ^^^^^^^^^^^
-             redirects STDOUT(1)  redirects STDERR
-             to output.log        to error.log
-
-  $ command1 1>output.log         2>&1
-             ^^^^^^^^^^^^         ^^^^
-             redirects STDOUT(1)  redirects STDERR
-             to output.log        to STDOUT (&1, aka output.log)
+associated terminal (the console where the user has been logged).
+The shell allows also to redirect STDOUT/STDERR to any other
+file in our file system. Ex:
+  ```
+  | $ command1 1>output.log         2>error.log
+  │            └─────┬────┘         └─────┬───┘
+  |            redirects STDOUT(1)  redirects STDERR
+  |            to output.log        to error.log
+  | 
+  | $ command1 1>output.log         2>&1
+  |            └─────┬────┘         └─┬┘
+  |            redirects STDOUT(1)  redirects STDERR
+  |            to output.log        to STDOUT (&1, aka output.log)
+  ```
 [[}]]
 
 ## Process model [[{linux.101.process_model,job_control.101,]]
 
-- Linux follows a parent-child process model.
+  Linux follows a parent-child process model.
 
-- Once loaded and initialized during the boot process,
-  the kernel will launch an initial user-space process in
-  charge of reading system configuration and (re)start
-  all other user-space processes that builds a running system.
+  Once loaded and initialized during the boot process,
+the kernel will launch an initial user-space process in
+charge of reading system configuration and (re)start
+all other user-space processes that builds a running system.
 
-- Normally this initial process is systemd in modern
-  systems (or initd in older or embedded ones).
+ Normally this initial process is systemd in modern
+systems (or initd in older or embedded ones).
 
-- Each process can optionally launch new children processes
-  up to the resource limits established on the running system.
+ Each process can optionally launch new children processes
+up to the resource limits established on the running system.
 
-- By default a child-process inherits the same user (and so, permissions)
-  than its parent process. Some processes like the remote
-  login "sshd" service (ssh is an acronymn for secure-shell) will
-  change the child-process user/permission to a less privileged
-  account.
+ By default a child-process inherits the same user (and so, permissions)
+than its parent process. Some processes like the remote
+login "sshd" service (ssh is an acronymn for secure-shell) will
+change the child-process user/permission to a less privileged
+account.
 
-- A simplified process-tree of a running-system will look like:      [[{02_doc_has.diagram]]
+  A simplified process-tree of a running-system will look like:      [[{02_doc_has.diagram]]
 
-    PROCESS                                       USER    PROCESS   PARENT-ID
-                                                         UNIQUE-ID
-    systemd·······································root       1         0
-          └─crond·································root      23         1
-          |-cupsd·································root      70         1
-          |-rtkit-daemon··························rtkit    100         1
-          |-sshd··································root      10         1
-          |    └─sshd·····························mike     300        10
-          |         └─bash························mike     301       300
-          |              └─firefox················mike     302       301
-          |-systemd·······························alice    705         1
-          |       └─at-spi-bus-laun···············alice    706       705
-          |       |···············└─dbus-daemon···alice    707       706
-          |       |-gnome-terminal················alice    883       705
-          |                       ─bash-+·········alice    884       883
-          |                             └─top·····alice    885       884
-          |-systemd-journal·······················root      10         1
-          ...
-    Notice for example that the same process "bash" runs as a user or another
-    ( *mike* or  *alice*) depending on the "path"
-    followed until the process is executed.                          [[}]]
+  ```
+  | PROCESS                                       USER    PROCESS   PARENT-ID
+  |                                                      UNIQUE-ID
+  | systemd·······································root       1         0
+  |       └─crond·································root      23         1
+  |       |-cupsd·································root      70         1
+  |       |-rtkit-daemon··························rtkit    100         1
+  |       |-sshd··································root      10         1
+  |       |    └─sshd·····························mike     300        10
+  |       |         └─bash························mike     301       300
+  |       |              └─firefox················mike     302       301
+  |       |-systemd·······························alice    705         1
+  |       |       └─at-spi-bus-laun···············alice    706       705
+  |       |       |···············└─dbus-daemon···alice    707       706
+  |       |       |-gnome-terminal················alice    883       705
+  |       |                       ─bash-+·········alice    884       883
+  |       |                             └─top·····alice    885       884
+  |       |-systemd-journal·······················root      10         1
+  |       ...
+  | Notice for example that the same process "bash" runs as a user or another
+  | ( *mike* or  *alice*) depending on the "path"
+  | followed until the process is executed.                           [[}]]
+  ```
 
-    - The initial sshd running as root user, will span a new sshd child process
-      with restricted  *"mike"* privileges/permissions once the user
-      has introduced its correct user and password in the remote ssh session, and
-      from there on, all children will just be able to run with  *"mike"*
-      privileges/permissions.
-
-    - Similarly the root systemd process will span a new child process will
-      restricted  *"alice"* privileges/permissions once logged in
-      the local console, and from there on, all children will just be able to
-      run with  *"alice"* privileges/permissions.
+* The initial sshd running as root user, will span a new sshd child process
+  with restricted  *"mike"* privileges/permissions once the user
+  has introduced its correct user and password in the remote ssh session, and
+  from there on, all children will just be able to run with  *"mike"*
+  privileges/permissions.
+* Similarly the root systemd process will span a new child process will
+  restricted  *"alice"* privileges/permissions once logged in
+  the local console, and from there on, all children will just be able to
+  run with  *"alice"* privileges/permissions.
 
 
 ## Executable file vs in-memory process [[{linux.101]]
-- Applications are stored on disk drives as files or "bunch-of-instructions and initial data".
 
-- When the kernel executes and application it will read the executable file, load
-  the "bunch-of-instructions" into RAM memory, setup the initial data, assign
-  restricted privileges and finally allow the program-in-memory to be executed by
-  any free-available CPU on the system.
-  [[}]]
+ Applications are stored on disk drives as files or 
+"bunch-of-instructions and initial data".
+
+ When the kernel executes and application it will read the executable file, load
+the "bunch-of-instructions" into RAM memory, setup the initial data, assign
+restricted privileges and finally allow the program-in-memory to be executed by
+any free-available CPU on the system.
+[[}]]
 
 
 ## Basic file permissions  [[{linux.101,security.aaa]]
 Standar file permissions allows to assign different access permissions to
 the owner of the file, the group owner of the file and anyone else.
 
-$ ls -l myFileOfInterest.db
+  ```
+  | $ ls -l myFileOfInterest.db
+  | 
+  | -rw?-r-?---? john accountDepartment ....  myFileOfInterest.db
+  | └┼┘│└┼┘│└┼┘│  └┬─┘ └──────┬────────┘
+  |  │ │ │ │ │ │   │          │
+  |  │ │ │ │ │ │   │          └─ group owner
+  |  │ │ │ │ │ │   └──────────── user  owner
+  |  │ │ │ │ │ │
+  |  │ │ │ │ │ └──────────────── sticky bit (hidden if not set)
+  |  │ │ │ │ │
+  |  │ │ │ │ └────────────────── permissions allowed to others: read           access
+  |  │ │ │ │
+  |  │ │ │ └──────────────────── SUID bit   (hidden if not set)
+  |  │ │ │
+  |  │ │ └────────────────────── permissions allowed to group : read           access
+  |  │ │
+  |  │ └──────────────────────── SUID bit   (hidden if not set)
+  |  │
+  |  └────────────────────────── permissions allowed to user  : read&amp;write access
+  ```
 
--rw?-r-?---? john accountDepartment ....  myFileOfInterest.db
-└┼┘│└┼┘│└┼┘│  └┬─┘ └──────┬────────┘
- │ │ │ │ │ │   │          │
- │ │ │ │ │ │   │          └─ group owner
- │ │ │ │ │ │   └──────────── user  owner
- │ │ │ │ │ │
- │ │ │ │ │ └──────────────── sticky bit (hidden if not set)
- │ │ │ │ │
- │ │ │ │ └────────────────── permissions allowed to others: read           access
- │ │ │ │
- │ │ │ └──────────────────── SUID bit   (hidden if not set)
- │ │ │
- │ │ └────────────────────── permissions allowed to group : read           access
- │ │
- │ └──────────────────────── SUID bit   (hidden if not set)
- │
- └────────────────────────── permissions allowed to user  : read&amp;write access
+The previous command line can be read as:
 
-Previous line can be read as:
-"""Allow read and write permissions to file-owner "john",
-       read permissions to group-owner "accountDepartment"
-   and no   permissions to anyone-else """
+> Allow read and write permissions to file-owner "john",
+> read permissions to group-owner "accountDepartment"
+>  and no   permissions to anyone-else """
 
-            ┌──────┬─────────────────────────────┬─────────────────────────────┐
-Permissions │Symbol│      FILE                   │     DIRECTORY               │
-┌───────────┼──────┼─────────────────────────────┼─────────────────────────────┤
-│       read│  r   │ Allows to read the content  │ Allows to list the files in │
-│           │      │ of the file                 │ and file-attributes in the  │
-│           │      │                             │ directory                   │
-├───────────┼──────┼─────────────────────────────┼─────────────────────────────┤
-│      write│  w   │ Allows to write, modify,    │ Allows to add and delete    │
-│           │      │ append or delete the file   │ files into the directory and│
-│           │      │ content.                    │ modify metadata (access     │
-│           │      │                             │ or modification time, ...)  │
-├───────────┼──────┼─────────────────────────────┼─────────────────────────────┤
-│    execute│  x   │ Allows to execute the       │ Allows to enter into the    │
-│           │      │ program or script           │ directory                   │
-├───────────┼──────┼─────────────────────────────┴─────────────────────────────┤
-│    sticky │  T   │ Only the person that created the file/dir. can change it, │
-│           │      │ even if other people have write permissions to file/dir.  │
-│           │      │ turn on: $ chmod +t someFileOrDir                         │
-│           │      │ Normal /tmp (temporary user files) is an sticky directory │
-├───────────┼──────┼───────────────────────────────────────────────────────────┤
-│       suid│  S   │ Allow SUID/SGID (switch user/group ID). When executed it  │
-│           │      │ it will be executed with creator/group of file, instead of│
-│           │      │ current user.                                             │
-│           │      │ turn on: $ chmod +s someFileOrDir                         │
-└───────────┴──────┴───────────────────────────────────────────────────────────┘
+  ```
+  |            ┌──────┬─────────────────────────────┬─────────────────────────────┐
+  |Permissions │Symbol│      FILE                   │     DIRECTORY               │
+  |┌───────────┼──────┼─────────────────────────────┼─────────────────────────────┤
+  |│       read│  r   │ Allows to read the content  │ Allows to list the files in │
+  |│           │      │ of the file                 │ and file-attributes in the  │
+  |│           │      │                             │ directory                   │
+  |├───────────┼──────┼─────────────────────────────┼─────────────────────────────┤
+  |│      write│  w   │ Allows to write, modify,    │ Allows to add and delete    │
+  |│           │      │ append or delete the file   │ files into the directory and│
+  |│           │      │ content.                    │ modify metadata (access     │
+  |│           │      │                             │ or modification time, ...)  │
+  |├───────────┼──────┼─────────────────────────────┼─────────────────────────────┤
+  |│    execute│  x   │ Allows to execute the       │ Allows to enter into the    │
+  |│           │      │ program or script           │ directory                   │
+  |├───────────┼──────┼─────────────────────────────┴─────────────────────────────┤
+  |│    sticky │  T   │ Only the person that created the file/dir. can change it, │
+  |│           │      │ even if other people have write permissions to file/dir.  │
+  |│           │      │ turn on: $ chmod +t someFileOrDir                         │
+  |│           │      │ Normal /tmp (temporary user files) is an sticky directory │
+  |├───────────┼──────┼───────────────────────────────────────────────────────────┤
+  |│       suid│  S   │ Allow SUID/SGID (switch user/group ID). When executed it  │
+  |│           │      │ it will be executed with creator/group of file, instead of│
+  |│           │      │ current user.                                             │
+  |│           │      │ turn on: $ chmod +s someFileOrDir                         │
+  |└───────────┴──────┴───────────────────────────────────────────────────────────┘
+  ```
 [[}]]
 
 ## Network Time Protocol 101 [[{configuration.clock,troubleshooting]]
 
-   # REF:@[https://www.server-world.info/en/note?os=Fedora_25&p=ntp&f=2]
-   $ sudo dnf -y install ntp                       # <- STEP 1) Install ntp client on RedHat flavours
-                                                   #   sudo apt install ntp on Debian/Ubuntu flavours
-   $ edit /etc/ntp.conf                            # <- STEP 2) Create/Modify config. file
-   ┌──────────────────────────────────────
-   │ ...
-   │ restrict 10.0.0.0 mask 255.255.255.0 nomodify notrap
-   │   server 0.fedora.pool.ntp.org iburst
-   │ # server 1.fedora.pool.ntp.org iburst
-   │ # server 2.fedora.pool.ntp.org iburst
-   │ # server 3.fedora.pool.ntp.org iburst
-   │ # server ntp.nict.jp iburst
-   │ # server ntp1.jst.mfeed.ad.jp iburst
-   │ # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   │ # Enable/disable NTP servers "at will"
-   $ sudo systemctl start ntpd                     # <- STEP 3) Start daemon as (SystemD) service
-   $ ntpq -p                                       # <- STEP 4) check
-   $ sudo systemctl enable ntpd                    # <- STEP 5) Enable at boot time.
-   $ sudo timedatectl set-timezone Europe/London   # <- STEP 5) Set timezone
+REF:<https://www.server-world.info/en/note?os=Fedora_25&p=ntp&f=2>
+
+  ```
+  | $ sudo dnf -y install ntp                       # <- STEP 1) Install ntp client on RedHat flavours
+  |                                                 #   sudo apt install ntp on Debian/Ubuntu flavours
+  | $ edit /etc/ntp.conf                            # <- STEP 2) Create/Modify config. file
+  | 
+  |   ...
+  | + restrict 10.0.0.0 mask 255.255.255.0 nomodify notrap
+  | +   server 0.fedora.pool.ntp.org iburst
+  |   # server 1.fedora.pool.ntp.org iburst
+  |   # server 2.fedora.pool.ntp.org iburst
+  |   # server 3.fedora.pool.ntp.org iburst
+  |   # server ntp.nict.jp iburst
+  |   # server ntp1.jst.mfeed.ad.jp iburst
+  |   # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   # Enable/disable NTP servers "at will"
+  | $ sudo systemctl start ntpd                     # <- STEP 3) Start daemon as (SystemD) service
+  | $ ntpq -p                                       # <- STEP 4) check
+  | $ sudo systemctl enable ntpd                    # <- STEP 5) Enable at boot time.
+  | $ sudo timedatectl set-timezone Europe/London   # <- STEP 5) Set timezone
+  ```
 [[}]]
 
 #[linux_users_groups_summary]
-## User Management [[{linux.101,security.aaa]]
-  $ useradd -D                       ← display (D)efault values to apply when creating new uses.
-                                        (Default group / HOME, SHELL, ...)
-                                        Use next flags to update defaults:
-                                        --base-dir BASE_DIR  :  (default to /home) Ignored if --home-dir set
-                                        --expiredate EXPIRE_DATE
-                                        --inactive INACTIVE  :  day # after pass.expiration before disabling
-                                        --gid GROUP: existing group name or ID for initial group (when --no-user-group used)
-                                        --shell SHELL
-
-  $ addgroup PROJECT01               ← Best pattern when allowing multi-user access to the linux machine.
-                                        Create a new group per project ,then assign permissions to group (vs
-                                        to user). This greately simplifies permissions administration in
-                                        multi-user setups.
-
-
-  $ useradd alice                 \   ← Create user alice.
-      --shell=/usr/bin/git-shell  \   ← Assign shell (restricted git-shell in this example)
-      --shell=/usr/bin/git-shell  \   ← upon succesful login alice will be presented with a git shell *1
-      --groups PROJECT01,PROJECT02\   ← Assign PROJECT01 as default group for alice.
-      --password ...              \   ← create an initial and strong password (or provide alice with ssh keys.
-      --no-user-group             \   ← Do NOT create a new group (otherwise indicated by --gid)
-      --no-create-home            \   ← Do not create the /home/alice directory. (Some sort of
-                                        /var/lib/git/PROJECT01 directories already exist with read/write permissions
-                                        for PROJECT01, ... groups)
-
-                                      *1 By default /bin/bash o similar is used. git-shell restricts
-                                         access to just git-related commands.
-   Other useful 'useradd' options are:
-   --skel SKEL_DIR :  skel. dir. to be copied in the user's home directory
-   --key KEY=VALUE : Overrides /etc/login.defs defaults
-                     (UID_MIN, UID_MAX, UMASK, PASS_MAX_DAYS and others).
-                     Example: -K PASS_MAX_DAYS=-1 can be used when creating
-                       system account to turn off password ageing, even though
-                       system account has no password at all.
-   --no-log-init   : Do not add user to lastlog and faillog databases
-   --non-unique    : Allow duplicate (non-unique) existing UID in --uid. Most of the times used to
-                     allow 'root' users with non-root name accounts.
-   --system        : Create system account (no aging, uid chosen in SYS_UID_MIN-SYS_UID_MAX range)
-   --root CHROOTDIR: Apply changes in chrooted directory.
-   --uid UID       : numerical value for user's ID.
-   --user-group    : Create group with the same name as user, and use as initial group
-   --selinux-user SEUSER : SELinux user for the user's login
+## User Management [[{security.aaa.101,linux.101,]]
+  |```
+  | $ useradd -D                       ← display (D)efault values to apply when creating new uses.
+  |                                       (Default group / HOME, SHELL, ...)
+  |                                       Use next flags to update defaults:
+  |                                       --base-dir BASE_DIR  :  (default to /home) Ignored if --home-dir set
+  |                                       --expiredate EXPIRE_DATE
+  |                                       --inactive INACTIVE  :  day # after pass.expiration before disabling
+  |                                       --gid GROUP: existing group name or ID for initial group (when --no-user-group used)
+  |                                       --shell SHELL
+  |
+  | $ addgroup PROJECT01               ← Best pattern when allowing multi-user access to the linux machine.
+  |                                       Create a new group per project ,then assign permissions to group (vs
+  |                                       to user). This greately simplifies permissions administration in
+  |                                       multi-user setups.
+  |
+  | $ useradd alice                 \   ← Create user alice.
+  |     --shell=/usr/bin/git-shell  \   ← Assign shell (restricted git-shell in this example)
+  |     --shell=/usr/bin/git-shell  \   ← upon succesful login alice will be presented with a git shell *1
+  |     --groups PROJECT01,PROJECT02\   ← Assign PROJECT01 as default group for alice.
+  |     --password ...              \   ← create an initial and strong password (or provide alice with ssh keys.
+  |     --no-user-group             \   ← Do NOT create a new group (otherwise indicated by --gid)
+  |     --no-create-home            \   ← Do not create the /home/alice directory. (Some sort of
+  |                                       /var/lib/git/PROJECT01 directories already exist with read/write permissions
+  |                                       for PROJECT01, ... groups)
+  |
+  |                                     *1 By default /bin/bash o similar is used. git-shell restricts
+  |                                        access to just git-related commands.
+  |  Other useful 'useradd' options are:
+  |  --skel SKEL_DIR :  skel. dir. to be copied in the user's home directory
+  |  --key KEY=VALUE : Overrides /etc/login.defs defaults
+  |                    (UID_MIN, UID_MAX, UMASK, PASS_MAX_DAYS and others).
+  |                    Example: -K PASS_MAX_DAYS=-1 can be used when creating
+  |                      system account to turn off password ageing, even though
+  |                      system account has no password at all.
+  |  --no-log-init   : Do not add user to lastlog and faillog databases
+  |  --non-unique    : Allow duplicate (non-unique) existing UID in --uid. Most of the times used to
+  |                    allow 'root' users with non-root name accounts.
+  |  --system        : Create system account (no aging, uid chosen in SYS_UID_MIN-SYS_UID_MAX range)
+  |  --root CHROOTDIR: Apply changes in chrooted directory.
+  |  --uid UID       : numerical value for user's ID.
+  |  --user-group    : Create group with the same name as user, and use as initial group
+  |  --selinux-user SEUSER : SELinux user for the user's login
+  ```
 
 
 ## su/sudo: Switch user:  [[{security.aaa,linux.101,01_PM.WiP]]
-- su and sudo are mostly used to allow temporal root/superuser access
+
+* su and sudo are mostly used to allow temporal root/superuser access
   to standard users for administrative tasks like installing new applications,
   re-configuring the network, ...
-
-- sudo is ussually considered safer than su. Ubuntu was the first
+* sudo is ussually considered safer than su. Ubuntu was the first
   distribution to allow sudo-only. Others distributions are also
   changing to sudo-only as time passes.
-
-- sudo offers also a plugable architecture not offered by su
+* sudo offers also a plugable architecture not offered by su
   to provide different authentication and audit mechanisms.
   REF:
-  - https://www.sudo.ws/ (Sudo Home page)
-  - https://www.sudo.ws/plugins.html (sudo Third-party plugins)
+  * https://www.sudo.ws/ (Sudo Home page)
+  * https://www.sudo.ws/plugins.html (sudo Third-party plugins)
     https://linux.die.net/man/1/su
     https://linux.die.net/man/8/sudo
-- Ex. ussage:
-  $ sudo vim /etc/passwd # edit /etc/passwd as root
-  $ su  # Change to root user
+* Ex. ussage:
+  ```
+  | $ sudo vim /etc/passwd # edit /etc/passwd as root
+  | $ su  # Change to root user
+  ```
 [[}]]
 
 ## Linux ACLs  [[{security.aaa,01_PM.TODO]]
-@[https://wiki.archlinux.org/index.php/Access_Control_Lists]
+<https://wiki.archlinux.org/index.php/Access_Control_Lists>
 [[}]]
+[[security.aaa.101}]]
 
 #[sysctl_summary]
 ## Kernel Tunning [[{configuration.sysctl,configuration.network,storage.fs,troubleshooting.performance,]]
 ## sysctl
-  - Cli app to view/modify kernel parameters affecting the runtime behavior
-    of network, file-systems, kernel logging, ...
-  - Not to be confused with (SystemD) 'systemctl' used to add/remove/modify/...
-    services (applications running in background), centralized app logging,...
-  - TIP: *read comments in /etc/sysctl.conf  for most widely tunned params.*
-
+* Cli app to view/modify kernel parameters affecting the runtime behavior
+  of network, file-systems, kernel logging, ...
+* Not to be confused with (SystemD) 'systemctl' used to add/remove/modify/...
+  services (applications running in background), centralized app logging,...
+* TIP: *read comments in /etc/sysctl.conf  for most widely tunned params.*
+  ```
+  | $ sysctl -a                    ← View all configured kernel params
+  |                                  Output can be filtered out easily with
+  |                                  'grep'.
+  |
+  | $ sysctl vm.min_free_kbytes    ← View a given param
+  |                                  -n: opt. Show only value (vs param name)
+  |
+  |
+  | $ sudo sysctl -w net....=0     ← Set new value for kernel param.
+  |
+  |
+  | $ sudo edit /etc/sysctl.conf   ← make changes permanent after reboot
+  |                                 edit /etc/sysctl.d/99-custom.conf for custom
+  |                                 changes.
+  |
+  |
+  | $ sudo sysctl -p               ← apply any change in /etc/sysctl.conf
+  |                                  Use -p /etc/sysctl.d/99-custom.conf for
+  |                                  alternative (non default) path
+  |
+  | /proc/sys/ OVERVIEW:
+  | ├ abi/vsyscall32
+  | ├ debug
+  | │ ├ exception-trace
+  | │ └ kprobes-optimization
+  | ├ dev
+  | │ ├ parport
+  | │ │ ├ default/...
+  | │ │ └ parport0/...
+  | │ │   ├ devices
+  | │ │   ...
+  | │ ├ raid/speed_limit_max(min)
+  | │ ├ scsi/logging_level
+  | │ ├ tty/ldisc_autoload
+  | │ ...
+  | ├ kernel    REF:  https://www.kernel.org/doc/html/v5.7/admin-guide/sysctl/kernel.html
+  | │ ├ acct
+  | │ ├ sched_*
+  | │ ├ sem
+  | │ ├ watchdog*
+  | │ ...
+  | ├ net
+  | │ ├ core/... (40 tunnable params)
+  | │ ├ ipv4/* (devices, conf, route, tcp, udp,...)
+  | │ ├ ipv6/...
+  | │ ├ netfilter ... (65 tunnable params)
+  | │ ├ nf_conntrack_max
+  | │ ├ unix
+  | │ │ └ max_dgram_qlen
+  | │ ...
+  | ├ fs
+  | │ ├ inotify/...
+  | │ ├ nfs/...
+  | │ ├ ext4/...
+  | │ ├ xfs/...
+  | │ ...
+  | ├ sunrpc ... (11 tunnable params)
+  | ├ user/... (9 tunnable params)
+  | └ vm/... (48 tunnable params)
+  ```
   $ sysctl -a                    ← View all configured kernel params
-                                   Output can be filtered out easily with
-                                   'grep'.
-
-  $ sysctl vm.min_free_kbytes    ← View a given param
-                                   -n: opt. Show only value (vs param name)
-
-
-  $ sudo sysctl -w net....=0     ← Set new value for kernel param.
-
-
-  $ sudo edit /etc/sysctl.conf   ← make changes permanent after reboot
-                                  edit /etc/sysctl.d/99-custom.conf for custom
-                                  changes.
-
-
-  $ sudo sysctl -p               ← apply any change in /etc/sysctl.conf
-                                   Use -p /etc/sysctl.d/99-custom.conf for
-                                   alternative (non default) path
-
-  /proc/sys/ OVERVIEW:
-  ├ abi/vsyscall32
-  ├ debug
-  │ ├ exception-trace
-  │ └ kprobes-optimization
-  ├ dev
-  │ ├ parport
-  │ │ ├ default/...
-  │ │ └ parport0/...
-  │ │   ├ devices
-  │ │   ...
-  │ ├ raid/speed_limit_max(min)
-  │ ├ scsi/logging_level
-  │ ├ tty/ldisc_autoload
-  │ ...
-  ├ kernel    REF:  https://www.kernel.org/doc/html/v5.7/admin-guide/sysctl/kernel.html
-  │ ├ acct
-  │ ├ sched_*
-  │ ├ sem
-  │ ├ watchdog*
-  │ ...
-  ├ net
-  │ ├ core/... (40 tunnable params)
-  │ ├ ipv4/* (devices, conf, route, tcp, udp,...)
-  │ ├ ipv6/...
-  │ ├ netfilter ... (65 tunnable params)
-  │ ├ nf_conntrack_max
-  │ ├ unix
-  │ │ └ max_dgram_qlen
-  │ ...
-  ├ fs
-  │ ├ inotify/...
-  │ ├ nfs/...
-  │ ├ ext4/...
-  │ ├ xfs/...
-  │ ...
-  ├ sunrpc ... (11 tunnable params)
-  ├ user/... (9 tunnable params)
-  └ vm/... (48 tunnable params)
 [[configuration.sysctl}]]
 
 ## Kernel Tunning with 'tuned' [[{linux.101,monitoring.101,configuration.kernel,01_PM.TODO,qa.UX]]
-  /proc/sys/vm/ Kernel FS "control pannel"   [[{01_PM.TODO}]]
-  https://tuned-project.org/
-- About tuned:
-  - OS Tunning is done in practice through:
-    - long-profiling
-    - continuous-monitoring
-  - Tunning becomes harder if system load changes frequently.
 
+* `/proc/sys/vm/`: Kernel FS "control pannel"   [[{01_PM.TODO}]]
+  <https://tuned-project.org/>
+
+* About tuned:
+  * OS Tunning is done in practice through:
+    * long-profiling
+    * continuous-monitoring
+  * Tunning becomes harder if system load changes frequently.<br/>
     Ex.: A system with a peak of load certain hours a day
-         can be tuned for performance     those known hours
-         and    tuned for power-efficency the rest of day
+    ``` 
+    can be tuned for performance     those known hours
+    and    tuned for power-efficency the rest of day
+    ``` 
 
-
-- man 8 tuned: Dynamic Adaptive system tuning daemon
-@[https://linux.die.net/man/8/tuned]
-
-  - cron-friendly system service that lets to select a tuning profile
+* man 8 tuned: Dynamic Adaptive system tuning daemon
+  <https://linux.die.net/man/8/tuned>
+  * cron-friendly system service that lets to select a tuning profile
     (pre-build or custom).
-  - Tuning include:
-    - sysctl settings (/proc/sys/)
-    - settings for disk-elevators
-    - power management options
-    - transparent hugepages
-    - custom-scripts
+  * Tuning include:
+    * sysctl settings (/proc/sys/)
+    * settings for disk-elevators
+    * power management options
+    * transparent hugepages
+    * custom-scripts
+* Install):
+  ```
+  |  $ sudo dnf -y install tuned   # <· RedHat/Fedora/CentOS package install
+  |  $ sudo systemctl enable tuned # <· enable tuned service at boot
+  |  ...
+  |  $ sudo systemctl start  tuned # <· Start  tuned service now
+  |  $ sudo systemctl status tuned # <· Check  tuned service status
+  |  $ sudo systemctl status tuned
+  |  * tuned.service - Dynamic System Tuning Daemon
+  |     Loaded: loaded (/usr/lib/systemd/system/tuned.service; disabled; vendor preset: disabled)
+  |     Active: *active (running)* since Sun 2019-01-20 16:29:05 EST; 15s ago
+  |       Docs: man:tuned(8)
+  |             man:tuned.conf(5)
+  |             man:tuned-adm(8)
+  |   Main PID: 10552 (tuned)
+  |      Tasks: 4 (limit: 4915)
+  |     Memory: 15.7M
+  |     CGroup: /system.slice/tuned.service
+  |             └─10552 /usr/bin/python3 -Es /usr/sbin/tuned -l -P
+  ```
 
-- Install):
-  $ sudo dnf -y install tuned   # <· RedHat/Fedora/CentOS package install
-  $ sudo systemctl enable tuned # <· enable tuned service at boot
-  ...
-  $ sudo systemctl start  tuned # <· Start  tuned service now
-  $ sudo systemctl status tuned # <· Check  tuned service status
-  $ sudo systemctl status tuned
-→ * tuned.service - Dynamic System Tuning Daemon
-→    Loaded: loaded (/usr/lib/systemd/system/tuned.service; disabled; vendor preset: disabled)
-→    Active: *active (running)* since Sun 2019-01-20 16:29:05 EST; 15s ago
-→      Docs: man:tuned(8)
-→            man:tuned.conf(5)
-→            man:tuned-adm(8)
-→  Main PID: 10552 (tuned)
-→     Tasks: 4 (limit: 4915)
-→    Memory: 15.7M
-→    CGroup: /system.slice/tuned.service
-→            └─10552 /usr/bin/python3 -Es /usr/sbin/tuned -l -P
-
-*Ussage:*
-$ *tuned-adm list*   #  ← List existing tunning profiles
-→ Available profiles:
-→ - balanced                    - General non-specialized
-→ - desktop                     - Optimize for the desktop
-→ - latency-performance         - deterministic performance             (increased power consumption)
-→ - network-latency             - deterministic performance low-latency (increased power consumption)
-→ - network-throughput          - Optimize for streaming network throughput
-                                  generally only necessary on older CPUs or
-                                  40G+ networks
-→ - powersave                   - Optimize for low power consumption
-→ - throughput-performance      - provides excellent performance across a
-                                  variety of common server workloads
-→ - virtual-guest               - Optimize for running inside a virtual guest
-→ - virtual-host                - Optimize for running KVM guests
-→ Current active profile: balanced
-
-$ *sudo tuned-adm active*  #  ← query status
-Current active profile: balanced
-
-$ *sudo tuned-adm profile  powersave* # ←  select profile
-[[}]]
-
-
+* Ussage:
+  ```
+  | $ *tuned-adm list*   #  ← List existing tunning profiles
+  | → Available profiles:
+  | → - balanced                    - General non-specialized
+  | → - desktop                     - Optimize for the desktop
+  | → - latency-performance         - deterministic performance             (increased power consumption)
+  | → - network-latency             - deterministic performance low-latency (increased power consumption)
+  | → - network-throughput          - Optimize for streaming network throughput
+  |                                   generally only necessary on older CPUs or
+  |                                   40G+ networks
+  | → - powersave                   - Optimize for low power consumption
+  | → - throughput-performance      - provides excellent performance across a
+  |                                   variety of common server workloads
+  | → - virtual-guest               - Optimize for running inside a virtual guest
+  | → - virtual-host                - Optimize for running KVM guests
+  | → Current active profile: balanced
+  | 
+  | $ *sudo tuned-adm active*  #  ← query status
+  | Current active profile: balanced
+  | 
+  | $ *sudo tuned-adm profile  powersave* # ←  select profile
+  ```
 [[}]]
 
 ## Job/Process control: Scheduling Tasks  [[{101,job_control.task_scheduling,01_PM.TODO]]
-  Officially in Linux/UNIX/Posix, a Job or task is a running process.
-  - cron    : program task to be run periodically
-  - at
-  - anacron :
-    Unlike cron(8), it does not assume that the machine is running continuously.
-    Hence,  it  can  be used on machines that aren't running 24 hours a day.
+Officially in Linux/UNIX/Posix, a Job or task is a running process.
 
-    Anacron checks whether this job has been executed in the last n days.
-    If not, Anacron runs the job's shell command, after waiting for the
-    number of minutes specified as the delay parameter.
-    NOTE/WARN: Only the date , not hour is used.
+* cron    : program task to be run periodically
+* at
+* anacron :
+  Unlike cron(8), it does not assume that the machine is running continuously.
+  Hence,  it  can  be used on machines that aren't running 24 hours a day.
 
-    e.g.: On Debian-based systems, anacron will be activated hourly every day
-          from 07:30  local  time  to 23:30  local time through cron job
+  Anacron checks whether this job has been executed in the last n days.
+  If not, Anacron runs the job's shell command, after waiting for the
+  number of minutes specified as the delay parameter.
+  NOTE/WARN: Only the date , not hour is used.
+
+  e.g.: On Debian-based systems, anacron will be activated hourly every day
+        from 07:30  local  time  to 23:30  local time through cron job
 
 ## Job control++
-  - nice      : run a process with modified scheduling priority.
-  - STOP/CONT : kill -STOP $pid "freezes" a process.
-  -             kill -CONT $pid un-freezes it.
-  - chroot    : (Ch)ange Root, runs a process withing a modified view of   [[{security.101]]
-                the OS File System, where the root seen by the process is
-                just a subdirectory of the real root path seen by the OS.
-                Basically containerization extends the idea of chroot to
-                let processes view only a subset of the FS and network
-                through (kernel supported) namespaces. [[}]]
-  - cgroups   : linux kernel (C)ontrol groups allow processes to be organized
-                into hierarchical groups whose usage of various types of
-                resourcescan then be limited and monitored.
+* nice      : run a process with modified scheduling priority.
+* STOP/CONT : kill -STOP $pid "freezes" a process.
+*             kill -CONT $pid un-freezes it.
+* chroot    : (Ch)ange Root, runs a process withing a modified view of   [[{security.101]]
+              the OS File System, where the root seen by the process is
+              just a subdirectory of the real root path seen by the OS.
+              Basically containerization extends the idea of chroot to
+              let processes view only a subset of the FS and network
+              through (kernel supported) namespaces. [[}]]
+* cgroups   : linux kernel (C)ontrol groups allow processes to be organized
+              into hierarchical groups whose usage of various types of
+              resourcescan then be limited and monitored.
 
-                /sys/fs/cgroup pseudo-FS is used to control them.
+              /sys/fs/cgroup pseudo-FS is used to control them.
 
-    └ cgroup  : kernel component modifying the behavior of processes.
-     subsystem  (CPU time, available memory, ...).
-                 also known as resource controllers (or simply, controllers).
-  ...
+  └ cgroup  : kernel component modifying the behavior of processes.
+   subsystem  (CPU time, available memory, ...).
+               also known as resource controllers (or simply, controllers).
+...
 [[}]]
 
 ## GNU Parallel  [[{job_control,performance.distributed]]
-@[https://linux.die.net/man/1/parallel]
-@[https://www.gnu.org/software/parallel/parallel_cheat.pdf]
-@[https://www.reddit.com/r/programming/comments/ayew9r/never_got_around_to_learning_gnu_parallel_here_is/]
-- Replacement for xargs and for-loops.
-- It can also split a file or a stream into blocks and pass those to commands running in parallel.
+* <https://linux.die.net/man/1/parallel>
+* <https://www.gnu.org/software/parallel/parallel_cheat.pdf>
+* <https://www.reddit.com/r/programming/comments/ayew9r/never_got_around_to_learning_gnu_parallel_here_is/>
+* Replacement for xargs and for-loops.
+* It can also split a file or a stream into blocks and pass those to commands running in parallel.
 
 Ex:
+  ```
+  |$ parallel --jobs 200% gzip ::: *.html  # ← Compress all *.html files in parallel
+  |                                            200% → 2 per CPU thread
+  |
+  |$ parallel lame {} -o {.}.mp3 ::: *.wav # ← Convert all *.wav to *.mp3 using lame
+  |
+  |$ cat bigfile | \                       # ← Chop bigfile into 1MB blocks and grep
+  |  parallel --pipe grep foobar               for the string foobar
+  ```
 
-$ parallel --jobs 200% gzip ::: *.html  # ← Compress all *.html files in parallel
-                                            200% → 2 per CPU thread
+* INPUT SOURCES:
+  ```
+  | $ parallel echo ::: cmd line input source
+  | $ cat input_from_stdin | parallel echo
+  | $ parallel echo ::: multiple input sources ::: with values
+  | $ parallel -a input_from_file echo
+  | $ parallel echo :::: input_from_file
+  | $ parallel echo :::: input_from_file ::: and command line
+  ```
 
-$ parallel lame {} -o {.}.mp3 ::: *.wav # ← Convert all *.wav to *.mp3 using lame
+* Replacement string:
+  ```
+  | {}                    ← mydir/mysubdir/myfile.myext
+  | {.}                   ← mydir/mysubdir/myfile
+  | {/}, {//}, {/.}       ← myfile.myext, mydir/mysubdir, myfile
+  | {#}                   ← The sequence number of the job
+  | {%}                   ← The job slot number
+  | {2}                   ← Value from the second input source
+  | {2.} {2/} {2//} {2/.} ← Combination of {2} and {.} {/} {//} {/.}
+  | {= perl expression =} ← Change $_ with perl expression
+  | 
+  | $ parallel --keep-order "sleep {}; echo {}" ::: 5 4 3 2 1 # ← *Keep input order in output*
+  ```
 
-$ cat bigfile | \                       # ← Chop bigfile into 1MB blocks and grep
-  parallel --pipe grep foobar               for the string foobar
+* Control the execution:
+  ```
+  | $ parallel --jobs 2 "sleep {}; echo {}" ::: 5 4 3 2 1  # ← Run 2 jobs in parallel
+  | 
+  | $ parallel --dryrun echo ::: Red Green Blue ::: S M L  # ← Dry-run. See will be executed
+  |                                                            without real execution
+  ```
 
-*INPUT SOURCES*
-$ parallel echo ::: cmd line input source
-$ cat input_from_stdin | parallel echo
-$ parallel echo ::: multiple input sources ::: with values
-$ parallel -a input_from_file echo
-$ parallel echo :::: input_from_file
-$ parallel echo :::: input_from_file ::: and command line
+* Remote execution:
+  ```
+  | $ parallel -S server1 -S server2 "hostname; echo {}" ::: foo bar
+  ```
 
-*Replacement string*
-{}                    ← mydir/mysubdir/myfile.myext
-{.}                   ← mydir/mysubdir/myfile
-{/}, {//}, {/.}       ← myfile.myext, mydir/mysubdir, myfile
-{#}                   ← The sequence number of the job
-{%}                   ← The job slot number
-{2}                   ← Value from the second input source
-{2.} {2/} {2//} {2/.} ← Combination of {2} and {.} {/} {//} {/.}
-{= perl expression =} ← Change $_ with perl expression
-
-$ parallel --keep-order "sleep {}; echo {}" ::: 5 4 3 2 1 # ← *Keep input order in output*
-
-*Control the execution*
-$ parallel --jobs 2 "sleep {}; echo {}" ::: 5 4 3 2 1  # ← Run 2 jobs in parallel
-
-$ parallel --dryrun echo ::: Red Green Blue ::: S M L  # ← Dry-run. See will be executed
-                                                           without real execution
-
-*Remote execution*
-$ parallel -S server1 -S server2 "hostname; echo {}" ::: foo bar
-
-*Pipe mode*
-cat bigfile | parallel --pipe wc -l
-
-$ parallel -a bigfile --pipepart --block -1 grep foobar # ← Chop bigfile into one block per CPU
-                                                            thread and grep for foobar
+* Pipe mode:
+  ```
+  | $ cat bigfile | parallel --pipe wc -l
+  | 
+  | $ parallel -a bigfile \     <·· Chop bigfile into one block per CPU
+  |   --pipepart --block -1 \       thread and grep for foobar
+  |   grep foobar 
+  ```
 [[}]]
 
 
 # Monitoring
+
 ## basic process monit/control [[{job_control.101,linux.101,monitoring.jobs,monitoring.i/o]]
-$ *ps*   ← shows list of the processes running. i
-         Without options: processes belonging to current user&amp;with a controlling terminal
-  Ex. options include:
-   -a: all processes from all users
-   -u: add user names, %cpu usage, and %mem usage,...
-   -x: add also processes without controlling terminals
-   -l: add information including UID and nice value
-   --forest: show process hierarchy.
 
-$ *pstree* ← show parent/children process tree (-p flag show pid)
+* shows list of the processes running:
+  ```
+  |$ ps    # Without options: display processes belonging to current
+  |          user and with a controlling terminal
+  |  Ex. options include:
+  |   -a: all processes from all users
+  |   -u: add user names, %cpu usage, and %mem usage,...
+  |   -x: add also processes without controlling terminals
+  |   -l: add information including UID and nice value
+  |   --forest: show process hierarchy.
+  |
+  | $ *pstree ← show parent/children process tree (-p flag show pid)
+  | 
+  | $ *top -n  * ← Display top by cpu processes once and finish
+  | $ *top*      ← real-time display processes ordered by memory/CPU/...(as in CPU usage)
+  | 
+  |   Z,B,E,e   Global: 'Z' colors; 'B' bold; 'E'/'e' summary/task memory scale
+  |   l,t,m     Toggle Summary: 'l' load avg; 't' task/cpu stats; 'm' memory info
+  |   0,1,2,3,I Toggle: '0' zeros; '1/2/3' cpus or numa node views; 'I' Irix mode
+  |   f,F,X     Fields: 'f'/'F' add/remove/order/sort; 'X' increase fixed-width
+  | 
+  |   L,&,<,> . Locate: 'L'/'&' find/again; Move sort column: '<'/'>' left/right
+  |   R,H,V,J . Toggle: 'R' Sort; 'H' Threads; 'V' Forest view; 'J' Num justify
+  |   c,i,S,j . Toggle: 'c' Cmd name/line; 'i' Idle; 'S' Time; 'j' Str justify
+  |   x,y     . Toggle highlights: 'x' sort field; 'y' running tasks
+  |   z,b     . Toggle: 'z' color/mono; 'b' bold/reverse (only if 'x' or 'y')
+  |   u,U,o,O . Filter by: 'u'/'U' effective/any user; 'o'/'O' other criteria
+  |   n,#,^O  . Set: 'n'/'#' max tasks displayed; Show: Ctrl+'O' other filter(s)
+  |   C,...   . Toggle scroll coordinates msg for: up,down,left,right,home,end
+  | 
+  |   k,r       Manipulate tasks: 'k' kill; 'r' renice
+  |   d or s    Set update interval
+  |   W,Y       Write configuration file 'W'; Inspect other output 'Y'
+  |   q         Quit
+  | 
+  | $ iotop    # ← Simple top-like I/O monitor
+  | <https://linux.die.net/man/1/iotop>
+  ```
 
-$ *top -n  * ← Display top by cpu processes once and finish
-$ *top*      ← real-time display processes ordered by memory/CPU/...(as in CPU usage)
+  ```
+  $ *kill - *   ← Display existing signals (Default to SIGTERM that most of the times
+                will just terminate the process "cleanely")
+  →  1) SIGHUP   2) SIGINT   3) SIGQUIT  4) SIGILL   5) SIGTRAP
+  →  6) SIGABRT  7) SIGBUS   8) SIGFPE   9) SIGKILL 10) SIGUSR1
+  → 11) SIGSEGV 12) SIGUSR2 13) SIGPIPE 14) SIGALRM 15) SIGTERM
+  → 16) SIGSTKFLT   17) SIGCHLD 18) SIGCONT 19) SIGSTOP 20) SIGTSTP
+  → 21) SIGTTIN 22) SIGTTOU 23) SIGURG  24) SIGXCPU 25) SIGXFSZ
+  → 26) SIGVTALRM   27) SIGPROF 28) SIGWINCH    29) SIGIO   30) SIGPWR
+  → 31) SIGSYS  34) SIGRTMIN    35) SIGRTMIN+1  36) SIGRTMIN+2  37) SIGRTMIN+3
+  → 38) SIGRTMIN+4  39) SIGRTMIN+5  40) SIGRTMIN+6  41) SIGRTMIN+7  42) SIGRTMIN+8
+  → 43) SIGRTMIN+9  44) SIGRTMIN+10 45) SIGRTMIN+11 46) SIGRTMIN+12 47) SIGRTMIN+13
+  → 48) SIGRTMIN+14 49) SIGRTMIN+15 50) SIGRTMAX-14 51) SIGRTMAX-13 52) SIGRTMAX-12
+  → 53) SIGRTMAX-11 54) SIGRTMAX-10 55) SIGRTMAX-9  56) SIGRTMAX-8  57) SIGRTMAX-7
+  → 58) SIGRTMAX-6  59) SIGRTMAX-5  60) SIGRTMAX-4  61) SIGRTMAX-3  62) SIGRTMAX-2
+  → 63) SIGRTMAX-1  64) SIGRTMAX
+  
+  $ *kill [ -s (signal name)] 'process_id'* ← Send signal to process. kill -9 kills unconditionally
+  $ killall "process_name"  ← send signal to all processes matching full name
+  $ pkill "process_name"    ← send signal to all processes matching part of the name
+  $ skill  ← send a particular signal to command/username/tty.
+          -L --- list the various signals that can be sent
+          -u --- specify a username;
+          -p --- process id (followed by the process id)
+          -c --- command name (this is the same as killall)
+          -t --- (tty number)
+          -v --- verbose mode
+          -i --- interactive mode.
+  ```
+* Kill example. PAUSE AND CONTINUE A PROCESS:
+  ```
+  $ *kill -STOP "pid"* # Pauses
+  $ *kill -CONT "pid"* # Continues
+  ```
 
-  Z,B,E,e   Global: 'Z' colors; 'B' bold; 'E'/'e' summary/task memory scale
-  l,t,m     Toggle Summary: 'l' load avg; 't' task/cpu stats; 'm' memory info
-  0,1,2,3,I Toggle: '0' zeros; '1/2/3' cpus or numa node views; 'I' Irix mode
-  f,F,X     Fields: 'f'/'F' add/remove/order/sort; 'X' increase fixed-width
-
-  L,&,<,> . Locate: 'L'/'&' find/again; Move sort column: '<'/'>' left/right
-  R,H,V,J . Toggle: 'R' Sort; 'H' Threads; 'V' Forest view; 'J' Num justify
-  c,i,S,j . Toggle: 'c' Cmd name/line; 'i' Idle; 'S' Time; 'j' Str justify
-  x,y     . Toggle highlights: 'x' sort field; 'y' running tasks
-  z,b     . Toggle: 'z' color/mono; 'b' bold/reverse (only if 'x' or 'y')
-  u,U,o,O . Filter by: 'u'/'U' effective/any user; 'o'/'O' other criteria
-  n,#,^O  . Set: 'n'/'#' max tasks displayed; Show: Ctrl+'O' other filter(s)
-  C,...   . Toggle scroll coordinates msg for: up,down,left,right,home,end
-
-  k,r       Manipulate tasks: 'k' kill; 'r' renice
-  d or s    Set update interval
-  W,Y       Write configuration file 'W'; Inspect other output 'Y'
-  q         Quit
-
-$ *iotop*    # ← Simple top-like I/O monitor
-@[https://linux.die.net/man/1/iotop]
-
-$ *kill - *   ← Display existing signals (Default to SIGTERM that most of the times
-              will just terminate the process "cleanely")
-→  1) SIGHUP   2) SIGINT   3) SIGQUIT  4) SIGILL   5) SIGTRAP
-→  6) SIGABRT  7) SIGBUS   8) SIGFPE   9) SIGKILL 10) SIGUSR1
-→ 11) SIGSEGV 12) SIGUSR2 13) SIGPIPE 14) SIGALRM 15) SIGTERM
-→ 16) SIGSTKFLT   17) SIGCHLD 18) SIGCONT 19) SIGSTOP 20) SIGTSTP
-→ 21) SIGTTIN 22) SIGTTOU 23) SIGURG  24) SIGXCPU 25) SIGXFSZ
-→ 26) SIGVTALRM   27) SIGPROF 28) SIGWINCH    29) SIGIO   30) SIGPWR
-→ 31) SIGSYS  34) SIGRTMIN    35) SIGRTMIN+1  36) SIGRTMIN+2  37) SIGRTMIN+3
-→ 38) SIGRTMIN+4  39) SIGRTMIN+5  40) SIGRTMIN+6  41) SIGRTMIN+7  42) SIGRTMIN+8
-→ 43) SIGRTMIN+9  44) SIGRTMIN+10 45) SIGRTMIN+11 46) SIGRTMIN+12 47) SIGRTMIN+13
-→ 48) SIGRTMIN+14 49) SIGRTMIN+15 50) SIGRTMAX-14 51) SIGRTMAX-13 52) SIGRTMAX-12
-→ 53) SIGRTMAX-11 54) SIGRTMAX-10 55) SIGRTMAX-9  56) SIGRTMAX-8  57) SIGRTMAX-7
-→ 58) SIGRTMAX-6  59) SIGRTMAX-5  60) SIGRTMAX-4  61) SIGRTMAX-3  62) SIGRTMAX-2
-→ 63) SIGRTMAX-1  64) SIGRTMAX
-
-$ *kill [ -s (signal name)] 'process_id'* ← Send signal to process. kill -9 kills unconditionally
-$ killall "process_name"  ← send signal to all processes matching full name
-$ pkill "process_name"    ← send signal to all processes matching part of the name
-$ skill  ← send a particular signal to command/username/tty.
-        -L --- list the various signals that can be sent
-        -u --- specify a username;
-        -p --- process id (followed by the process id)
-        -c --- command name (this is the same as killall)
-        -t --- (tty number)
-        -v --- verbose mode
-        -i --- interactive mode.
-
-PAUSE AND CONTINUE A PROCESS:
-$ *kill -STOP "pid"* # Pauses
-$ *kill -CONT "pid"* # Continues
-
-$ *nice -20 make* ← Sets make priority to -20
-                  -20 is maximum priority   (negative only allowed to root)
-                   20 is the minimum priority.
-$ *renice 10 "pid"* ← Changes priority of running process.
+* Change process execution priority 
+  ```
+  | $ *nice -20 make* ← Sets make priority to -20
+  |                   -20 is maximum priority   (negative only allowed to root)
+  |                    20 is the minimum priority.
+  | $ *renice 10 "pid"* ← Changes priority of running process.
+  ```
 [[}]]
 
 
 ## Disk Space [[{troubleshooting.disk_full]]
-   $ df -kh               <·· (D)isk (F)ree report.
-                              -k : take block-size=1K
-                              -h : human-readable, print sizes in powers of 1024 (e.g., 1023M)
-   $ du -sch dir1 dir2    <·· (D)isk (U)ssage report for files&directories.
-                              -s: summarize. Display only a total for each argument
-                              -c: produce grand total
-                              -h : human-readable
+  ```
+  |  $ df -kh               <·· (D)isk (F)ree report.
+  |                             -k : take block-size=1K
+  |                             -h : human-readable, print sizes in powers of 1024 (e.g., 1023M)
+  |  $ du -sch dir1 dir2    <·· (D)isk (U)ssage report for files&directories.
+  |                             -s: summarize. Display only a total for each argument
+  |                             -c: produce grand total
+  |                             -h : human-readable
+  ```
 [[}]]
 
 ## `pv` monit data pipe progress [[{monitoring.pipes,monitoring.i/o,profiling.storage.FS,storage.profiling]]
-## pv provides time elasped, %compl., progressbar, throughput, ETA, ...on STDERR.
-## cat /dev/zero | pv | cat > /dev/null  # Check CPU/memory perf.
-## pv file | nc -w 1 somewhere.com 3000  # Check network perf.
-## pv -EE /dev/sda > disk-image.img      # Check disk image (skip errors)
 
-  man pv summary
-OUTPUT MODIFIERS
-  --wait: until first byte has been transferred.
-  --delay-start SEC (before showing info)
-  --size SIZE: Set total size (if piping from STDIN and size is known)
-  --line-mode: (count lines vs counting bytes)
-               --null for null terminated.
-  --interval SEC: (1 sec by default)
-  --width N / --height N: Assume width / height for terminal
-  --name NAME: Useful with --cursor for "compilcated pipelines"
-               --cursor: Use cursor pos. escape sequences (vs CR)
-  --force: (even if STDOUT is not terminal)
+pv provides time elasped, %compl., progressbar, throughput, ETA, ...on STDERR.
+  Ex:
+ ```
+ | $ cat /dev/zero | pv | cat > /dev/null  # Check CPU/memory perf.
+ | $ pv file | nc -w 1 somewhere.com 3000  # Check network perf.
+ | $ pv -EE /dev/sda > disk-image.img      # Check disk image (skip errors)
+ ```
 
-DATA TRANSFER MODIFIERS
-  --rate-limit RATE
-  --buffer-size BYTES
-  --no-splice: Never  use splice(2). Ussually more efficient way of
-               transferring data from/to pipe than regular read/write.
-               but means that the transfer buffer may not be used.
-               This prevents -A and -T from working.
-  -E/--skip-errors (set twice to only report a read error once per file)
-  --stop-at-size
-  --watchfd PID[:FD]. Wath FIle Descriptor of process PID, and show its
-                      progress.
-  --remote PID : where PID is an running instance of pv already running.
-                 Add other commands to such instance.
-                 --pidfile FILE save PID of (first running) pv instance.
+* man pv summary
+ ```
+ | OUTPUT MODIFIERS
+ |   --wait: until first byte has been transferred.
+ |   --delay-start SEC (before showing info)
+ |   --size SIZE: Set total size (if piping from STDIN and size is known)
+ |   --line-mode: (count lines vs counting bytes)
+ |                --null for null terminated.
+ |   --interval SEC: (1 sec by default)
+ |   --width N / --height N: Assume width / height for terminal
+ |   --name NAME: Useful with --cursor for "compilcated pipelines"
+ |                --cursor: Use cursor pos. escape sequences (vs CR)
+ |   --force: (even if STDOUT is not terminal)
+ | DATA TRANSFER MODIFIERS
+ |   --rate-limit RATE
+ |   --buffer-size BYTES
+ |   --no-splice: Never  use splice(2). Ussually more efficient way of
+ |                transferring data from/to pipe than regular read/write.
+ |                but means that the transfer buffer may not be used.
+ |                This prevents -A and -T from working.
+ |   -E/--skip-errors (set twice to only report a read error once per file)
+ |   --stop-at-size
+ |   --watchfd PID[:FD]. Wath FIle Descriptor of process PID, and show its
+ |                       progress.
+ |   --remote PID : where PID is an running instance of pv already running.
+ |                  Add other commands to such instance.
+ |                  --pidfile FILE save PID of (first running) pv instance.
+ ```
 [[}]]
 
-## Netdata (Glances++) [[{]]
- https://github.com/netdata/netdata
-
-(Used by AWS, ..)
+## Netdata (Glances++) [[{PM.TODO]]
+* <https://github.com/netdata/netdata>
+* (Used by AWS, ..)
 [[}]]
 
 ## Glances [[{monitoring.101,01_PM.low_code,QA.UX,troubleshooting]]
-@[https://www.tecmint.com/glances-an-advanced-real-time-system-monitoring-tool-for-linux/]
-@[https://github.com/tldr-pages/tldr/blob/master/pages/common/glances.md]
-- Alternative to top
-- Linux/FreeBSD python command-line,  curses-based, using psutils
+* <https://www.tecmint.com/glances-an-advanced-real-time-system-monitoring-tool-for-linux/>
+* <https://github.com/tldr-pages/tldr/blob/master/pages/common/glances.md>
+* Alternative to top
+* Linux/FreeBSD python command-line,  curses-based, using psutils
   under the hood.
-- It makes easier to find an application/process consuming lots
+* It makes easier to find an application/process consuming lots
   of system resources  by highlighting programs consuming too much
   resources and providing maximum of information about the server.
-- Allows to define thresholds (careful, warning and critical) in
+* Allows to define thresholds (careful, warning and critical) in
   config files.
+* Display info about:
+  * CPU (user, kernel, idle processes).
+  * RAM, Swap, Free memory,... etc.
+  * Average CPU load for past 1min, 5mins and 15 mins.
+  * Network Download/Upload rates of network connections.
+  * Total number of processes, active ones, sleeping processes etc.
+  * Disk I/O related (read or write) speed details
+  * Currently mounted devices disk usages.
+  * Top processes CPU/Memory usages, Names and file path of exec
+* official packages for Debian/RedHat/...
 
-- Display info about:
-  - CPU (user, kernel, idle processes).
-  - RAM, Swap, Free memory,... etc.
-  - Average CPU load for past 1min, 5mins and 15 mins.
-  - Network Download/Upload rates of network connections.
-  - Total number of processes, active ones, sleeping processes etc.
-  - Disk I/O related (read or write) speed details
-  - Currently mounted devices disk usages.
-  - Top processes CPU/Memory usages, Names and file path of exec
+### USSAGE:
+  ```
+  | $ glances
+  |   GREEN : OK       (everything is fine)
+  |   BLUE  : CAREFUL  (need attention)
+  |   VIOLET: WARNING  (alert)
+  |   RED   : CRITICAL (critical)
+  |
+  | Shortcuts:
+  | a – Sort processes automatically
+  | c – Sort processes by CPU%
+  | m – Sort processes by MEM%
+  | p – Sort processes by name
+  | i – Sort processes by I/O rate
+  |
+  | d – Show/hide disk I/O stats ols
+  | f – Show/hide file system statshddtemp
+  | n – Show/hide network stats
+  | s – Show/hide sensors stats
+  | y – Show/hide hddtemp stats
+  | l – Show/hide logs
+  | b – Bytes or bits for network I/Oools
+  | w – Delete warning logs
+  | x – Delete warning and critical logs
+  | x – Delete warning and critical logs
+  | 1 – Global CPU or per-CPU stats
+  | h – Show/hide this help screen
+  | t – View network I/O as combination
+  | u – View cumulative network I/O
+  | q – Quit (Esc and Ctrl-C also work)
+  |
+  | default thresholds: /etc/glances/glances.conf*
+  | (careful=50, warning=70 and critical=90)
+  ```
 
-- official packages for Debian/RedHat/...
-
- *USSAGE*
-  $ glances
-    GREEN : OK       (everything is fine)
-    BLUE  : CAREFUL  (need attention)
-    VIOLET: WARNING  (alert)
-    RED   : CRITICAL (critical)
-
- *Shortcuts:*
-  a – Sort processes automatically
-  c – Sort processes by CPU%
-  m – Sort processes by MEM%
-  p – Sort processes by name
-  i – Sort processes by I/O rate
-
-  d – Show/hide disk I/O stats ols
-  f – Show/hide file system statshddtemp
-  n – Show/hide network stats
-  s – Show/hide sensors stats
-  y – Show/hide hddtemp stats
-  l – Show/hide logs
-  b – Bytes or bits for network I/Oools
-  w – Delete warning logs
-  x – Delete warning and critical logs
-  x – Delete warning and critical logs
-  1 – Global CPU or per-CPU stats
-  h – Show/hide this help screen
-  t – View network I/O as combination
-  u – View cumulative network I/O
-  q – Quit (Esc and Ctrl-C also work)
-
-
- *default thresholds: /etc/glances/glances.conf*
-  (careful=50, warning=70 and critical=90)
-
-
-- Client/Server mode:
-  ON THE SERVER                                  ON THE CLIENT
-
-$*# glances -s -B $ADDRESS -p $PORT *          $*# glances -c -P 172.16.27.56 *
-                  (0.0.0.0)   (61209)
-  Define the password for the Glances server
-  Password:
-  Password (confirm):
-  Glances server is running on 0.0.0.0:61209
+* Client/Server mode:
+  ```
+  | ON THE SERVER                       │ ON THE CLIENT
+  | ────────────────────────────────────┼────────────────────────────────
+  |                                     │
+  | # glances -s -B $ADDRESS -p $PORT   │ # glances -c -P 172.16.27.56 *
+  |                 (0.0.0.0)   (61209) │
+  | Define password for server          │
+  | ...
+  | Glances server is running on ... 
+  ```
 [[}]]
 
-## Dstat (vmstat + iostat+ ifstat + mpstat) [[{monitoring.101,monitoring.memory,monitoring.I/O,monitoring.network,monitoring.cpu,01_PM.TODO,troubleshooting]]
-@[https://linux.die.net/man/1/dstat]
-- Dstat: moderm replacement joining the info from    [[{02_doc_has.comparative]]
+[[{monitoring.101,monitoring.memory,monitoring.I/O,]]
+[[monitoring.network,monitoring.cpu,troubleshooting,01_PM.TODO]]
+## Dstat (vmstat + iostat+ ifstat + mpstat) 
+
+  NOTE: There is a conflict between Red Hat Dstat and the original dstat-real.
+  C&P from <https://github.com/dstat-real/dstat>:
+
+> Due to actions taken by RedHat to hijack the DSTAT name, further 
+> development of this project has ceased. Development of this project 
+> is taking place on the Dool fork. 
+
+  Next refers to Red-Hat? version.
+
+* TODO: Compare with [dool](https://github.com/scottchiefbaker/dool)
+
+<https://linux.die.net/man/1/dstat>
+* Dstat: moderm replacement joining the info from    [[{02_doc_has.comparative]]
   vmstat, iostat, ifstat an mpstat.                  [[}]]
-- Dstat overcomes some of the limitations and adds some extra features.
-- Dstat allows you to view all of your system resources instantly,
+* Dstat overcomes some of the limitations and adds some extra features.
+* Dstat allows you to view all of your system resources instantly,
   you can eg.:
-  - compare disk usage in combination with interrupts from disk controller.
-  - compare network bandwidth numbers directly with the disk throughput (in the same interval).
+  * compare disk usage in combination with interrupts from disk controller.
+  * compare network bandwidth numbers directly with the disk throughput (in the same interval).
 [[}]]
 
 ## pidstat: process stats [[{monitoring.jobs,job_control,monitoring.i/o]]
                          [[profiling.jobs.IO.block,profiling.storage,storge.profiling]]
-  By Sebastien Godard (http://pagesperso-orange.fr/sebastien.godard/)
- -d Report I/O statistics
-    kB_rd/s
-    kB_wr/s
-    kB_ccwr/s:  Cancelled-writes eg. task truncates some dirty pagecache.
-                (IO which another task has been accounted for).
-    iodelay  : Block-I/O delay of task-monitored, measured in clock ticks.                    [[{profiling.jobs.]]
-               including  delays waiting for sync-block-I/O and swaping-block-I/O completion. [[}]]
+* By Sebastien Godard (http://pagesperso-orange.fr/sebastien.godard/)
+ ```
+ | -d Report I/O statistics
+ |    kB_rd/s
+ |    kB_wr/s
+ |    kB_ccwr/s:  Cancelled-writes eg. task truncates some dirty pagecache.
+ |                (IO which another task has been accounted for).
+ |    iodelay  : Block-I/O delay of task-monitored, measured in clock ticks.                    [[{profiling.jobs.]]
+ |               including  delays waiting for sync-block-I/O and swaping-block-I/O completion. [[}]]
+ |
+ | --dec= 0|1|2*  number of decimal-places to use.
+ | -e 'program' arg1 arg2 ...  Exec. program + args to be monitored.
+ | -G cmd_name_regex Filter by processes mathching regex for its command-name .
+ | -H Display timestamp-in-seconds since epoch. (1970-01-01)
+ | -h Display activities horizontally in a single line, without statistics (for batch tasks)
+ | --human
+ | -I In SMP archs, indicate to divide task CPU ussage should be divided by total num.or proccessors.
+ | -l Display command-name + all its arguments.
+ | -p $PID Filter by process $PID Select tasks (processes)
+ |         Use SELF for the pidstat process itself.
+ |         Use ALL  for all tasks.
+ | -R Report realtime-priority and scheduling-policy info, including:
+ | -r Report pagefaults and memory utilization. [[profiling.jobs.pagefaults]]
+ |   minflt/s : Total number of minor-faults per sec, (not loading from disk).
+ |   minflt-nr: Total number of minor-faults for task-and-children for time-interval.
+ |   majflt/s : Total number of major-faults per secd,
+ |   majflt-nr: Total number of major-faults for task-and-children for time-interval.
+ |   VSZ      : virtual memory usage of entire task in kilobytes.
+ |   RSS      : Resident Set Size: (non-swapped physical memory used in kilobytes).
+ |   %MEM     : Resident Set Size %
+ |   -nr      : Total number of major-faults by task-and-children for time-interval.
+ | -s     Report stack utilization.  [[profiling.jobs.memory.stack]]
+ |   StkSize  : memory in kilobytes reserved for the task as stack, (not necessarily used)
+ |   StkRef   : memory in kilobytes used as stack, referenced by the task.
+ | -T {TASK*|CHILD|ALL}
+ | -t     display statistics per-thread.
+ | -U [ username ] Display  real-user-name or filter by user-name.
+ | -u Report CPU utilization.  [[{profiling.jobs.cpu]]
+ |   %usr      : CPU used by task at user-level NOT include time spent running a Virt.CPU.
+ |    usr-ms   : Total millisecs spent by task+children at user level.
+ |   %system   : CPU used by task while executing at the system level (kernel).
+ |    system-ms: Total millisecs spent by task+children at systeml level (kernel).
+ |   %guest    : Percentage of CPU spent by the task    in virt. machine. (KVM/Qemu/...?)
+ |    guest-ms : Total millisecs spent by task+children in virt. machine. (KVM/Qemu/...?)
+ |    %wait    : Percentage of CPU spent by the task while waiting to run.
+ |    %CPU     : Total percentage of CPU time used by the task. [[}]]
+ |           Total  number  of milliseconds spent by the task and all its children in virtual
+ |           machine (running a virtual processor).
+ | -v Report some kernel tables.  [[monitoring.jobs.kernel]]
+ | -w Report task switching activity: [[profiling.jobs.kernel]]       [[{profiling.jobs.kernel]]
+ |    cswch/s  : Total number of voluntary context-switches per sec.
+ |                   voluntary == task blocks waiting for a resource.
+ |    nvcswch/s: Total number of non-voluntary context switches per sec.
+ |               non voluntary == task executes for the duration of its time slice and then
+ |               is forced to relinquish the processor. [[}]]
+ |
+ |  ENV.VARS:
+ |  S_COLORS := never|always|auto (display statistics in color)
+ ```
 
- --dec= 0|1|2*  number of decimal-places to use.
- -e 'program' arg1 arg2 ...  Exec. program + args to be monitored.
- -G cmd_name_regex Filter by processes mathching regex for its command-name .
- -H Display timestamp-in-seconds since epoch. (1970-01-01)
- -h Display activities horizontally in a single line, without statistics (for batch tasks)
- --human
- -I In SMP archs, indicate to divide task CPU ussage should be divided by total num.or proccessors.
- -l Display command-name + all its arguments.
- -p $PID Filter by process $PID Select tasks (processes)
-         Use SELF for the pidstat process itself.
-         Use ALL  for all tasks.
- -R Report realtime-priority and scheduling-policy info, including:
- -r Report pagefaults and memory utilization. [[profiling.jobs.pagefaults]]
-   minflt/s : Total number of minor-faults per sec, (not loading from disk).
-   minflt-nr: Total number of minor-faults for task-and-children for time-interval.
-   majflt/s : Total number of major-faults per secd,
-   majflt-nr: Total number of major-faults for task-and-children for time-interval.
-   VSZ      : virtual memory usage of entire task in kilobytes.
-   RSS      : Resident Set Size: (non-swapped physical memory used in kilobytes).
-   %MEM     : Resident Set Size %
-   -nr      : Total number of major-faults by task-and-children for time-interval.
- -s     Report stack utilization.  [[profiling.jobs.memory.stack]]
-   StkSize  : memory in kilobytes reserved for the task as stack, (not necessarily used)
-   StkRef   : memory in kilobytes used as stack, referenced by the task.
- -T {TASK*|CHILD|ALL}
- -t     display statistics per-thread.
- -U [ username ] Display  real-user-name or filter by user-name.
- -u Report CPU utilization.  [[{profiling.jobs.cpu]]
-   %usr      : CPU used by task at user-level NOT include time spent running a Virt.CPU.
-    usr-ms   : Total millisecs spent by task+children at user level.
-   %system   : CPU used by task while executing at the system level (kernel).
-    system-ms: Total millisecs spent by task+children at systeml level (kernel).
-   %guest    : Percentage of CPU spent by the task    in virt. machine. (KVM/Qemu/...?)
-    guest-ms : Total millisecs spent by task+children in virt. machine. (KVM/Qemu/...?)
-    %wait    : Percentage of CPU spent by the task while waiting to run.
-    %CPU     : Total percentage of CPU time used by the task. [[}]]
-           Total  number  of milliseconds spent by the task and all its children in virtual
-           machine (running a virtual processor).
- -v Report some kernel tables.  [[monitoring.jobs.kernel]]
- -w Report task switching activity: [[profiling.jobs.kernel]]       [[{profiling.jobs.kernel]]
-    cswch/s  : Total number of voluntary context-switches per sec.
-                   voluntary == task blocks waiting for a resource.
-    nvcswch/s: Total number of non-voluntary context switches per sec.
-               non voluntary == task executes for the duration of its time slice and then
-               is forced to relinquish the processor. [[}]]
-
-  ENV.VARS:
-  S_COLORS := never|always|auto (display statistics in color)
-
-EXAMPLES
- $ pidstat 2 5   <··· Dump 5-reports of CPU-statistics for every active task at 2-secs intervals.
- $ pidstat -r -p 1643 2 5
-              Display five reports of page faults and memory statistics for PID 1643  at  two  second
-              intervals.
- $ pidstat -C "fox|bird" -r -p ALL
-              Display  global  page  faults and memory statistics for all the processes whose command
-              name includes the string "fox" or "bird".
-
- $ pidstat -T CHILD -r 2 5
-              Display five reports of page faults statistics at two second intervals  for  the  child
-              processes  of  all  tasks  in the system. Only child processes with non-zero statistics
-              values are displayed.
+* EXAMPLES
+ ```
+ | $ pidstat 2 5               # Dump 5-reports of CPU-statistics
+ |                             # for every active task at 2-secs intervals.
+ |
+ | $ pidstat -r -p 1643 2 5    # Display five reports of page faults 
+ |                             # and mem. stats for PID 1643 at 2 secs interval.
+ |
+ | $ pidstat -C "fox|bird" -r -p ALL # Display global page faults and mem.
+ |                            # stats for all processes whose command name
+ |                            # includes the string "fox" or "bird".
+ |
+ | $ pidstat -T CHILD -r 2 5  # Display 5 reports of page faults stats at 2 secs
+ |                            # intervals  for  child processes of all tasks in
+ |                            # the system. Only child processes with non-zero statistics
+ |                            # values are displayed.
+ ```
 [[}]]
 
 ## iostat(CPU, I/O, FS)  [[{MONITORING.I/O,MONITORING.STORAGE,01_PM.TODO]]
-@[https://linux.die.net/man/1/iostat]
-$ iostat -xt 2  # -x Show extended statistics
-                # -t Print time
-avg-cpu:  %user   %nice %system %iowait  %steal   %idle
-           4.27    0.00    4.27    2.26    0.00   89.20
-
-Device  r/s  w/s rkB/s wkB/s rrqm/s wrqm/s %rrqm %wrqm r_await  w_await aqu-sz rareq-sz wareq-sz svctm %util
-sda    0.00 5.50  0.00 36.00   0.00   5.00  0.00 47.62    0.00    17.55   0.09     0.00     6.55  0.82  0.45
-sdb    0.00 0.00  0.00  0.00   0.00   0.00  0.00  0.00    0.00     0.00   0.00     0.00     0.00  0.00  0.00
-dm-0   0.00 3.00  0.00 12.00   0.00   0.00  0.00  0.00    0.00   123.00   0.37     0.00     4.00  0.50  0.15
-dm-1   0.00 0.00  0.00  0.00   0.00   0.00  0.00  0.00    0.00     0.00   0.00     0.00     0.00  0.00  0.00
-dm-2   0.00 7.50  0.00 30.00   0.00   0.00  0.00  0.00    0.00     0.47   0.00     0.00     4.00  0.40  0.30
-       ^^^^ ^^^^  ^^^^ ^^^^^   ^^^^   ^^^^  ^^^^  ^^^^    ^^^^     ^^^^   ^^^^     ^^^^     ^^^^  ^^^^  ^^^^
-       read                                            r_await  r_await  aqu-sz                  ignore elapsed
-       req.                                            avg msec avg msec avg                     to be  time %
-                                                       for read for read queue                   remove during
-                                                       requests requests length                         which
-                                                                         of req                         I/O req
-                                                                         issued                         were
-                                                                                                        issued
-                                                                                                        BANDWIDTH
-                                                                                                        USSAGE
+* <https://linux.die.net/man/1/iostat>
+  ```
+  | $ iostat -xt 2  # -x Show extended statistics
+  |                 # -t Print time
+  | avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+  |            4.27    0.00    4.27    2.26    0.00   89.20
+  | 
+  | Device  r/s  w/s rkB/s wkB/s rrqm/s wrqm/s %rrqm %wrqm r_await  w_await aqu-sz rareq-sz wareq-sz svctm %util
+  | sda    0.00 5.50  0.00 36.00   0.00   5.00  0.00 47.62    0.00    17.55   0.09     0.00     6.55  0.82  0.45
+  | sdb    0.00 0.00  0.00  0.00   0.00   0.00  0.00  0.00    0.00     0.00   0.00     0.00     0.00  0.00  0.00
+  | dm-0   0.00 3.00  0.00 12.00   0.00   0.00  0.00  0.00    0.00   123.00   0.37     0.00     4.00  0.50  0.15
+  | dm-1   0.00 0.00  0.00  0.00   0.00   0.00  0.00  0.00    0.00     0.00   0.00     0.00     0.00  0.00  0.00
+  | dm-2   0.00 7.50  0.00 30.00   0.00   0.00  0.00  0.00    0.00     0.47   0.00     0.00     4.00  0.40  0.30
+  |        ^^^^ ^^^^  ^^^^ ^^^^^   ^^^^   ^^^^  ^^^^  ^^^^    ^^^^     ^^^^   ^^^^     ^^^^     ^^^^  ^^^^  ^^^^
+  |        read                                            r_await  r_await  aqu-sz                  ignore elapsed
+  |        req.                                            avg msec avg msec avg                     to be  time %
+  |                                                        for read for read queue                   remove during
+  |                                                        requests requests length                         which
+  |                                                                          of req                         I/O req
+  |                                                                          issued                         were
+  |                                                                                                         issued
+  |                                                                                                         BANDWIDTH
+  |                                                                                                         USSAGE
+  ```
 [[}]]
 
 ## blktrace (block I/O traffic) [[{monitoring.storage.blocks]] (man 8 blktrace)
-  generate traces of the i/o traffic on (low-level) block devices vs (high-level) File Systems.
- $ sudo blktrace -d /dev/sda -o - | blkparse -i -   <··· trace i/o for /dev/sda
-                                                         Alt. using btrace script:
-                                                         $ btrace /dev/sda
 
- $ blktrace /dev/sda /dev/sdb          <··· trace /dev/sda+/dev/sdb to current dir.
- $ blkparse sda sdb                    <··· View saved trace
+* generate traces of the i/o traffic on (low-level) block devices vs (high-level) File Systems.
+  ```
+  | $ sudo blktrace -d /dev/sda -o - | blkparse -i -   <··· trace i/o for /dev/sda
+  |                                                         Alt. using btrace script:
+  |                                                         $ btrace /dev/sda
 
-SYNOPSIS
-       blktrace -d dev [ -r debugfs_path ] [ -o output ] [ -w time ] [ -a action ] [ -A action_mask ] [ -v ]
+  | $ blktrace /dev/sda /dev/sdb          <··· trace /dev/sda+/dev/sdb to current dir.
+  | $ blkparse sda sdb                    <··· View saved trace
+  ```
 
-DESCRIPTION
-OPTIONS
-    -a/--set-mask=hex-mask :  Set filter mask to hex-mask (see below for masks)
-                              barrier : barrier attribute
-                              complete: completed by driver
-                              discard : discard / trim traces
-                              fs      : requests
-                              issue   : issued to driver
-                              pc      : packet command events
-                              queue   : queue operations
-                              read    : read traces
-                              requeue : requeue operations
-                              sync    : synchronous attribute
-                              write   : write traces
-                              notify  : trace messages
-                              drv_data: additional driver specific trace
+  ```
+  | SYNOPSIS
+  |        blktrace -d dev [ -r debugfs_path ] [ -o output ] [ -w time ] [ -a action ] [ -A action_mask ] [ -v ]
+  | 
+  | DESCRIPTION
+  | OPTIONS
+  |     -a/--set-mask=hex-mask :  Set filter mask to hex-mask (see below for masks)
+  |                               barrier : barrier attribute
+  |                               complete: completed by driver
+  |                               discard : discard / trim traces
+  |                               fs      : requests
+  |                               issue   : issued to driver
+  |                               pc      : packet command events
+  |                               queue   : queue operations
+  |                               read    : read traces
+  |                               requeue : requeue operations
+  |                               sync    : synchronous attribute
+  |                               write   : write traces
+  |                               notify  : trace messages
+  |                               drv_data: additional driver specific trace
+  | 
+  |        --act-mask=mask     : Add mask to current filter (see below for masks)
+  |        --buffer-size=size  : Specifies (1024) buffer size for event extraction. Def 512KiB.
+  |        --dev=dev           : Adds dev as a device to trace
+  |        --input-devs=file   : Adds the devices found in file as devices to trace
+  |        --num-sub-buffers=X : number of buffers to use. Def: 4 sub buffers.
+  |        --listen            : Run in network listen/server mode.
+  |        --host=hostname     : Run in network client mode
+  |        --port=number       : Network port to use (default 8462)
+  |        --no-sendfile       : Make the network client NOT use sendfile() to transfer data
+  |        --output=basename   : Specifies base name for input files. Default is device.blktrace.cpu.
+  |                              Specifying -o - runs  in  live mode with blkparse (writing data to standard out).
+  |        --output-dir=dir    : Prepend file to output file name(s)
+  |        --relay=rel-path    : Specifies debugfs mount point
+  |        --version
+  |        -w seconds
+  |        --stopwatch=seconds
+  ```
 
-       --act-mask=mask     : Add mask to current filter (see below for masks)
-       --buffer-size=size  : Specifies (1024) buffer size for event extraction. Def 512KiB.
-       --dev=dev           : Adds dev as a device to trace
-       --input-devs=file   : Adds the devices found in file as devices to trace
-       --num-sub-buffers=X : number of buffers to use. Def: 4 sub buffers.
-       --listen            : Run in network listen/server mode.
-       --host=hostname     : Run in network client mode
-       --port=number       : Network port to use (default 8462)
-       --no-sendfile       : Make the network client NOT use sendfile() to transfer data
-       --output=basename   : Specifies base name for input files. Default is device.blktrace.cpu.
-                             Specifying -o - runs  in  live mode with blkparse (writing data to standard out).
-       --output-dir=dir    : Prepend file to output file name(s)
-       --relay=rel-path    : Specifies debugfs mount point
-       --version
-       -w seconds
-       --stopwatch=seconds
-
-
-  REQUEST TYPES:
-  - file system  : normal read/write op from a specific disk location at a given size.
-                   typically originating from a user process
-  - SCSI commands: blktrace sends the command data block as a payload so that blkparse can decode it.
+### REQUEST TYPES:
+* file system  : normal read/write op from a specific disk location at a given size.
+                 typically originating from a user process
+* SCSI commands: blktrace sends the command data block as a payload so that blkparse can decode it.
 [[}]]
 
 ## powertop  [[{monitoring.hardware]]
 Allows to:
-  - diagnose device/CPU power consumption issues
-  - Tune/control device/CPU power management.
+  * diagnose device/CPU power consumption issues
+  * Tune/control device/CPU power management.
 
 $ sudo powertop # ← Interactive mode if no other option is provided
 $ sudo powertop --auto-tune  # ← Callibrate non-interactively
@@ -977,13 +1054,13 @@ OTHER PERTINENT OPTIONS:
 
 
 ## perf (kernel counters) [[{monitoring.kernel.counters,profiling.jobs,dev_stack.java,profiling.locks,01_PM.TODO]]
-TODO @[http://www.brendangregg.com/perf.html]
-TODO @[http://www.brendangregg.com/flamegraphs.html]
-- Perf: new kernel-based subsystem that provide a framework for all things performance analysis.
-- It covers hardware level (CPU/PMU, Performance Monitoring Unit)
+TODO <http://www.brendangregg.com/perf.html>
+TODO <http://www.brendangregg.com/flamegraphs.html>
+* Perf: new kernel-based subsystem that provide a framework for all things performance analysis.
+* It covers hardware level (CPU/PMU, Performance Monitoring Unit)
   features and software features (software counters, tracepoints) as well.
 
-$ perf stat           <- -gather perf-counter stats. @[https://linux.die.net/man/1/perf-stat]
+$ perf stat           <- -gather perf-counter stats. <https://linux.die.net/man/1/perf-stat>
      [--event=EVENT]  ← PMU event in the form:
                         - symbolic event name (perf list to list)
                         - raw PMU event (eventsel+umask) with format
@@ -1054,7 +1131,7 @@ $*perf stats*-r 4 --event=cycles:{k,u} -- make -j
 
 *PROFILING*
 -*CPU Profiling*
-@[https://linux.die.net/man/1/perf-top]
+<https://linux.die.net/man/1/perf-top>
   $ perf top
   Samples: 12K of event 'cycles:ppp', Event count (approx.): 54543453553535
 Overhead  Shared Object              Symbol
@@ -1068,9 +1145,9 @@ Overhead  Shared Object              Symbol
   It can be used to profile anything, not just Rust projects!
 
 -*Sleep-time Profiling*
- See also @[#latencytop]
+ See also <#latencytop>
 
-- Syscall Pofiling:
+* Syscall Pofiling:
   $ perf trace --durtion=100
    340.448 (1000.122 ms): JS Watchdog/15221 futex(uaddr: 0x7f3e9cd1a434, op: WAIT_BITSET|PRIVATE_FLAG|CLOCK_REALTIME, utime: 0x7f3eae487df0, val3: MATCH_ANY) = -1 ETIMEDOUT (Connection timed out)
    119.549 (1221.529 ms): tmux: server/2501 poll(ufds: 0x55edaa47c990, nfds: 11, timeout_msecs: 12189)            = 1
@@ -1098,24 +1175,24 @@ Overhead  Shared Object              Symbol
   1877.189 (1000.372 ms): dockerd/32491 futex(uaddr: 0xc420c83948)                                            = 0
 
 
-- record command's profile into perf.data:
+* record command's profile into perf.data:
   https://linux.die.net/man/1/perf-record
 
-- display recorded perf.data:
+* display recorded perf.data:
   https://linux.die.net/man/1/perf-report
 
-- General framework for bench.suites:
+* General framework for bench.suites:
   https://linux.die.net/man/1/perf-bench
 
-- Analyze lock events:                   [[{profiling.locks]]
+* Analyze lock events:                   [[{profiling.locks]]
   https://linux.die.net/man/1/perf-lock  [[}]]
 
 ## Example Profiling with Perf (FB 60 TB+ input data)              [[{]]
 Extracted from:
   "Apache Spark @Scale: A  production use case"
-@[https://engineering.fb.com/core-data/apache-spark-scale-a-60-tb-production-use-case/]
+<https://engineering.fb.com/core-data/apache-spark-scale-a-60-tb-production-use-case/>
   ...  Tools we used to find performance bottleneck
-  - Spark Linux Perf/Flame Graph support: Although the two tools
+  * Spark Linux Perf/Flame Graph support: Although the two tools
     above are very handy, they do not provide an aggregated view of CPU
     profiling for the job running across hundreds of machines at the same
     time. On a per-job basis, * we added support for enabling Perf *
@@ -1127,16 +1204,16 @@ Extracted from:
 
 #[latencytop]
 ## (x)latencytop [[{profiling.locks,troubleshooting.jobs,QA.UX]]
-@[https://linux.die.net/man/8/xlatencytop]
-- aimed at:
-  - identifying and visualizing where (kernel and userspace) latencies are happening
-  - What kind of operation/action is causing the latency
+<https://linux.die.net/man/8/xlatencytop>
+* aimed at:
+  * identifying and visualizing where (kernel and userspace) latencies are happening
+  * What kind of operation/action is causing the latency
 
-- LATENCYTOP FOCUSES ON THE CASES WHERE THE APPLICATIONS WANT TO RUN
+* LATENCYTOP FOCUSES ON THE CASES WHERE THE APPLICATIONS WANT TO RUN
   AND EXECUTE USEFUL CODE, BUT THERE'S SOME RESOURCE THAT'S NOT
   CURRENTLY AVAILABLE (AND THE KERNEL THEN BLOCKS THE PROCESS).
 
-- This is done both on a system level and on a per process level,
+* This is done both on a system level and on a per process level,
   so that you can see what's happening to the system, and which
   process is suffering and/or causing the delays.
 
@@ -1150,35 +1227,35 @@ NOTE: There are newer alternatives based on BPF:
       http://www.brendangregg.com/blog/2016-10-27/dtrace-for-linux-2016.html
 
 NOTE: See also the more advanced TimeChart:
-    @[http://www.linux-magazine.com/Online/News/Timechart-Zoom-in-on-Operating-System]
-    @[http://blog.fenrus.org/?p=5]
+    <http://www.linux-magazine.com/Online/News/Timechart-Zoom-in-on-Operating-System>
+    <http://blog.fenrus.org/?p=5>
 [[}]]
 
 [[monitoring.kernel}]]
 
 ## SystemTap (stap) [[{monitoring.jobs,troubleshooting,01_PM.TODO]]
-- C&P from https://lwn.net/Articles/852112/:  [[{02_doc_has.comparative]]
+* C&P from https://lwn.net/Articles/852112/:  [[{02_doc_has.comparative]]
   SystemTap has been available since 2005, while bpftrace is a more
   recent contender that, to some, may appear to have made SystemTap
   obsolete. However, SystemTap is still the preferred tool for some
   real-world use cases. [[}]]
 
-@[https://en.wikipedia.org/wiki/SystemTap]
-  - tool to perform live analysis of running program (dynamic instrumentation).
-  - It can interrupt normal control flow and execute code specified by a SystemTap script,
+<https://en.wikipedia.org/wiki/SystemTap>
+  * tool to perform live analysis of running program (dynamic instrumentation).
+  * It can interrupt normal control flow and execute code specified by a SystemTap script,
     temporarily modifying the program at runtime.
-  - Use-cases:
+  * Use-cases:
     - extract, filter, summarize complex performance|functional diagnosys data.
 
-  - Contributed by:
+  * Contributed by:
     - Red Hat/IBM, Intel, Hitachi, Oracle, community.
 
   See real example:
-  @[https://developers.redhat.com/blog/2019/07/24/probing-golang-runtime-using-systemtap/]
+  <https://developers.redhat.com/blog/2019/07/24/probing-golang-runtime-using-systemtap/>
 [[}]]
 
 ## latrace LD audit [[{monitoring.jobs,monitoring.libc,troubleshooting,01_PM.TODO]] (man 1 latrace
-- LD_AUDIT 2.4+ libc frontend
+* LD_AUDIT 2.4+ libc frontend
 
 $ latrace [-ltfsbcCpADaoyIiBdvTFELVh] command [arg ... ]
   Run command and display its dynamic library calls using
@@ -1199,28 +1276,28 @@ $ latrace [-ltfsbcCpADaoyIiBdvTFELVh] command [arg ... ]
 
 # Network  [[{network]]
 ## NetworkManager [[{configuration.network,troubleshooting.network]]
-@[https://www.redhat.com/sysadmin/becoming-friends-networkmanager]
-@[https://linux.die.net/man/8/networkmanager]
-@[https://linux.die.net/man/5/networkmanager.conf]
-@[https://linux.die.net/man/1/nmcli]
-@[https://linux.die.net/man/8/networkmanager_selinux]
+<https://www.redhat.com/sysadmin/becoming-friends-networkmanager>
+<https://linux.die.net/man/8/networkmanager>
+<https://linux.die.net/man/5/networkmanager.conf>
+<https://linux.die.net/man/1/nmcli>
+<https://linux.die.net/man/8/networkmanager_selinux>
 
-- widespread network configuration daemon
-- Managed through cli (nmcli), text-GUI (nmtui) GUI (GNOME,...)
+* widespread network configuration daemon
+* Managed through cli (nmcli), text-GUI (nmtui) GUI (GNOME,...)
   files, web-console (Cockpit) or D-Bus interface.
   APIs and a library (libnm) is also provided.
 -*NetworkManager allows users and applications to retrieve *
  *and modify the network's configuration at the same time, *
  *ensuring a consistent and up-to-date view of the network.*
 
-- NetworkManager philosophy:
+* NetworkManager philosophy:
   "...attempts to make networking configuration and operation as
     painless and automatic as possible..."
   When there is partial or no configuration, NetworkManager checks
   the available devices and tries its best to provide connectivity
   to the host.
 
-- NetworkManager allows advanced network administrators to
+* NetworkManager allows advanced network administrators to
   provide their own configuration.
 
 *NetworkManager Entities*
@@ -1333,15 +1410,15 @@ $ nmcli con edit   ← Interactive editor-mode with inline help will open
 
 
 TODO:
-- "Many features deserve separate blog posts"
-  - dispatcher scripts
-  - connectivity checkers
-  - split DNS
-  - MAC address randomization
-  - hotspot configuration
-  - automatic configuration.
+* "Many features deserve separate blog posts"
+  * dispatcher scripts
+  * connectivity checkers
+  * split DNS
+  * MAC address randomization
+  * hotspot configuration
+  * automatic configuration.
 
-*Check Network status* @[https://linux.die.net/man/1/nm-online]
+*Check Network status* <https://linux.die.net/man/1/nm-online>
 ~:$ nm-online -q   ←     --timeout=10       (Defaults to 30secs)
 ~:$ echo $?              --exit             Exit immediately if nm is not running or connecting
 → 0                      --quiet            Don't print anything
@@ -1423,11 +1500,11 @@ $ sudo tcpdump \    "snif" IP traffic
                      more advanced Wireshark.
 
 ## WireShark: [[{qa.UX]]
-  - world’s most popular and widely-used open-source and cross-platform
+  * world’s most popular and widely-used open-source and cross-platform
     network protocol analyzer.
-  - Previously known as Ethereal.
-  - Latest version is 4.0. (2022-10)
-  - Features include:
+  * Previously known as Ethereal.
+  * Latest version is 4.0. (2022-10)
+  * Features include:
     - powerful display filter syntax with support and wizard dialogs.
       (for example to filter just traffic to a port, dump in ASCII the
       HTTP traffic from client to server, ...)
@@ -1456,11 +1533,11 @@ $ sudo nmap -nt remote_machine    ← (try to) query remote machine for open por
 
 ## basic network traffic shaping [[{monitoring.network,troubleshooting.network]]
 *Network interface shaping with Wondershaper*
-@[https://github.com/magnific0/wondershaper/]
+<https://github.com/magnific0/wondershaper/>
 $ sudo ./wondershaper -a eth0 -u 4096 -d 8192 ← limit upload: 4Mbps, download:8Mbs
 
 *Process network shaping with Firejail*
-@[https://www.pcsuggest.com/bandwidth-traffic-shaping-in-linux-with-firejail/]
+<https://www.pcsuggest.com/bandwidth-traffic-shaping-in-linux-with-firejail/>
 $ firejail  --net=enp2s0 firefox [/bash]
 $ firejail --list | grep 'firefox' | awk -F: '{print$1}'
 $ firejail  --bandwidth=PID set interface-name down-speed up-speed
@@ -1493,7 +1570,7 @@ $ curl -u username:password http://www.placetodownload/file
 [[}]]
 
 ## Nethogs: bandwidth "top" per ps [[{monitoring.network,monitoring.jobs,troubleshooting.network]]
-- Nethogs is a command line utility for linux that displays the network
+* Nethogs is a command line utility for linux that displays the network
   bandwidth used by each application or process in realtime.
 
 $*$ sudo nethogs                                                                   *
@@ -1508,14 +1585,14 @@ $*$ sudo nethogs                                                                
 
     TOTAL                                                4.274      21.493 KB/sec"
 
-- TODO:
-  @[https://www.binarytides.com/linux-commands-monitor-network/]
+* TODO:
+  <https://www.binarytides.com/linux-commands-monitor-network/>
 [[}]]
 [[network}]]
 
 # Remote access  [[{security.remote_access]]
 ## ssh (text console)  [[{security.aaa,security.audit.user]]
-  @[https://en.wikipedia.org/wiki/Secure_Shell]:
+  <https://en.wikipedia.org/wiki/Secure_Shell>:
   standard way to access Linux&Other OSes remotely.
   A running "sshd" (ssh daemon) must be instaled and running
   on the remote machine. Used also for tunneling TCP connections.
@@ -1544,7 +1621,7 @@ $*$ sudo nethogs                                                                
 
 
  *Passwordless authentication*
-  - Useful to execute remote task automatically.
+  * Useful to execute remote task automatically.
   # STEP 01: generate local private secret (key) and associated public key.
   $ ssh-keygen
   (WARN: leave passphrase blank to allow for automated task)
@@ -1587,41 +1664,41 @@ $*$ sudo nethogs                                                                
   See 'man 1 ssh' and 'man 8 sshd' for details.
 
   Related:
-@[https://www.reddit.com/r/linuxadmin/comments/b9c7lw/using_a_yubikey_as_smartcard_for_ssh_public_key/]
+<https://www.reddit.com/r/linuxadmin/comments/b9c7lw/using_a_yubikey_as_smartcard_for_ssh_public_key/>
 [[}]]
 
 ## VNC Remote Desktop [[{security.aaa,security.remote_access,]]
-- The VNC protocol allows to launch a graphical system in a
+* The VNC protocol allows to launch a graphical system in a
   remote system using the VNC server and access it remotely
   using the VNC clients.
 
-- Running programs in the remote machine will "draw" to a
+* Running programs in the remote machine will "draw" to a
   local memory buffer shared by the VNC server.
   When a remote VNC client connects, the VNC server will
   transmit to the client the graphic buffer and finally
   the VNC client will show the buffer in the local display.
-- Modern VNC client←→server protocols are highly optimized
+* Modern VNC client←→server protocols are highly optimized
   to save bandwith and allows for high-resolution displays
   with around 1Megabit of bandwidth.
 
-- There is no limit to the number of remote VNC servers that
+* There is no limit to the number of remote VNC servers that
   can run in parallel, just limited by memory access.
   Next links offers an example of how to run many different
   VNC servers (1 or more desktops per user) in a single VNC server:
-@[https://github.com/earizon/tigervnc_remote_desktop]
+<https://github.com/earizon/tigervnc_remote_desktop>
 [[}]]
 
 #[knockd_summary]
 ## Knockd ("Invisible Linux")  [[{security.aaa,security.remote_access]]
-@[https://www.maketecheasier.com/make-linux-server-invisible-knockd/]
+<https://www.maketecheasier.com/make-linux-server-invisible-knockd/>
  REF(Michael Aboagye @ MakeTechEasier.com)
-  - Knockd allows to  listen to traffic on an network interface/port
+  * Knockd allows to  listen to traffic on an network interface/port
     waiting first for special sequences of port-hits.
-  - clients (telnet, socat, ...) initiate port-hits by sending a TCP
+  * clients (telnet, socat, ...) initiate port-hits by sending a TCP
      or packet to a port on the server.
 
 *PRE-SETUP*
-- Install and Configure Iptables
+* Install and Configure Iptables
   $ sudo apt-get install iptables iptables-persistent
                                   ^^^^^^^^^^^^^^^^^^^
                                   takes over automatic
@@ -1664,8 +1741,8 @@ $ sudo "vim" /etc/knockd.conf
   |   command = /sbin/iptables -D INPUT -s %IP% -p tcp --dport 22 -j ACCEPT
   |   tcpflags = syn
 
-- command will be executed once the client-sequence  is recognised.
-- tcpflags must be set on the client "knocks"
+* command will be executed once the client-sequence  is recognised.
+* tcpflags must be set on the client "knocks"
 
 NOTE: Adding iptables "-A" flag (appned) causes the rule to be appended
 to the end of th INPUT chain, causing all remaining connections to drop.
@@ -1676,7 +1753,7 @@ Replace by:
   input chain to accept ssh connections.
 
 *Enable Knockd Service*
-- Add/edit START_KNOCKD option in /etc/default/knock lo look like:
+* Add/edit START_KNOCKD option in /etc/default/knock lo look like:
   START_KNOCKD=1
 $ sudo systemctl enable knockd
 $ sudo systemctl start knockd
@@ -1918,7 +1995,7 @@ $ sudo pip install ps_mem  <··· PIP (P)ackage (I)nstaler for (P)ython
 [[}]]
 
 ## SysV shared memory [[{linux.101,configuration.memory,monitoring.memory,]]
-- SysV shared memory segments are accounted as a cache,
+* SysV shared memory segments are accounted as a cache,
   though they do not represent any data on the disks.
 _
 #  ipcs -m  #  check size of shared-memory-segments
@@ -1938,9 +2015,9 @@ _
     by 10x, and still reduce our storage costs by 17x."""
   [[}]]
 ## tar (tape-archive) (man 1 tar)
-  - standard tool for archiving saving a (many) files and directories to a single
+  * standard tool for archiving saving a (many) files and directories to a single
     tape or disk archive.
-  - Individual files can be restored from the .tar file when needed.
+  * Individual files can be restored from the .tar file when needed.
 
 Examples:
 *Create archive file:*
@@ -1972,22 +2049,22 @@ $ tar tzf _home_myUser_myProject_01.tar.gz
       └──── *list*
 
 ## Remote Incremental [[{security.backup.incremental,storage.network]]
-- EasyUp: KISS incremental remote backup around rsync+ssh
-@[https://github.com/earizon/easyup]
-- Rsnapshot: filesystem snapshot utility on top of rsync.
-@[http://rsnapshot.org/]
+* EasyUp: KISS incremental remote backup around rsync+ssh
+<https://github.com/earizon/easyup>
+* Rsnapshot: filesystem snapshot utility on top of rsync.
+<http://rsnapshot.org/>
   rsnapshot makes it easy to make periodic snapshots of local machines, and remote machines over ssh.
   The code makes extensive use of hard links whenever possible, to greatly reduce the disk space required
   and rsync to save bandwidth (backup only changes)
-- Live backups with inotify + rsync + bash: Backup on "real-time changes"
-@[https://linuxhint.com/inotofy-rsync-bash-live-backups/]
-- Bacula:
-@[http://www.bacula.org/]
+* Live backups with inotify + rsync + bash: Backup on "real-time changes"
+<https://linuxhint.com/inotofy-rsync-bash-live-backups/>
+* Bacula:
+<http://www.bacula.org/>
   """Bacula is a set of Open Source, computer programs that permit to manage backup,
      recovery, and verification of computer data across a network of computers of different
      kinds,  offering many advanced storage management features that make it
      easy to find and recover lost or damaged files."""
-     -@[http://www.bacula.org/9.0.x-manuals/en/main/index.html]
+     -<http://www.bacula.org/9.0.x-manuals/en/main/index.html>
      *Director Daemon*supervises all the backup, restore, verify and archive operations.
       Sysadmin uses Director to schedule backups and to recover files..
      *Console service*allows the administrator or user to communicate with the Director
@@ -2009,13 +2086,13 @@ $ tar tzf _home_myUser_myProject_01.tar.gz
      *Monitor Service*Allows the administrator or user to watch current status of Directors,
       File Daemons and Bacula Storage Daemons. Currently, only a GTK+ version is available.
 
-- Symple remote backups with ssh
+* Symple remote backups with ssh
   $ tar cjf - myDirToBackup \       # local
     | ssh myUser@myRemoteMachine \  # ssh pipe
     "cd myBackupPath && tar -xjf -" # remote
 
-- "Real time" backup with rsync and bash
-@[https://github.com/Leo-G/backup-bash]
+* "Real time" backup with rsync and bash
+<https://github.com/Leo-G/backup-bash>
 [[}]]
 
 #[multicore_compression_tools_summary]
@@ -2026,9 +2103,9 @@ $ tar tzf _home_myUser_myProject_01.tar.gz
   Ideal to save bandwidth while highly increasing CPU ussage.
 
   Ex:
-  - two runs to avoid FS cache effects
-  - Input: (dir1), 430M, with 70% binary (hard to compress) data.
-
+  * two runs to avoid FS cache effects
+  * Input: (dir1), 430M, with 70% binary (hard to compress) data.
+  ```
     430M
   STANDARD UTILITY                           MULTI-CORE ALTERNATIVE
   NO COMPRESSION                          |
@@ -2062,40 +2139,41 @@ $ tar tzf _home_myUser_myProject_01.tar.gz
   TIME: 151,7s                            |   TIME: 46,8s
   sys     0m2,179s                        |   sys     0m1,706s
   OUTPUT SIZE: 313M                       |   OUTPUT SIZE: 317M
+  ```
 
-From: @[https://www.linuxlinks.com/best-linux-multi-core-compression-tools/]
-## pigz    Parallel implementation of gzip. It's a fully functional replacement for gzip
-## PBZIP2  Parallel implementation of the bzip2 block-sorting file compressor
-## PXZ     Runs LZMA compression on multiple cores and processors
-## lbzip2  Parallel bzip2 compression utility, suited for serial and parallel processing
-## plzip   Massively parallel (multi-threaded) lossless data compressor based on lzlib
-## lrzip   Compression utility that excels at compressing large files
-## pixz    Parallel indexing XZ compression, fully compatible with XZ. LZMA and LZMA2
+From: <https://www.linuxlinks.com/best-linux-multi-core-compression-tools/>
+* pigz    Parallel implementation of gzip. It's a fully functional replacement for gzip
+* PBZIP2  Parallel implementation of the bzip2 block-sorting file compressor
+* PXZ     Runs LZMA compression on multiple cores and processors
+* lbzip2  Parallel bzip2 compression utility, suited for serial and parallel processing
+* plzip   Massively parallel (multi-threaded) lossless data compressor based on lzlib
+* lrzip   Compression utility that excels at compressing large files
+* pixz    Parallel indexing XZ compression, fully compatible with XZ. LZMA and LZMA2
 [[}]]
 
 
 ## Zstandard  [[{01_PM.TODO]]
-@[https://www.2daygeek.com/zstandard-a-super-faster-data-compression-tool-for-linux/]
-- super-fast compression tool [[}]]
+<https://www.2daygeek.com/zstandard-a-super-faster-data-compression-tool-for-linux/>
+* super-fast compression tool [[}]]
 
 ## Android 2 Linux Backups  [[{storage.android,]]
-@[https://github.com/FlamingTuri/android-file-backup]
+<https://github.com/FlamingTuri/android-file-backup>
 
 Script solving common problems when transferring files/folders from/to Android.
-- transfer big folders
-- keep the files original modification date
+* transfer big folders
+* keep the files original modification date
 
 PREREQUISITES
-- On Linux:
-  - adb installed.
-    Download (~10MB size Toolkit) from @[https://developer.android.com/studio/releases/platform-tools]
-    More info at @[https://developer.android.com/studio/command-line/adb]
+* On Linux:
+  * adb installed.
+    Download (~10MB size Toolkit) from <https://developer.android.com/studio/releases/platform-tools>
+    More info at <https://developer.android.com/studio/command-line/adb>
 
-  - $ sudo apt-get install pv  ← pv allows to view the backup compression progress (-z option)
+  * $ sudo apt-get install pv  ← pv allows to view the backup compression progress (-z option)
 
-- On Android:
-  - enable USB debugging
-  - enable USB file transfer
+* On Android:
+  * enable USB debugging
+  * enable USB file transfer
     (accept dialog asking to trust your computer RSA fingerprint)
 
 Execution Example:
@@ -2150,19 +2228,19 @@ Execution Example:
 
 
 ## Asciinema: TTY recordings [[{]]
-@[https://asciinema.org/]
-- Includes a command line tool to record the terminal plus
+<https://asciinema.org/>
+* Includes a command line tool to record the terminal plus
   a Javascript player to replay the session in a browser.
   https://asciinema.org/docs/how-it-works
-  - Lightweight, purely text-based approach to terminal recording.
-  - See demos at:
+  * Lightweight, purely text-based approach to terminal recording.
+  * See demos at:
     - https://asciinema.org/
     - Example asciinema recording "embedded" in github markdown:
       https://github.com/mvndaemon/mvnd
 [[}]]
 
 ## Linux Audit framework [[{monitoring.audit_framework,02_doc_has.diagram]]
-  REF: @[https://www.youtube.com/watch?v=x2u_prS2HmM]
+  REF: <https://www.youtube.com/watch?v=x2u_prS2HmM>
 *ARCHITECTURE:*                                   *LOG "TOPICS":*
                                                   ┌───────────────────
  audit.rules   auditd.conf                        │user
@@ -2189,13 +2267,13 @@ process     │    ║        │
         │ KERNEL════╝  │                ═══ : control
         └──────────────┘                ─── : data─flow
 
-  - *auditd daemon* centralize log writing to disk/network
+  * *auditd daemon* centralize log writing to disk/network
 
-  - *audit module@KERNEL* handles the audit rules
+  * *audit module@KERNEL* handles the audit rules
     (audtictl gets in charge of passing audit.rules to audit@KERNEL
     It also intercepts system calls.
 
-  - CLI UTILITIES:
+  * CLI UTILITIES:
   |-  *aureport* creates human-readable reports. Useful options:
   |  --summary
   |  --failed
@@ -2211,10 +2289,10 @@ process     │    ║        │
         httpd ("Apache", lighthttpd). Useful also for debugging
         SELinux related problems.
 
-  - autrace is the "ptrace" or "strace" for audit events
+  * autrace is the "ptrace" or "strace" for audit events
     (audit the audit)
 
-  - Audispd (dispatcher) provides a plugin system to dispath
+  * Audispd (dispatcher) provides a plugin system to dispath
     to other places (remote machines, Prometheus,...)
   In RHEL 8+ it has been integrated into auditd.
   (REF https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8-beta/html/8.0_beta_release_notes/new-features)
@@ -2307,7 +2385,7 @@ $ sudo aureport -s -i | \                        <- Show relationship among user
   (5)audispd.conf  (8)audispd   (8)auditd   (8)ausearch
   (5)auditd.conf   (8)auditctl  (8)aureport (8)autrace
 
-- /usr/share/doc/audit:
+* /usr/share/doc/audit:
  Contains README with basic design information and
  sample .rules files for different scenarios:
  -   capp.rules: Controlled Access Protection Profile (CAPP)
@@ -2319,7 +2397,7 @@ $ sudo aureport -s -i | \                        <- Show relationship among user
 
 ## logrotate  [[{security.backup,security.secret_management,storage.troubleshooting]]
   Avoid filling disks with logs
-- automatic rotation, compression, removal, and mailing of log files.
+* automatic rotation, compression, removal, and mailing of log files.
   (daily, weekly, monthly, or when size is exceeded)
 
 synopsys:
@@ -2329,7 +2407,7 @@ $ logrotate --state "file" option_flags config_file ..
                              may be given on the command line.
                            - order is important. later ones override first ones
 
-- tipically run on daily cron.
+* tipically run on daily cron.
 
  *option flags:*
   --debug: no changes will be made to the logs or to the logrotate state file.
@@ -2347,9 +2425,9 @@ $ logrotate --state "file" option_flags config_file ..
   --verbose
 
  *configuration file*
-  - rules: local definitions override global ones,
+  * rules: local definitions override global ones,
            later definitions override earlier ones
-  - example file:
+  * example file:
 
   | compress              ← compress using gzip (by default)
   |                         use compresscmd     to set gzip alternative
@@ -2379,58 +2457,58 @@ $ logrotate --state "file" option_flags config_file ..
           *including previously rotated ones*.
 
   other config. file options:
-  - copy: make a copy of the log file, but don't change the original at all.
+  * copy: make a copy of the log file, but don't change the original at all.
           (create snapshot)
-  - copytruncate: copy and truncate original log file in place
-  - create mode owner group:
+  * copytruncate: copy and truncate original log file in place
+  * create mode owner group:
            ^
            octal format
 
-  - delaycompress: postpone compression of previous log file to next rotation cycle.
+  * delaycompress: postpone compression of previous log file to next rotation cycle.
     useful when some program cannot be told to close its logfile and thus might
     continue writing to the previous log file for some time.
 
-  - extension ext: allows to rotate names like mylog.foo → mylog.1.foo.gz
+  * extension ext: allows to rotate names like mylog.foo → mylog.1.foo.gz
                                                           (mylog.foo.1.gz by default)
-  - ifempty: rotate log file even i empty, overriding any previous notifempty option
-  - include file_or_directory:  include file in config.
+  * ifempty: rotate log file even i empty, overriding any previous notifempty option
+  * include file_or_directory:  include file in config.
     (files read in alphabetic order for dirs)
-  - mailfirst   : mail just-rotated file vs about-to-expire file.
-  - maillast    : mail about-to-expire file vs  just-rotated file.
+  * mailfirst   : mail just-rotated file vs about-to-expire file.
+  * maillast    : mail about-to-expire file vs  just-rotated file.
   -*maxage     n:*remove rotated logs older than n days.
 
-  - size size   : rotate only if log grow bigger than size bytes.
+  * size size   : rotate only if log grow bigger than size bytes.
                   (suffix k|m|g allowed)
 
-  - minsize size: rotate when file grow bigger than size bytes,
+  * minsize size: rotate when file grow bigger than size bytes,
                   but not before any additionally specified time interval
                   (daily, weekly, monthly, or yearly).
 
-  - missingok   : don't issue error if a file is missing.
-  - nocreate    : do not create new log file.
-  - (no)shred   :
+  * missingok   : don't issue error if a file is missing.
+  * nocreate    : do not create new log file.
+  * (no)shred   :
     do not use shred when deleting old log files. see also shred.
-  - olddir $dir : move old logs to $dir
+  * olddir $dir : move old logs to $dir
                    *warn*: $dir must be on the same physical device
-  - rotate count: log rotated count times before being removed|mailed
+  * rotate count: log rotated count times before being removed|mailed
 
-  - see also: sharedscripts
-  - shred       : delete log files using shred -u instead of unlink().            [secret_management]
+  * see also: sharedscripts
+  * shred       : delete log files using shred -u instead of unlink().            [secret_management]
                   this should ensure that logs are not readable after their
                   scheduled deletion; this is off by default. see also noshred.
-  - start count :
-  - tabooext [+]list: defaults to .rpmorig, .rpmsave, ,v, .swp, .rpmnew, ~,
+  * start count :
+  * tabooext [+]list: defaults to .rpmorig, .rpmsave, ,v, .swp, .rpmnew, ~,
                       .cfsaved and .rhn-cfg-tmp-*.
 
  *files*:
-  - /var/lib/logrotate.status    default state file.
-  - /etc/logrotate.conf          default configuration options.
+  * /var/lib/logrotate.status    default state file.
+  * /etc/logrotate.conf          default configuration options.
 [[}]]
 
 
 
 ## logwatch [[{security.audit.user,security.aaa]]
-  - perl script utility to summarize logs. Ussage:
+  * perl script utility to summarize logs. Ussage:
     (Doesn't look to work on Fedora, works on Debian)
 
 $ sudo logwatch --detail Low --range today
@@ -2519,20 +2597,20 @@ $ sudo logwatch --detail Low --range today
 [[}]]
 
 ## Logreduce(IA)filter [[{security.audit.user.IA,QA.UX,01_PM.TODO]]
-@[https://opensource.com/article/18/9/quiet-log-noise-python-and-machine-learning]
-@[https://pypi.org/project/logreduce/] logreduce@pypi
-  - Quiet log noise with Python and machine learning
+<https://opensource.com/article/18/9/quiet-log-noise-python-and-machine-learning>
+<https://pypi.org/project/logreduce/> logreduce@pypi
+  * Quiet log noise with Python and machine learning
 [[}]]
 ## Tiger: Kiss-IDS [[{security.IDS,01_PM.low_code,qa.UX,security.audit.user,]]
-@[https://www.nongnu.org/tiger/]
+<https://www.nongnu.org/tiger/>
 (Unix/Linux)
-- open source shell-scripts collection for security audit and host intrusion detection.
-- Very extensible.
-- It scans system configuration files, file systems, and user configuration files
+* open source shell-scripts collection for security audit and host intrusion detection.
+* Very extensible.
+* It scans system configuration files, file systems, and user configuration files
   for possible security problems and reports them.
 
 *Install*
-- Debian/Ubuntu/Mint/...
+* Debian/Ubuntu/Mint/...
   $ sudo apt install tiger
   (Output will be similar to)
   →┌─────────────────────────Tripwire Configuration ├────────────────────────────┐
@@ -2617,7 +2695,7 @@ $ sudo logwatch --detail Low --range today
   → Security report is in `/var/log/tiger/security.report.localhost.190115-14:57'.
 
 
-- security report will be generated in the ./log
+* security report will be generated in the ./log
 → ...
 → Security report is in `log//security.report.tecmint.181229-11:12'.
 $ sudo cat log/security.report.tecmint.181229-11\:12
@@ -2690,7 +2768,7 @@ where [acc001w] and [path009w] are the msgids:
 
 ## Telegram Notifications  [[{monitoring.notifications.telegram]]
   REF: https://ugeek.github.io/blog/post/2019-03-14-crea-un-bot-de-telegram-con-bash-y-una-sola-linea-de-terminal.html (ES)
-- Telegram API allows to easely craete bots to notify any event in
+* Telegram API allows to easely craete bots to notify any event in
   our server (someone logged-in through ssh, ...)
 
 └ PRE-SETUP. STEP 1: Go to:
@@ -2700,19 +2778,19 @@ where [acc001w] and [path009w] are the msgids:
  (BotFather is the "fathers of all Bots", created by Telegram to easify bot creation)
 
 └ PRE-SETUP STEP 2:
-  -  type  "/newbot"
-  - We will be asked for the name of our new bot
+  *  type  "/newbot"
+  * We will be asked for the name of our new bot
     (Name must end with bot)
-  - Once the bot name is accepted we will receive the  *access-token to the HTTP API*
+  * Once the bot name is accepted we will receive the  *access-token to the HTTP API*
     NOTE:  each Telegram user has an ID that can be retrieved starting the "@userinfobot" bot)
 
 └ PRE-SETUP STEP 3: (Optional)
-  - If we want to add the Bot to a group or channel to send messages
+  * If we want to add the Bot to a group or channel to send messages
     or any other function, we must retrieve the Group or Channel ID. To
     do so send a message to @ChannelIdBot from the channel/group.
 
 └ CREATE-THE-BOT:
-- CREATE-THE-BOT STEP 1: Write a test script
+* CREATE-THE-BOT STEP 1: Write a test script
   $ editor  *my_bot_telegram.sh*  # ← edit a new script  (using vim/nano/"editor"...)
   _____________________________________________________
   #!/bin/bash
@@ -2725,10 +2803,10 @@ where [acc001w] and [path009w] are the msgids:
   curl -s -X POST $URL -d chat_id=$ID -d text="$MENSAJE"
   _____________________________________________________
 
-- CREATE-THE-BOT STEP 2: Set exec permissions
+* CREATE-THE-BOT STEP 2: Set exec permissions
   $ sudo chmod +x  *my_bot_telegram.sh*
 
-- CREATE-THE-BOT STEP 3: Test it!
+* CREATE-THE-BOT STEP 3: Test it!
   $  *./my_bot_telegram.sh*
 
 ### Example use 1: Show ssh connection IP*
@@ -2754,19 +2832,19 @@ $ crontab -e
 [[monitoring.notifications.telegram}]]
 
 ## Pushover (iOS/Android push) [[{security.notifications]]
-REF: @[https://www.cyberciti.biz/mobile-devices/android/how-to-push-send-message-to-ios-and-android-from-linux-cli/]
+REF: <https://www.cyberciti.biz/mobile-devices/android/how-to-push-send-message-to-ios-and-android-from-linux-cli/>
 ## Pushover Service with no need for AWS/Azure/GCP accounts:
-  - $5 ONE-TIME purchase. !!!!
-  - Up to 7500 messages/month.
-  - (More options exists for IT teams)
+  * $5 ONE-TIME purchase. !!!!
+  * Up to 7500 messages/month.
+  * (More options exists for IT teams)
 ## PRESETUP)
-  - Sign up for Pushover.
-  - download Pushover for Android/iOS.
-  - subscribe to service (7-day trial account).
-  - Once logged in, register cli application.
+  * Sign up for Pushover.
+  * download Pushover for Android/iOS.
+  * subscribe to service (7-day trial account).
+  * Once logged in, register cli application.
     to retrieve a  *secret API token*.
 ## Ussage:
-  - Integrate Pushover API into (monitoring) scripts. Ex. script:
+  * Integrate Pushover API into (monitoring) scripts. Ex. script:
     push_to_mobile(){        # ← Ussage push_to_mobile $title $message
       local t="${1:cli-app}"
       local m="$2"
@@ -2780,29 +2858,29 @@ REF: @[https://www.cyberciti.biz/mobile-devices/android/how-to-push-send-message
 [[}]]
 
 ## alert/monitoring best-patterns [[{security.notifications,qa.best_patterns,monitoring.notifications,01_PM.WiP]]
-- Simple e-mail/telegram do NOT scale
+* Simple e-mail/telegram do NOT scale
   You will receive many useless notification from proper behaviour
   (correct logins, ...)
 
-  - *A proper monitoring system will notify only when there's a real problem:*
-  - Enable messaging agent (email, telegram,...)
-  - Enable cpu/mem/net/disk login inputs and (Prometheus) output.
-  - Run a single Prometheus server that scrapes each endpoint every minute.
-  - Add Grafana for nice graphs.
-  - Add Alert Manager and set up thresholds to notify you:
+  * *A proper monitoring system will notify only when there's a real problem:*
+  * Enable messaging agent (email, telegram,...)
+  * Enable cpu/mem/net/disk login inputs and (Prometheus) output.
+  * Run a single Prometheus server that scrapes each endpoint every minute.
+  * Add Grafana for nice graphs.
+  * Add Alert Manager and set up thresholds to notify you:
     -  via OpsGenie/PagerDuty/VictorOps/Slack.
-  - Check graphs once a week, unless you get notifications.
+  * Check graphs once a week, unless you get notifications.
 
-- You can "start small" and use Monit:
-  - single binary that can be configured to watch stuff and react to problems.
+* You can "start small" and use Monit:
+  * single binary that can be configured to watch stuff and react to problems.
     - Start a service when stoped.
     - Clean up when disk is full.
 
-- "Sensu": Slightly better (and more complex) than Monit, allowing to:
-  - run any script as a check
-  - fix stuff if it's broken for X consecutive checks
-  - alert if it's still broken Y consecutive checks.
-  - Sensu can also alert to pretty much anything.
+* "Sensu": Slightly better (and more complex) than Monit, allowing to:
+  * run any script as a check
+  * fix stuff if it's broken for X consecutive checks
+  * alert if it's still broken Y consecutive checks.
+  * Sensu can also alert to pretty much anything.
     "I wrote handlers that alert to Slack, Jira and a pager."
 [[}]]
 
@@ -2902,13 +2980,13 @@ sed stays for "Stream editor", and has a lot of powerful flags like searching fo
 #[systemd_summary]
 # SystemD  [[{configuration.systemd]]
 ## Service Configuration [{configuration.systemd]]
-@[http://freedesktop.org/wiki/Software/systemd/]
-@[https://www.freedesktop.org/software/systemd/man/systemd.service.html]
-@[http://www.tecmint.com/create-new-service-units-in-systemd/]
+<http://freedesktop.org/wiki/Software/systemd/>
+<https://www.freedesktop.org/software/systemd/man/systemd.service.html>
+<http://www.tecmint.com/create-new-service-units-in-systemd/>
 "service unit"                  "targets"
-- createNew                       unit_collection
-- run                             "wants"
-- lifespan:daemon|run-once
+* createNew                       unit_collection
+* run                             "wants"
+* lifespan:daemon|run-once
 
 $ systemctl --type=service           <··· Check unit_collections.
 $ systemctl status firewalld.service <··· Check status of service
@@ -2970,7 +3048,7 @@ $ sudo systemctl \
  *runtime      *: /runtime/systemd/system
 
 ## chkservice systemd ncurses (UI in terminal)
-@[https://github.com/linuxenko/chkservice]
+<https://github.com/linuxenko/chkservice>
 [[}]]
 
 ## Journalctl(find logs)  [[{configuration.systemd,monitoring.101,security.audit.user]]
@@ -3010,85 +3088,85 @@ $ sudo systemctl \
 [[}]]
 
 ## Rsyslog (ancient log system) [[{monitoring,security.audit.user,02_doc_has.comparative,]]
-@[github.com/rsyslog/rsyslog.git]
-@[https://www.rsyslog.com]
+<github.com/rsyslog/rsyslog.git>
+<https://www.rsyslog.com>
 
 The Rocket-fast Syslog Server
-- Year: 2004
-- (primary) author: Rainer Gerhards
-- Implements and extends syslog protocol (RFC-5424)
-- Adopted by RedHat, Debian*, SuSE, Solaris, FreeBSD, ...
+* Year: 2004
+* (primary) author: Rainer Gerhards
+* Implements and extends syslog protocol (RFC-5424)
+* Adopted by RedHat, Debian*, SuSE, Solaris, FreeBSD, ...
   *Replaced by journald* in Fedora 20+
 
 Important extensions include:
-- ISO 8601 timestamp with millisecond and timezone
-- addition of the name of relays in the host fields
+* ISO 8601 timestamp with millisecond and timezone
+* addition of the name of relays in the host fields
   to make it possible to track the path a given message has traversed
-- reliable transport using TCP
-- GSS-API and TLS support
-- logging directly into various database engines.
-- support for RFC 5424, RFC 5425, RFC 5426
-- support for RELP (Reliable_Event_Logging_Protocol)
-- support for buffered operation modes:
+* reliable transport using TCP
+* GSS-API and TLS support
+* logging directly into various database engines.
+* support for RFC 5424, RFC 5425, RFC 5426
+* support for RELP (Reliable_Event_Logging_Protocol)
+* support for buffered operation modes:
   messages are buffered locally if the receiver is not ready
-- complete input/output support for systemd journal
-- "Infinite" logs. Can store years of logs from
+* complete input/output support for systemd journal
+* "Infinite" logs. Can store years of logs from
                    hundreds of machines.
 
 ## Journald [[{]]
-@[https://www.loggly.com/blog/why-journald/]
-@[https://docs.google.com/document/pub?id=1IC9yOXj7j6cdLLxWEBAGRL6wl97tFxgjLUEHIX3MSTs]
-- system service for collecting and storing log data,
+<https://www.loggly.com/blog/why-journald/>
+<https://docs.google.com/document/pub?id=1IC9yOXj7j6cdLLxWEBAGRL6wl97tFxgjLUEHIX3MSTs>
+* system service for collecting and storing log data,
   introduced with systemd.
-- easier for admins to find relevant info.
-- replaces simple plain text log files with a special file format
+* easier for admins to find relevant info.
+* replaces simple plain text log files with a special file format
   optimized for log messages with index-like queries,
   adding Structure to Log Files
-- It does *not* include a well-defined remote logging implementation,
+* It does *not* include a well-defined remote logging implementation,
   relying on existing syslog-protocol implementations to relay
   to a central log host,(and  *losing most of the benefits*)
-- retains full syslog compatibility by providing the same API in C,
+* retains full syslog compatibility by providing the same API in C,
   supporting the same protocol, and also forwarding plain-text versions
   of messages to an existing syslog implementation.
   Obviously the format, as well as the journald API allow for structured data.
 
 Syslog-protocol Problems:
-- syslog implementations (ussually) write log messages to plain text files
+* syslog implementations (ussually) write log messages to plain text files
   with lack of structure.
-- syslog protocol does *NOT* provide a means of separating messages
+* syslog protocol does *NOT* provide a means of separating messages
   by application-defined targets (for example log messages per virt.host)
   This means that, for example, web servers generally write their own access
   logs so that the main system log is not flooded with web server status messages.
-- log files write messages terminated by a newline:
+* log files write messages terminated by a newline:
   (very) hard for programs to emit multi-line information such as backtraces
   when an error occurs, and log parsing software must often do a lot of work
   to combine log messages spread over multiple lines.
 
 journalctl:
-- The journald structured file format does not work well with standard
+* The journald structured file format does not work well with standard
   UNIX tools optimized for plain text. The journalctl tool will be used.
-- very fast access to entries filtered by:
+* very fast access to entries filtered by:
   date, emitting program, program PID, UID, service, ...
-- Can also access backups in single files or directories of other systems.
+* Can also access backups in single files or directories of other systems.
 [[}]]
 
 ## Modern logging
-- Modern architectures use many systems where it becomes impractical to
+* Modern architectures use many systems where it becomes impractical to
   read logs on individual machines.
-- Centralized logging are usually stored in a (time-series) database
+* Centralized logging are usually stored in a (time-series) database
   address many of the same issues that journald does without the problems
-- Journald allows applications to send key-value fields that the
+* Journald allows applications to send key-value fields that the
   centralized systems could use directly instead of relying on these heuristics.
  *Sadly, journald does not come with a usable remote logging solution*.
-  - systemd-journal-remote is more of a proof-of-concept than an actually
+  * systemd-journal-remote is more of a proof-of-concept than an actually
     useful tool, lacking good authentication among other things.
 [[}]]
 [[configuration.systemd}]]
 
 # APPLICATION PACKAGE MANAGERS  [[{packaging]]
 ## DNF  ("yum++") [[{packaging.rpm,01_PM.WiP]]
-@[https://dnf.readthedocs.io/en/latest/]
-@[https://github.com/rpm-software-management]
+<https://dnf.readthedocs.io/en/latest/>
+<https://github.com/rpm-software-management>
 *MOST COMMONLY USED:*
 $ dnf search  "*myPackage*"     # ← Show matching pattern in package name|description
 $ dnf list    "*myPackage*"     # ← Show matching pattern in package name
@@ -3116,7 +3194,7 @@ $ dnf list *upgrades *     # ← report available packages upgrading
 *Avoid dnf/yum update certain packages:*
 (This can be needed in critical systems where no downtime is allowed for some service)
 
-- Add next line to /etc/dnf/dnf.conf (new Fedora/RedHat distros) or
+* Add next line to /etc/dnf/dnf.conf (new Fedora/RedHat distros) or
                    /etc/yum.conf     ( old Fedora/RedHat distros)
 |exclude=kernel* another_package_name_or_name_pattern
 
@@ -3180,9 +3258,9 @@ $ sudo yum --disablerepo=\* \            <·····  Install from a given repos
 
 ## apt (Debian/Ubuntu/...)  [[{packaging.apt]]
   (o 'aptitude' ncurses variant)
-- @[https://help.ubuntu.com/community/AptGet/Howto#Maintenance_commands]
+* <https://help.ubuntu.com/community/AptGet/Howto#Maintenance_commands>
 
-- 'apt', introduced by Ubuntu in 2014, is recomended over "older" 'apt-get' and 'apt-cache'.
+* 'apt', introduced by Ubuntu in 2014, is recomended over "older" 'apt-get' and 'apt-cache'.
   by unifying both of them while removing most "obscure" options.
   It also add a progress bar by default.
 
@@ -3235,7 +3313,7 @@ $ sudo yum --disablerepo=\* \            <·····  Install from a given repos
   sudo dpkg --set-selections    WARN: (SIDE-EFFECT) prevents upgrades to packages
                                       depending on updated versions of package1.
                                       ('sudo apt dist-upgrade'  will override it)
-  - Setting  *http-proxy*
+  * Setting  *http-proxy*
     - alt 1: Temporary proxy session:
       # export http_proxy=http://username:password@yourproxyaddress:proxyport
 
@@ -3255,23 +3333,23 @@ $*$ dpkg -S $search_pattern * ← "what package provides this file/package?" rev
                                 'apt-file' also allows to search over all available packages,
 
 ### APT Sources [[01_PM.TODO]]
-  - /etc/apt/sources.list file
-    @[https://help.ubuntu.com/community/SourcesList]
+  * /etc/apt/sources.list file
+    <https://help.ubuntu.com/community/SourcesList>
 [[packaging.apt}]]
 
 ## apk (Alpine)  [[{packaging,01_PM.TODO]]
-@[https://wiki.alpinelinux.org/wiki/Alpine_Linux_package_management]
-- Alpine Linux is designed to run from RAM, implying that package management
+<https://wiki.alpinelinux.org/wiki/Alpine_Linux_package_management>
+* Alpine Linux is designed to run from RAM, implying that package management
   involves two phases:
 
-  - Installing / Upgrading / Deleting packages on a running system.
-  - Restoring a system to a previously configured state
+  * Installing / Upgrading / Deleting packages on a running system.
+  * Restoring a system to a previously configured state
     (e.g. after reboot), including all previously installed packages
     and locally modified configuration files. (RAM-Based Installs Only)
 
 
-  - apk: tool used to install/upgrade/delete software.
-  - lbu: tool used to capture the data necessary to
+  * apk: tool used to install/upgrade/delete software.
+  * lbu: tool used to capture the data necessary to
          restore a system to previously configured state.
 
 apk:
@@ -3297,7 +3375,7 @@ apk:
   manifest Display checksums for files contained in a given package
 
 
-- Alpine packages:
+* Alpine packages:
 
   Alpine repositories:  directory with *.apk files +
   ├ APKINDEX.tar.gz index
@@ -3305,7 +3383,7 @@ apk:
   ├ file2.apk
   ├ ...
 
-- The list of repositories to check is stored in /etc/apk/repositories
+* The list of repositories to check is stored in /etc/apk/repositories
   (one repo per line)
   Ex:
   /media/sda1/apks
@@ -3367,18 +3445,18 @@ Information on Packages
 # Tracing (Application&Kernel fine grined monitoring)
 ## Dynamic Tracing Tools [[{monitoring.jobs,profiling,security.encryption]]
                          [[dev_stack.mysql,dev_stack.postgresql,dev_stack.java]]
-@[https://www.tecmint.com/bcc-best-linux-performance-monitoring-tools/]
+<https://www.tecmint.com/bcc-best-linux-performance-monitoring-tools/>
 
 ### *sslsniff*                                                                   [[{monitoring.network]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/sslsniff_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/sslsniff_example.txt>
     traces the write/send and read/recv functions of OpenSSL,
     GnuTLS and NSS.  Data passed to this functions is printed as plain
     text. Useful, for example, to sniff HTTP before encrypted with SSL
     See also:
-  @[https://github.com/tldr-pages/tldr/blob/master/pages/common/httpflow.md]    [[}]]
+  <https://github.com/tldr-pages/tldr/blob/master/pages/common/httpflow.md>    [[}]]
 
 ### *tcpconnect*                                                                 [[{monitoring.network]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/tcpconnect_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/tcpconnect_example.txt>
     traces the kernel function performing active TCP connections
     (eg, via a connect() syscall; accept() are passive connections). Some example
     output (IP addresses changed to protect the innocent):ç
@@ -3393,7 +3471,7 @@ Information on Packages
 
 ### *tcplife *                                                                  [[{monitoring.network]]
 
-  @[https://github.com/iovisor/bcc/blob/master/tools/tcplife_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/tcplife_example.txt>
     summarizes TCP sessions that open and close while tracing. For example:
     # ./tcplife
     PID   COMM       LADDR           LPORT RADDR           RPORT TX_KB RX_KB MS
@@ -3408,13 +3486,13 @@ Information on Packages
     [...]                                                                      [[}]]
 
 ### *ttysnoop*                                                                 [[{security.audit.user]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/ttysnoop_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/ttysnoop_example.txt>
     watches a tty or pts device, and prints the same output that is
     appearing on that device. It can be used to mirror the output from a shell
     session, or the system console.                                           [[}]]
 
 ### *argdist*                                                                  [[{profiling,troubleshooting]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/argdist_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/argdist_example.txt>
     - It probes indicated functions collecting parameter values into a
      *histogram or a frequency count* allowing to understand the distribution
       of values a certain parameter takes, filter and print interesting parameters
@@ -3432,25 +3510,25 @@ Information on Packages
     ...                                                                      [[}]]
 
 ### *bashreadline*                                                     [[{security.audit.user]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/bashreadline_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/bashreadline_example.txt>
     prints bash commands from all running bash shells on the system   [[}]]
 
 ### *biolatency*                                                       [[{monitoring.storage,profiling.storage]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/biolatency_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/biolatency_example.txt>
     traces block device I/O (disk I/O), and records the distribution
     of I/O latency (time), printing this as a histogram when Ctrl-C is hit [[}]]
 
 ### *biosnoop*                                                         [[{monitoring.storage,profiling.storage]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/biosnoop_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/biosnoop_example.txt>
     biosnoop traces block device I/O (disk I/O), and prints a line of output [[}]]
 
 ### *biotop*                                                           [[{monitoring.storage,profiling.storage]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/biotop_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/biotop_example.txt>
     lock device I/O top, biotop summarizes which processes are
     performing disk I/O. It's top for disks.                          [[}]]
 
 ### *bitesize*                                                         [[{monitoring.storage,profiling.storage]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/bitesize_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/bitesize_example.txt>
     show I/O distribution for requested block sizes, by process name  [[}]]
 
 ### *bpflist*                                                          [[{monitoring.bft,kernel.bft]]
@@ -3458,110 +3536,110 @@ Information on Packages
     prints open kprobes and uprobes                                   [[}]]
 
 ### *cachestat*                                                        [[{monitoring.storage,profiling.storage]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/cachestat_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/cachestat_example.txt>
     shows hits and misses to the file system page cache               [[}]]
 
 ### *cachetop*                                                         [[{monitoring.storage,profiling.storage]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/cachetop_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/cachetop_example.txt>
     show Linux page cache hit/miss statistics including read and write hit % per
     processes in a UI like top.                                       [[}]]
 
 ### *capable*                                                          [[{security.audit]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/capable_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/capable_example.txt>
     capable traces calls to the kernel cap_capable() function, which does
     security capability checks, and prints details for each call.     [[}]]
 
 ### *cpudist*                                                          [[{monitoring.cpu,profiling.cpu]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/cpudist_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/cpudist_example.txt>
     summarizes task on-CPU time as a histogram, showing how long tasks
     spent on the CPU before being descheduled                         [[}]]
 
 ### *cpuunclaimed*                                                     [[{monitoring.cpu,profiling.cpu]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/cpuunclaimed_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/cpuunclaimed_example.txt>
     samples the length of the CPU run queues and determine when there are
     idle CPUs, yet queued threads waiting their turn.                 [[}]]
 
 ### *criticalstat*                                                     [[{monitoring.kernel,profiling.kernel]]
     traces and reports occurences of atomic critical sections in the  [[profiling.locks]]
     kernel with useful stacktraces showing the origin of them.
-  @[https://github.com/iovisor/bcc/blob/master/tools/criticalstat_example.txt] [[}]]
+  <https://github.com/iovisor/bcc/blob/master/tools/criticalstat_example.txt> [[}]]
 
 ### *dbslower*                                                         [[{profiling,dev_stack.mysql,dev_stack.postgresql]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/dbslower_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/dbslower_example.txt>
     traces queries served by a MySQL or PostgreSQL server, and prints
     those that exceed a latency (query time) threshold.
 
 ### *dbstat*                                                           [[{profiling,dev_stack.mysql,dev_stack.postgresql]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/dbstat_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/dbstat_example.txt>
     traces queries performed by a MySQL or PostgreSQL database process, and
     displays a histogram of query latencies.                          [[}]]
 
 ### *dcstat*                                                           [[{monitoring.storage,profiling.storage]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/dcstat_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/dcstat_example.txt>
     dcstat shows directory entry cache (dcache) statistics.           [[}]]
 
 ### *deadlock*                                                         [[{profiling.locks.deadlock]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/deadlock_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/deadlock_example.txt>
     This program detects potential deadlocks on a running process. The program
     attaches uprobes on `pthread_mutex_lock` and `pthread_mutex_unlock` to build
     a mutex wait directed graph, and then looks for a cycle in this graph.  [[}]]
 
 ### *drsnoop*                                                          [[{monitoring.memory,profiling.memory]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/drsnoop_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/drsnoop_example.txt>
     While tracing, the processes alloc pages，due to insufficient memory available
     in the system, direct reclaim events happened, which will increase the waiting
     delay of the processes.
     drsnoop traces the direct reclaim system-wide, and prints various details.  [[}]]
 
 ### *execsnoop*                                                        [[{monitoring.jobs]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/execsnoop_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/execsnoop_example.txt>
     Traces new process                                                [[}]]
 
 ### *fileslower*                                                       [[{monitoring.storage,profiling.storage]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/fileslower_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/fileslower_example.txt>
     shows file-based synchronous reads and writes slower than a threshold [[}]]
 
 ### *filetop*                                                          [[{monitoring.storage,profiling.storage]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/filetop_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/filetop_example.txt>
     filetop shows reads and writes by file, with process details.     [[}]]
 
 ### *gethostlatency*                                                   [[{monitoring.network]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/gethostlatency_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/gethostlatency_example.txt>
     traces host name lookup calls                                     [[}]]
 
 ### *hardirqs*                                                         [[{monitoring.hardware,profiling.hardware]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/hardirqs_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/hardirqs_example.txt>
     traces hard interrupts (irqs), and stores timing statistics
     in-kernel for efficiency                                          [[}]]
 
 ### *llcstat*                                                         [[{monitoring.memory,profiling.memory]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/llcstat_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/llcstat_example.txt>
   traces cache reference and cache miss events system-wide, and summarizes
   them by PID and CPU.                                               [[}]]
 
 ### *mdflush*                                                         [[{monitoring.storage,profiling.storage]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/mdflush_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/mdflush_example.txt>
   traces flushes at the md driver (kernel software RAID) level       [[}]]
 
 ### *memleak*                                                         [[{monitoring.memory,profiling.memory]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/memleak_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/memleak_example.txt>
     traces and matches memory allocation and deallocation requests, and
     collects call stacks for each allocation. memleak can then print a summary
     of which call stacks performed allocations that weren't subsequently freed  [[}]]
 
 ### *nfs...*
 ### *offcputime, offcpu...*                                           [[profiling.locks.profiling]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/offcputime_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/offcputime_example.txt>
     shows stack traces that were blocked, and the total duration they
     were blocked.                                                    [[}]]
 
 ### *oomkill*                                                         [[{monitoring.memory]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/oomkill_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/oomkill_example.txt>
     simple program that traces the Linux out-of-memory (OOM) killer,
     and shows basic details on one line per OOM kill:                [[}]]
 
 ### *wakeuptime*                                                      [[{profiling.locks.profiling]]
-  @[https://github.com/iovisor/bcc/blob/master/tools/wakeuptime_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/wakeuptime_example.txt>
   measures when threads block, and shows the stack traces for the
   threads that performed the wakeup, along with the process names of the waker
   and target processes, and the total blocked time.                  [[}]]
@@ -3570,17 +3648,17 @@ Information on Packages
 ## Python,Java,NodeJS  [[{profiling.java,profiling.python,profiling.nodejs]]
                        [[ monitoring.java,monitoring.python,monitoring.nodejs]]
 ### *ugc*
-  @[https://github.com/iovisor/bcc/blob/master/tools/lib/ugc_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/lib/ugc_example.txt>
     traces garbage collection events in high-level languages, including Java,
     Python, Ruby, and Node.
 
 ### *ucalls*
-  @[https://github.com/iovisor/bcc/blob/master/tools/lib/ucalls_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/lib/ucalls_example.txt>
    ucalls summarizes method calls in various high-level languages, including Java,
    Perl, PHP, Python, Ruby, Tcl, and Linux system calls.
 
 ### *uflow*
-  @[https://github.com/iovisor/bcc/blob/master/tools/lib/uflow_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/lib/uflow_example.txt>
     uflow traces method entry and exit events and prints a visual flow graph that
     shows how methods are entered and exited, similar to a tracing debugger with
     breakpoints. This can be useful for understanding program flow in high-level
@@ -3588,21 +3666,21 @@ Information on Packages
     probes for method invocations.
 
 ### *uobjnew*
-  @[https://github.com/iovisor/bcc/blob/master/tools/lib/uobjnew_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/lib/uobjnew_example.txt>
     summarizes new object allocation events and prints out statistics on
     which object type has been allocated frequently, and how many bytes of that
     type have been allocated. This helps diagnose common allocation paths, which
     can in turn cause heavy garbage collection.
 
 ### *ustat*
-  @[https://github.com/iovisor/bcc/blob/master/tools/lib/ustat_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/lib/ustat_example.txt>
     ustat is a "top"-like tool for monitoring events in high-level languages. It
     prints statistics about garbage collections, method calls, object allocations,
     and various other events for every process that it recognizes with a Java,
     Node, Perl, PHP, Python, Ruby, and Tcl runtime.
 
 ### *uthreads*
-  @[https://github.com/iovisor/bcc/blob/master/tools/lib/uthreads_example.txt]
+  <https://github.com/iovisor/bcc/blob/master/tools/lib/uthreads_example.txt>
     traces thread creation events in Java or raw (C) pthreads, and prints
     details about the newly created thread. For Java threads, the thread name is
     printed; for pthreads, the thread's start function is printed, if there is
@@ -3665,8 +3743,8 @@ Information on Packages
 
 ### BCC – Dynamic Tracing toolkit for creating efficient Linux kernel tracing, [[{01_PM.TODO]]
   performance Monitoring, networking and much more.
-- It makes use of extended BPF (Berkeley Packet Filters), formally known as eBPF [[}]]
-@[https://github.com/iovisor/bcc]
+* It makes use of extended BPF (Berkeley Packet Filters), formally known as eBPF [[}]]
+<https://github.com/iovisor/bcc>
 
 ### Linux Tracer comparative:  [[{02_doc_has.comparative,01_PM.TODO]]
   http://www.brendangregg.com/blog/2015-07-08/choosing-a-linux-tracer.html
@@ -3674,7 +3752,7 @@ Information on Packages
 [[}]]
 
 ## ltrace: Library Call Tracer [[{monitoring.jobs]]
-@[https://linux.die.net/man/1/ltrace]
+<https://linux.die.net/man/1/ltrace>
 Summary:
 *ltrace                           | ltrace -c  # ← Count time and calls for each library call*
 *                                                  and report a summary on program exit.     *
@@ -3763,12 +3841,12 @@ read(0, 0x7ffff72cf5cf, 1)              = ? *ERESTARTSYS (To be restarted)*
 rt_sigreturn(0xe)                       = 0
 read(0, ""..., 1)                       = 0
 
-- explain: decode error returned from strace
+* explain: decode error returned from strace
   https://linux.die.net/man/1/explain
 [[}]]
 
 ## mpstat-CPU stats (ints., hypervisor...) [[{monitoring.cpu,monitoring.hypervisor]]
-@[https://linux.die.net/man/1/mpstat]
+<https://linux.die.net/man/1/mpstat>
 mpstat
   [ -A ]                        ==  -I ALL -u -P ALL
   [ -I { SUM | CPU | ALL } ]    ==  Report interrupts statistics
@@ -3782,7 +3860,7 @@ mpstat writes to standard output activities for each available processor,
 Global average activities among all processors are also reported.
 
 
-- CPU output columns:
+* CPU output columns:
  %usr   :  executing at the user level (application).
  %nice  :  executing at the user level with nice priority.
  %sys   :  executing at the system level (kernel).
@@ -3803,32 +3881,32 @@ Global average activities among all processors are also reported.
 
 # Integrated Admin Tools [[{configuration.foreman,QA.UX,01_PM.TODO]]
 ## Foreman Server Lifecycle Mng. [[{]]
-@[https://theforeman.org/introduction.html]
-@[https://github.com/theforeman/foreman_bootdisk]
+<https://theforeman.org/introduction.html>
+<https://github.com/theforeman/foreman_bootdisk>
 [[}]]
 
 ## cockpit Web UI [[{QA.UX,configuration.cockpit,monitoring,security.aaa,security.selinux]]
                  [[troubleshooting]]
-@[https://cockpit-project.org/]
-- easy-to-use, integrated, "glanceable", web-based interface for servers.
+<https://cockpit-project.org/>
+* easy-to-use, integrated, "glanceable", web-based interface for servers.
 
-@[https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8-beta/html/managing_systems_using_the_cockpit_web_interface/getting-started-with-cockpit_system-management-using-cockpit]
+<https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8-beta/html/managing_systems_using_the_cockpit_web_interface/getting-started-with-cockpit_system-management-using-cockpit>
 
-- UI with wide range of administration tasks, including:
-  - Managing services, user accounts, system services
+* UI with wide range of administration tasks, including:
+  * Managing services, user accounts, system services
     network interfaces,  firewall, virtual machines,
     kernel-dump-configuration, SELinux, software updates,
     system subscriptions.
-  - system logs tracing,
-  - diagnostic reports.
+  * system logs tracing,
+  * diagnostic reports.
 [[}]]
 [[}]]
 
 
 # Non Classified:
 ## ZSwap For low-mem systems  [[{configuration.memory,troubleshooting.memory,storage.compression]]
-- Increase system performance in systems with memory-preasure
-@[https://www.maketecheasier.com/use-zswap-improve-old-linux-performance/]
+* Increase system performance in systems with memory-preasure
+<https://www.maketecheasier.com/use-zswap-improve-old-linux-performance/>
 
 -*Debian/Ubuntu flavour Setup*
     STEP 1: Edit /etc/default/grub and add "zswap.enabled=1" option to "GRUB_CMDLINE_LINUX_DEFAULT".
@@ -3862,9 +3940,34 @@ Global average activities among all processors are also reported.
   (must display "Y,")
 
 -*Tunning*
-  - Check adding the (grub) option "zswap.max_pool_percent=20" to see if performance increase.
+  * Check adding the (grub) option "zswap.max_pool_percent=20" to see if performance increase.
     It’s recommended NOT to go above 50% since more than that can have detrimental effects
     on systems with low amounts of RAM.
 [[}]]
 
+## Linux Boot Process [[{]]
+```
+ Power On 
+ ··> 1) BIOS/UEFI
+     - load from non-volatile
+       memory.
+     - run POST
+ ··> 2) Detect Devices
+ ··> 3) Choose a Boot Device
+ ··> 4) GRUB
+        Boot Loader
+ ··> 5) Execute SystemD: first process in user space
+ ··> 6) Run .target Files
+        · default.target
+        · multi-user.target
+          · Basic.target
+          · getty.target
+          · ssh.service
+ ··> 7) Run Startup Scripts
+        ··> /systemd-logind
+            ··> /etc/profile
+              ··> ${HOME}/.bashrc
+ ··> 8) Users can login now
+```
+[[}]]
 

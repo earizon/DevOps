@@ -1,4 +1,4 @@
-# GIT [[{git]]
+# GIT
 ## External Links
 
 * @[https://git-scm.com/book/en/v2]
@@ -1004,7 +1004,7 @@ $ git pull  \             ←   # Verify signature at pull time
   <https://www.weave.works/blog/gitops-operations-by-pull-request>
 [[{ci/cd.gitops}]]
 
-## Scalar (Git v2.38+) [[{git.scalability,scalability.storage>]]
+## Scalar (Git v2.38+) [[{git.scalability,scalability.storage}]]
 * <https://git-scm.com/docs/scalar>
 * Replace previous Git LFS/VFS support for "big files and repositories
   with a native Git integration.
@@ -1129,6 +1129,10 @@ Gerrit is a Git Server that provides:
   available open source tools with this purpose and provides a
   framework to run them as one.
 
-[[git}]]
+## when to avoid git-rebase [[{101.rebase]]
+https://www.javacodegeeks.com/2024/03/when-to-avoid-git-rebase.html
+[[101.rebase}]]
 
+## Alternatives to git
 
+* Fossil, Plastic, Pijal  

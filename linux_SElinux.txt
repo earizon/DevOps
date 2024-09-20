@@ -1,6 +1,6 @@
 ## Apropos:
   Content is versioned in git.  commits, issues and pull-requests welcome!
-@[https://www.github.com/earizon/DevOps]
+<https://www.github.com/earizon/DevOps>
 
 # SElinux Summary [[{linux.security.selinux,security.aaa,linux.kernel.101]] #[selinux_summary]
 - Ext.Refs

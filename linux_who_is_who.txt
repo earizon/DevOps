@@ -3,12 +3,12 @@
   - Linus Torvalds:
     - He loves C++ and Microkernels, author of a Unix like
        hobbie project for x86. Nothing serious.
-     @[http://www.linux-schule.net/linux/text34.html]
-     @[https://en.wikipedia.org/wiki/Linus_Torvalds]
+     <http://www.linux-schule.net/linux/text34.html>
+     <https://en.wikipedia.org/wiki/Linus_Torvalds>
   - Alan Cox
-  @[https://en.wikipedia.org/wiki/Alan_Cox]
+  <https://en.wikipedia.org/wiki/Alan_Cox>
   - Ingo Molnár
-    @[https://en.wikipedia.org/wiki/Ingo_Moln%C3%A1r]
+    <https://en.wikipedia.org/wiki/Ingo_Moln%C3%A1r>
     - Completely Fair Scheduler
     - in-kernel TUX HTTP / FTP server.
     - thread handling enhancements
@@ -28,23 +28,23 @@
     Moshe is at this time a board member of Tinaba SpA, Graylog Inc, ePrice SpA, Quandoo AG, Cascade Partners LP and Optigrowth Sarl.
   - Patrick Volkerding, creator of Slackware, the first Linux
     distribution.
-  @[https://en.wikipedia.org/wiki/Patrick_Volkerding]
+  <https://en.wikipedia.org/wiki/Patrick_Volkerding>
   - Marc Ewing, creator of Red Hat
-  @[https://en.wikipedia.org/wiki/Marc_Ewing]
+  <https://en.wikipedia.org/wiki/Marc_Ewing>
   - Robert Love
-  @[https://en.wikipedia.org/wiki/Robert_Love]
+  <https://en.wikipedia.org/wiki/Robert_Love>
     Ximian, Linux Desktop Group, SuSe Novell, worked on GNOME,
     on 2007 joins Google to work on Android, engineered several
     kernel and system-level solutions like its novel shared memory
     subsystem, ashmem. From 2014 Love continues to work at Google
     as Director of Engineering for Search Infrastructure.
   - Andries Brouwer
-  @[https://en.wikipedia.org/wiki/Andries_Brouwer#Linux_kernel]
+  <https://en.wikipedia.org/wiki/Andries_Brouwer#Linux_kernel>
   - Bredan D.Gregg: Author of many great books and posts on
       Linux observability and monitoring
-  @[http://www.brendangregg.com/]
+  <http://www.brendangregg.com/>
   - Rusty Russell
-  @[https://en.wikipedia.org/wiki/Rusty_Russell]
+  <https://en.wikipedia.org/wiki/Rusty_Russell>
     work on the Linux kernel's succesful networking subsystem
     (netfilter, iptables) and the Filesystem Hierarchy Standard.
   - Sebastien Godard (http://pagesperso-orange.fr/sebastien.godard/),

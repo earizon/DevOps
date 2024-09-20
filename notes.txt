@@ -1,6 +1,6 @@
 ## Apropos:
   Content is versioned in git.  commits, issues and pull-requests welcome!
-@[https://www.github.com/earizon/DevOps]
+<https://www.github.com/earizon/DevOps>
 
 # Shell Scripting [[{dev_stack.shell_script]]
 
@@ -58,8 +58,8 @@
   |
   | function XXX(){
   |   set +e                                # <- Disable "exit on any error" for the body of function.
-  |                                         #  REF: @[https://en.wikipedia.org/wiki/Fail-fast]
-  |   local -r name = ${HOME}               # local: scoped to function!!!                      [[qa]]
+  |                                         #  REF: <https://en.wikipedia.org/wiki/Fail-fast>
+  |   readonly local -r name = ${HOME}      # local: scoped to function!!!                      [[qa]]
   |   echo "Cleaning resource and exiting"
   |   rm -fO ${FILE_RESOURCE_01}
   |   set -e                                # <- Re-enable fail-fast.
@@ -359,7 +359,7 @@
 [[}]]
 
 ## Kapow! Shell Script to HTTP API [[{web_hook,01_PM.low_code,git,monitoring.prometheus,dev_stack.shell_script,dev_stack.kubernetes,]]
-@[https://github.com/BBVA/kapow]    [[notifications.jira,InfraAsCode.ansible,git,git.github,notifications.slack]]
+<https://github.com/BBVA/kapow>    [[notifications.jira,InfraAsCode.ansible,git,git.github,notifications.slack]]
   (by BBVA-Labs Security team members)
   " If you can script it, you can HTTP it !!!!"
 
@@ -570,7 +570,7 @@ Initial Script:
   full analytical platform.
 
 * MUCH MORE DETAILED INFORMATION IS AVAILABLE AT:
- @[../../txt_world_domination/viewer.html?payload=../SoftwareArchitecture/ddbb_engines.txt]
+ <../../txt_world_domination/viewer.html?payload=../SoftwareArchitecture/ddbb_engines.txt>
 
 [[}]]
 [[monitoring.101}]]
@@ -578,7 +578,7 @@ Initial Script:
 # Non-Classified/TODO/Backlog [[{01_PM.TODO]]
 
 ## Yaml References [[{yaml.101]]
-@[http://docs.ansible.com/ansible/YAMLSyntax.html]
+<http://docs.ansible.com/ansible/YAMLSyntax.html>
 
   ```
   YAML                               JSON
@@ -653,7 +653,7 @@ Initial Script:
 [[}]]
 
 # Source{d}: Large Scale Code Analysis with IA [[{security,qa.code_analysis,qa.testing,git,01_PM.TODO]]
-@[https://www.linux.com/blog/holberton/2018/10/sourced-engine-simple-elegant-way-analyze-your-code]
+<https://www.linux.com/blog/holberton/2018/10/sourced-engine-simple-elegant-way-analyze-your-code>
 
 * source{d} offers a suite of applications that uses machine learning on code
   to complete source code analysis and assisted code reviews. Chief among them

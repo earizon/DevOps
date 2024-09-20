@@ -1,23 +1,4 @@
-<!DOCTYPE html>
-<html>
-   <meta charset="UTF-8">
-    <meta name="viewport"
-     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">  <title>Linux Networking Map<!-- ignore --></title>
-<head>
-<script type=module src=/IT_notes/map_v1.js></script>
-<link rel='stylesheet' type='text/css' href='/IT_notes/map_v1.css' />
-</head>
-
-<body>
-
-<table style='width:100%'{>
-<tbody>
-<tr {>
-  <th colspan=3 header_delimit {   >topic1</th>
-</tr }>
-</body>
-<pre zoom labels="ansible,network">
-<span xsmall>Napalm</span>
+# Napalm [[{DevOps.ansible]]
 @[https://napalm-automation.net/]
 @[https://napalm.readthedocs.io/en/latest/]
 NAPALM: (N)etwork (A)utomation and (P)rogrammability (A)bstraction (L)ayer with (M)ultivendor support
@@ -62,11 +43,10 @@ get_users                   ✅  ✅  ✅  ✅  ✅  ✅
 is_alive                    ✅  ✅  ✅  ✅  ✅  ✅
 ping                        ✅  ✅  ❌  ✅  ✅  ✅
 traceroute
-</pre>
-<pre zoom labels="TODO">
-<span xsmall></span>
+[[}]]
+
+# OpenDaylight Magnesium SDN [[{]]
 @[http://www.enterprisenetworkingplanet.com//datacenter/opendaylight-magnesium-advances-open-source-software-defined-networking.html]
-OpenDaylight Magnesium:
 - open source Software Defined Networking (SDN) controller platform.
 
 - platform comprised of multiple modular component project that users
@@ -100,11 +80,9 @@ OpenDaylight Magnesium:
   microservices," the release notes state. "Plastic emphasizes writing 
   translations intended to be as resilient to model changes as 
   possible."
+[[}]]
  
-</pre>
-
-<pre zoom labels="snmp,TODO">
-<span xsmall>SNMP → gRPC</span>
+# SNMP → gRPC [[{snmp,TODO]]
 https://www.brighttalk.com/webcast/17628/384377?player-preauth=2BiCCR552sHx%2FC02RlHmQIwBkVlhwe7BEsWkRAzKHRM%3D
  Watch out SNMP! gRPC is here: Model-Driven Telemetry in the Enterprise
 
@@ -112,19 +90,17 @@ https://www.brighttalk.com/webcast/17628/384377?player-preauth=2BiCCR552sHx%2FC0
  Feb 6 2020 | 31 mins
 
  We know the challenges of SNMP with it's UDP transport, limited filtering and encoding options, and the tax to the device CPU and memory resources when multiple tools are polling. Now that gRPC Dial-Out model-driven telemetry is here there are options for migrating to the newer TCP based solution that is supported by YANG data models. These data models make finding specific data points or KPI's easy - the days of analyzing MIB's and OIDs are over
-</pre>
-____________________
+[[}]]
 
-</html>
 
-<!--
-Create a SDN on Linux with open source | Opensource.com
-https://opensource.com/article/20/4/quagga-linux 
-_________________________
+# TODO 
+
+##  Sclaing networking
 https://www.infoq.com/news/2020/06/scaling-networking-digitalocean/
-_____________________
+
+
+## iptables: 2 variants and their relationship with nftables
 https://developers.redhat.com/blog/2020/08/18/iptables-the-two-variants-and-their-relationship-with-nftables/132118/
-iptables: The two variants and their relationship with nftables
 
 In Red Hat Enterprise Linux (RHEL) 8, the userspace utility program 
 iptables has a close relationship to its successor, nftables. The 
@@ -236,10 +212,9 @@ To summarize, the iptables-nft variant utilizes the newer nftables kernel infras
 
 It is also important to note that while iptables-nft can supplant iptables-legacy, you should never use them simultaneously.
 
-<pre zoom labels="monitoring,TODO">
-<span xsmall>Model-Driven Telemetry in the Enterprise</span>
+## Model-Driven Telemetry in the Enterprise [[{monitoring]]
 https://www.brighttalk.com/webcast/17628/384377?player-preauth=2BiCCR552sHx%2FC02RlHmQIwBkVlhwe7BEsWkRAzKHRM%3D
-</pre>
+
  Watch out SNMP! gRPC is here: Model-Driven Telemetry in the Enterprise
 
  Jeremy Cohoe, Technical Marketing Engineer, Cisco
@@ -252,10 +227,42 @@ https://www.brighttalk.com/webcast/17628/384377?player-preauth=2BiCCR552sHx%2FC0
   migrating to the newer TCP based solution that is supported by YANG 
   data models. These data models make finding specific data points or 
   KPI's easy - the days of analyzing MIB's and OIDs are over
-</pre>
 
-<pre zoom labels="TODO">
-<span xsmall>Scapy</span>
+  [[}]]
+
+## Scapy [[{TODO]]
 https://scapy.readthedocs.io/en/latest/introduction.html#what-makes-scapy-so-special
-</pre>
--->
+
+Scapy is a Python program that enables the user to send, sniff, 
+dissect and forge network packets. This capability allows 
+construction of tools that can probe, scan or attack networks.
+
+First, with most other networking tools, you won’t build something 
+the author didn’t imagine. These tools have been built for a 
+specific goal and can’t deviate much from it. For example, an ARP 
+cache poisoning program won’t let you use double 802.1q 
+encapsulation. Or try to find a program that can send, say, an ICMP 
+packet with padding (I said padding, not payload, see?). In fact, 
+each time you have a new need, you have to build a new tool.
+
+Second, they usually confuse decoding and interpreting. Machines are 
+good at decoding and can help human beings with that. Interpretation 
+is reserved for human beings. Some programs try to mimic this 
+behavior. For instance they say “this port is open” instead of 
+“I received a SYN-ACK”. Sometimes they are right. Sometimes not. 
+It’s easier for beginners, but when you know what you’re doing, 
+you keep on trying to deduce what really happened from the 
+program’s interpretation to make your own, which is hard because 
+you lost a big amount of information. And you often end up using 
+tcpdump -xX to decode and interpret what the tool missed.
+
+Third, even programs which only decode do not give you all the 
+information they received. The vision of the network they give you is 
+the one their author thought was sufficient. But it is not complete, 
+and you have a bias. For instance, do you know a tool that reports 
+the Ethernet padding
+
+Scapy is a Python program that enables the user to send, sniff, 
+dissect and forge network packets. This capability allows 
+construction of tools that can probe, scan or attack networks.
+[[}]]

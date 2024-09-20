@@ -1,110 +1,226 @@
-## Container Networking [[{networking.101,containerization.networking,01_PM.TODO]]
-@[https://jvns.ca/blog/2016/12/22/container-networking/]
-By Julia Evans
+## DevOps: 101 OpenTelemetry is the modern replacement for OpenTracing.
+https://lumigo.io/opentelemetry/opentelemetry-vs-opentracing-key-differences-and-how-to-migrate/
 
-""" There are a lot of different ways you can network containers
-  together, and the documentation on the internet about how it works is
-  often pretty bad. I got really confused about all of this, so I'm
-  going to try to explain what it all is in laymen's terms. """
+It resulted from the merging of OpenTracing with another important observability project, OpenCensus, taking the best aspects of both and adding some new features.
 
- *what even is container networking?*
+It combines aspects of distributed tracing, metrics, and logging into a single API, simplifying the process of adding observability to applications.
 
-  When  a program in a container, you have two main options:
-  - run app in host network namespace. (normal networking)
-    "host_ip":"app_port"
-  - run the program in its own*network namespace*:
-   *It turns out that this problem of how to connect *
-   *two programs in containers together has a ton of *
-   *different solutions. *
 
-- "every container gets an IP".  (k8s requirement)
-    "172.16.0.1:8080" // Tomcat continer app 1
-    "172.16.0.2:5432" // PostgreSQL container app1
-    "172.17.0.1:8080" // Tomcat continer app 2
-    ...
-    └───────┬───────┘
-    any other program in the cluster will target those IP:port
-    Instead of single-IP:"many ports" we have "many IPs":"some ports"
+Like OpenTracing, OpenTelemetry provides an API for developers to add instrumentation to their applications. However, unlike OpenTracing, OpenTelemetry also provides an implementation, eliminating the need for developers to integrate a separate tracing system. This can significantly simplify the setup and operation of distributed tracing.
 
+
+Moreover, in addition to distributed tracing, OpenTelemetry supports metrics and logs. This comprehensive approach to observability means that developers can get a complete picture of system performance and behavior, without having to integrate multiple systems.
+
+## Terraform AWS Cloud Control integrated.
+https://www.infoq.com/news/2024/06/hashicorp-aws-cloud-control/
+
+AWS Cloud Control Terraform Provider Enables Quicker Access to AWS Features
+Jun 03, 2024 2 min read
+HashiCorp has moved the AWS Cloud Control (AWSCC) provider to general availability. The AWSCC provider is automatically generated based on the Cloud Control API published by AWS implying that new AWS features can be supported in Terraform upon their release. Originally released in 2021 as a tech preview, the move to version 1.0 includes several new features including sample configurations and improved schema-level documentation.
+
+AWSCC is built on top of the AWS Cloud Control API. The Cloud Control API provides CRUDL (create, read, update, delete, and list) operations to use with AWS cloud resources. Any resource type published to the CloudFormation Public Registry has a standard JSON schema that can be used with this API.
+
+As part of this release, there are now over 270 resources with sample configurations. For example, awscc_ec2_key_pair allows for specifying a key pair to use with an EC2 instance. An existing key pair can be specified in the PublicKeyMaterial property; omitting that property will generate a new key pair.
+
+resource "awscc_ec2_key_pair" "example" {
+  key_name            = "example"
+  public_key_material = ""
+
+  tags = [{
+    key   = "Modified By"
+    value = "AWSCC"
+  }]
+}
+
+In addition, more than 75 resources now have improved attribute-level documentation. The resources have detailed descriptions of how to use the attributes within the resource-accepted values. This includes context about the attribute, how it's used, and the expected values for each attribute.
+
+The AWSCC is not meant as a replacement for the standard AWS provider. As noted by Aurora Chun, Product Marketing Manager at HashiCorp, "using the AWSCC and AWS providers together equips developers with a large catalog of resources across established and new AWS services." The providers can be used in conjunction to provision resources:
+
+# Use the AWS provider to provision an S3 bucket
+resource "aws_s3_bucket" "example" {
+  bucket_prefix = "example"
+}
+ 
+# Use the AWSCC provider to provision an Amazon Personalize dataset
+resource "awscc_personalize_dataset" "interactions" {
+  ...
+ 
+  dataset_import_job = {
+    data_source = {
+      data_location = aws_s3_bucket.interactions_import.bucket
+    }
+  }
+}
+
+The AWSCC provider is generated from the latest CloudFormation schemas and releases weekly with all new services added to the Cloud Control API. There are some resources in the CloudFormation schema that are not compatible with the AWSCC provider. A full list of these can be found on GitHub.
+
+Within Azure, the AzAPI Provider enables similar support for the Azure ARM (Azure Resource Management) REST APIs. While there isn't a Terraform provider available for it, CloudGraph provides a similar API experience to AWS Cloud Control. CloudGraph has support for AWS, Azure, GCP, and Kubernetes.
+
+The Terraform AWS Cloud Control provider is available for download now from the Terraform Registry. The AWSCC provider requires Terraform CLI version 1.0.7 or higher. The source code for the provider is available on GitHub and is licensed under the MPL-2.0 license. Additional information can be found within the provider document and the tutorial.
+
+
+## Traefik 3.0 Reverse Proxy Rolls Out With Major Enhancements
+https://linuxiac.com/traefik-3-0-reverse-proxy/ 
+
+Traefik 3.0, a cloud-native HTTP reverse proxy and load balancer, brings stable HTTP/3 support, OpenTelemetry & Wasm integration, and more.
+
+Yes, there are easier-to-use solutions in the world of reverse proxies, like Nginx Proxy Manager or Caddy, for example. However, when we talk about an enterprise that is tightly integrated with the needs of DevOps and Kubernetes professionals, Traefik is the name that comes out on top.
+
+
+Traefik 3.0 also extends its observability features, incorporating OpenTelemetry to provide state-of-the-art tooling for metrics and tracing, supporting a seamless transition from older systems like OpenCensus and OpenTracing.
+
+
+the new release also brings several Kubernetes-related updates, including support for cross-namespace references in Gateway API and the ability to handle middleware in filters for better traffic management. Other Kubernetes enhancements include the addition of the Gateway status address and the removal of deprecated APIs.
+
+Traefik compares to Envoy.
+
+## DevOps: How Container Networking Works: a Docker Bridge Network From Scratchhttps://labs.iximiuz.com/tutorials/container-networking-from-scratch 
+
+## DevOps Git 101
+https://www.youtube.com/watch?v=aolI_Rz0ZqYhttps://gitbutler.com/
+
+
+## /bin/pash parallel shells
+Data Parallel Shell scripting
+https://github.com/binpash
+
+PaSh aims at the correct and automated parallelization of POSIX shell scripts. Broadly, PaSh includes three components: (1) a compiler that, given as input a POSIX shell script, emits a POSIX shell script that includes explicit data-parallel fragments for which PaSh has deemed such parallelization semantics-preserving, (2) a set of PaSh-related runtime primitives for supporting the execution of the parallel script fragments, available as in the PATH as normal commands, and (3) a crowd-sourced library of annotations characterizing several properties of common Unix/Linux commands relevant to parallelization.
+
+# spell-checking.sh
+cat f1.md f2.md | 
+  tr A-Z a-z |
+  tr -cs A-Za-z '\n' |
+  sort |
+  uniq | 
+  comm -13 dict.txt - > out
+cat out | wc -l | sed 's/$/ mispelled words!/'
+
+Ej:
+
+$                                                                           ./demo-spell.sh # no parallel
+
+$ $PASH_TOP/pa.sh -w 2 -d 1 --log_file pash.log demo-spell.sh # 2x parallelism
+
+## DevOps Git: merging at scale:
+* merge queue at Github to ship hundreds of changes every day
+* <https://github.blog/2024-03-06-how-github-uses-merge-queue-to-ship-hundreds-of-changes-every-day/>
+
+
+## Enhancing Istio Operations with Kong Istio Gateway
+* <https://thecloudblog.net/post/enhancing-istio-operations-with-kong-istio-gateway/>
+
+
+## DevOps Grafana Loki 3.0 Released with Native OpenTelemetry Support
+* <https://linuxiac.com/grafana-loki-3-0-released-with-native-opentelemetry-support/>
+
+Grafana Loki 3.0 Released with Native OpenTelemetry Support
+
+
+OpenTelemetry, a set of tools, APIs, and SDKs used to collect, analyze, and export telemetry data from software applications and services. This improves the log ingestion and querying experience.
+
+
+
+## Container Networking [[{containerization.networking.101]]
+* <https://jvns.ca/blog/2016/12/22/container-networking/> By Julia Evans
+
+> """ There are a lot of different ways you can network containers
+> together, and the documentation on the internet about how it works is
+> often pretty bad. I got really confused about all of this, so I'm
+> going to try to explain what it all is in laymen's terms. """
+> ...  *what even is container networking?*
+> .. you have two main options for running apps:
+> 1. run app in host network namespace. (normal networking)
+>   "host_ip":"app_port"
+> 2. run the program in its own *network namespace*:
+>    It turns out that this problem of how to connect two programs in 
+>    containers together has a ton of different solutions. [[{doc_has.keypoint}]]
+
+1. "every container gets an IP".  (k8s requirement)
+   ```
+   | "172.16.0.1:8080" // Tomcat continer app 1
+   | "172.16.0.2:5432" // PostgreSQL container app1
+   | "172.17.0.1:8080" // Tomcat continer app 2
+   | ...
+   | └───────┬───────┘
+   | any other program in the cluster will target those IP:port
+   | Instead of single-IP:"many ports" we have "many IPs":"some ports"
+   ```
    Q: How to get many IPs in a single host?
-    - Host IP: 172.9.9.9
-    - Container private IP: 10.4.4.4
-    - To route from 10.4.4.4 to 172.9.9.9:
-    - Alt1: Configure Linux routing tables
-    $*$ sudo ip route add 10.4.4.0/24 via 172.23.1.1 dev eth0*
-    - Alt2: Use AWS VPC Route tables
-    - Alt3: Use Azure ...
+   - Host IP: 172.9.9.9
+   - Container private IP: 10.4.4.4
+   - To route from 10.4.4.4 to 172.9.9.9:
+   1. Alt1: Configure Linux routing tables
+      ```
+      | $ sudo ip route add 10.4.4.0/24 via 172.23.1.1 dev eth0
+      ```
+   2. Alt2: Use AWS VPC Route tables
+   3. Alt3: Use Azure ...
 
- *Encapsulating to other networks:*
+2. Encapsulating to other networks:
+   ```
+   | LOCAL NETWORK     REMOTE NETWORK
+   |                   (encapsulation)
+   | IP: 10.4.4.4      IP: 172.9.9.9
+   | TCP stuff         (extra wrapper stuff)
+   | HTTP stuff        IP: 10.4.4.4
+   |                   TCP stuff
+   |                   HTTP stuff
+   ```
+   2 different ways of doing encapsulation:
+     1. "ip-in-ip": add extra IP-header on top "current" IP header.
+     ```
+     | MAC:  11:11:11:11:11:11
+     | IP: 172.9.9.9
+     | IP: 10.4.4.4
+     | TCP stuff
+     | HTTP stuff
+     | Ex:
+     | $ sudo ip tunnel add mytun mode ipip \       <·· Create tunnel "mytun"
+     |    remote 172.9.9.9 local 10.4.4.4 ttl 255   
+     |    sudo ifconfig mytun 10.42.1.1             
+     | $ sudo route add -net 10.42.2.0/24 dev mytun <·· set up a route table
+     | $ sudo route list
+     ```
+     2. "vxlan": take whole packet (including the MAC address) and wrap
+     it inside a UDP packet. Ex:
+     ```
+     | MAC address: 11:11:11:11:11:11
+     | IP: 172.9.9.9
+     | UDP port 8472 (the "vxlan port")
+     | MAC address: ab:cd:ef:12:34:56
+     | IP: 10.4.4.4
+     | TCP port 80
+     | HTTP stuff
+     ```
 
-  LOCAL NETWORK     REMOTE NETWORK
-                    (encapsulation)
-  IP: 10.4.4.4      IP: 172.9.9.9
-  TCP stuff         (extra wrapper stuff)
-  HTTP stuff        IP: 10.4.4.4
-                    TCP stuff
-                    HTTP stuff
+* Every container networking "thing" runs some kind of daemon program 
+  on every box which is in charge of adding routes to the route table.
+  for automatic route configuration. Alternatives include [[{doc_has.keypoint}]]
+  1. Alt1: routes are in etcd cluster, and program talks to the
+     etcd cluster to figure out which routes to set.
+  2. Alt2: use BGP protocol to gossip to each other about routes,
+     and a daemon (BIRD) that listens for BGP messages on
+     every box.
 
-  - 2 different ways of doing encapsulation:
-    - "ip-in-ip": add extra IP-header on top "current" IP header.
-      MAC:  11:11:11:11:11:11
-      IP: 172.9.9.9
-      IP: 10.4.4.4
-      TCP stuff
-      HTTP stuff
-      Ex:
-      $*$ sudo ip tunnel add mytun mode ipip \       * ← Create tunnel "mytun"
-      $*   remote 172.9.9.9 local 10.4.4.4 ttl 255   *
-      $*   sudo ifconfig mytun 10.42.1.1             *
-      $*$ sudo route add -net 10.42.2.0/24 dev mytun * ← set up a route table
-      $*$ sudo route list
+* Q: How does that packet actually end up getting to your container program?
+  1. bridge networking
+     1. Docker/... creates fake (virtual) network interfaces for every
+       single one of your containers with a given IP address.
+     2. The fake interfaces are bridges to a real one.
+  2. Flannel:
+     - Supports vxlan (encapsulate all packets) and
+       host-gw (just set route table entries, no encapsulation)
+     - The daemon that sets the routes gets them *from an etcd cluster*.
+  3. Calico:
+     - Supports ip-in-ip encapsulation and
+       "regular" mode, (just set route table entries, no encaps.)
+     - The daemon that sets the routes gets them *using BGP messages*
+       from other hosts. (etcd is  not used for distributing routes).
+[[containerization.networking.101}]]
 
-
-    - "vxlan": take whole packet
-       (including the MAC address) and wrap
-       it inside a UDP packet. Ex:
-       MAC address: 11:11:11:11:11:11
-       IP: 172.9.9.9
-       UDP port 8472 (the "vxlan port")
-       MAC address: ab:cd:ef:12:34:56
-       IP: 10.4.4.4
-       TCP port 80
-       HTTP stuff
-
-  - *Every container networking "thing" runs some kind of daemon program *
-    *on every box which is in charge of adding routes to the route table.*
-    *for automatic route configuration.*
-     - Alt1: routes are in etcd cluster, and program talks to the
-             etcd cluster to figure out which routes to set.
-     - Alt2: use BGP protocol to gossip to each other about routes,
-             and a daemon (BIRD) that listens for BGP messages on
-             every box.
-
- *Q: How does that packet actually end up getting to your container program?*
-  A: bridge networking
-  - Docker/... creates fake (virtual) network interfaces for every
-    single one of your containers with a given IP address.
-  - The fake interfaces are bridges to a real one.
-
- *Flannel:*
-  - Supports vxlan (encapsulate all packets) and
-    host-gw (just set route table entries, no encapsulation)
-  - The daemon that sets the routes gets them *from an etcd cluster*.
-
- *Calico:*
-  - Supports ip-in-ip encapsulation and
-    "regular" mode, (just set route table entries, no encaps.)
-  - The daemon that sets the routes gets them *using BGP messages*
-    from other hosts. (etcd is  not used for distributing routes).
-[[}]]
-
-## CRI-O: container runtime for K8s / OpenShift.[[{]
-- OCI compliant Container Runtime Engines:
-[[}]]
-
-## Testcontainers: [[{qa.testing,dev_language.java,qa,01_PM.TODO]
-@[https://www.testcontainers.org/#who-is-using-testcontainers]
-- Testcontainers is a Java library that supports JUnit tests,
+## Testcontainers: [[{qa.testing,dev_language.java,qa,PM.TODO]
+* <https://www.testcontainers.org/#who-is-using-testcontainers>
+* Testcontainers is a Java library that supports JUnit tests,
   providing lightweight, throwaway instances of common databases,
   Selenium web browsers, or anything else that can run in a Docker
   container.
@@ -185,7 +301,7 @@ Who is using Testcontainers?
 [[}]]
 
 ## CRIU.org: Container Live Migration : [[{]
-@[https://criu.org/Main_Page]
+<https://criu.org/Main_Page>
 
 CRIU: project to implement checkpoint/restore functionality for Linux.
 
@@ -195,13 +311,13 @@ running container (or an individual application) and checkpoint its
 state to disk. The data saved can be used to restore the application
 
 Used for example to bootstrap JVMs in millisecs (vs secs)     [[performance,dev_stack.java]]
-@[/JAVA/java_map.html#?jvm_app_checkpoint]
+</JAVA/java_map.html#?jvm_app_checkpoint>
 and run it exactly as it was during the time of the freeze. Using
 this functionality, application or container live migration,
 snapshots, remote debugging, and many other things are now possible.
 [[}]]
 
-## ContainerCoreInterceptor:  [[{troubleshooting,01_PM.TODO]
+## ContainerCoreInterceptor:  [[{troubleshooting,PM.TODO]
 https://github.com/AmadeusITGroup/ContainerCoreInterceptor 
 Core_interceptor can be used to handle core dumps in a dockerized environment.
 It listens on the local docker daemon socket for events. When it
@@ -209,8 +325,8 @@ receives a die event it checks if the dead container produced any
 core dump or java heap dump.
 [[}]]
 
-# KVM Kata containers:[[{01_PM.TODO]
-@[https://katacontainers.io/]
+# KVM Kata containers:[[{PM.TODO]
+<https://katacontainers.io/>
 - Security: Runs in a dedicated kernel, providing isolation of
   network, I/O and memory and can utilize hardware-enforced isolation
   with virtualization VT extensions.
@@ -305,7 +421,7 @@ https://developers.redhat.com/blog/2021/03/04/building-rootless-containers-for-j
 ## Git: What's new 2.31
   https://github.blog/2021-03-15-highlights-from-git-2-31/
 
-## https://space.sh,  Server apps and automation in a nutshell   [[{01_PM.low_code]]
+## https://space.sh,  Server apps and automation in a nutshell   [[{PM.low_code]]
    very, very non-intrusive. If you want to manage servers
    remotely Space would SSH into those servers to run your tasks and
    never upload anything to the server, nor have any dependencies other
@@ -453,7 +569,7 @@ https://github.com/charmbracelet/glow
 [[}]]
 
 
-## set -o pipefail   bash flag  @[[{bash,qa.error_control]]
+## set -o pipefail   bash flag  <[{bash,qa.error_control>]
   https://linuxtect.com/make-bash-shell-safe-with-set-euxo-pipefail/
 ...By default, if a commands in a pipe fails,  pipe continues to
    execute,  makes it fail instead.
@@ -567,12 +683,12 @@ https://github.com/charmbracelet/glow
  sudo ${SUDO_OPTS} ...
 [[}]]
 
-## Resizing containers with the Device Mapper: [[{containerization.image,storage,01_PM.TODO]]
-@[http://jpetazzo.github.io/2014/01/29/docker-device-mapper-resize/]
+## Resizing containers with the Device Mapper: [[{containerization.image,storage,PM.TODO]]
+<http://jpetazzo.github.io/2014/01/29/docker-device-mapper-resize/>
 [[}]]
 
-## Rootless Docker: [[{containerization.docker,qa,containerization.security,01_PM.TODO]]
-@[https://docs.docker.com/engine/security/rootless/]
+## Rootless Docker: [[{containerization.docker,qa,containerization.security,PM.TODO]]
+<https://docs.docker.com/engine/security/rootless/>
 [[}]]
 
 ## Show image change history: [[{containerization.image.build]]
@@ -589,14 +705,14 @@ host-mach $ docker tag figlet              # Tage new image
 host-mach $ docker run -it figlet          # Boot new image instance
 [[}]]
 
-## Selenium Browser test automation [[{ci/cd,qa,testing,selenium,web,_PM.low_code,01_PM.TODO]]
+## Selenium Browser test automation [[{ci/cd,qa,testing,selenium,web,_PM.low_code,PM.TODO]]
 See also QAWolf:
 [[}]]
 
 
-## Packaging Apps:  [[{containerization.image.build,InfraAsCode.pulumi,02_doc_has.comparative,]]
+## Packaging Apps:  [[{containerization.image.build,InfraAsCode.pulumi,doc_has.comparative,]]
                    [[dev_stack.kubernetes.ballerina,dev_stack.metaparticle,dev_language.java]]
-@[https://www.infoq.com/articles/metaparticle-pulumi-ballerina/]
+<https://www.infoq.com/articles/metaparticle-pulumi-ballerina/>
 - Packaging Applications for Docker and Kubernetes approaches comparative.
   • Metaparticle:
     - Looks to be discontinued (last update in github 2020-06-25)
@@ -708,8 +824,8 @@ NEXT) Once you create a pull request, it will deploy to that test
   https://www.redhat.com/sysadmin/using-quayio-scanner
 
 ## git-pw:  [[{]]
-@[http://jk.ozlabs.org/projects/patchwork/]
-@[https://www.collabora.com/news-and-blog/blog/2019/04/18/quick-hack-git-pw/]
+<http://jk.ozlabs.org/projects/patchwork/>
+<https://www.collabora.com/news-and-blog/blog/2019/04/18/quick-hack-git-pw/>
 - git-pw requires patchwork v2.0, since it uses the
   new REST API and other improvements, such as understanding
   the difference between patches, series and cover letters,
@@ -806,7 +922,7 @@ This is like a Swiss Army knife for DevSecOps engineers.
    yaml                    yamllint
 [[}]]
 
-## @[http://alblue.bandlem.com/2011/11/git-tip-of-week-git-notes.html]
+## <http://alblue.bandlem.com/2011/11/git-tip-of-week-git-notes.html>
 
 ## Managing "many-branches" Git projects:
   - sync all local/remote branches:
@@ -898,16 +1014,17 @@ https://github.com/smallstep/certificates
 ## Run docker container as current user:
   https://jtreminio.com/blog/running-docker-containers-as-current-host-user/
 
-[[01_PM.TODO}]]
+[[PM.TODO}]]
 
 # Git modules @ /usr/lib/git-core
+  ```
   3_097_168 /usr/lib/git-core/git
   1_839_328 /usr/lib/git-core/git-remote-http
   1_835_232 /usr/lib/git-core/git-http-push
   1_831_520 /usr/lib/git-core/git-imap-send
   1_823_072 /usr/lib/git-core/git-fast-import
   1_822_912 /usr/lib/git-core/git-http-fetch
-  1_802_048 /usr/lib/git-core/git-remote-testsvn
+  1_8048 /usr/lib/git-core/git-remote-testsvn
   1_793_856 /usr/lib/git-core/git-daemon
   1_789_984 /usr/lib/git-core/git-http-backend
   1_773_344 /usr/lib/git-core/git-shell
@@ -937,60 +1054,154 @@ https://github.com/smallstep/certificates
       2_448 /usr/lib/git-core/git-sh-i18n
       2_236 /usr/lib/git-core/git-difftool--helper
         944 /usr/lib/git-core/git-merge-resolve
+  ```
 
-# https://iximiuz.com/en/series/implementing-container-manager/
-
+# implementing container manager
+* <https://iximiuz.com/en/series/implementing-container-manager/>
 
 # Container Tools, Tips, and Tricks - Issue #2
-  https://iximiuz.ck.page/posts/container-tools-tips-and-tricks-issue-2
+* <https://iximiuz.ck.page/posts/container-tools-tips-and-tricks-issue-2>
 
-# DevOps: Ansible Register Variable - OSTechNix
-  https://ostechnix.com/ansible-register/
-
-# DevOps: Merging two GitHub repositories without losing commit history - Mozilla Hacks - the Web developer blog
-  https://hacks.mozilla.org/2022/08/merging-two-github-repositories-without-losing-commit-history/
-
+# DevOps: Merging " GitHub repos without losing commit history
+* <https://hacks.mozilla.org/2022/08/merging-two-github-repositories-without-losing-commit-history/>
 
 # TAXONOMY:
-1) Basic Linux commands necessary before jumping    2). Shell Scripting:
-   into shell script.                               * https://lnkd.in/da_wHgQH
-   * https://lnkd.in/dBTsJbhz                       * https://lnkd.in/d5CFPgga
-   * https://lnkd.in/dHQTiHBB
-   * https://lnkd.in/dA9pAmHa
+1. Basic Linux commands necessary before jumping    into shell script.                               
+  * https://lnkd.in/dBTsJbhz                       
+  * https://lnkd.in/dHQTiHBB
+  * https://lnkd.in/dA9pAmHa
+2. Shell Scripting
+  * https://lnkd.in/da_wHgQH
+  * https://lnkd.in/d5CFPgga
+3. Python: This will help you in automation         
+  * https://lnkd.in/dFtNz_9D                          
+  * https://lnkd.in/d6cRpFrY                          
+  * https://lnkd.in/d-EhshQz
 
-3. Python: This will help you in automation         4. Networking
-* https://lnkd.in/dFtNz_9D                          * https://lnkd.in/dqTx6jmN
-* https://lnkd.in/d6cRpFrY                          * https://lnkd.in/dRqCzbkn
-* https://lnkd.in/d-EhshQz
+4. Networking
+  * https://lnkd.in/dqTx6jmN
+  * https://lnkd.in/dRqCzbkn
 
-5. Git & Github                 6. YAML                   7. Containers — Docker:
-* https://lnkd.in/d9gw-9Ds      https://lnkd.in/duvmhd5X  * https://lnkd.in/dY2ZswMZ
-* https://lnkd.in/dEp3KrTJ      https://lnkd.in/dNqrXjmV  * https://lnkd.in/d_EySpbh
-                                                          * https://lnkd.in/dPddbJTf
+5. Git & Github                 
+  * https://lnkd.in/d9gw-9Ds      
+  * https://lnkd.in/dEp3KrTJ      
+                                
+6. YAML                   
+  * https://lnkd.in/duvmhd5X  
+  * https://lnkd.in/dNqrXjmV  
 
-8.CI/CD:                      9. Container Orchestration — Kubernetes:
-* https://lnkd.in/dMHv9T8U    * https://lnkd.in/duGZwHYX
+7. Containers — Docker:
+  * https://lnkd.in/dY2ZswMZ 
+  * https://lnkd.in/d_EySpbh
+  * https://lnkd.in/dPddbJTf
 
-10. Monitoring:              11. Infrastructure Provisioning       12. CI/CD Tools: Jenkins,
-* https://lnkd.in/dpXhmVqs       & Configuration Management (IaC):   GitHub Actions, GitLab CI,
-* https://lnkd.in/dStQbpRX       Terraform, Ansible, Pulumi          Travis CI, AWS CodePipeline
-* https://lnkd.in/de4H5QVz      * https://lnkd.in/dvpzNT5M           + AWS CodeBuild, Azure DevOps, etc
-* https://lnkd.in/dEtTSsbB      * https://lnkd.in/dNugwtVW           * https://lnkd.in/dTmSXNzv
-                                * https://lnkd.in/dn5m2NKQ           * https://lnkd.in/dAnxpVTe
-                                * https://lnkd.in/dhknHJXp           * https://lnkd.in/daMFG3Hq
-                                * https://lnkd.in/ddNxd8vU           * https://lnkd.in/dqf-zzrx
-                                                                     * https://lnkd.in/diWP7Tm7
-                                                                     * https://lnkd.in/dYDCSiiC
+8.CI/CD:                      
+  * https://lnkd.in/dMHv9T8U    
 
-13. AWS:                    14. Learn how to SSH           Best Websites to learn Devops:
-* https://lnkd.in/dmi-TMv9  SSH using mobaxterm:           https://kodekloud.com
-* https://lnkd.in/de3-dAB6  * https://lnkd.in/gx-T_FU8     https://acloudguru.com
-* https://lnkd.in/dh2zXZAB                                 https://www.katacoda.com
-* https://lnkd.in/dQMyCBWy  15. SSH using Putty :
-                             * https://lnkd.in/gGgW7Ns9
+9. Container Orchestration — Kubernetes:
+  * https://lnkd.in/duGZwHYX
+
+10. Monitoring:              
+  * https://lnkd.in/dpXhmVqs   
+  * https://lnkd.in/dStQbpRX   
+  * https://lnkd.in/de4H5QVz   
+  * https://lnkd.in/dEtTSsbB   
+                             
+11. Infrastructure Provisioning       
+    & Configuration Management (IaC): 
+    Terraform, Ansible, Pulumi        
+   * https://lnkd.in/dvpzNT5M         
+   * https://lnkd.in/dNugwtVW         
+   * https://lnkd.in/dn5m2NKQ         
+   * https://lnkd.in/dhknHJXp         
+   * https://lnkd.in/ddNxd8vU         
+                                      
+12. CI/CD Tools: Jenkins,
+  GitHub Actions, GitLab CI,
+  Travis CI, AWS CodePipeline
+  + AWS CodeBuild, Azure DevOps, etc
+  * https://lnkd.in/dTmSXNzv
+  * https://lnkd.in/dAnxpVTe
+  * https://lnkd.in/daMFG3Hq
+  * https://lnkd.in/dqf-zzrx
+  * https://lnkd.in/diWP7Tm7
+  * https://lnkd.in/dYDCSiiC
+                            
+13. AWS:                    
+* https://lnkd.in/dmi-TMv9  
+* https://lnkd.in/de3-dAB6  
+* https://lnkd.in/dh2zXZAB  
+* https://lnkd.in/dQMyCBWy  
+                            
+Best Websites to learn Devops:
+* https://kodekloud.com
+* https://acloudguru.com
+* https://www.katacoda.com
 
 
 # Vim documentation: windows
-https://vimdoc.sourceforge.net/htmldoc/windows.html#window
+* <https://vimdoc.sourceforge.net/htmldoc/windows.html#window>
 
+* Learn to become DevOps Engineer or SRE
+* <https://roadmap.sh/devops> [[{doc_has.roadmap}]]
 
+## OpenTelemetry Metrics
+https://opentelemetry.io/docs/concepts/signals/metrics/
+A metric is a measurement about a service, captured at 
+runtime.Logically, the moment of capturing one of these measurements 
+is known as ametric event which consists not only of the measurement 
+itself, but the timethat it was captured and associated metadata.
+https://opentelemetry.io/docs/concepts/signals/traces/
+
+Traces give us the big picture of what happens when a request is made 
+to anapplication. Whether your application is a monolith with a 
+single database or asophisticated mesh of services, traces are 
+essential to understanding the full“path” a request takes in your 
+application.
+
+## DevOps exercises
+DevOps exercises: bregman-arie/devops-exercises: Linux, Jenkins, AWS, 
+SRE, Prometheus, Docker, Python, Ansible, Git, Kubernetes, Terraform, 
+OpenStack, SQL, NoSQL, Azure, GCP, DNS, Elastic, Network, 
+Virtualization. DevOps Interview 
+Questionshttps://github.com/bregman-arie/devops-exercises 
+
+## terraform tools: Top 10 
+for #Devops TFLint (https://lnkd.in/gn4QBzTM): A Terraform linter 
+that checks your configuration files for potential errors, best 
+practices, and style violations Terrascan (https://lnkd.in/gxmzE-nm): 
+A static code analyzer specifically designed for Terraform 
+configurations, providing security scanning and compliance checks 
+Terramate (https://lnkd.in/gEW9ythN): A plugin for popular text 
+editors (like Visual Studio Code) that provides advanced features for 
+working with Terraform, such as syntax highlighting, autocompletion, 
+and documentation lookup TFSwitch (https://lnkd.in/g9gseDcn): A 
+command-line tool that simplifies switching between different 
+versions of Terraform, allowing you to manage and switch between 
+multiple Terraform installations Tfsec (https://lnkd.in/gpYuCtF2): A 
+security scanner for Terraform templates that identifies potential 
+security issues and provides recommendations to improve security 
+posture Checkov (https://lnkd.in/g4Py3WYN): An open-source static 
+analysis tool for infrastructure-as-code files, including Terraform. 
+It scans your code for security vulnerabilities and policy violations 
+Terraform Compliance (https://lnkd.in/g7C5fQep): Validate Terraform 
+configurations against security and compliance policies Terraform 
+Landscape (https://lnkd.in/gduDAit5): Visualize Terraform plan with 
+highlighted resource changes Terraform Graph 
+(https://lnkd.in/gdp-8FAr): Generate a visual representation of 
+resource dependencies in your configuration Terraform CDK 
+(https://lnkd.in/gdvUXwHh): Define infrastructure using programming 
+languages like TypeScript, Python, and Java#iac #infrastructureascode 
+#automation #developer #sysops #linux #sysadmin #solutionsarchitect 
+#oss #security #cloud
+
+## Traefik 3.1: comprehensive support for Kubernetes Gateway API
+
+* several contributions aimed at stabilizing and extending its functionalities. (no experimental anymore)
+* Gateway API supported: version 1.1.0
+* enhancements to HTTPRoute capabilities.
+* New ReferenceGrant feature: addressing security concerns in cross-namespace references
+  — A SIGNIFICANT ENHANCEMENT FOR MULTI-TENANT ENVIRONMENTS.
+* 3.1 facilitates full-featured WASM plugins that can perform HTTP calls and integrate 
+  various Go libraries, enhancing the flexibility and power of Traefik’s plugins.
+* better error handling and status reporting for HTTPRoutes.

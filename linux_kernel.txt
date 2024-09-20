@@ -64,7 +64,7 @@
 <span xsmall>Other</span>
 <span xsmall>(RT and/or embedded)</span>
 <span xsmall>Alternatives</span>
-@[https://www.osrtos.com/]
+<https://www.osrtos.com/>
 List of OOSS real─time OSs
 Name        Platforms   Built─in      Description                                                                                Name        Platforms   Built─in      Description
                         Components                                                                                                                       Components
@@ -225,7 +225,7 @@ ________________________________________________________________________________
 
 <pre zoom 01_PM.TODO>
 <span xsmall>SysFS</span>
-@[https://www.kernel.org/doc/html/v4.12/admin-guide/sysfs-rules.html]
+<https://www.kernel.org/doc/html/v4.12/admin-guide/sysfs-rules.html>
 -  sysfs exports internal kernel implementation details and depends on internal kernel structures and layout.
 </pre>
 </table>
@@ -349,7 +349,7 @@ Scheduling classes and policies:
 <pre zoom labels="" 01_PM.TODO>
 <span xsmall> What Does It Take to Make a Kernel?</span>
 REF:
-@[https://www.linuxjournal.com/content/what-does-it-take-make-kernel-0]
+<https://www.linuxjournal.com/content/what-does-it-take-make-kernel-0>
 - Pre-requisites:
     binutils
     gcc
@@ -562,7 +562,7 @@ highlighted the emergence of seccomp BPF.
 
 <pre zoom labels="eBPF,monitoring,storage" 01_PM.TODO>
 <span xsmall>trace FS requests with eBPF</span>
-@[https://www.collabora.com/news-and-blog/blog/2018/11/21/gaining-ebpf-vision-tracing-linux-filesystem-disk-requests/]
+<https://www.collabora.com/news-and-blog/blog/2018/11/21/gaining-ebpf-vision-tracing-linux-filesystem-disk-requests/>
 </pre>
 
 <pre zoom labels="eBPF,01_PM.TODO">
@@ -726,3 +726,6 @@ ______________________________
 ## Rust for Linux
 https://github.com/Rust-for-Linux/rust-for-linux.com
 
+## Canal sobre Seguridad detalles sobre compilación, ejecutables, LDD,...
+
+https://www.youtube.com/channel/UClcE-kVhqyiHCcjYwcpfj9w/videos

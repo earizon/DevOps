@@ -1,5 +1,5 @@
 Vim Cheat Sheet
-vim History: @[https://begriffs.com/posts/2019-07-19-history-use-vim.html]
+vim History: <https://begriffs.com/posts/2019-07-19-history-use-vim.html>
    - Core Author: Bram Moolenaar (Bram@Vim.org)
 
 # CONCEPTS:
@@ -155,13 +155,13 @@ $*$ git clone $url_git_repo   *       ← use $*$ git pull ...* to update/swith 
 
 
 # CoC Plugin: Visual Code Intellisense support:  [[{]]
-@[https://github.com/neoclide/coc.nvim]
+<https://github.com/neoclide/coc.nvim>
 - popular Vim plugin written in TypeScript.
   WARN: dependent on the npm ecosystem for providing full IDE features to Vim.
 - Both ALE and coc.nvim implement Language Server Protocol (LSP) clients for
   upporting diagnostics (linting with a live server),
 - easiest way to using 'ALE' and coc.nvim together:
-  REF: @[https://github.com/dense-analysis/ale#faq-coc-nvim]
+  REF: <https://github.com/dense-analysis/ale#faq-coc-nvim>
   1) :CocConfig                        <··· Will open 'coc.nvim' config file
    + "diagnostic.displayByAle": true   <··· add this line to inform coc.nvim to send diagnostics to ALE
                                             so ALE controls how all problems are presented to you.

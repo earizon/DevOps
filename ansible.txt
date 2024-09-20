@@ -1,13 +1,13 @@
 ## Apropos:
   Content is versioned in git.  commits, issues and pull-requests welcome!
-@[https://www.github.com/earizon/DevOps]
+<https://www.github.com/earizon/DevOps>
 
 ## Ansible External Links: [[{]]
 - https://docs.ansible.com/ansible/latest/user_guide/index.html
 - Ansible in practice[Video]
-@[https://sysadmincasts.com/episodes/46-configuration-management-with-ansible-part-3-4]
+<https://sysadmincasts.com/episodes/46-configuration-management-with-ansible-part-3-4>
 - Playbooks best practices:
-@[https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html]
+<https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html>
 
 - Ronald Kurr has lot of very-useful and professional Ansible powered code to
   provide JVM, Python, Desktops, ... machines. For example:
@@ -36,27 +36,27 @@
    https://github.com/kurron/ansible-role-vpc
 
 - Command line tools
-@[https://docs.ansible.com/ansible/latest/user_guide/command_line_tools.html]
+<https://docs.ansible.com/ansible/latest/user_guide/command_line_tools.html>
 
 - run a single task 'playbook' against a set of hosts
-@[https://docs.ansible.com/ansible/latest/cli/ansible.html]
+<https://docs.ansible.com/ansible/latest/cli/ansible.html>
 
 - ansible-config view, edit, and manage ansible configuration
-@[https://docs.ansible.com/ansible/latest/cli/ansible-config.html]
+<https://docs.ansible.com/ansible/latest/cli/ansible-config.html>
 
 - ansible-console  interactive console for executing ansible tasks
-@[https://docs.ansible.com/ansible/latest/cli/ansible-console.html]
+<https://docs.ansible.com/ansible/latest/cli/ansible-console.html>
 
 - manage Ansible roles in shared repostories (default to [https://galaxy.ansible.com] )
-@[https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html]
+<https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html>
 
 - display/dump configured inventory:
-@[https://docs.ansible.com/ansible/latest/cli/ansible-inventory.html]
+<https://docs.ansible.com/ansible/latest/cli/ansible-inventory.html>
 
 - ansible-pull pulls playbooks from a VCS repo and executes them for the local host:
-@[https://docs.ansible.com/ansible/latest/cli/ansible-pull.html]
+<https://docs.ansible.com/ansible/latest/cli/ansible-pull.html>
 - ansible-vault  encryption/decryption utility for Ansible data files:
- @[https://docs.ansible.com/ansible/latest/cli/ansible-vault.html]
+ <https://docs.ansible.com/ansible/latest/cli/ansible-vault.html>
 
 [[}]]
 
@@ -64,8 +64,8 @@
 View on:
 https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/ansible.txt
 - ansible-doc:  101,security.secret_management,qa #[ansible_summary]
- @[https://docs.ansible.com/ansible/latest/cli/ansible-doc.html]
- @[https://github.com/tldr-pages/tldr/blob/master/pages/common/ansible*]
+ <https://docs.ansible.com/ansible/latest/cli/ansible-doc.html>
+ <https://github.com/tldr-pages/tldr/blob/master/pages/common/ansible*>
 
   Display information on modules installed in Ansible libraries.
   Display a terse listing of plugins and their short descriptions.
@@ -81,7 +81,7 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/ans
   $ --json*                  (optional) dump as JSON
 
 - ansible-playbook:
-@[https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html]
+<https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html>
   Execute tasks defined in playbook over SSH.
 
   $ ansible-playbook $playbook   \ ← Run tasks in playbook:
@@ -94,11 +94,11 @@ https://earizon.github.io/txt_world_domination/viewer.html?payload=../DevOps/ans
       --ask-vault-pass*                ← alt.1. Ask for secrets interatively
                                         (alt.B_1 --vault-password-file*passFile*)
                                         (alt.B_2 export ANSIBLE_VAULT_PASSWORD_FILE=...)
-                                        See @[#ansible_handling_secrets]
+                                        See <#ansible_handling_secrets>
                                         for more info on secret management
 
 - ansible-galaxy: Create and manage Ansible roles.
-@[https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html]
+<https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html>
   $ ansible-galaxy install $username.$role_name ← Install a role
   $ ansible-galaxy remove  $username.$role_name ← Remove a role
   $ ansible-galaxy list                         ← List installed roles
@@ -143,7 +143,7 @@ host_vars/                                         ║ Role   N  ←────
    hostname2.yml      #  to particular systems     ║ Mechanism to          ─ main yaml defining        single proc.
                                                    ║ share files/...         task to be executed       to execute
 library/              # (opt) custom modules       ║ for reuse *2          ─ Created by DevOps team
-module_utils/         # (opt) custom module_utils  ║@[https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html]
+module_utils/         # (opt) custom module_utils  ║<https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html>
                       #       to support modules   ║
 filter_plugins/       # (opt) filter plugins       ║*RUN SEQUENCE*
                                                    ║ |playbook| 1←→N |Play| 1 → apply to → N |Hosts|
@@ -177,7 +177,7 @@ roles/                                             ║  INPUT
 │ ├─templates/     #                               ║                           - *include*: Redhat.yml
 │ │ └─ ntp.conf.j2 # ← notice .j2 extension        ║                             *when*: ansible_os_family == 'Redhat'
 │ ├─files/         #                               ║ Reminder:
-│ │ ├─ bar.txt     # ← input to   copy─resource    ║@[https://docs.ansible.com/ansible/2.4/playbooks_reuse_includes.html]
+│ │ ├─ bar.txt     # ← input to   copy─resource    ║<https://docs.ansible.com/ansible/2.4/playbooks_reuse_includes.html>
 │ │ └─ foo.sh      # ← input to script─resource    ║ "include"        ← evaluated @ playbook parsing
 │ ├─vars/          #                               ║ "import"         ← evaluated @ playbook execution
 │ │ └─ main.yml    # ← role related vars           ║ "import_playbook"← plays&tasks in each playbook
@@ -192,7 +192,7 @@ roles/                                             ║  INPUT
 │                          is used                 ║  testserver │ success │ rc=0 &&
     ...                                            ║  17:14:07 up  1:16,  1 user, load average: 0.16, ...
 ═══════════════════════════════════════════════════╩════════════════════════════════════════════════════════════════
-**1:*@[https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html]
+**1:*<https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html>
 
 ────────────────────────────────────────────────────────────────────────────────
 ## playbook-layout
@@ -259,7 +259,7 @@ roles/                                             ║  INPUT
 
 - *serial*,  *max_fail_percentage* can be
    used to define a playbook-play as failed.
- @[https://docs.ansible.com/ansible/2.5/user_guide/playbooks_delegation.html#maximum-failure-percentage]
+ <https://docs.ansible.com/ansible/2.5/user_guide/playbooks_delegation.html#maximum-failure-percentage>
 
 - Using 'block' (task grouping) inside tasks:
 
@@ -379,7 +379,7 @@ Variable scope Overrinding rules:
       they come from the cache.
 
 - Ad-hoc command   [[{troubleshooting,ansible.debugging,01_PM.TODO]]
-@[https://www.howtoforge.com/ansible-guide-ad-hoc-command/]
+<https://www.howtoforge.com/ansible-guide-ad-hoc-command/>
   - Ad-Hoc allows to perform tasks without creating a playbook
     first, such as rebooting servers, managing services, editing the line
     configuration, copy a file to only one host, install only one package.
@@ -509,7 +509,7 @@ Ex1:
     creates: /etc/a/b    # ← Execute command if path doesn't exists
 
 # host facts to Play Vars
-@[https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html]
+<https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html>
 - UsingO*setup* module at play/run-time. Ex:
 
   tasks:
@@ -594,7 +594,7 @@ To copy local facts and make the usable in current play:
                                     ← locals facts available in current play
 
 ## Lookups: Query ext.data: file sh KeyValDB .. ──────────────────────────────────
-@[https://docs.ansible.com/ansible/latest/user_guide/playbooks_lookups.html]
+<https://docs.ansible.com/ansible/latest/user_guide/playbooks_lookups.html>
   ...
   vars:
     motd_value: "{{ *lookup*( *'file'*, '/etc/motd') }}"
@@ -689,7 +689,7 @@ To copy local facts and make the usable in current play:
 
 
 # notify vs register [[{02_doc_has.comparative]]
-@[https://stackoverflow.com/questions/33931610/ansible-handler-notify-vs-register]
+<https://stackoverflow.com/questions/33931610/ansible-handler-notify-vs-register>
 
   some tasks ...                         |     some tasks ...
  *notify:*nginx_restart                  |    *register:*nginx_restart
@@ -722,8 +722,8 @@ To copy local facts and make the usable in current play:
 #[ansible_handling_secrets]
 # ansible-vault Handling secrets [[{security.secret_management]]
   En/de-crypts values/data structures/files
-@[https://github.com/tldr-pages/tldr/blob/master/pages/common/ansible-vault.md]
-@[https://docs.ansible.com/ansible/latest/user_guide/vault.html#id17]
+<https://github.com/tldr-pages/tldr/blob/master/pages/common/ansible-vault.md>
+<https://docs.ansible.com/ansible/latest/user_guide/vault.html#id17>
 
   $*$ ansible-vault create $vault_file           *  ← Create new encrypted vault file with
                                                       a prompt for a password.
@@ -748,7 +748,7 @@ To copy local facts and make the usable in current play:
   $* --new-vault-password-file=$new_pass_file    *
   $* $vault_file                                 *
 
-@[https://docs.ansible.com/ansible/latest/user_guide/playbooks_vault.html]
+<https://docs.ansible.com/ansible/latest/user_guide/playbooks_vault.html>
 - Ansible vaults use symetric-chiper encryption
 
   INPUT               ENCRYPTING                OUTPUT                  Ussage
@@ -884,7 +884,7 @@ To copy local facts and make the usable in current play:
 └────────────────────────────────────────────────────── [[}]]
 
 ## Ex: Insanely complet Ansible playbook [[{]]
-@[https://gist.github.com/marktheunissen/2979474]
+<https://gist.github.com/marktheunissen/2979474>
 ---                                                                <- YAML documents must begin with doc.separator "---"
 
   ####
@@ -1342,11 +1342,11 @@ To copy local facts and make the usable in current play:
 
 # TODO/Non-Classified [[{01_PM.TODO]]
 ## Dynamic Inventory  [[{cloud]]
-@[https://docs.ansible.com/ansible/2.5/user_guide/intro_dynamic_inventory.html]
+<https://docs.ansible.com/ansible/2.5/user_guide/intro_dynamic_inventory.html>
 (EC2, OpenStack,...) [[}]]
 
 ## Fact Caching:
-@[https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#fact-caching]
+<https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#fact-caching>
   - To benefit from cached facts you will set gather_facts to False in most plays.
   - Ansible ships with two persistent cache plugins: redis and jsonfile.
   - To configure fact caching using redis, enable it in ansible.cfg as follows:
@@ -1356,7 +1356,7 @@ To copy local facts and make the usable in current play:
   fact_caching_timeout = 86400
 
 ## AWX GUI: [[{]]
-  @[https://www.howtoforge.com/ansible-awx-guide-basic-usage-and-configuration/]
+  <https://www.howtoforge.com/ansible-awx-guide-basic-usage-and-configuration/>
 
   - AWX is an open source web application that provides a user interface, REST API,
     and task engine for Ansible. It's the open source version of the Ansible Tower.
@@ -1364,11 +1364,12 @@ To copy local facts and make the usable in current play:
     to run using the web interface.
 
   - How to Run and Schedule Ansible Playbook Using AWX GUI
-  @[https://www.linuxtechi.com/run-schedule-ansible-playbook-awx-gui/]
+  <https://www.linuxtechi.com/run-schedule-ansible-playbook-awx-gui/>
   [[}]]
 [[}]]
 
-
+# Ansible Register Variable
+* <https://ostechnix.com/ansible-register/>
 
 [[ansible}]]
 

@@ -1,286 +1,305 @@
 ## Apropos:
-  Content is versioned in git.  commits, issues and pull-requests welcome!
-@[https://www.github.com/earizon/DevOps]
+* Content is versioned in git.  commits, issues and pull-requests welcome!
+  <https://www.github.com/earizon/DevOps>
 
-[[{jenkins]]
-#####################
-# JENKINS SUMMARY/101 [[{jenkins.101,security.backup,security.secret_management,01_PM.low_code,notifications.jenkins]]
-#####################
-  ##################
-  # External Links #
-  ##################
-  @[https://jenkins.io/doc/]      @[https://jenkins.io/user-handbook.pdf]
-  @[https://jenkins.io/doc/book/] @[https://github.com/sahilsk/awesome-jenkins]
-  using/using-credentials/,
-  pipeline/running-pipelines,
-  pipeline/multibranch,             Branches and Pull Requests
-  pipeline/docker,
-  pipeline/shared-libraries,        Extending with Shared Libraries
-  pipeline/development,             Pipeline Development Tools
-  pipeline/syntax,                  Pipeline Syntax
-  pipeline/pipeline-best-practices  Pipeline Best Practices
-  pipeline/scaling-pipeline
-  blueocean/*
-  managing                          Managing Jenkins
-  managing/cli
-  managing/script-console
-  managing/nodes
-  managing/script-approval
-  managing/users
-  system-administration             System Administration
+# JENKINS SUMMARY/101 [[{jenkins.101,security.backup,security.secret_management,PM.low_code,notifications.jenkins]]
+
+## External Links
+* <https://jenkins.io/doc/>     
+* <https://jenkins.io/doc/book/>
+* using/using-credentials/,
+* pipeline/running-pipelines,
+* pipeline/multibranch,             Branches and Pull Requests
+* pipeline/docker,
+* pipeline/shared-libraries,        Extending with Shared Libraries
+* pipeline/development,             Pipeline Development Tools
+* pipeline/syntax,                  Pipeline Syntax
+* pipeline/pipeline-best-practices  Pipeline Best Practices
+* pipeline/scaling-pipeline
+* blueocean/*
+* managing                          Managing Jenkins
+* managing/cli
+* managing/script-console
+* managing/nodes
+* managing/script-approval
+* managing/users
+* system-administration             System Administration
 
 ##  Pipeline injected ENV.VARS
 
-  - ${BASE_JENKINS_URL}/pipeline-syntax/globals#env  ← FULL LIST OF ENV.VARs:
-  - $env.BUILD_ID       :
-    $env.BUILD_NUMBER   :
-    $env.BUILD_TAG      : String of jenkins-${JOB_NAME}-${BUILD_NUMBER}
-                                                          ^^^^^^^^^^^^
-                          Useful to subclassify resource/jar/etc output artifacts
-    $env.BUILD_URL      : URL where results of this build can be found
-                          (Ex.: http://buildserver/jenkins/job/MyJobName/17/)
-    $env.EXECUTOR_NUMBER: Unique number ID for current executor in same machine
-    $env.JAVA_HOME      : JAVA_HOME configured for a given job
-    $env.JENKINS_URL    :
-    $env.JOB_NAME       : Name of the project of this build
-    $env.NODE_NAME      : 'master', 'slave01',...
-    $env.WORKSPACE      : absolute path for workspace
+  ```
+  |   ${BASE_JENKINS_URL}/pipeline-syntax/globals#env  ← FULL LIST OF ENV.VARs:
+  |   $env.BUILD_ID       :
+  |   $env.BUILD_NUMBER   :
+  |   $env.BUILD_TAG      : String of jenkins-${JOB_NAME}-${BUILD_NUMBER}
+  |                                                         ^^^^^^^^^^^^
+  |                         Useful to subclassify resource/jar/etc output artifacts
+  |   $env.BUILD_URL      : URL where results of this build can be found
+  |                         (Ex.: http://buildserver/jenkins/job/MyJobName/17/)
+  |   $env.EXECUTOR_NUMBER: Unique number ID for current executor in same machine
+  |   $env.JAVA_HOME      : JAVA_HOME configured for a given job
+  |   $env.JENKINS_URL    :
+  |   $env.JOB_NAME       : Name of the project of this build
+  |   $env.NODE_NAME      : 'master', 'slave01',...
+  |   $env.WORKSPACE      : absolute path for workspace
+  ```
 
-───────────────────────────────────────────────────────────────────────
 # Jenkinsfile
-REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
-     @[https://jenkins.io/doc/pipeline/steps/]
-## ┌ PIPELINE EXECUTION SUMMARY ──────────────────────┐
-  │     INPUT     PROCESSING   OUTPUT                │
-  │ ===========  ===========  =======================│
-  │ Jenkinsfile → Jenkins   → ✓ archived built artif.│
-  │                           ✓ test results         │
-  │                           ✓ full console output  │
-  │                           ✓ Pipeline status      │
-  │                             (unstable,success    │
-  │                              failure,changed)    │
-  └──────────────────────────────────────────────────┘
+* REFs:
+  * <https://jenkins.io/doc/book/pipeline/jenkinsfile/>
+  * <https://jenkins.io/doc/pipeline/steps/>
+* PIPELINE EXECUTION SUMMARY
+  ``` 
+  |     INPUT     PROCESSING   OUTPUT                
+  | ===========  ===========  =======================
+  | Jenkinsfile → Jenkins   → ✓ archived built artif.
+  |                           ✓ test results         
+  |                           ✓ full console output  
+  |                           ✓ Pipeline status      
+  |                             (unstable,success    
+  |                              failure,changed)    
+  ``` 
+* DECLARATIVE SYNTAX EXAMPLE 
+  ``` 
+  | pipeline {                        
+  |   environment {                   
+  |     T1 = 'development'           ← Env.var with global visibility
+  |     CC = """${sh(                ← Env.var set from shell STDOUT.
+  |         returnStdout: true,        trailing whitespace appended.
+  |         script: 'echo "clang"'     (Use .trim() to fix)
+  |         )}"""                     
+  |     AWS_SECRET_ACCESS_KEY     =   
+  |       credentials ('aws-acc-key')← Secret protected by Jenkins    [security.secret_management]
+  |   }                                *1
+  |                                   
+  |   parameters {                   ← parameters allowed to be modified  at runtime
+  |     string(name: 'Greeting',     ← Referenced as ${params.Greeting}
+  |            defaultValue: 'Hello', 
+  |            description: 'Hi!')    
+  |   }                               
+  |                                   
+  |   agent any                      ← allocate an EXECUTOR AND WORKSPACE , it ensures
+  |                                    that SRC. REPO. is IMPORTED TO WORKSPACE in next stages
+  |                                   
+  |   stages {                       ← ORDERED list of stages in Pipeline
+  |                                   
+  |   stage('clone') {                
+  |     checkout   scm               ← checkout code from scm ("git clone ...") *2
+  |     checkout poll: false,           scm : SPECIAL VAR. TELLING JENKINS TO
+  |       scm: [                              USE SAME REPO./REVISION USED TO
+  |         $class: 'GitSCM',                 CHECKOUT (CLONE) JENKINSFILE
+  |         branches: [[name: 'dev']],
+  |         doGenerateSubmoduleConfigurations: false,
+  |         extensions: [],           
+  |         submoduleCfg: [],         
+  |         userRemoteConfigs: [      
+  |           [url: 'https://github.com/user01/project01.git',
+  |            credentialsId: 'UserGit01']
+  |         ]                         
+  |       ]                           
+  |   }                               
+  |                                   
+  |     stage('Build') {             ← (trans|com)pile/package/... using maven/npm/... plugins
+  |                                   
+  |       environment {              ← ENV.VAR with local stage visibility
+  |         msg1 = "Building..."       (also visible to shell scripts)
+  |         EXIT = """               ← Initialized to returned status code shell exec.
+  |         ${sh(                      """ .... """ to embed multi-stage script.
+  |           returnStatus: true,     
+  |           script: 'exit 1'        
+  |         )}"""                     
+  |       }                           
+  |                                   
+  |       steps {                    ← ORDERED list of steps in stage.
+  |         echo " ${msg1} :..."     ← shell-like interpolation for double-coutes
+  |             sh 'printenv'        ← msg1 and EXIT available here
+  |             sshagent (            
+  |               crendentials: ['keys']  ←····┬─ ssh with help of agent
+  |             )                              │  (ssh-agent plugin
+  |             {                              │   needed)
+  |                sh 'ssh user@remoteIP' ←····┘
+  |             }                     
+  |       }                             NOTE:
+  |     }                               ┌─ GROOVY SYNTAX SUGAR ──────┐
+  |                                     │ sh([script: 'echo hello']) ← standard funct. call
+  |     stage('Test') {                 │ sh  script: 'echo hello'   ← shortcut
+  |       steps { ... }                 │ sh          'echo hello'   ← ultra-sortcut (Single param fun.only)
+  |     }                               └────────────────────────────┘ 
+  |                                   
+  |     stage('Deploy') {             
+  |       when {                     ← Conditional steps execution *1 For "complex" secrets use SNIPPET GENERATORS:
+  |         expression {                                           ┌──────────────┬───────────────────────────────────┐
+  |           currentBuild.result == 'SUCCESS'                     │ GENERATOR    │ PARAMS                            │
+  |         }                                                      │──────────────┼───────────────────────────────────┤
+  |       }                                                        │ SSH Priv.Key │ • Key File   Variable             │
+  |       steps { sh '...' }                                       │              │ • Passphrase Variable             │
+  |     }                                                          │              │ • Username   Variable             │
+  |   } /* stages end */                                           │──────────────┼───────────────────────────────────┤
+  |                                      ===============           │ Credentials  │ • SSH priv/pub keys stored        │
+  |   post {                         ←   HANDLING ERRORS           │              │    in Jenkins.                    │
+  |       always {                       ===============           │──────────────┼───────────────────────────────────┤
+  |           junit '**/target/*.xml'                              │ (PKCS#12)    │ • Keystore Variable               │
+  |       }                                                        │ Certificate  │   Jenkins temporary assigns it to │
+  |       failure {                                                │              │   secure location of Cert's KeyS. │
+  |           mail to:team@bla.com,  ←   e-MAIL NOTIFICATIONS      │              │ • Password Variable (Opt)         │
+  |           subject: '...'             [notifications.jenkins]   │              │ • Alias Variable (Opt)            │
+  |       }                                                        │              │ • Credentials: Cert.credentials   │
+  |       unstable { ...  }          ← PIPELINE RESULT             │              │   stored in Jenkins. Its value is │
+  |       success  { ...  }            STATUS CLASSIFICATION       │              │   the credential ID, which Jenkins│
+  |       failure  { ...  }                                        │              │   writes out to generated snippet │
+  |       changed  { ...  }                                        │──────────────┼───────────────────────────────────┤
+  |   }                                                            │ Docker Client│ • Handle Docker Host Cert.Auth.   │
+  | }                                                              │  Certificate │                                   │
+  |                                                                └──────────────┴───────────────────────────────────┘
+  ``` 
 
-## ┌ DECLARATIVE SYNTAX EXAMPLE ──────┐
-  │ pipeline {                       │
-  │   environment {                  │
-  │     T1 = 'development'           ← Env.var with global visibility
-  │     CC = """${sh(                ← Env.var set from shell STDOUT.
-  │         returnStdout: true,      │ trailing whitespace appended.
-  │         script: 'echo "clang"'   │ (Use .trim() to fix)
-  │         )}"""                    │
-  │     AWS_SECRET_ACCESS_KEY     =  │
-  │       credentials ('aws-acc-key')← Secret protected by Jenkins    [security.secret_management]
-  │   }                              │ *1
-  │                                  │
-  │   parameters {                   ← parameters allowed to be modified  at runtime
-  │     string(name: 'Greeting',     ← Referenced as ${params.Greeting}
-  │            defaultValue: 'Hello',│
-  │            description: 'Hi!')   │
-  │   }                              │
-  │                                  │
-  │   agent any                      ← allocate an EXECUTOR AND WORKSPACE , it ensures
-  │                                  │ that SRC. REPO. is IMPORTED TO WORKSPACE in next stages
-  │                                  │
-  │   stages {                       ← ORDERED list of stages in Pipeline
-  │                                  │
-  │   stage('clone') {               │
-  │     checkout   scm               ← checkout code from scm ("git clone ...") *2
-  │     checkout poll: false,        │  scm : SPECIAL VAR. TELLING JENKINS TO
-  │       scm: [                     │        USE SAME REPO./REVISION USED TO
-  │         $class: 'GitSCM',        │        CHECKOUT (CLONE) JENKINSFILE
-  │         branches: [[name: 'dev']],
-  │         doGenerateSubmoduleConfigurations: false,
-  │         extensions: [],          │
-  │         submoduleCfg: [],        │
-  │         userRemoteConfigs: [     │
-  │           [url: 'https://github.com/user01/project01.git',
-  │            credentialsId: 'UserGit01']
-  │         ]                        │
-  │       ]                          │
-  │   }                              │
-  │                                  │
-  │     stage('Build') {             ← (trans|com)pile/package/... using maven/npm/... plugins
-  │                                  │
-  │       environment {              ← ENV.VAR with local stage visibility
-  │         msg1 = "Building..."     │ (also visible to shell scripts)
-  │         EXIT = """               ← Initialized to returned status code shell exec.
-  │         ${sh(                    │ """ .... """ to embed multi-stage script.
-  │           returnStatus: true,    │
-  │           script: 'exit 1'       │
-  │         )}"""                    │
-  │       }                          │
-  │                                  │
-  │       steps {                    ← ORDERED list of steps in stage.
-  │         echo " ${msg1} :..."     ← shell-like interpolation for double-coutes
-  │             sh 'printenv'        ← msg1 and EXIT available here
-  │             sshagent (           │
-  │               crendentials: ['keys']  ←····┬─ ssh with help of agent
-  │             )                    │         │  (ssh-agent plugin
-  │             {                    │         │   needed)
-  │                sh 'ssh user@remoteIP' ←····┘
-  │             }                    │
-  │       }                          │  NOTE:
-  │     }                            │  ┌─ GROOVY SYNTAX SUGAR ──────┐
-  │                                  │  │ sh([script: 'echo hello']) ← standard funct. call
-  │     stage('Test') {              │  │ sh  script: 'echo hello'   ← shortcut
-  │       steps { ... }              │  │ sh          'echo hello'   ← ultra-sortcut (Single
-  │     }                            │  └────────────────────────────┘ param fun.only
-  │                                  │
-  │     stage('Deploy') {            │
-  │       when {                     ← Conditional steps execution *1 For "complex" secrets use SNIPPET GENERATORS:
-  │         expression {             │                             ┌──────────────┬───────────────────────────────────┐
-  │           currentBuild.result == │SUCCESS'                     │ GENERATOR    │ PARAMS                            │
-  │         }                        │                             │──────────────┼───────────────────────────────────┤
-  │       }                          │                             │ SSH Priv.Key │ • Key File   Variable             │
-  │       steps { sh '...' }         │                             │              │ • Passphrase Variable             │
-  │     }                            │                             │              │ • Username   Variable             │
-  │   } /* stages end */             │                             │──────────────┼───────────────────────────────────┤
-  │                                  │   ===============           │ Credentials  │ • SSH priv/pub keys stored        │
-  │   post {                         ←   HANDLING ERRORS           │              │    in Jenkins.                    │
-  │       always {                   │   ===============           │──────────────┼───────────────────────────────────┤
-  │           junit '**/target/*.xml'│                             │ (PKCS#12)    │ • Keystore Variable               │
-  │       }                          │                             │ Certificate  │   Jenkins temporary assigns it to │
-  │       failure {                  │                             │              │   secure location of Cert's KeyS. │
-  │           mail to:team@bla.com,  ←   e-MAIL NOTIFICATIONS      │              │ • Password Variable (Opt)         │
-  │           subject: '...'         │   [notifications.jenkins]   │              │ • Alias Variable (Opt)            │
-  │       }                          │                             │              │ • Credentials: Cert.credentials   │
-  │       unstable { ...  }          ← PIPELINE RESULT             │              │   stored in Jenkins. Its value is │
-  │       success  { ...  }          │ STATUS CLASSIFICATION       │              │   the credential ID, which Jenkins│
-  │       failure  { ...  }          │                             │              │   writes out to generated snippet │
-  │       changed  { ...  }          │                             │──────────────┼───────────────────────────────────┤
-  │   }                              │                             │ Docker Client│ • Handle Docker Host Cert.Auth.   │
-  │ }                                │                             │  Certificate │                                   │
-  └──────────────────────────────────┘                             └──────────────┴───────────────────────────────────┘
-
-  ┌ *2 GIT REPO. CLONING ("checkouts" in Jenkin) SUMMARY ────────────────┐
-  │ REF: @[https://jenkins.io/doc/pipeline/steps/workflow-scm-step/]     │
-  │ checkout([                                                           │
-  │   $class    : 'GitSCM',                                              │
-  │   poll      : false,                                                 │  ┌ *1 CloneOption Class ────────────────────────────────────────────┐
-  │   branches  : [[name: commit]],                                      │  │· shallow (boolean) : do NOT download history    (Save time/disk) │
-  │   extensions: [                                                      │  │· noTags  (boolean) : do NOT download tags       (Save time/disk) │
-  │     [$class: 'RelativeTargetDirectory', relativeTargetDir: reponame],│  │                      (use only what specified in refspec)        │
-  │     [$class: 'CloneOption', reference: "/var/cache/${reponame}"]     ←  │· depth (int)       : Set shallow clone depth    (Save time/disk) │
-  │   ],                                                                 │  │· reference(String) : local folder with existing repository       │
-  │   submoduleCfg: [],                                                  │  │                      used by Git during clone operations.        │
-  │   userRemoteConfigs: [                                               │  │· timeout  (int)    : timeout for clone/fetch ops.                │
-  │     [credentialsId: 'jenkins-git-credentials', url: repo_url]        │  │· honorRefspec(bool): init.clone using refspec    (Save time/disk)│
-  │   ],                                                                 │  └──────────────────────────────────────────────────────────────────┘
-  │   doGenerateSubmoduleConfigurations: false,                          │
-  │ ])                                                                   │
-  └──────────────────────────────────────────────────────────────────────┘
-# ┌─ MULTIAGENT PIPELINES COMMON BUILD ──┐  Useful for multi─target builds/tests/...
-  │ pipeline {                           │  reusing common builds in different agents.
-  │   agent none                         │
-  │   stages {                           │
-  │     stage('clone') { ... }           │
-  │     stage('Build') {                 │
-  │       agent any                      │
-  │       steps {                        │
-  │         ...                          │
-  │         stash ([                     │
-  │          includes: '**/target/*.jar',│
-  │          name: 'app'  ])             ←··┐
-  │     }                                │  ·
-  │    }                                 │  ·
-  │    stage('Linux') {                  │  · copy named─stash FROM JENKINS MASTER TO CURRENT WORKSP.
-  │      agent { label 'linux' }         │  · NOTE:   stash  = something put away for future use
-  │      steps {                         │  ·   (In practice: Named cache of generated artifacts
-  │         unstash  'app'               ←··•   during same pipeline for reuse in further steps)
-  │         sh '...'                     │  ·   Removed at pipeline termination.
-  │       }                              │  ·
-  │       post { ...  }                  │  ·
-  │     }                                │  ·
-  │     stage('Test on Windows') {       │  ·
-  │       agent { label 'windows' }      │  ·
-  │       steps {                        │  ·
-  │         unstash 'app'                ←··┘
-  │         bat '...'                    │
-  │       }                              │
-  │       post { ...  }                  │
-  │     }                                │
-  │   }                                  │
-  │ }                                    │
-  └──────────────────────────────────────┘
-
-# ┌─ PARALLEL EXECUTION ───────────┐
-  │ stage('Test') {                │
-  │   parallel                     ←·•  Execute linux&windows nodes
-  │   linux: {                     │ ·  in parallel.
-  │     node('linux') {            ←─┤
-  │       try {                    │ ·
-  │         unstash 'app'          │ ·
-  │         sh 'make check'        │ ·
-  │       }                        │ ·
-  │       finally {                │ ·
-  │         junit '**/target/*.xml'│ ·
-  │       }                        │ ·
-  │     }                          │ ·
-  │   },                           │ ·
-  │   windows: {                   │ ·
-  │     node('windows') { ... }    ←·┘
-  │   }                            │
-  │ }                              │
-  └────────────────────────────────┘
+## *2 GIT REPO. CLONING ("checkouts" in Jenkin) SUMMARY 
+  ``` 
+  | REF: <https://jenkins.io/doc/pipeline/steps/workflow-scm-step/>  
+  | checkout([                                                           
+  |   $class    : 'GitSCM',                                              
+  |   poll      : false,                                                   
+  |   branches  : [[name: commit]],                                        
+  |   extensions: [                                                        
+  |     [$class: 'RelativeTargetDirectory', relativeTargetDir: reponame],  
+  |     [$class: 'CloneOption', reference: "/var/cache/${reponame}"] ¹ 
+  |   ],                                                                   
+  |   submoduleCfg: [],                                                    
+  |   userRemoteConfigs: [                                                 
+  |     [credentialsId: 'jenkins-git-credentials', url: repo_url]          
+  |   ],                                                                   
+  |   doGenerateSubmoduleConfigurations: false,                          
+  | ])                                                                   
+  |
+  |  ¹ CloneOption Class 
+  |  · shallow (boolean) : do NOT download history    (Save time/disk) 
+  |  · noTags  (boolean) : do NOT download tags       (Save time/disk) 
+  |                        (use only what specified in refspec)        
+  |  · depth (int)       : Set shallow clone depth    (Save time/disk) 
+  |  · reference(String) : local folder with existing repository       
+  |                        used by Git during clone operations.        
+  |  · timeout  (int)    : timeout for clone/fetch ops.                
+  |  · honorRefspec(bool): init.clone using refspec    (Save time/disk)
+  ``` 
+## MULTIAGENT PIPELINES COMMON BUILD:
+* Useful for multi─target builds/tests/... reusing common builds in different agents.
+  ``` 
+  | pipeline {                              
+  |   agent none                          
+  |   stages {                            
+  |     stage('clone') { ... }            
+  |     stage('Build') {                  
+  |       agent any                       
+  |       steps {                         
+  |         ...                           
+  |         stash ([                      
+  |          includes: '**/target/*.jar', 
+  |          name: 'app'  ])             <··┐
+  |     }                                   ·
+  |    }                                    ·
+  |    stage('Linux') {                     · copy named─stash FROM JENKINS MASTER TO CURRENT WORKSP.
+  |      agent { label 'linux' }            · NOTE:   stash  = something put away for future use
+  |      steps {                            ·   (In practice: Named cache of generated artifacts
+  |         unstash  'app'               <··•   during same pipeline for reuse in further steps)
+  |         sh '...'                        ·   Removed at pipeline termination.
+  |       }                                 ·
+  |       post { ...  }                     ·
+  |     }                                   ·
+  |     stage('Test on Windows') {          ·
+  |       agent { label 'windows' }         ·
+  |       steps {                           ·
+  |         unstash 'app'                <··┘
+  |         bat '...'                    
+  |       }                              
+  |       post { ...  }                  
+  |     }                                
+  |   }                                  
+  | }                                    
+  ``` 
+## PARALLEL EXECUTION:
+  ``` 
+  | stage('Test') {                
+  |   parallel                     ←·•  Execute linux&windows nodes
+  |   linux: {                       ·  in parallel.
+  |     node('linux') {            ←─┤
+  |       try {                      ·
+  |         unstash 'app'            ·
+  |         sh 'make check'          ·
+  |       }                          ·
+  |       finally {                  ·
+  |         junit '**/target/*.xml'  ·
+  |       }                          ·
+  |     }                            ·
+  |   },                             ·
+  |   windows: {                     ·
+  |     node('windows') { ... }    ←·┘
+  |   }
+  | }                               
+  ``` 
 [[jenkins.101}]]
 
-# Jenkins Pipeline Builder [[{01_PM.low_code,QA.UX]]
-  @[https://jenkinspipelinegenerator.octopus.com/#/]
-  https://www.linuxtoday.com/developer/jenkins-pipeline-builder-now-available/
-  pipeline builder scans your public GitHub repository and attempts
+# Jenkins Pipeline Builder [[{PM.low_code,QA.UX]]
+* <https://jenkinspipelinegenerator.octopus.com/#/>
+* <https://www.linuxtoday.com/developer/jenkins-pipeline-builder-now-available/>
+* pipeline builder scans your public GitHub repository and attempts
   to build a custom Jenkins Pipeline that you can then copy and paste
   into a Jenkins Pipeline project.
   Support for maven, php, node,python, .Net Core, ..
 [[}]]
 
-────────────────────────────────────────────────────────────────────────────────
-# Admin 101: EXPORT/IMPORT jobs [[{security.backup]]
+[[{security.backup]]
+# Jenkins Admin 101: Export/Import jobs 
 
-  REF: @[https://wiki.jenkins-ci.org/display/JENKINS/Jenkins+CLI]
+* REF: <https://wiki.jenkins-ci.org/display/JENKINS/Jenkins+CLI>
 
-  └ * ALT 1: Using jenkins-cli.jar
-    ******************************
-    · PRE-REQUISITES)
-      · jenkins-cli.jar version must match Server version
-      · jnlp ports need to be open
+1. ALT 1: Using jenkins-cli.jar
+   * PRE-REQUISITES)
+     * jenkins-cli.jar version must match Server version
+     * jnlp ports need to be open
+   * Script:
+     ```
+     | $ JENKINS_CLI="java -jar ${JENKINS_HOME}/war/WEB-INF/jenkins-cli.jar -s ${SERVER_URL}"
+     | $ ${JENKINS_CLI}    get-job job01 > job01.xml    ← job01.xml can be "gitted",...
+     | $ ${JENKINS_CLI} create-job job01 < job01.xml
+     |  WARN:  There are issues with bare naked ampersands in the XML such as when you have & in Groovy code.
+     |       (REF: <https://stackoverflow.com/questions/8424228/export-import-jobs-in-jenkins>)
+     ```
+2. ALT 2: USING CURL
+   ```
+   | SERVER_URL = "http://..."                                     ← Without Authentication
+   | SERVER_URL = "http://${USER}:${API_TOKEN}@..."                ← With    Authentication
+   | $ curl -s ${SERVER_URL}/job/ JOBNAME/config.xml > job01.xml   ← EXPORT
+   | $ curl -X POST ${SERVER_URL}/createItem?name=JOBNAME' \       ← IMPORT
+   |        --header "Content-Type: application/xml" -d  job01.xml
+   ```
+3. ALT 3: Filesystem (backup)
+   ```
+   | $ tar cjf _var_lib_jenkins_jobs.tar.bz2 /var/lib/jenkins/jobs
+   ```
+[[security.backup}]]
 
-    · Script:
-      JENKINS_CLI="java -jar ${JENKINS_HOME}/war/WEB-INF/jenkins-cli.jar -s ${SERVER_URL}"
-      ${JENKINS_CLI}    get-job job01 > job01.xml    ← job01.xml can be "gitted",...
-      ${JENKINS_CLI} create-job job01 < job01.xml
-       WARN:  There are issues with bare naked ampersands in the XML such as when you have & in Groovy code.
-            (REF: @[https://stackoverflow.com/questions/8424228/export-import-jobs-in-jenkins])
+[[{PM.low_code]]
+## Dockerized Jenkins  
+   ```
+   | $ docker run --rm -u root -p 8080:8080 \
+   |   -v jenkins-data:/var/jenkins_home \             ← if 'jenkins-data' Docker volumen
+   |   \                                                  doesn't exists it will be created
+   |   \
+   |   -v /var/run/docker.sock:/var/run/docker.sock \  ← Jenkins need control of Docker to
+   |   \                                                 launch new Docker instances during
+   |   \                                                 the build process
+   |   -v "$HOME":/home \
+   |   --name jenkins01 \                              ← Allows to "enter" docker with:
+   |   jenkinsci/blueocean                               $ docker exec -it jenkins01 bash
+   ```
+[[}]]
 
-  └ · ALT 2: USING CURL
-    *******************
-    SERVER_URL = "http://..."                                     ← Without Authentication
-    SERVER_URL = "http://${USER}:${API_TOKEN}@..."                ← With    Authentication
-    $ curl -s ${SERVER_URL}/job/ JOBNAME/config.xml > job01.xml   ← EXPORT
-    $ curl -X POST ${SERVER_URL}/createItem?name=JOBNAME' \       ← IMPORT
-           --header "Content-Type: application/xml" -d  job01.xml
+[[{jenkins.101,PM.TODO]]
+## End-to-End Multibranch Pipeline 
 
-  └ ALT 3: Filesystem (backup)
-    **************************
-    $ tar cjf _var_lib_jenkins_jobs.tar.bz2 /var/lib/jenkins/jobs
- [[security.backup}]]
-
-# Admin 101: Dockerized Jenkins  [[{01_PM.low_code]]
-  $ docker run --rm -u root -p 8080:8080 \
-      -v jenkins-data:/var/jenkins_home \             ← if 'jenkins-data' Docker volumen
-      \                                                  doesn't exists it will be created
-      \
-      -v /var/run/docker.sock:/var/run/docker.sock \  ← Jenkins need control of Docker to
-      \                                                 launch new Docker instances during
-      \                                                 the build process
-      -v "$HOME":/home \
-      --name jenkins01 \                              ← Allows to "enter" docker with:
-      jenkinsci/blueocean                               $ docker exec -it jenkins01 bash
-  [[}]]
-
-# End-to-End Multibranch Pipeline [[{jenkins.101,01_PM.TODO]]
-  @[https://jenkins.io/doc/tutorials/build-a-multibranch-pipeline-project/]
-  PREREQUISITES: Git installed, Docker installed.
+* <https://jenkins.io/doc/tutorials/build-a-multibranch-pipeline-project/>
+* PREREQUISITES: Git installed, Docker installed.
+  ```
   ┌──────────────┬────────────┬────────────┐
   │ INPUT        → JENKINS    → OUTPUT     │
   │ ARTIFACTS    →            → ARTIFACTS  │
@@ -289,94 +308,94 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
   │ React app    │            │ production │
   │ npm          │            │            │
   └──────────────┴────────────┴────────────┘
-
-  STEP 1) Setup local git repository
-   - clone:
+  ```
+1. STEP 1) Setup local git repository
+   ```
    $ git clone https://github.com/?????/building-a-multibranch-pipeline-project
                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                         Forked from
                                         https://github.com/jenkins-docs/building...
-   - Creak dev/pro branches:
-     $ git branch development
-     $ git branch production
+     $ git branch development  # <·· Creak dev branch
+     $ git branch production   # <·· Creak pro branch
+   ```
+2. STEP 2) Add 'Jenkinsfile' stub (agent, stages sections) to repo
+   (initially in master branch)
 
-  STEP 2) Add 'Jenkinsfile' stub (agent, stages sections) to repo
-         (initially in master branch)
-
-  STEP 3) Create new Pipeline in Jenkins Blue Ocean Interaface
-          browse to "http://localhost:8080/"
-            → click "Create a new Pipeline"
-              → Choose "Git" in "In Where do you store your code?"
-                → Repository URL: "/home/.../building-a-multibranch-pipeline-project"
-                  → Save
-
-      Blue Ocean will detect the presence of the "Jenkinsfile" stub
-      in each branch and will run each Pipeline against its respective branch,
-
-
-  STEP 4) Start adding functionality to the Jenkinsfile pipeline
-          (commit to git once edited)
-      pipeline {
-          environment {
-            docker_caching = 'HOME/.m2:/root/.m2'  ←  Cache to speed-up builds
-            docker_ports   = '-p 3000:3000 -p 5000:5000'  ←  Cache to speed-up builds
-          }
-          agent {
-              docker {
-                  image 'node:6-alpine'            ←   Good Enough to build simple
-                                                       Node.js+React apps
-                  args '' ←   dev/pro port where the app will
-              }                                        listen for requests. Used during
-          }                                            functional testing
-          environment {
-              CI = 'true'
-          }
-          stages {
-              stage('Build') {
-                  steps {
-                      sh 'npm install'             ←  1st real build command
-                  }
-              }
-              stage('Test') {
-                  steps {
-                      sh './jenkins/scripts/test.sh'
-                  }
-              }
-          }
-      }
-
-  STEP 5) Click "run" icon of the master branch of your Pipeline project,
-          and check the result.
-
-  STEP 6) Add "deliver" and "deploy" stages to the Jenkinsfile Pipeline
-          (and commit changes)
-          Jenkins will selectively execute based on the branch that Jenkins is building from
-
-        + stage('Deliver for development') {
-        +     when {
-        +         branch 'development'
-        +     }
-        +     steps {
-        +         sh './jenkins/scripts/deliver-for-development.sh'
-        +         input message: 'Finished using the web site? (Click "Proceed" to continue)'
-        +         sh './jenkins/scripts/kill.sh'
-        +     }
-        + }
-        + stage('Deploy for production') {
-        +     when {
-        +         branch 'production'
-        +     }
-        +     steps {
-        +         sh './jenkins/scripts/deploy-for-production.sh'
-        +         input message: 'Finished using the web site? (Click "Proceed" to continue)'
-        +         sh './jenkins/scripts/kill.sh'
-        +     }
-        + }
+3. STEP 3) Create new Pipeline in Jenkins Blue Ocean Interaface. <br/>
+   browse to "http://localhost:8080/"
+   ```
+   | → click "Create a new Pipeline"
+   |   → Choose "Git" in "In Where do you store your code?"
+   |     → Repository URL: "/home/.../building-a-multibranch-pipeline-project"
+   |       → Save
+   ```
+   (Blue Ocean will detect the presence of the "Jenkinsfile" stub
+    in each branch and will run each Pipeline against its respective branch)
+4. STEP 4) Start adding functionality to the Jenkinsfile pipeline
+   (commit to git once edited)
+   ```
+   | pipeline {
+   |     environment {
+   |       docker_caching = 'HOME/.m2:/root/.m2'  ←  Cache to speed-up builds
+   |       docker_ports   = '-p 3000:3000 -p 5000:5000'  ←  Cache to speed-up builds
+   |     }
+   |     agent {
+   |         docker {
+   |             image 'node:6-alpine'            ←   Good Enough to build simple
+   |                                                  Node.js+React apps
+   |             args '' ←   dev/pro port where the app will
+   |         }                                        listen for requests. Used during
+   |     }                                            functional testing
+   |     environment {
+   |         CI = 'true'
+   |     }
+   |     stages {
+   |         stage('Build') {
+   |             steps {
+   |                 sh 'npm install'             ←  1st real build command
+   |             }
+   |         }
+   |         stage('Test') {
+   |             steps {
+   |                 sh './jenkins/scripts/test.sh'
+   |             }
+   |         }
+   |     }
+   | }
+   ```
+5. STEP 5) Click "run" icon of the master branch of your Pipeline project,
+   and check the result.
+6. STEP 6) Add "deliver" and "deploy" stages to the Jenkinsfile Pipeline
+   (and commit changes).<br/>
+   Jenkins will selectively execute based on the branch that Jenkins is building from
+   ```
+   | + stage('Deliver for development') {
+   | +     when {
+   | +         branch 'development'
+   | +     }
+   | +     steps {
+   | +         sh './jenkins/scripts/deliver-for-development.sh'
+   | +         input message: 'Finished using the web site? (Click "Proceed" to continue)'
+   | +         sh './jenkins/scripts/kill.sh'
+   | +     }
+   | + }
+   | + stage('Deploy for production') {
+   | +     when {
+   | +         branch 'production'
+   | +     }
+   | +     steps {
+   | +         sh './jenkins/scripts/deploy-for-production.sh'
+   | +         input message: 'Finished using the web site? (Click "Proceed" to continue)'
+   | +         sh './jenkins/scripts/kill.sh'
+   | +     }
+   | + }
+   ```
 [[}]]
 
-# Jenkins Unordered:  [[{01_PM.TODO]]
-## Example Pipeline script:[[{jenkins.101,01_PM.TODO]]
-  @[https://jenkins.io/doc/pipeline/steps/pipeline-build-step/]
+# Jenkins Unordered Notes  [[{PM.TODO]]
+## Example Pipeline script:[[{jenkins.101]]
+* <https://jenkins.io/doc/pipeline/steps/pipeline-build-step/>
+  ```
   build job: 'Pipeline01FromJenkinsfileAtGit', propagate: true, wait: false
   build job: 'Pipeline02FromJenkinsfileAtGit', propagate: true, wait: false
   build job: 'Pipeline03FromJenkinsfileAtGit', propagate: true, wait: false
@@ -386,91 +405,93 @@ REF: @[https://jenkins.io/doc/book/pipeline/jenkinsfile/]
 
                                   false →  step succeeds even if the downstream build failed
                                            use result property of the return value as needed.
-  [[}]]
-
-## Serverless Pipeline  [[{jenkins.101,jenkins.troubleshooting,qa.testing,01_PM.TODO]]
-  Jenkinsfile-runner: Exec. Jenkinsfile pipeline without running Jenkin server.
-  - https://jenkins.io/blog/2019/02/28/serverless-jenkins/
-  - https://medium.com/@jdrawlings/serverless-jenkins-with-jenkins-x-9134cbfe6870
-
- @[https://github.com/jenkinsci/jenkinsfile-runner]
-  [[}]]
-
-## AWS EC2 plugin: launch Amazon EC2 Spot Instances as worker nodes  [[cloud.aws]]
-  automatically scaling capacity with load demand.
-@[https://wiki.jenkins.io/display/JENKINS/Amazon+EC2+Fleet+Plugin]
-
-## "Organization Folders" allows Jenkins to monitor entire                      [[git.github,git.bitbucket,git.gerrit]]
-  GitHub Organization or BitbucketTeam/Project and automatically create new
-  Multibranch Pipelines for multi-branch repos by pulling Jenkinsfile's.
-
-## Jenkins + Zuul integration: @[https://zuul-ci.org/]
-  • Zuul is a python daemon listening for Gerrit stream-events feed and
-    trigger jobs function registered by Jenkins using the Jenkins Gearman
-    plugin. triggers are set with YAML and hosted in the git repo.
-    integration/config.git as /zuul/layout.yaml.
-   @[https://www.mediawiki.org/wiki/Continuous_integration/Zuul]
-    · IBM OpenStack Engineer Urges Augmenting Jenkins with Zuul for Hyperscale Projects
-    @[https://thenewstack.io/ibm-openstack-engineer-urges-cncf-consider-augmenting-jenkins-zuul/]
-
-## Jenkins X: https://jenkins-x.io/es/
-  Accelerate Continuous Delivery on Kubernetes                                   [[k8s]]
-  · https://github.com/kurron/jx3-k3s-vault
-    Jenkins X 3.x GitOps repository using k3s to create a kubernetes
-    cluster, github for the git and container registry and external vault
-  · Rather than having to have deep knowledge of the internals of
-    Jenkins X Pipeline, Jenkins X will default awesome pipelines for your
-    projects that implements fully CI and CD."
-  · Environment Promotion via GitOps.
-  · Preview Environments.
-  · Feedback on Issues and Pull Requests.
-
-## Customize History Saving Policy:[[{jenkins.101,jenkins.build_history]]
-@[https://stackoverflow.com/questions/60391327/is-it-possible-in-jenkins-to-keep-just-first-and-last-failures-in-a-row-of-con]
-
-Use Case: We are just interesing in keeping "build" changes when the execution
-   changes from "success execution" to "failure". That's is, if w  have a history like:
-
-   t1  t2  t3  t4  t5  t6  t7  t8  t9  t10 t11 t12 t13 t14 t15
-   -----------------------------------------------------------
-   OK, OK, OK, OK, KO, KO, KO, KO, OK, OK, OK, OK, KO, KO, OK
-   ^               ^               ^               ^       ^
-   status          status          status          status  status
-   change          change          change          change  change
-
-
-   We want to keep history just for:
-   t1              t5              t9              t13     t15
-   -----------------------------------------------------------
-   OK,             KO,             OK,             KO,     OK
-
-To allow this history saving policy a groovy job-post-build step is needed:
-
- Ex: discard all successful builds of a job except for the last 3 ones
-     (since typically, you're more interested in the failed runs)
-
-     def allSuccessfulBuilds = manager.build.project.getBuilds().findAll {
-         it.result?.isBetterOrEqualTo( hudson.model.Result.SUCCESS )
-     }
-
-     allSuccessfulBuilds.drop(3).each {
-       it.delete()
-     }
+  ```
 [[}]]
 
-## build-status conditional Post-build actions: [[{jenkins.101,git,performance,01_PM.TODO}]]
-@[https://stackoverflow.com/questions/45456564/jenkins-declarative-pipeline-conditional-post-action]
+## Serverless Pipeline  [[{jenkins.101,jenkins.troubleshooting,qa.testing]]
+* Jenkinsfile-runner: Exec. Jenkinsfile pipeline without running Jenkin server.
+  * <https://jenkins.io/blog/2019/02/28/serverless-jenkins/>
+  * <https://medium.com/@jdrawlings/serverless-jenkins-with-jenkins-x-9134cbfe6870>
+* <https://github.com/jenkinsci/jenkinsfile-runner>
+[[}]]
+
+## AWS EC2 plugin: [[cloud.aws]]
+* launch Amazon EC2 Spot Instances as worker nodes  automatically scaling capacity with load demand.
+  <https://wiki.jenkins.io/display/JENKINS/Amazon+EC2+Fleet+Plugin>
+
+## Github "Organization Folders"                       [[git.github,git.bitbucket,git.gerrit]]
+* Organization Folders allows Jenkins to monitor entire GitHub Organization 
+  or BitbucketTeam/Project and automatically create new Multibranch Pipelines 
+  for multi-branch repos by pulling Jenkinsfile's.
+
+## Jenkins + Zuul integration [[{jenkins,scalability]]
+* <https://zuul-ci.org/>
+* Zuul is a python daemon listening for Gerrit stream-events feed and
+  trigger jobs function registered by Jenkins using the Jenkins Gearman
+  plugin. triggers are set with YAML and hosted in the git repo.
+  integration/config.git as /zuul/layout.yaml.
+  <https://www.mediawiki.org/wiki/Continuous_integration/Zuul>
+* IBM OpenStack Engineer Urges Augmenting Jenkins with Zuul for Hyperscale Projects
+  <https://thenewstack.io/ibm-openstack-engineer-urges-cncf-consider-augmenting-jenkins-zuul/>
+[[jenkins,scalability}]]
+
+## Jenkins-x (CI on K8s)
+* <https://jenkins-x.io/es/>
+* Accelerate Continuous Delivery on Kubernetes                                   [[k8s]]
+* https://github.com/kurron/jx3-k3s-vault
+  Jenkins X 3.x GitOps repository using k3s to create a kubernetes
+  cluster, github for the git and container registry and external vault
+* Rather than having to have deep knowledge of the internals of
+  Jenkins X Pipeline, Jenkins X will default awesome pipelines for your
+  projects that implements fully CI and CD."
+* Environment Promotion via GitOps.
+* Preview Environments.
+* Feedback on Issues and Pull Requests.
+
+[[{jenkins.101,jenkins.build_history,PM.TODO.now]]
+## Customize History Saving Policy
+* <https://stackoverflow.com/questions/60391327/is-it-possible-in-jenkins-to-keep-just-first-and-last-failures-in-a-row-of-con>
+* Use Case: We are just interesing in keeping "build" changes when the execution
+  changes from "success execution" to "failure". That's is, if w  have a history like:
+  ```
+  |  t1  t2  t3  t4  t5  t6  t7  t8  t9  t10 t11 t12 t13 t14 t15
+  |  -----------------------------------------------------------
+  |  OK, OK, OK, OK, KO, KO, KO, KO, OK, OK, OK, OK, KO, KO, OK
+  |  ^               ^               ^               ^       ^
+  |  status          status          status          status  status
+  |  change          change          change          change  change
+  | 
+  |  We want to keep history just for:
+  |  t1              t5              t9              t13     t15
+  |  -----------------------------------------------------------
+  |  OK,             KO,             OK,             KO,     OK
+  ```
+  To allow this history saving policy a groovy job-post-build step is needed:
+* Ex: discard all successful builds of a job except for the last 3 ones
+  (since typically, you're more interested in the failed runs)
+  ```
+  |  def allSuccessfulBuilds = manager.build.project.getBuilds().findAll {
+  |      it.result?.isBetterOrEqualTo( hudson.model.Result.SUCCESS )
+  |  }
+  |
+  |  allSuccessfulBuilds.drop(3).each {
+  |    it.delete()
+  |  }
+  ```
+[[}]]
+
+## build-status conditional Post-build actions [[{jenkins.101,git,performance}]]
+* <https://stackoverflow.com/questions/45456564/jenkins-declarative-pipeline-conditional-post-action>
 
 ## Clone directovy (vs full repo)  [[performance]]
-@[https://softwaretestingboard.com/q2a/1791/how-clone-checkout-specific-directory-command-line-jenkins]
-  Ex:
+* <https://softwaretestingboard.com/q2a/1791/how-clone-checkout-specific-directory-command-line-jenkins>
+* Ex:
+  ```
   $ git checkout branch_or_version -- path/file
   $ git checkout HEAD -- main.c   ←  checkout main.c from HEAD
   $ git checkout e5224c883a...c9 /path/to/directory ← Checkout folder from commit
+  ```
 
 ## Jenkins: managing large git repos [[performance]]
-@[https://jenkins.io/files/2016/jenkins-world/large-git-repos.pdf]
-
-[[01_PM.TODO}]]
-
-[[jenkins}]]
+* <https://jenkins.io/files/2016/jenkins-world/large-git-repos.pdf>
+[[PM.TODO}]]

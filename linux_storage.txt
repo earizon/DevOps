@@ -39,7 +39,7 @@ $*# ioping /dev/sda1 -c4* ← monitor I/O speed and latency in real time
 [[}]]
 
 ## Block Storage  [[{storage.block_management,linux.101]]
-REF: @[https://opensource.com/article/18/11/partition-format-drive-linux]
+REF: <https://opensource.com/article/18/11/partition-format-drive-linux>
 
 Linux(UNIX) sees storage devices like block-devices:
 - read and write data is done fixed-size blocks. (4096 bytes or more, ussually)
@@ -182,15 +182,15 @@ Linux(UNIX) sees storage devices like block-devices:
 ┌────────────────┬─────────────────────────────────────────────────────────────────────────────┐
 │*DEVICE MAPPER *│                                                                             │
 ├────────────────┘                                                                             │
-│ @[https://en.wikipedia.org/wiki/Device_mapper]                                               │
+│ <https://en.wikipedia.org/wiki/Device_mapper>                                               │
 │ - kernel framework mapping virtual block devices                                             │
 │   to one (or more) physical block device                                                     │
 │ - Optionally can process and filter in/out data                                              │
 │ ┌───────────────────────────────────────────────┬───────────────────────────────┐            │
 │ │*DMSETUP — LOW LEVEL LOGICAL VOLUME MANAGEMENT*│                               │            │
 │ ├───────────────────────────────────────────────┘                               │            │
-│ │@[https://linux.die.net/man/8/dmsetup]                                         │            │
-│ │CY&P from @[https://wiki.gentoo.org/wiki/Device-mapper]                        │            │
+│ │<https://linux.die.net/man/8/dmsetup>                                         │            │
+│ │CY&P from <https://wiki.gentoo.org/wiki/Device-mapper>                        │            │
 │ │"""                                                                            │            │
 │ │Normally, users rarely use dmsetup directly. The dmsetup is a very low level.  │            │
 │ │LVM, mdtool or cryptsetup is generally the  preferred way to do it,            │            │
@@ -470,7 +470,7 @@ Add mirror to existing disk without deleting data:
 [[}]]
 
 ## DRBD (Distributed Replicated Block Device) [[{storage.block_management.DRDB,storage.distributed]]
-@[https://www.tecmint.com/setup-drbd-storage-replication-on-centos-7/]
+<https://www.tecmint.com/setup-drbd-storage-replication-on-centos-7/>
   flexible and versatile replicated storage solution for Linux. It mirrors the
   content of block devices such as hard disks, partitions, logical volumes etc.
   between servers. It involves a copy of data on two storage devices, such that
@@ -490,7 +490,7 @@ Add mirror to existing disk without deleting data:
 
 - See also DRBD4Cloud research project, aiming at ncreasing the applicability
   adn functionality for cloud markets.
-  @[https://www.ait.ac.at/en/research-topics/cyber-security/projects/extending-drbd-for-large-scale-cloud-deployments/]
+  <https://www.ait.ac.at/en/research-topics/cyber-security/projects/extending-drbd-for-large-scale-cloud-deployments/>
   """RBD is currently storing up to 32full data replicas on remote storage
      nodes. DRBD4Cloudwill allow for the usage of erasure coding, which allows
      one to split data into a number of fragments (e.g., nine), such that
@@ -506,7 +506,7 @@ Add mirror to existing disk without deleting data:
 
 # BLOCK LAYER FLASH  [[{]]
 ## Detecting false Flash [[{storage.flash,security.storage]]
-@[https://www.linuxlinks.com/essential-system-tools-f3-detect-fix-counterfeit-flash-storage/]
+<https://www.linuxlinks.com/essential-system-tools-f3-detect-fix-counterfeit-flash-storage/>
 2019-02-08  Steve Emms
 - f3: Detect and fix counterfeit flash storage:
 - f3 stands for Fight Flash Fraud, or Fight Fake Flash.
@@ -606,9 +606,9 @@ Add mirror to existing disk without deleting data:
 
 #[f2fs_summary]
 ## Flash Friendly FS "F2FS" [[{storage.flash,security.encryption]]
-@[https://www.usenix.org/conference/fast15/technical-sessions/presentation/lee]
-@[https://mjmwired.net/kernel/Documentation/filesystems/f2fs.rst]
-@[man mkfs.f2fs]
+<https://www.usenix.org/conference/fast15/technical-sessions/presentation/lee>
+<https://mjmwired.net/kernel/Documentation/filesystems/f2fs.rst>
+<man mkfs.f2fs>
 ## Much better than EXT4 for Flash Storage:
   - ~3.1x faster with iozone
   - ~2.0x faster with SQLite
@@ -627,7 +627,7 @@ Add mirror to existing disk without deleting data:
   $*  [ -f ]                 \     * ← Force overwrite if existing FS is detected.
   $*  [ -l volume-label ]    \     *
   $*  [ -m ]                 \     * ← Enable block-zoned-feature support
-                                       Useful in NVMe disks according to @[https://zonedstorage.io/]
+                                       Useful in NVMe disks according to <https://zonedstorage.io/>
   $*  [ -q  ]                \     * ← Quiet mode.
 ┌→$*  [ other options   ]\   \     * ← ** *
 │ $*    /dev/... [sectors]         *
@@ -730,7 +730,7 @@ $*$ cp -R directoryToCopy /destination/directory/ *       |                     
                         ^   (rename) finalName            |             │  └───── Finally write over with zeroes
                                                           |             └──────── Overwrite twice with random data
                                                           |
- *LISTING  FILES*                                         |  @[https://linux.die.net/man/1/shred]
+ *LISTING  FILES*                                         |  <https://linux.die.net/man/1/shred>
 $*$ ls" -"optionalFlags"   * ← list files in current      |  prevent data from being recovered by
          ^^^^^^^^^^^^^^^       directory                  |  hackers using software (and most
   -l: ("long"), show permissions, size,                   |  probably hardware)
@@ -742,13 +742,13 @@ $*$ ls" -"optionalFlags"   * ← list files in current      |  prevent data from
   -R: ("recursive") list recursively children dirs
 
  *CHECK DISK FREE/USED SPACE*                             |  *FILE PERMISSIONS*
-  @[https://linux.die.net/man/0/df]                       |  - Change who can read,write or execute a file
+  <https://linux.die.net/man/0/df>                       |  - Change who can read,write or execute a file
 $*$ df -k -h  -x devtmpfs -x tmpfs * ← df: (D)isk (F)ree  |  $*$ chmod go-rwx mySecretDir                 *
         ↑  ↑   ↑           ↑                              |              ↑↑
         │  │   Skip "false" filesystems(dev,...)          |              │└──  (r)ead, (w)rite e(x)ecute
         │  └── show in human readable units               |              │      4       2        1
         └───── scale size by 1K before printing           |              │
-  @[https://linux.die.net/man/1/du]                       |              └───   - remove
+  <https://linux.die.net/man/1/du>                       |              └───   - remove
   $ du -sch dir1 file2 # * *isk  * *ssage                 |                     + add
         ↑↑↑                                               |
         ││└── show in human readable units                |  - Change someFile owner and group
@@ -756,7 +756,7 @@ $*$ df -k -h  -x devtmpfs -x tmpfs * ← df: (D)isk (F)ree  |  $*$ chmod go-rwx 
         └──── display only total for each arg
 
  *SEARCHING FILES/DATA*                                            |  *GRAPHICAL TOOLS*
- @[https://linux.die.net/man/1/find]                               | - Easier to use, but not scriptable.
+ <https://linux.die.net/man/1/find>                               | - Easier to use, but not scriptable.
 $*$ find /var/lib                *                                 | - Discouraged for system administration.
 $*   -type f        \            * ←     f: only files             |
 $*                               *       d: only directories       | $ mc       ← Execute the Midnight Commander
@@ -767,7 +767,7 @@ $*                               *       iname:do     ignore case  | $ nnn      
 $*   -mmin  -30     \            * ←*AND*whose modification time   |              lightweight file managers:
 $*                               *       is '30 or less'(-30)      |              ~50KB binary using ~3.5MB resident
 $*                               *       minutes (mmin)            |              memory at runtime:
-$*   -msize +20k    \            * ←*AND*whose size (msize) is     |         @[https://github.com/jarun/nnn#features]
+$*   -msize +20k    \            * ←*AND*whose size (msize) is     |         <https://github.com/jarun/nnn#features>
 $*                               *       20k(ilobytes) or more
 $*   -not \(  \                  * ← Skip
 $*     -path "./node_modules/*" \* ← node_modules dir.
@@ -833,7 +833,7 @@ lazytime  : Only update times (atime, mtime, ctime) on the in-memory version of 
 ┌──────────────────────────────┬─────────────────────────────────────────────────────────────────────────┐
 │*LIST FILES OPEN BY A PROCESS*│                                                                         │
 ├──────────────────────────────┘                                                                         │
-│@[https://linux.die.net/man/8/lsof]                                                                     │
+│<https://linux.die.net/man/8/lsof>                                                                     │
 │$ sudO*lsof*-pO*511*                                                                                    │
 │             ↑                                                                                          │
 │             └── running process with ID=511                                                            │
@@ -871,7 +871,7 @@ lazytime  : Only update times (atime, mtime, ctime) on the in-memory version of 
 ┌──────────────────────────┬───────────────────────────┐ ┌─────────────────────────────────────┬───────────────────────────────┐
 │*MONITOR FILE/DIR. ACCESS*│                           │ │*AUDIT LAST ACCESS/EXECUTION OF FILE*│                               │
 ├──────────────────────────┘                           │ ├─────────────────────────────────────┘                               │
-│@[https://linux.die.net/man/1/inotifywait]            │ │$*stat*/usr/bin/sort                                                 │
+│<https://linux.die.net/man/1/inotifywait>            │ │$*stat*/usr/bin/sort                                                 │
 │Ex:*Wait for changes, then execute someCommand*       │ │  File: /usr/bin/sort                                                │
 │LIST_OF_FILES_TO_MONITOR="file1 file2 ..."            │ │  Size: 144016          Blocks: 288     IO Block: 4096   regular file│
 │while  true ; do                                      │ │Device: fd00h/64768d    Inode: 263476   Links: 1                     │
@@ -880,7 +880,7 @@ lazytime  : Only update times (atime, mtime, ctime) on the in-memory version of 
 │done                                                  │ │Access: 2019-05-18 15:00:03.242672510 -0400                          │
 │                                                      │ │Modify: 2018-11-07 10:14:42.000000000 -0500                          │
 │See also                                              │ │Change: 2019-01-17 08:14:01.789349117 -0500                          │
-│@[https://linux.die.net/man/1/inotifywatch]           │ │ Birth: -                                                            │
+│<https://linux.die.net/man/1/inotifywatch>           │ │ Birth: -                                                            │
 │  (gather filesystem access statistics)               │ │                                                                     │
 └──────────────────────────────────────────────────────┘ │For an executable access will show when it was last executed         │
                                                          └─────────────────────────────────────────────────────────────────────┘
@@ -1023,8 +1023,8 @@ lazytime  : Only update times (atime, mtime, ctime) on the in-memory version of 
 [[}]]
 
 # GDrive FUSE: [[{storage.network]]
-@[https://www.techrepublic.com/article/how-to-mount-your-google-drive-on-linux-with-google-drive-ocamlfuse/]
-@[https://ask.fedoraproject.org/en/question/68813/any-good-client-for-google-drive/]
+<https://www.techrepublic.com/article/how-to-mount-your-google-drive-on-linux-with-google-drive-ocamlfuse/>
+<https://ask.fedoraproject.org/en/question/68813/any-good-client-for-google-drive/>
 [[}]]
 
 
@@ -1211,7 +1211,7 @@ FILE SYSTEMS [[{storage.file_system,01_PM.WiP]]
 - New anti-fragmentation algorithms.
 
 ## EXT4: shrinking on LVM
-@[https://www.systutorials.com/124416/shrinking-a-ext4-file-system-on-lvm-in-linux/]
+<https://www.systutorials.com/124416/shrinking-a-ext4-file-system-on-lvm-in-linux/>
 
 ## EXT4: Checks error|fragmentation
 (ussually it must be really low in EXT"N" filesystems):
@@ -1290,7 +1290,7 @@ min_batch_time=usec This parameter sets the commit time (as
 [[storage.file_system.ext4}]]
 
 # XFS [[{storage.file_system.XFS,01_PM.TODO]]
-@[https://www.systutorials.com/docs/linux/man/8-xfs_admin/]
+<https://www.systutorials.com/docs/linux/man/8-xfs_admin/>
   https://wiki.archlinux.org/title/XFS [[{01_PM.TODO}]]
   - mkfs.xfs(8):    - xfs_repair(8)    [[{01_PM.TODO]]
   - xfs_db(8):      - xfs(5)
@@ -1332,7 +1332,7 @@ min_batch_time=usec This parameter sets the commit time (as
 
 # BTRFS [[{storage.file_system.BTRFS]]
 ## Bedup: Deduplication for BTRFS
-@[https://github.com/g2p/bedup]
+<https://github.com/g2p/bedup>
 bedup looks for new and changed files, making sure that multiple
 copies of identical files share space on disk. It integrates deeply
 with btrfs so that scans are incremental and low-impact.
@@ -1342,8 +1342,8 @@ shared on disk, saving space.
 [[}]]
 
 # Stratis [[{storage.file_system.stratis,01_PM.backlog]]
-@[https://opensource.com/article/18/4/stratis-lessons-learned]
-@[https://stratis-storage.github.io/StratisSoftwareDesign.pdf]
+<https://opensource.com/article/18/4/stratis-lessons-learned>
+<https://stratis-storage.github.io/StratisSoftwareDesign.pdf>
 WARN: (2022-10): Technology Preview feature only. not supported
       with Red Hat production service level agreements (SLAs)
       and might not be functionally complete. Not recommended
@@ -1352,12 +1352,17 @@ WARN: (2022-10): Technology Preview feature only. not supported
 [[}]]
 
 # Encryption [[{security.encryption]]
-## Kernel Keyrings [[{security.encryption,security.secret_management]]
-@[https://www.kernel.org/doc/Documentation/security/keys.txt]
-## in-Kernel cache for cryptographic secrets (encrypted FS passwords, kernel services,...),
- *used by various kernel components -file-systems, hardware modules,...- to cache*
- *security data, authentication keys, encryption keys, ... in kernel space*.
 
+## Kernel Keyrings [[{security.encryption,security.secret_management]]
+
+* <https://www.kernel.org/doc/Documentation/security/keys.txt>
+
+## in-Kernel cache for cryptographic secrets (encrypted FS passwords, kernel services,...),
+
+* used by various kernel components -file-systems, hardware modules,...- to cache*
+* security data, authentication keys, encryption keys, ... in kernel space*.
+
+  ```
   (kernel) KEY OBJECT
   ┌── attributes ────┐
   │ · type           │ Must be registered in kernel by a kernel service (FS,...)
@@ -1396,21 +1401,26 @@ WARN: (2022-10): Technology Preview feature only. not supported
   · @a  or -7  : Assumed request_key authorisation key:
   · %:${name}  : named      keyring, to be searched for in [process's keyrings , */proc/keys*]
   · %$typ:$name: named type:keyring, to be searched for in [process's keyrings , */proc/keys*]
-
-## RELATED PROCFS FILES:
+  ```
+* RELATED PROCFS FILES:
+  ```
   · /proc/keys                          ← list keys granted View perm/task reading the file.
   · /proc/key-users                     ← lists quota+stats by user
-## RELATED SYSCTL PROCFS FILES:
-  · /proc/sys/kernel/keys/root_maxkeys
-    /proc/sys/kernel/keys/root_maxbytes
-    /proc/sys/kernel/keys/maxkeys
-    /proc/sys/kernel/keys/maxbytes
-	/proc/sys/kernel/keys/gc_delay      ← timeout to garbage-collect revoked|expired keys
+  ```
+* RELATED SYSCTL PROCFS FILES:
+  ```
+  /proc/sys/kernel/keys/root_maxkeys
+  /proc/sys/kernel/keys/root_maxbytes
+  /proc/sys/kernel/keys/maxkeys
+  /proc/sys/kernel/keys/maxbytes
+  /proc/sys/kernel/keys/gc_delay      ← timeout to garbage-collect revoked|expired keys
+  ```
 
-## e.g.: When a filesystem/device calls "file-open", the kernel react by
-        searching for a key, releasing it upon close.
-        (How to deal with conflicting keys due to concurrent users opening
-         the same file is left to the filesystem author to solve)
+* e.g.: When a filesystem/device calls "file-open", the kernel react by
+  searching for a key, releasing it upon close.
+  (How to deal with conflicting keys due to concurrent users opening
+  the same file is left to the filesystem author to solve)
+
  *########################*
  *# man 1 keyctl summary #* (Used by scripts, ...)
  *########################*
