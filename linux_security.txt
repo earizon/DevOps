@@ -1,0 +1,192 @@
+[[{linux.security,PM.draft]]
+# Security Hardening
+
+[[{security.101,doc_has.comparative]]
+## Difference Between su, sudo su, sudo -i, and sudo -s 
+
+* <https://trendoceans.com/difference-between-su-sudo-su-sudo-i-and-sudo-s/>
+[[security.101}]]
+
+[[{security.rescue_disk,security.101]]
+## 8 rescue disks and OS:
+
+* <https://www.genbeta.com/herramientas/8-discos-rescate-sistemas-operativos-que-he-elegido-para-crear-navaja-suiza-pendrive-usb-multiboot>
+Para hacer los discos multi arranque Ventoy es muchísimo mejor
+opción. Basta con instalar ventoy en el pendrive (te creará una
+partición) y te dejará el resto del pendrive libre. Para añadir
+nuevos discos, simplemente copias y pegas la iso (tal cual) en el
+espacio libre y al reiniciar te aparecerán todas las isos para la
+que quieras.
+No necesitarás ningún software para añadir nuevas isos: Copiar y pegar
+[[security.rescue_disk}]]
+
+
+
+## Grsecurity®
+* <https://grsecurity.net/>
+* Grsecurity: extensive security enhancement to the Linux kernel that defends
+  against a wide range of security threats through intelligent access control,
+  memory corruption-based exploit prevention, and a host of other system
+  hardening that generally require no configuration.
+* It has been actively developed and maintained for the past 17 years.
+  Commercial support for grsecurity is available through Open Source Security, Inc
+* <https://www.grsecurity.net/compare.php">Comparation grsecurity SELinux AppArmor KSPP</a>
+* <https://en.wikipedia.org/wiki/Grsecurity#PaX>
+   ""A major component bundled with grsecurity is PaX. Among other features,
+  the patch flags data memory, the stack, for example, as non-executable and
+  program memory as non-writable. The aim is to prevent memory from being
+  overwritten, which can help to prevent many types of security vulnerabilities,
+  such as buffer overflows. PaX also provides address space layout randomization
+  (ASLR), which randomizes important memory addresses to reduce the probability
+  of attacks that rely on easily predicted memory addresses.""
+
+
+## SysDig Container Monit
+* <https://sysdig.com/opensource/sysdig/>
+* [How to monitor and troubleshoot a Linux server using sysdig](http://xmodulo.com/monitor-troubleshoot-linux-server-sysdig.html)
+
+...you need to track system calls made and received by a process?:  strace?
+... monitor raw network traffic from the command line?   tcpdump
+.... everything is a file...:  lsof.
+
+sysdig == "strace + tcpdump + lsof + awesome sauce with a little Lua cherry on top.
+
+Install
+```
+# curl -s https://s3.amazonaws.com/download.draios.com/stable/install-sysdig | bash
+```
+ Ussage:
+```
+# sysdig  # global picture
+# sysdig -cl | less # list of available chisels (scripts)
+# sysdig -cl [chisel_name] # display info of a given chisel
+# sysdig -i spy_port    # can be combined with filters (class.field structure)
+Filter examples:
+fd.cip: client IP address.
+evt.dir: event direction can be either '>' for enter events or '<' for exit events.
+
+# sysdig -l  # <-- display complete filter list
+
+# sysdig -w trace.scap  # collect trace for offline analyis
+# sysdig -c bottlenecks # <·· list 10 slowest systems calls real-time!!!
+                        #     -r trace.scap  (for offline analysis)
+
+# sysdig \
+  -s 4096 \             <· bytes per event captured
+  -z \                  <· compress
+  -w debian.scap.gz
+
+# sysdig \                         <·· all user's activity
+   -r debian.scap.gz \                 filter user like: "user.name=xmodulo"
+   -c spy_users
+
+
+# sysdig \
+  -p "%user.name %proc.name %fd.name" \
+  "evt.type=write and fd.name contains /home/" \
+  -z -w writetrace.scap.gz           # Monitoring File I/O
+
+
+
+# sysdig -s 4096 \
+  -A -c echo_fds \
+  fd.cip=192.168.0.100 \
+  -r /debian.scap.gz  \
+  proc.name=apache2               # <·· Monitoring Network I/O
+```
+
+## SysDig Falco
+* <https://sysdig.com/blog/selinux-seccomp-falco-technical-discussion/>
+
+
+[[{security.101.honeypots]]
+## HoneyPots with SysDig and Falco
+
+* <https://labs.mwrinfosecurity.com/blog/high-interaction-honeypots-with-sysdig-and-falco>
+[[security.101.honeypots}]]
+
+## practical hardening guide
+
+* <https://github.com/trimstray/the-practical-linux-hardening-guide>
+
+## Firejail 
+
+* <https://www.ostechnix.com/improve-linux-systems-security-using-firejail/>
+
+
+## Analysis of ext4 for digital forensics
+* <https://www.dfrws.org/sites/default/files/session-files/paper-an_analysis_of_ext4_for_digital_forensics.pdf>
+
+[[{security.cryptography]]
+## kernel crypto
+* <https://www.kernel.org/doc/html/v4.12/crypto/index.html>
+[[security.cryptography}]]
+
+
+## How to Perform Comprehensive Kernel Module Security Testing
+
+* <https://www.apriorit.com/dev-blog/634-qa-how-to-perform-comprehensive-linux-kernel-module-security-testing>
+
+* Security testing is becoming essential for every business. Undetected bugs and security vulnerabilities can lead to expensive consequences or even losses that businesses can’t recover from.
+
+[[{]]
+## eBPF "vs" SELinux/AppArmor
+
+* <https://lwn.net/Articles/788282/>
+
+One of the Linux kernel features that Docker will take full advantage
+of in the future is eBPF, which will someday be usable to write
+seccomp filters. Crosby explained that seccomp and BPF allow for
+flexible system call interception within the kernel, which opens the
+door for new control and security opportunities for containers.
+
+More kernel security support is also headed to Docker in the future.
+Crosby said that SELinux and AppArmor are no longer the only Linux
+Security Modules (LSMs) that developers want. Among the new and
+emerging LSMs that Docker developers are working to support in the
+future is Landlock. Crosby added that developers will also have the
+ability to write their own custom LSMs with eBPF. Additionally, he
+highlighted the emergence of seccomp BPF.
+[[}]]
+
+[[{linux.security.SSSD,security.remote_access.identity]]
+## SSSD (NSS, PAM, ...)
+
+* <https://docs.pagure.org/SSSD.sssd/>
+
+* system daemon providing access to local or remote identity and
+  authentication resources through a common framework that can
+  provide caching and offline support to the system. 
+* It provides several interfaces, including NSS and PAM modules or
+  a D-Bus interface.
+[[linux.security.SSSD}]]
+
+[[{security.101,security.selinux,security.AppArmor,security.Auditd,security.SecComp,security.Falco,doc_has.comparative]]
+## SELinux, AppArmor, Auditd, SecComp, SecComp-bpf, Falco compared
+
+* <https://www.infoq.com/news/2020/01/falco-security-cncf/>
+
+  While similar to other tools that allow for declaring security policies such as
+SELinux, AppArmor, or auditd, Falco has some differences. As Mark Stemm,
+software engineer at Sysdig, notes:
+
+  Overall, these products can be grouped into ones focused on enforcement vs
+auditing. Both groups define a policy that describes the allowed or disallowed
+behavior for a process, in terms of system calls, their arguments, and host
+resources accessed.
+
+  Tools like seccomp, seccomp-bpf, SELinux, and AppArmor fall into the
+enforcement category in that they will alter the behaviour of processes if they
+are found to violate the defined rules. Falco and other tools, such as auditd,
+fall in the auditing category as they will notify when detecting a violation.
+
+  According to Stemm, one difference between Falco and these other tools is that
+"Falco runs in user space, using a kernel module to obtain system calls, while
+the other tools perform system call filtering/monitoring at the kernel level."
+This allows Falco to have more available data to be used within its policies as
+noted previously.
+[[security.101}]]
+
+
+
+[[linux.security,PM.draft}]]

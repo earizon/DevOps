@@ -1,0 +1,472 @@
+[[{monitoring.kernel,monitoring.I/O,monitoring.network,monitoring.jobs]]
+
+# Kernel Monitorization
+
+## dmesg
+
+* `dmesg` prints or controls the kernel ring buffer. 
+
+
+
+
+```
+| KERNEL MONITORIZATION           [[02_doc_has.diagram,troubleshooting]]
+| ┌       ┌───────────────────────────────────────────────────────┐
+| ·       │                    APPLICATIONS                       │
+| ·       ├───────────────────────────────────────────────────────┤
+| ·       │[ltrace][ldd]      System Libraries gethostlatency perf│
+| ·       ├───────────────────────────────────────────────────────┤
+| ·       │ strace,sydgid       System Call Interface [*3]    perf│
+| ·       │ opensnoop,statsnoop,syncsnoop                         │  CPU
+|perf   ┌ ├─────────────────┬───┬──────────────┬┬─────────────────┤  Inter-  ┌────┐
+|dtrace · │ VFS             │   │SOCKETS  [ss] ││SCHEDULER   [perf│  connect |CPU1│
+|       · │ opensnoop       │   │              ││                 ├──────────┤perf│
+|stap   · ├─────────────────┤   │──────────────┤│ perf            <·· top    └─·──·
+|lttnp  · │ FILE SYSTEM     │   │TCP/UPD  [*2] ││ latencytop      │ · ps       ·  ·
+|lttnp  L │                 │   │tcptop,       ││ mpstat          │ · pidstat  ·  ·
+|ktap   I │ lsof,fstrace    │   │tcplife,      │├─────────────────┤ ·          ·  ·
+| ·     N │ filelie,pcstat  │   │tcpconnect,   ││VIRTUAL MEMORY   │ ·  Memory  ·  ·
+| ·     U ├─────────────────┤   │tcpaccept     ││[vmstat]         <··     BUS  ·  ·
+| ·     X │ VOLUME MANAGERS │   │tcpconnlat,   ││[slabtop]        <··        ┌─v─┐·
+| ·       │ mdflush         │   ├tcpretrans    ││[free]           ├··········>RAM│·
+| ·     K ├─────────────────┤   ├──────────────┤│[memleak]        │          └───┘·
+| ·     E │ BLOCK DEVICE    │   │IP ip,        ││[comkill]        │      numastat ·
+| ·     R │ INTERFACE       │   │route,        ││[slabratetop]    │       lstop   ·
+| ·     N │ iostat,iotop    │   │iptables      ││                 │               ·
+| ·     E │ blktrace        │   │              ││                 │               ·
+| ·     L │ pidstat         │   │              ││                 │               ·
+| ·     · │ biosnoop        │   │──────────────│├─────────────────┤               ·
+| ·     · │ biolatency      │   │Ethernet [ss] ││CLOCKSOURCE      │               ·
+| ·     · │ biotop,blktrace │   │[tcpdump]     ││[/sys/...]       │               ·
+| ·     · ├──·──────────────┴───┴──────────────┴┴─────────────────┤               ·
+| ·     · │  ·[hardirqs][criticalstat]  Device Drivers            │               ·
+| └     └ └──·────────────────────────────────────────────────────┘    I/O  perf  ·
+|            ·                  Expander-Interconnect         ┌ I/O ──┐BUS  tiptop·
+|            ·    ─┬──────────────────────────────────────┬───┤ BRidge├···········┘
+|            ·     │                                      │   └───────┘
+|            └┐    │                                      │
+|            ┌v────┴───────────┐             ┌─ Network ──┴─┐ nicstat
+|            │I/O Controller *1│             │Controller    │ ss, ip
+|            └─────────────────┘             └───────┬──────┘
+|           ┬──────┴───────┬                  ┬──────┴────┬
+|           │              │                  │           │
+|          Disk[*1]       Swap [swapon]      Port        Port
+|                                            ping, traceroute]
+|                                            ethtool] [snmpget]
+|                                            lldptool]
+| OTHERS: [sar] [dstat] [/proc]
+|
+|  ┌───┐[sar -m FAN]       ┌────────────┐[ipmitool]
+|  │FAN│                   │POWER SUPPLY│[dmidecode]
+|  └───┘                   └────────────┘
+```
+
+
+## `/proc/meminfo`
+
+  ```
+  | $ cat /proc/meminfo
+  | MemTotal:       16116792 kB
+  | MemFree:         2042420 kB
+  | MemAvailable:   10656344 kB
+  | Buffers:         1637424 kB
+  | Cached:          6513208 kB
+  | SwapCached:          352 kB
+  | Active:          8372356 kB
+  | Inactive:        3940908 kB
+  | Active(anon):    3755128 kB
+  | Inactive(anon):   645496 kB
+  | Active(file):    4617228 kB
+  | Inactive(file):  3295412 kB
+  | Unevictable:           0 kB
+  | Mlocked:               0 kB
+  | SwapTotal:       8126460 kB
+  | SwapFree:        8124156 kB
+  | Dirty:              1304 kB
+  | Writeback:             0 kB
+  | AnonPages:       4162388 kB
+  | Mapped:           732652 kB
+  | Shmem:            238000 kB
+  | Slab:            1337700 kB
+  | SReclaimable:    1029376 kB
+  | SUnreclaim:       308324 kB
+  | KernelStack:       15632 kB
+  | PageTables:        31724 kB
+  | NFS_Unstable:          0 kB
+  | Bounce:                0 kB
+  | WritebackTmp:          0 kB
+  | CommitLimit:    16184856 kB
+  | Committed_AS:   11012532 kB
+  | VmallocTotal:   34359738367 kB
+  | VmallocUsed:           0 kB
+  | VmallocChunk:          0 kB
+  | HardwareCorrupted:     0 kB
+  | AnonHugePages:         0 kB
+  | ShmemHugePages:        0 kB
+  | ShmemPmdMapped:        0 kB
+  | CmaTotal:              0 kB
+  | CmaFree:               0 kB
+  | HugePages_Total:       0
+  | HugePages_Free:        0
+  | HugePages_Rsvd:        0
+  | HugePages_Surp:        0
+  | Hugepagesize:       2048 kB
+  | Hugetlb:               0 kB
+  | DirectMap4k:     1147072 kB
+  | DirectMap2M:    15319040 kB
+  ```
+
+
+
+## BCC [[{01_PM.TODO}]]
+
+* Dynamic Tracing toolkit for creating efficient Linux kernel tracing,
+  performance Monitoring, networking and much more.
+* It makes use of extended BPF (Berkeley Packet Filters), formally known as eBPF
+* <https://github.com/iovisor/bcc>
+
+### Linux Tracer comparative  [[{02_doc_has.comparative,01_PM.TODO}]]
+* <http://www.brendangregg.com/blog/2015-07-08/choosing-a-linux-tracer.html>
+
+## ltrace: Library Call Tracer [[{monitoring.jobs]]
+
+* <https://linux.die.net/man/1/ltrace>
+
+Summary:
+ ```
+ ltrace                          | ltrace -c  # ← Count time and calls for each library call*
+                                 |                 and report a summary on program exit.     *
+  [-e filter|-L]                 |   [-e filter|-L]
+  [-l|--library=library_pattern] |   [-l|--library=library_pattern]
+  [-x filter]                    |   [-x filter]
+  [-S]                           |   [-S]
+  [-b|--no-signals]              |
+  [-i] [-w|--where=nr]           |
+  [-r|-t|-tt|-ttt]               |
+  [-T]                           |
+  [-F pathlist]                  |
+  [-A maxelts]                   |
+  [-s strsize]                   |
+  [-C|--demangle]                |
+  [-a|--align column]            |
+  [-n|--indent nr]               |
+  [-o|--output filename]         |   [-o|--output filename]
+  [-D|--debug mask]              |
+  [-u username]                  |
+  [-f]                           |   [-f]
+  [-p pid]                       |   [-p pid]
+  [ [--] command [arg ...] ]     |   [ [--] command [arg ...] ]
+ ```
+* runs the specified command until it exits, intercepting/recording:
+  * dynamic library calls  by process
+    * Display functions and funct.parameters.
+    * external prototype libraries is needed
+      for human-readable output.
+       (ltrace.conf(5), section PROTOTYPE LIBRARY DISCOVERY )
+  * signals which received by process
+  * system calls           by process
+[[}]]
+
+[[{monitoring.jobs.strace]]
+## strace: System call tracer
+
+ * man 1 strace
+
+ ```
+ | strace                    | strace -c  ← -c: Count time, calls, and errors
+ |                           |                  for each system call and report summary on exit.
+ |                           |                  -f aggregate over all forked processes
+ |   [ -dDffhiqrtttTvVxx ]   |   [ -D ]
+ |   [ -acolumn ]            |
+ |   [ -eexpr ] ...          |   [ -eexpr ] ...
+ |                           |   [ -Ooverhead ]
+ |   [ -ofile ]              |
+ |   [ -ppid ] ...           |
+ |   [ -sstrsize ]           |
+ |   [ -uusername ]          |
+ |   [ -Evar=val ] ...       |
+ |   [ -Evar ] ...           |   [ -Ssortby ]
+ |                           |   [ -Ssortby ]
+ |   [ command [ arg ... ] ] |   [ command [ arg ... ] ]
+ ```
+
+* strace runs specified command until it exits intercepting:
+  * system calls called by a process
+    * system-call-name + arguments + return-value is printed to STDERR (or -o file)
+    *  signals    received by a process
+
+  ```
+  | Ex system-call output:
+  | open("/dev/null", O_RDONLY) = 3
+  | open("/foo/bar", O_RDONLY) = -1 ENOENT (No such file or directory)
+  | ...
+
+  | Ex signal output:
+  | $ strace sleep 111
+  | ...
+  | sigsuspend([] <unfinished ...>
+  | --- SIGINT (Interrupt) ---     ← Signal received
+  | ...
+  | +++ killed by SIGINT +++
+  ```
+
+*  If a system call is being executed and meanwhile another one is being called
+  from a different thread/process then strace will try to preserve the order
+  of those events and mark the ongoing call as being unfinished.
+* When the call returns it will be marked as resumed. Ex. output:
+  ```
+  → [pid 28772] select(4, [3], NULL, NULL, NULL  *unfinished ... *
+  → [pid 28779] clock_gettime(CLOCK_REALTIME, {1130322148, 939977000}) = 0
+  → [pid 28772] *<... select resumed>* )      = 1 (in [3])
+  ```
+
+Interruption of a (restartable) system call by a signal delivery is
+processed differently as kernel terminates the system call and also
+arranges its immediate reexecution after the signal handler completes.
+
+  ```
+  | read(0, 0x7ffff72cf5cf, 1)              = ? *ERESTARTSYS (To be restarted)*
+  | --- SIGALRM (Alarm clock) @ 0 (0) ---
+  | rt_sigreturn(0xe)                       = 0
+  | read(0, ""..., 1)                       = 0
+  ```
+
+* explain: Tool to decode the error returned from strace
+  <https://linux.die.net/man/1/explain>
+[[monitoring.jobs.strace}]]
+
+[[{monitoring.cpu]]
+## mpstat-CPU stats (ints., hypervisor...)
+* <https://linux.die.net/man/1/mpstat>
+  ```
+  | mpstat
+  |   [ -A ]                        ==  -I ALL -u -P ALL
+  |   [ -I { SUM | CPU | ALL } ]    ==  Report interrupts statistics
+  |   [ -u ]                            Reports cpu utilization (default)
+  |   [ -P { cpu [,...] | ON | ALL } ]  Indicates the processor number
+  |   [ -V ]
+  |   [ secs_interval [ count ] ]
+  |     secs_interval = 0 => Report from times system startup (boot)
+  |
+  | mpstat writes to standard output activities for each available processor,
+  | Global average activities among all processors are also reported.
+  |
+  | CPU output columns:
+  | %usr   :  executing at the user level (application).
+  | %nice  :  executing at the user level with nice priority.
+  | %sys   :  executing at the system level (kernel).
+  |           It does NOT include time spent servicing hardware
+  |           and software interrupts.
+  | %iowait:  idle during which the system had an outstanding disk I/O request.
+  | %irq   :  time spent by the CPU or CPUs to service hardware interrupts.
+  | %soft  :  time spent by the CPU or CPUs to service software interrupts.
+  |
+  | %steal :  **time spent in involuntary wait by the virtual CPU or CPUs
+  |            while the hypervisor was servicing another virtual processor** !!!!
+  |            [[monitoring.hypervisor]]
+  |
+  | %guest : time spent by the CPU or CPUs to run a virtual processor.
+  | %idle  : time that the CPU or CPUs were idle and the system did not have
+  |          an outstanding disk I/O request.
+  ```
+[[}]]
+
+
+
+[[{monitoring.kernel.counters,profiling.jobs,dev_stack.java,profiling,troubleshooting.locks,01_PM.TODO]]
+## perf (kernel counters)
+* <http://www.brendangregg.com/perf.html>
+* <http://www.brendangregg.com/flamegraphs.html>
+* Perf: new kernel-based subsystem that provide a framework for all things performance analysis.
+* It covers hardware level (CPU/PMU, Performance Monitoring Unit)
+  features and software features (software counters, tracepoints) as well.
+
+  ```
+  | $ perf stat           <- -gather perf-counter stats. <https://linux.die.net/man/1/perf-stat>
+  |      [--event=EVENT]  ← PMU event in the form:
+  |                         - symbolic event name (perf list to list)
+  |                         - raw PMU event (eventsel+umask) with format
+  |                           rNNN where NNN is an hexadecimal event descriptor
+  |      [--no-inherit]   ← child tasks do not inherit counters
+  |      [--all-cpus]
+  |      [--pid=$pid]     ← comma separated list of existing processes
+  |      [--tid=$tid]     ← comma separated list of existing thread id
+  |      [--scale]        ← scale/normalize counter values
+  |      [--repeat=n]     ← repeat command, print average + stddev (max: 100)
+  |      [--big-num]      ← print large numbers with thousands-local-separator
+  |      [--cpu=]         ← comma separated list of cpus (All if not provided)
+  |      [--no-aggr]      ← Do not aggregate counts across all monitored CPUs
+  |                         in system-wide mode (-a). Only valid in system-wide mode.
+  |      [--null]         ← don't start any counters
+  |      [--verbose]      ← show counter open errors, etc,...
+  |      [--field-separator SEP]
+  |      [--cgroup name]  ← monitor only the container (cgroup) called "name".
+  |                         - Only available in per-cpu mode. The cgroup filesystem
+  |                         must be mounted. All threads belonging to container "name"
+  |                         are monitored when they run on the monitored CPUs.
+  |                         - Multiple cgroups can be provided. Each cgroup is applied
+  |                         to the corresponding event, i.e., first cgroup to first event,
+  |                         - It is possible to provide an empty cgroup
+  |                           (monitor all the time) using, e.g., -G foo,,bar.
+  |                         - Cgroups must have corresponding events, i.e., they always
+  |                           refer to events defined earlier on the command line.
+  |      [--output file]
+  |      [--append]
+  |      [--log-fd]      ← append to given fd instead of stderr.
+  |      (-)
+  |      <command> [<options>]
+  |      ^^^^^^^^^
+  |      Any command you can specify in a shell.
+  ```
+
+* Example:
+
+  ```
+  |                    ┌─────┬─ Command to be traced.
+  | $ perf stat  --    make -j
+  |
+  | (Output will be similar to)
+  | → Performance counter stats for 'make -j':
+  | →
+  | → 8117.370256  task clock ticks     #      11.281 CPU utilization factor
+  | →         678  context switches     #       0.000 M/sec
+  | →         133  CPU migrations       #       0.000 M/sec
+  | →      235724  pagefaults           #       0.029 M/sec (page faults)
+  | → 24821162526  CPU cycles           #    3057.784 M/sec
+  | → 18687303457  instructions         #    2302.138 M/sec
+  | →   172158895  cache references     #      21.209 M/sec
+  | →    27075259  cache misses         #       3.335 M/sec
+  | →
+  | → Wall-clock time elapsed:   719.554352 msecs
+  |
+  | *example  *
+  | $*perf stats*-r 4 --event=cycles:{k,u} -- make -j
+  |              ^^^^          ^     ^^^^^
+  |              repeat        ·  split into
+  |              4 times       · kernel/userspace
+  | ...                        ·
+  | 123,123,11  cycles:k       ·
+  |   1,123,11  cycles:u       ·
+  |                            ·
+  | 0.00013913  secs elapsed   ·
+  |                            ·
+  |                     - '$*perf list*' will show all predefined
+  |                       events (cycles, cache-misses, ...) organized
+  |                       by hardware/software/tracepoint
+  ```
+
+# PROFILING
+
+## CPU Profiling
+
+* <https://linux.die.net/man/1/perf-top>
+  ```
+  | $ perf top
+  |   Samples: 12K of event 'cycles:ppp', Event count (approx.): 54543453553535
+  | Overhead  Shared Object              Symbol
+  | 13.11%    libQT5Core.so.5.7.0        [.] QHashData:NextNode
+  |  5.11%    libc-2.24.so               [.] _int_malloc
+  |  2.90%    perf                       [.] symbols__insert
+  | ...
+  ```
+
+## flamegraph
+
+* <https://github.com/flamegraph-rs/flamegraph>
+
+* perf+dtrace flamegraph generator with additional support for Cargo projects! (Rust based)
+  It can be used to profile anything, not just Rust projects!
+
+*  See also notes on latencytop
+
+## Syscall Pofiling:
+  ```
+  | $ perf trace --durtion=100
+  |  340.448 (1000.122 ms): JS Watchdog/15221 futex(uaddr: 0x7f3e9cd1a434, op: WAIT_BITSET|PRIVATE_FLAG|CLOCK_REALTIME, utime: 0x7f3eae487df0, val3: MATCH_ANY) = -1 ETIMEDOUT (Connection timed out)
+  |  119.549 (1221.529 ms): tmux: server/2501 poll(ufds: 0x55edaa47c990, nfds: 11, timeout_msecs: 12189)            = 1
+  |  395.984 (1000.133 ms): tuned/19297 futex(uaddr: 0x7f37a4027130, op: WAIT_BITSET|PRIVATE_FLAG|CLOCK_REALTIME, utime: 0x7f37aad37e30, val3: MATCH_ANY) = -1 ETIMEDOUT (Connection timed out)
+  |  691.446 (1000.105 ms): JS Watchdog/15347 futex(uaddr: 0x7f6c829550b0, op: WAIT_BITSET|PRIVATE_FLAG|CLOCK_REALTIME, utime: 0x7f6c942a0df0, val3: MATCH_ANY) = -1 ETIMEDOUT (Connection timed out)
+  |  755.478 (1000.029 ms): Timer/15227 futex(uaddr: 0x7f3eb5b5cc80, op: WAIT|PRIVATE_FLAG, utime: 0x7f3e9c2c1a60) = -1 ETIMEDOUT (Connection timed out)
+  |  755.609 (1000.017 ms): Web Content/15215 poll(ufds: 0x7f3e9bd04760, nfds: 3, timeout_msecs: 4294967295)        = 1
+  |  311.581 (1527.461 ms): Gecko_IOThread/15157 epoll_wait(epfd: 8<anon_inode:[eventpoll]>, events: 0x7f3d6d1f5200, maxevents: 32, timeout: 4294967295) = 1
+  |  311.955 (1527.194 ms): firefox/15132 poll(ufds: 0x7f3d1ebd5610, nfds: 5, timeout_msecs: 4294967295)        = 1
+  |  876.905 (1000.146 ms): dockerd/32491 futex(uaddr: 0x561e1da0b920, utime: 0xc42045bed8)                     = -1 ETIMEDOUT (Connection timed out)
+  |  877.069 (1000.064 ms): dockerd/27832 futex(uaddr: 0x561e1da07950, utime: 0x7f50e7c61b90)                   = 0
+  |  877.025 (1000.145 ms): dockerd/27904 futex(uaddr: 0xc420c82548)                                            = 0
+  |  912.964 (1000.133 ms): JS Watchdog/15158 futex(uaddr: 0x7f3d57c4c0f0, op: WAIT_BITSET|PRIVATE_FLAG|CLOCK_REALTIME, utime: 0x7f3d65a41df0, val3: MATCH_ANY) = -1 ETIMEDOUT (Connection timed out)
+  |  311.586 (1607.337 ms): Chrome_~dThrea/15346 epoll_wait(epfd: 11<anon_inode:[eventpoll]>, events: 0x7f6c9b9cd080, maxevents: 32, timeout: 4294967295) = 1
+  |  937.245 (1000.102 ms): JS Watchdog/15276 futex(uaddr: 0x7feca361bbf0, op: WAIT_BITSET|PRIVATE_FLAG|CLOCK_REALTIME, utime: 0x7fecb4e27df0, val3: MATCH_ANY) = -1 ETIMEDOUT (Connection timed out)
+  |  214.944 (1927.025 ms): Timer/15164 futex(uaddr: 0x7f3d6d165be0, op: WAIT|PRIVATE_FLAG, utime: 0x7f3d542a1a60) = -1 ETIMEDOUT (Connection timed out)
+  |  215.042 (1927.063 ms): Socket Thread/15166 poll(ufds: 0x7f3d539028f0, nfds: 8, timeout_msecs: 4294967295)        = 1
+  | 1340.624 (1000.072 ms): JS Watchdog/15221 futex(uaddr: 0x7f3e9cd1a434, op: WAIT_BITSET|PRIVATE_FLAG|CLOCK_REALTIME, utime: 0x7f3eae487df0, val3: MATCH_ANY) = -1 ETIMEDOUT (Connection timed out)
+  | 1396.377 (1000.131 ms): tuned/19297 futex(uaddr: 0x7f37a4027130, op: WAIT_BITSET|PRIVATE_FLAG|CLOCK_REALTIME, utime: 0x7f37aad37e30, val3: MATCH_ANY) = -1 ETIMEDOUT (Connection timed out)
+  | 1691.606 (1000.059 ms): JS Watchdog/15347 futex(uaddr: 0x7f6c829550b0, op: WAIT_BITSET|PRIVATE_FLAG|CLOCK_REALTIME, utime: 0x7f6c942a0df0, val3: MATCH_ANY) = -1 ETIMEDOUT (Connection timed out)
+  | 1877.200 (1000.115 ms): dockerd/27844 futex(uaddr: 0x561e1da0b9a0, utime: 0xc420460ed8)                     = -1 ETIMEDOUT (Connection timed out)
+  |  876.826 (2000.665 ms): dockerd/27840 futex(uaddr: 0xc4206d7148)                                            = 0
+  | 1877.252 (1000.149 ms): dockerd/27832 futex(uaddr: 0x561e1da07950, utime: 0x7f50e7c61b90)                   = 0
+  | 1877.190 (1000.239 ms): dockerd/27904 futex(uaddr: 0xc420c82548)                                            = 0
+  | 1877.189 (1000.372 ms): dockerd/32491 futex(uaddr: 0xc420c83948)                                            = 0
+  ```
+
+* record command's profile into perf.data: <https://linux.die.net/man/1/perf-record>
+* display recorded perf.data: <https://linux.die.net/man/1/perf-report>
+* General framework for bench.suites: <https://linux.die.net/man/1/perf-bench>
+* Analyze lock events: <https://linux.die.net/man/1/perf-lock>   [[{troubleshooting.locks}]]
+
+[[{scalability.profiling]]
+## Profiling 60 Terabytes of input data with Perf at Facebook
+
+Extracted from: "Apache Spark @Scale: A  production use case"
+  <https://engineering.fb.com/core-data/apache-spark-scale-a-60-tb-production-use-case/>
+  ...  Tools we used to find performance bottleneck
+* Spark Linux Perf/Flame Graph support: Although the two tools
+  above are very handy, they do not provide an aggregated view of CPU
+  profiling for the job running across hundreds of machines at the same
+  time. On a per-job basis, **we added support for enabling Perf
+  profiling (via libperfagent for Java symbols) and can customize the
+  duration/frequency of sampling. The profiling samples are aggregated
+  and displayed as a Flame Graph across the executors using our
+  internal metrics collection framework**.
+[[scalability.profiling}]]
+[[{monitoring.kernel.counters}]]
+
+[[{profiling.latencytop,troubleshooting.performance.101,troubleshooting.locks,troubleshooting.jobs,QA.UX,PM.low_code]]
+## latencytop
+* <https://linux.die.net/man/8/xlatencytop>
+* aimed at:
+  * identifying and visualizing where (kernel and userspace) latencies are happening
+  * What kind of operation/action is causing the latency
+
+  **LATENCYTOP FOCUSES ON THE CASES WHERE THE APPLICATIONS WANT TO RUN
+AND EXECUTE USEFUL CODE, BUT THERE'S SOME RESOURCE THAT'S NOT
+CURRENTLY AVAILABLE (AND THE KERNEL THEN BLOCKS THE PROCESS).**
+
+  This is done both on a system level and on a per process level,
+so that you can see what's happening to the system, and which
+process is suffering and/or causing the delays.
+
+  ```
+  | $ sudo latencytop   <·· Press "s" + "letter" to display active processes
+  |                         starting with that lettter.
+  |                         Press "s" followed by 0 to remove the filter
+  ```
+
+* NOTES:
+  * See also notes about disk write-read pending queue.
+  * There are newer alternatives based on BPF:
+    <http://www.brendangregg.com/blog/2016-10-27/dtrace-for-linux-2016.html>
+  * See also the more advanced TimeChart:
+    * <http://www.linux-magazine.com/Online/News/Timechart-Zoom-in-on-Operating-System>
+    * <http://blog.fenrus.org/?p=5>
+[[profiling.latencytop}]]
+
+[[monitoring.kernel}]]
+
+[[{monitoring.kernel,monitoring.eBPF,kernel.eBPF]]
+
+## eBPF Tracing
+
+* Tutorial and Examples:
+  <https://www.brendangregg.com/blog/2019-01-01/learn-ebpf-tracing.html>
+
+[[monitoring.kernel.eBPF}]]

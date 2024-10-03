@@ -1,0 +1,349 @@
+# Napalm [[{DevOps.ansible]]
+@[https://napalm-automation.net/]
+@[https://napalm.readthedocs.io/en/latest/]
+NAPALM: (N)etwork (A)utomation and (P)rogrammability (A)bstraction (L)ayer with (M)ultivendor support
+- Python library that implements a set of functions to interact with different
+ network device Operating Systems using aºunified API to network devicesº.
+- Supported Network Operating Systems:
+  - Arista EOS
+  - Cisco IOS
+  - Cisco IOS-XR
+  - Cisco NX-OS
+  - Juniper JunOS
+
+Compatibility Matrix: (2020-02-01) 
+@[https://napalm.readthedocs.io/en/latest/support/index.html]
+                            EOS IOS IOS JUN NX  NX
+                                    XR  OS  OS  OS_SSH
+get_arp_table               ✅  ✅  ❌  ❌  ❌  ✅
+get_bgp_config              ✅  ✅  ✅  ✅  ❌  ❌
+get_bgp_neighbors           ✅  ✅  ✅  ✅  ✅  ✅
+get_bgp_neighbors_detail    ✅  ✅  ✅  ✅  ❌  ❌
+get_config                  ✅  ✅  ✅  ✅  ✅  ✅
+get_environment             ✅  ✅  ✅  ✅  ✅  ✅
+get_facts                   ✅  ✅  ✅  ✅  ✅  ✅
+get_firewall_policies       ❌  ❌  ❌  ❌  ❌  ❌
+get_interfaces              ✅  ✅  ✅  ✅  ✅  ✅
+get_interfaces_counters     ✅  ✅  ✅  ✅  ❌  ❌
+get_interfaces_ip           ✅  ✅  ✅  ✅  ✅  ✅
+get_ipv6_neighbors_table    ❌  ✅  ❌  ✅  ❌  ❌
+get_lldp_neighbors          ✅  ✅  ✅  ✅  ✅  ✅
+get_lldp_neighbors_detail   ✅  ✅  ✅  ✅  ✅  ✅
+get_mac_address_table       ✅  ✅  ✅  ✅  ✅  ✅
+get_network_instances       ✅  ✅  ❌  ✅  ✅  ❌
+get_ntp_peers               ❌  ✅  ✅  ✅  ✅  ✅
+get_ntp_servers             ✅  ✅  ✅  ✅  ✅  ✅
+get_ntp_stats               ✅  ✅  ✅  ✅  ✅  ❌
+get_optics                  ✅  ✅  ❌  ✅  ❌  ❌
+get_probes_config           ❌  ✅  ✅  ✅  ❌  ❌
+get_probes_results          ❌  ❌  ✅  ✅  ❌  ❌
+get_route_to                ✅  ✅  ✅  ✅  ❌  ✅
+get_snmp_information        ✅  ✅  ✅  ✅  ✅  ✅
+get_users                   ✅  ✅  ✅  ✅  ✅  ✅
+is_alive                    ✅  ✅  ✅  ✅  ✅  ✅
+ping dvantage over using the ping and traceroute commands is that Mtr will provide a lot of statistics about each hop, like response time and percentage.
+
+This tool comes pre-installed on most of the linux distros. However you can also install it manually using the following command.                       ✅  ✅  ❌  ✅  ✅  ✅
+traceroute
+[[}]]
+
+## Mtr : Stop using ping and traceroute anymore
+
+* <https://www.linuxnix.com/mtr-stop-using-ping-and-traceroute-anymore/>
+
+* Over ping and traceroute commands, mtr provides lot of statistics about each hop,
+  like response time and percentage.
+
+  ```
+  | $ mtr google.com # Opts:
+  |                  # -n: Do not resolve hostname (inverse DNS)
+  |                  # -c: number of pings
+  |                  # -r: printable output
+  |                  # -l: interval in seconds between "pings"
+  |                  # --tcp: Send tcp syn      (vs ICMP ECHO)
+  |                  # --udp: Send udp datagram (vs ICMP ECHO) 
+  | My traceroute  [v0.95]
+  | fedora (192.168.10.3) -> google.com (142.250.178.174)      2024-10-03T16:02:36+0200
+  | Ping Bit Pattern: 
+  | Pattern Range: 0(0x00)-255(0xff), <0 random.
+  |  Host                                        Loss% Snt Last   Avg  Best  Wrst StDev
+  |  1. _gateway                                  0.0%   7  3.5   3.6   3.2   4.3   0.4
+  |  2. 192.168.144.1                            57.1%   7  5.2   5.1   4.9   5.3   0.2
+  |  3. 33.red-5-205-19.dynamicip.rima-tde.net    0.0%   6  5.1   6.3   5.1   7.9   1.2
+  |  4. (waiting for reply)
+  |  5. (waiting for reply)
+  |  6. (waiting for reply)
+  |  7. 5.53.1.82                                 0.0%   6 12.3  12.7  11.3  17.1   2.2
+  |  8. 192.178.110.89                            0.0%   6 12.0  12.1  11.4  12.7   0.5
+  |  9. 142.251.54.155                            0.0%   6 12.5  17.6  12.2  41.9  11.9
+  | 10. mad41s08-in-f14.1e100.net                 0.0%   6 11.8  12.0  11.1  13.7   1.0
+  ```
+
+
+# OpenDaylight Magnesium SDN [[{]]
+@[http://www.enterprisenetworkingplanet.com//datacenter/opendaylight-magnesium-advances-open-source-software-defined-networking.html]
+- open source Software Defined Networking (SDN) controller platform.
+
+- platform comprised of multiple modular component project that users
+  can choose to mix and match in different configurations as needed.
+
+ºDeterministic Networking Comes to OpenDaylightº
+- DetNet is a Deterministic Networking project which aims to provide a 
+  very precise, deterministic set of networking characteristics 
+  including guaranteed bandwidth and bounded latency. The need for 
+  deterministic attributes in networking is critical for real-time 
+  applications that need to be execute with the exact same attributes 
+  every time.
+
+  - The release notes for Magnesium state that DetNet includes a number 
+    of Layer3 deterministic networking and Layer2 Time-Sensitive 
+    Networking (TSN) techniques,
+
+    "Architecturally, DetNet applications communicate with MD-SAL over 
+    RESTCONF API and the southbound DetNet controller enables MD-SAL to 
+    obtain topology information about DetNet bridges and to subsequently 
+    configure them by using the NETCONF protocol," the notes state. "The 
+    Magnesium release includes the first version of DetNet with time sync 
+    support for TSN, topology discovery for DetNet bridges, the 
+    southbound controller plugin, and features to manage the end-to-end 
+    information flow and service configuration, QoS, and optimal path 
+    calculation."
+    
+- Plastic Brings Translation by Intent to SDN
+  "The model-to-model translation problem is pervasive in writing SDN 
+  controller applications, both internally and in supporting 
+  microservices," the release notes state. "Plastic emphasizes writing 
+  translations intended to be as resilient to model changes as 
+  possible."
+[[}]]
+ 
+# SNMP → gRPC [[{snmp,TODO]]
+https://www.brighttalk.com/webcast/17628/384377?player-preauth=2BiCCR552sHx%2FC02RlHmQIwBkVlhwe7BEsWkRAzKHRM%3D
+ Watch out SNMP! gRPC is here: Model-Driven Telemetry in the Enterprise
+
+ Jeremy Cohoe, Technical Marketing Engineer, Cisco
+ Feb 6 2020 | 31 mins
+
+ We know the challenges of SNMP with it's UDP transport, limited filtering and encoding options, and the tax to the device CPU and memory resources when multiple tools are polling. Now that gRPC Dial-Out model-driven telemetry is here there are options for migrating to the newer TCP based solution that is supported by YANG data models. These data models make finding specific data points or KPI's easy - the days of analyzing MIB's and OIDs are over
+[[}]]
+
+
+# TODO 
+
+##  Sclaing networking
+https://www.infoq.com/news/2020/06/scaling-networking-digitalocean/
+
+
+## iptables: 2 variants and their relationship with nftables
+https://developers.redhat.com/blog/2020/08/18/iptables-the-two-variants-and-their-relationship-with-nftables/132118/
+
+In Red Hat Enterprise Linux (RHEL) 8, the userspace utility program 
+iptables has a close relationship to its successor, nftables. The 
+association between the two utilities is subtle, which has led to 
+confusion among Linux users and developers. In this article, I 
+attempt to clarify the relationship between the two variants of 
+iptables and its successor program, nftables.
+
+The kernel API
+
+In the beginning, there was only iptables. It lived a good, long life in Linux history, but it wasn’t without pain points. Later, nftables appeared. It presented an opportunity to learn from the mistakes made with iptables and improve on them.
+
+The most important nftables improvement, in the context of this article, is the kernel API. The kernel API is how user space programs the kernel. You can use either the nft command or a variant of the iptables command to access the kernel API. We’ll focus on the iptables variant.
+Everything you need to grow your career.
+
+With your free Red Hat Developer program membership, unlock our library of cheat sheets and ebooks on next-generation application development.
+SIGN UP
+[Everything you need to grow your career.]
+Two variants of the iptables command
+
+The two variants of the iptables command are:
+
+    legacy: Often referred to as iptables-legacy.
+    nf_tables: Often referred to as iptables-nft.
+
+The newer iptables-nft command provides a bridge to the nftables kernel API and infrastructure. You can find out which variant is in use by looking up the iptables version. For iptables-nft, the variant will be shown in parentheses after the version number, denoted as nf_tables:
+
+root@rhel-8 # iptables -V
+iptables v1.8.4 (nf_tables)
+
+For iptables-legacy, the variant will either be absent, or it will show legacy in parentheses:
+
+root@rhel-7 # iptables -V
+iptables v1.4.21
+
+You can also identify iptables-nft by checking whether the iptables binary is a symbolic link to xtables-nft-multi:
+
+root@rhel-8 # ls -al /usr/sbin/iptables
+lrwxrwxrwx. 1 root root 17 Mar 17 10:22 /usr/sbin/iptables -> xtables-nft-multi
+
+Using iptables-nft
+
+As I noted earlier, the nftables utility improves the kernel API. The iptables-nft command allows iptables users to take advantage of the improvements. The iptables-nft command uses the newer nftables kernel API but reuses the legacy packet-matching code. As a result, you get the following benefits while using the familiar iptables command:
+
+    Atomic rules updates.
+    Per-network namespace locking.
+    No file-based locking (for example: /run/xtables.lock).
+    Fast updates to the incremental ruleset.
+
+These benefits are mostly transparent to the user.
+
+Note: The userspace command for nftables is nft. It has its own syntax and grammar.
+Packet matching is the same
+
+It’s important to understand that while there are two variants of iptables, packet matching utilizes the same code. Regardless of the variant that you are using, the same packet-matching features are available and behave identically. Another term for the packet matching code in the kernel is xtables.  Both variants, iptables-legacy and iptables-nft, use the same xtables code. This diagram provides a visual aid. I included nft for completeness:
+
++--------------+     +--------------+     +--------------+
+|   iptables   |     |   iptables   |     |     nft      |   USER
+|    legacy    |     |     nft      |     |  (nftables)  |   SPACE
++--------------+     +--------------+     +--------------+
+       |                          |         |
+====== | ===== KERNEL API ======= | ======= | =====================
+       |                          |         |
++--------------+               +--------------+
+|   iptables   |               |   nftables   |              KERNEL
+|      API     |               |     API      |              SPACE
++--------------+               +--------------+
+             |                    |         |
+             |                    |         |
+          +--------------+        |         |     +--------------+
+          |   xtables    |--------+         +-----|   nftables   |
+          |    match     |                        |    match     |
+          +--------------+                        +--------------+
+
+The iptables rules appear in the nftables rule listing
+
+An interesting consequence of iptables-nft using nftables infrastructure is that the iptables ruleset appears in the nftables rule listing. Let’s consider an example based on a simple rule:
+
+root@rhel-8 # iptables -A INPUT -s 10.10.10.0/24 -j ACCEPT
+
+Showing this rule through the iptables command yields what we might expect:
+
+root@rhel-8 # iptables -nL INPUT
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination
+ACCEPT     all  --  10.10.10.0/24        0.0.0.0/0
+
+But it will also be shown in the nft ruleset:
+
+root@rhel-8 # nft list ruleset
+table ip filter {
+    chain INPUT {
+        type filter hook input priority filter; policy accept;
+        ip saddr 10.10.10.0/24 counter packets 0 bytes 0 accept
+    }
+}
+
+Note how the iptables rule was automatically translated into the nft syntax. Studying the automatic translation is one way to discover the nft equivalents of the iptables rules. In some cases, however, there isn’t a direct equivalent. In those cases, nft will let you know by showing a comment like this one:
+
+table ip nat {
+    chain PREROUTING {
+        meta l4proto tcp counter packets 0 bytes 0 # xt_REDIRECT
+    }
+}
+
+Summary
+
+To summarize, the iptables-nft variant utilizes the newer nftables kernel infrastructure. This gives the variant some benefits over iptables-legacy while allowing it to remain a 100% compatible drop-in replacement for the legacy command. Note, however, that iptables-nft and nftables are not equivalent. They merely share infrastructure.
+
+It is also important to note that while iptables-nft can supplant iptables-legacy, you should never use them simultaneously.
+
+## Model-Driven Telemetry in the Enterprise [[{monitoring]]
+https://www.brighttalk.com/webcast/17628/384377?player-preauth=2BiCCR552sHx%2FC02RlHmQIwBkVlhwe7BEsWkRAzKHRM%3D
+
+ Watch out SNMP! gRPC is here: Model-Driven Telemetry in the Enterprise
+
+ Jeremy Cohoe, Technical Marketing Engineer, Cisco
+ Feb 6 2020 | 31 mins
+
+- We know the challenges of SNMP with it's UDP transport, limited 
+  filtering and encoding options, and the tax to the device CPU and 
+  memory resources when multiple tools are polling. Now that gRPC 
+  Dial-Out model-driven telemetry is here there are options for 
+  migrating to the newer TCP based solution that is supported by YANG 
+  data models. These data models make finding specific data points or 
+  KPI's easy - the days of analyzing MIB's and OIDs are over
+
+  [[}]]
+
+## Scapy [[{TODO]]
+https://scapy.readthedocs.io/en/latest/introduction.html#what-makes-scapy-so-special
+
+Scapy is a Python program that enables the user to send, sniff, 
+dissect and forge network packets. This capability allows 
+construction of tools that can probe, scan or attack networks.
+
+First, with most other networking tools, you won’t build something 
+the author didn’t imagine. These tools have been built for a 
+specific goal and can’t deviate much from it. For example, an ARP 
+cache poisoning program won’t let you use double 802.1q 
+encapsulation. Or try to find a program that can send, say, an ICMP 
+packet with padding (I said padding, not payload, see?). In fact, 
+each time you have a new need, you have to build a new tool.
+
+Second, they usually confuse decoding and interpreting. Machines are 
+good at decoding and can help human beings with that. Interpretation 
+is reserved for human beings. Some programs try to mimic this 
+behavior. For instance they say “this port is open” instead of 
+“I received a SYN-ACK”. Sometimes they are right. Sometimes not. 
+It’s easier for beginners, but when you know what you’re doing, 
+you keep on trying to deduce what really happened from the 
+program’s interpretation to make your own, which is hard because 
+you lost a big amount of information. And you often end up using 
+tcpdump -xX to decode and interpret what the tool missed.
+
+Third, even programs which only decode do not give you all the 
+information they received. The vision of the network they give you is 
+the one their author thought was sufficient. But it is not complete, 
+and you have a bias. For instance, do you know a tool that reports 
+the Ethernet padding
+
+Scapy is a Python program that enables the user to send, sniff, 
+dissect and forge network packets. This capability allows 
+construction of tools that can probe, scan or attack networks.
+[[}]]
+
+
+[[{monitoring.network.wireshark,qa.UX]]
+## WireShark  
+
+* world’s most popular and widely-used open-source and cross-platform
+  network protocol analyzer.
+* Previously known as Ethereal.
+* Latest version is 4.0. (2022-10)
+* Features include:
+  - powerful display filter syntax with support and wizard dialogs.
+    (for example to filter just traffic to a port, dump in ASCII the
+    HTTP traffic from client to server, ...)
+  - GUI views for Packet Detail, Packet Bytes
+  - Hex dump imports
+  - MaxMind geolocation.
+  - Support for AT_NUMERIC address type (v4+) that allows simple
+    numeric addresses for protocols that don’t have a more
+    common-style address approach,
+  - JSON mapping for Protobuf messages (v4)
+  - extcap passwords support in tshark and related cli tools.
+  - DVB Selection Information Table (DVB SIT), (v4)
+  - gRPC Web (gRPC-Web) (v4)
+  - SSH File Transfer Protocol (SFTP) (v4)
+* REF: <https://9to5linux.com/wireshark-4-0-released-as-worlds-most-popular-network-protocol-analyzer>
+[[monitoring.network.wireshark}]]
+
+## Termshark, Wireshark-like terminal interface for TShark 
+
+* written in Go.
+* 2.0 release includes support for piped input, and stream reassembly,
+  performance optimizations, ...
+
+
+[[{monitoring.network.iperf3]]
+## iPerf3:  Test network thorughput
+
+* <https://www.tecmint.com/test-network-throughput-in-linux/>
+
+* cross-platform command-line-based program for performing real-time 
+  network throughput measurements. 
+
+* It is one of the most powerful tools for testing the maximum 
+  achievable bandwidth in IP networks (supports IPv4 and IPv6).
+[[monitoring.network.iperf3}]]
+

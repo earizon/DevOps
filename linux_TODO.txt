@@ -230,15 +230,14 @@ Setup:
     - Some chips only have 2 that limits how much can we profile
   - Working PMU
 
+```
 $  perf stat -r 5 -o baseline.txt -- ./ex_branches
                                      ^^^^^^^^^^^^^
                                      The command we want to
                                      "perf" comes after the --
+```
 
 https://perf.wiki.kernel.org/index.php/Tutorial
-
-# Wiki Kernel
-https://wiki.kernel.org/
 
 ## bitlocker-encrypted-windows-partitions-on-linux
 https://www.linuxtoday.com/storage/how-to-mount-bitlocker-encrypted-windows-partitions-on-linux-190426052029.html
@@ -348,286 +347,63 @@ https://wiki.debian.org/NetworkManager
 https://www.linuxuprising.com/2019/11/chkservice-is-systemd-units-manager.html?m=1
 
 
-_____________________
-https://www.phoronix.com/scan.php?page=news_item&px=GNOME-Firmware-Updater
-GNOME Firmware Updater Is A New UI For Managing Firmware On Linux By Power Users
-Written by Michael Larabel in GNOME on 28 August 2019 at 06:46 AM EDT. 16 Comments
-GNOME --
-After mentoring a Dell student intern over the summer, Red Hat's Richard Hughes has announced their work today on the GNOME Firmware Updater.
+## GNOME Firmware Updater 
 
-The GNOME Firmware Updater is a more powerful GTK application for viewing device firmware information on Linux built off the existing Fwupd+LVFS infrastructure.
-_________________________
-https://www.redhat.com/sysadmin/raid-drive-mdadm
-Replacing a failing RAID 6 drive with mdadm
-___________________
-https://docs.pagure.org/SSSD.sssd/
-SSSD is a system daemon. Its primary function is to provide access to local or remote identity and authentication resources through a common framework that can provide caching and offline support to the system. It provides several interfaces, including NSS and PAM modules or a D-Bus interface.
-____________________
-https://www.linuxadictos.com/llega-la-nueva-version-de-nmap-7-80-y-estos-son-sus-cambios-mas-importantes.html
-Llega la nueva versión de Nmap 7.80 y estos son sus cambios mas importantes
-___________________
-https://www.linuxuprising.com/2019/11/wireshark-for-terminal-termshark-20.html
-Termshark, a Wireshark-like terminal interface for TShark written in Go, was updated to version 2.0.0. This release includes support for dark mode, piped input, and stream reassembly, as well as performance optimizations that make the tool faster and more responsive.
-______________________
-https://bash.cyberciti.biz/file-management/linux-shell-script-to-reduce-pdf-file-size/
-Linux shell script to reduce PDF file size (x5 or more when embbeding images)
-____________
-_________________________
-rysnc dry-run:
-cd ...
-rsync --dry-run  --links --stats --itemize-changes --recursive --stats --human-readable --log-file=rsync_dry_run.log  user@host:$(pwd)/
-_________________________
-┌───────────────────────┬─────────────────────────────────────────────────────────────────────────┐
-│*GPT vs MBR Partitions*│                                                                         │
-├───────────────────────┴─────────────────────────────────────────────────────────────────────────┤
-│*GPT/GUID:*                                          │*MASTER BOOT RECORD (MBR, OLD 80'S MS-DOS)*│
-│- Suported by Linux GRUB 2                           │- Designed when HD were  tens of megabytes.│
-│  and GParted                                        │- First 512 bytes of disk                  │
-│- Globally Unique Identifiers                        │  - 446 Bytes bootloader                   │
-│  Partition Table                                    │  -  64 Partition table                    │
-│- Part of UEFI specs                                 │  -   2 boot signature                     │
-│- Linux can use it with UEFI                         │- limited to 4 primary partitions          │
-│  or legacy BIOS                                     │  - A single primary partition can hold an │
-│- no more primary/logical partitions.                │    extended partition with unlimited      │
-│- 64-bit disk pointers allows 264                    │    logical      partitions.               │
-│  total sectors:                                     │- original addressing:                     │
-│  - 512-byte blocks allows for                       │    (ylinders, heads, sectors)             │
-│    8 zebibytes.                                     │  -  2TB max size ( 512bytes block)        │
-│- fault-tolerance: partition table in                │  - 16TB max size (4099bytes block)i       │
-│  first, last sector of disk                         │    with LBA hack                          │
-│─ cyclic redundancy check (CRC)                      ├───────────────────────────────────────────┘
-│  checksum to verify its own integrity,              │
-│  and of the partition table                         │
-│- Unique IDs for disks and partitions.               │
-│NOTE:  GPT-GUIDs identifies disk tables              │
-│           UUIDs identifies filesystems              │
-│           (blkid)                                   │
-│                                                     │
-│$ sudO*gdisk /dev/sdc*                               │
-│→ GPT fdisk (gdisk) version 0.8.1                    │
-│→ Partition table scan:                              │
-│→   MBR: protective                                  │
-│→   BSD: not present                                 │
-│→   APM: not present                                 │
-│→   GPT: *present*                                   │
-│→ Found valid GPT with protective MBR;               │
-│  using GPT.                                         │
-│→ Command (? for help):                              │
-│  → Disk /dev/sdc: 39070... sectors, 1.8TiB          │
-│  → Logical sector size: 512 bytes                   │
-│                         ^^^                         │
-│                     4096 physical                   │
-│                     in new disks                    │
-│  → Disk identifier (GUID):                          │
-│    *058D39EE-5D06-409F-AA0C-298A3E6CC302*           │
-│  → Partition table holds up to 128 entries          │
-│  → First usable sector is 34,                       │
-│    last usable sector is 3907029134                 │
-│  → Partitions will be aligned on 2048-sector        │
-│    boundaries                                       │
-│  → Total free space is 819142765 sectors (390.6 GiB)│
-│  → NUMBER  START       END       SIZE  CODE  NAME   │
-│  →        SECTOR    SECTOR                          │
-│  →    1     2048   1953791  953.0 MiB  0700         │
-│  →    2  1953792  80078847   37.3 GiB  0700         │
-│  → ...                                              │
-└─────────────────────────────────────────────────────┘
-_____________________________
-https://geekland.eu/mejorar-el-rendimiento-de-un-sistema-operativo-de-escritorio-linux/
-______________________
+* <https://www.phoronix.com/scan.php?page=news_item&px=GNOME-Firmware-Updater>
+GNOME Firmware Updater Is A New UI For Managing Firmware On Linux By Power Users
+Written by Michael Larabel in GNOME on 28 August 2019 at 06:46 AM EDT.
+
+The GNOME Firmware Updater is a more powerful GTK application for 
+viewing device firmware information on Linux built off the existing 
+Fwupd+LVFS infrastructure.
+
 https://www.redhat.com/en/blog/achieving-maximum-performance-fixed-size-ceph-object-storage-cluster
 Achieving maximum performance from a fixed size Ceph object storage cluster
-_________________
-https://build.opensuse.org/
 
- The openSUSE Build Service is the public instance of the Open Build Service (OBS) used
-for development of the openSUSE distribution and to offer packages from same source for
-Fedora, Debian, Ubuntu, SUSE Linux Enterprise and other distributions..
-
- Please find further details of this service on our wiki pages
-
- This instance offers a special package search interface. Users of any distribution can
-search there for built packages for their distribution. For developers it is an efficient
-place to build up groups and work together through its project model.
-
-Used for example in this project:https://github.com/dmacvicar/terraform-provider-libvirt
-_______________________
-http://ivarch.com/programs/pv.shtml
-pv pipe viewer
- pv - Pipe Viewer - is a terminal-based tool for monitoring the progress of
-data through a pipeline. It can be inserted into any normal pipeline between
-two processes to give a visual indication of how quickly data is passing
-through, how long it has taken, how near to completion it is, and an estimate
-of how long it will be until completion.
-
-$ sudo apt install pv
-$ head -c 5000M /dev/urandom | pv -s 5000M > /dev/null
-2,01GiB 0:00:15 [ 206MiB/s] [================>               ] 61% ETA 0:00:09
-______________________
+## Why Debian does not create wheel group by default
 https://unix.stackexchange.com/questions/4460/why-is-debian-not-creating-the-wheel-group-by-default
-___________________
-https://computingforgeeks.com/virsh-commands-cheatsheet/
-______________________
-SELinux, AppArmor, Auditd, SecComp, SecComp-bpf, Falco compared:
-https://www.infoq.com/news/2020/01/falco-security-cncf/
-  While similar to other tools that allow for declaring security policies such as
-  SELinux, AppArmor, or auditd, Falco has some differences. As Mark Stemm,
-  software engineer at Sysdig, notes:
 
-  Overall, these products can be grouped into ones focused on enforcement vs
-  auditing. Both groups define a policy that describes the allowed or disallowed
-  behavior for a process, in terms of system calls, their arguments, and host
-  resources accessed.
+[[{virtualization.kvm.virsh,doc_has.cheat_sheet]]
+* <https://computingforgeeks.com/virsh-commands-cheatsheet/>
 
-  Tools like seccomp, seccomp-bpf, SELinux, and AppArmor fall into the
-  enforcement category in that they will alter the behaviour of processes if they
-  are found to violate the defined rules. Falco and other tools, such as auditd,
-  fall in the auditing category as they will notify when detecting a violation.
+Related:
+* Launching VMs directly from qemu
+  <https://developers.redhat.com/blog/2020/03/06/configure-and-run-a-qemu-based-vm-outside-of-libvirt/>
+[[virtualization.kvm.virsh}]]
 
-  According to Stemm, one difference between Falco and these other tools is that
-  "Falco runs in user space, using a kernel module to obtain system calls, while
-  the other tools perform system call filtering/monitoring at the kernel level."
-  This allows Falco to have more available data to be used within its policies as
-  noted previously.
-_________________
-New hardware temperature monitoring in kernel 5.5
-https://www.phoronix.com/scan.php?page=news_item&px=Linux-5.6-HWMON-Changes
+[[{monitoring.hardware.temperature]]
+## New hardware temperature monitoring in kernel 5.5
+* <https://www.phoronix.com/scan.php?page=news_item&px=Linux-5.6-HWMON-Changes>
+[[monitoring.hardware.temperature}]]
 
-<pre zoom labels="configuration.laptop,monitoring.hardware,01_PM.TODO">
-# Laptop Recipes
-<https://www.linuxuprising.com/2020/02/tlp-13-linux-laptop-battery-extender.html>
-</pre>
-_______________________
-https://github.com/zfsonlinux
-_______________________
-https://github.com/PoeBlu/ELLIS
-Enterprise Linux Lab Installer Script
-General purpose
 
-This is a script to quickly and easily setup a pre-configured lab environment useful for studying to obtain enterprise Linux certifications.
+[[{doc_has.tutorial]]
+## Enterprise Linux Lab Installer Script
 
-This script is intended to be run on a clean, updated installation of CentOS. It is presumed that you have configured networking during the install, and that the host machine has access to the Internet.
+* <https://github.com/PoeBlu/ELLIS>
 
-The script will install and configure the following lab components on the target host:
+* script to quickly setup a pre-configured lab environment useful
+  for studying to obtain enterprise Linux certifications.
+* The script will install and configure the following lab components 
+  on the target host:
+  * A virtualization host and two virtual networks with DHCP and name services
+  * A kerberos realm with user and server principals, and necessary server keytab files
+    [[security.kerberos]]
+  * An LDAP domain with pre-configured users [[security.LDAP]]
+  * An NFS server with home directory and generic shares
+  * A Samba server with a generic share
+  * An HTTP server with repo locations and lab resource files
+  * Kickstart files for lab VMs and automated VM build scripts
+  * An NTP server for time synchronization and lab use
+  * A Postfix SMTP host with delivery for the lab domain (for relay labs)
+[[doc_has.tutorial}]]
 
-    A virtualization host and two virtual networks with DHCP and name services
-    A kerberos realm with user and server principals, and necessary server keytab files
-    An LDAP domain with pre-configured users
-    An NFS server with home directory and generic shares
-    A Samba server with a generic share
-    An HTTP server with repo locations and lab resource files
-    Kickstart files for lab VMs and automated VM build scripts
-    An NTP server for time synchronization and lab use
-    A Postfix SMTP host with delivery for the lab domain (for relay labs)
-______________________
-https://www.redhat.com/sysadmin/pxe-boot-uefi
-How to set up PXE boot for UEFI hardware
-Setting up a PXE system will streamline new system installs, but the
-process is lengthy and requires attention to detail. This part one of
-two articles walks you through the process.
-______________________
-- "https://www.phoronix.com/forums/forum/software/general-linux-open-source/1127076-btrfs-xfs-file-systems-see-more-fixes-with-linux-5-4
-- Btrfs & XFS File-Systems See More Fixes With Linux 5.4
-- On the Btrfs front the Linux 5.4 changes are summed up as "work on
-  code refactoring, sanity checks and space handling. There are some
-  less user visible changes, nothing that would particularly stand
-  out." The Btrfs changes include deprecating a few items as well as
-  improving the exposure of debugging information via sysfs. See the
-  pull request for all the Btrfs file-system fixes and changes this
-  round.
 
------------------------
-https://developers.redhat.com/blog/2020/03/06/configure-and-run-a-qemu-based-vm-outside-of-libvirt/
-(Launching VMs directly from qemu)
-____________________
-Linux tools: Getting the message out with dmesg | Enable Sysadmin
-https://www.redhat.com/sysadmin/dmesg
-_______________________
-https://www.ctrl.blog/entry/systemd-service-hardening.html
+[[{security.101.BMC,hardware.BMC]]
+## BMC: Baseboard Management Controller
 
-Systemd service sandboxing and security hardening 101
-______________________
-conrad - conferences and meetups on your terminal - LinuxLinks
-https://www.linuxlinks.com/conrad-conferences-meetups-terminal/
-_____________________
-https://askubuntu.com/questions/601/the-following-packages-have-been-kept-back-why-and-how-do-i-solve-it
-
-The cautious solution is to run sudo apt-get install "list of
-packages kept back". In most cases this will give the kept-back
-packages what they need to successfully upgrade.
-
-Aggressive solution:
-
-A more aggressive solution is to run sudo apt-get dist-upgrade, which
-will force the installation of those new dependencies.
-
-But dist-upgrade can be quite dangerous. Unlike upgrade it may remove
-packages to resolve complex dependency situations. Unlike you, APT
-isn't always smart enough to know whether these additions and
-removals could wreak havoc.
-____________________________
-Code refactoring and multicursor with Vim:
-GitHub - dyng/ctrlsf.vim: An ack.vim alternative mimics Ctrl-Shift-F on Sublime Text 2
-https://github.com/dyng/ctrlsf.vim 
-___________________________
-Linux perf Examples
-http://www.brendangregg.com/perf.html
-
-Learn eBPF Tracing: Tutorial and Examples:
-http://www.brendangregg.com/blog/2019-01-01/learn-ebpf-tracing.html
-___________________________
-https://www.tecmint.com/test-network-throughput-in-linux/
-___________________________
-Man unix friendly DB: man db5.3_*
-___________________________
-https://www.debugpoint.com/2020/07/kde-plasma-5-20-wayland/
-Desktop recording in Wayland thanks to Pipeware.
-https://pipewire.org/
-- It provides a low-latency, graph based processing engine on top of
-  audio and video devices that can be used to support the use cases
-  currently handled by both pulseaudio and JACK. PipeWire was designed
-  with a powerful security model that makes interacting with audio and
-  video devices from containerized applications easy, with supporting
-  Flatpak applications being the primary goal. Alongside Wayland and
-  Flatpak we expect PipeWire to provide a core building block for the
-  future of Linux application development
-__________________________
-https://www.nsoftware.com/sftp/drive/
-An easy-to-use utility that mounts remote file systems as Windows
-drives via SFTP. Once connected, you can browse and work with files
-as if they were stored on your local machine.
-_______________________________
-https://serversuit.com/community/technical-tips/view/storage-area-network,-and-other-storage-methods.html
-There are some common misconceptions about the term "SAN", which
-means "Storage Area Network" and as such, strictly speaking, refers
-only to the communication infrastructure connecting storage devices
-(disk arrays, tape libraries, etc.) and storage users (servers).
-However, in common practice the term "SAN" is used to refer to two
-things:
-
-- A complete storage infrastructure, including all the hardware and
-software involved in providing shared access to central storage
-devices from multiple servers. This usage, although not strictly
-correct, is commonly accepted and what most people refers to when
-talking about a "SAN". The rest of this answer will focus on it, thus
-describing every component of an enterprise-level storage
-infrastructure.
-- A single storage array (see later); as in, "we have a Brand X SAN
-with 20 TB storage". This usage is fundamentally incorrect, because
-it doesn't even take into account the real meaning of "SAN" and just
-assumes it's some form of storage device.
-______________________________
-SSH two-facto authentication for R.Pi.:
-Q: Does anone know if Authy is supported as well as Google Auth?
-A:
-I've with TOTP any client app that supports the standar (Google auth, authy, M$ authenticato,r ...)
-should work iwth any service that implements it.
-__________________________
-https://linuxconfig.org/apt-vs-apt-get-advanced-package-tool
-____________________
-BMC: Baseboard Management Controller
-<https://www.servethehome.com/explaining-the-baseboard-management-controller-or-bmc-in-servers/>
-https://github.com/openbmc/openbmc
+* <https://www.servethehome.com/explaining-the-baseboard-management-controller-or-bmc-in-servers/>
+* <https://github.com/openbmc/openbmc>
 
 - A baseboard management controller, or BMC, is a small computer that
   sits on virtually every server motherboard. Other components such as
@@ -647,295 +423,105 @@ https://github.com/openbmc/openbmc
   - A BMC can utilize either shared or dedicated NIC for remote access.
     a give console access via serial or physical/virtual KVM,
     power cycle the servers, and log events.
-____________________
-https://www.redhat.com/sysadmin/session-recording-tlog
-set up secure access to your Linux environment with session recording and containerized servers.
-___________________________
-https://www.redhat.com/sysadmin/ssh-automation-sshpass
-SSH uses direct TTY access to ensure that the password is indeed
+[[security.101.BMC}]]
+
+[[{security.audit.user]]
+## Record/Audit sessions and containers with tlog
+* <https://www.redhat.com/sysadmin/session-recording-tlog>
+[[security.audit.user}]]
+
+[[{security.remote_access.ssh]]
+## SSH Automation
+
+* <https://www.redhat.com/sysadmin/ssh-automation-sshpass>
+
+  SSH uses direct TTY access to ensure that the password is indeed
 issued by an interactive keyboard user. sshpass runs SSH in a
 dedicated TTY, fooling SSH into thinking it is getting the password
 from an interactive user.
 
-Example 1: SSH
+* Example 1: SSH
  *WARN: -p is considered the least secure choice and shouldn't be used):*
 
-  $ sshpass -p !4u2tryhack ssh username@host.example.com
+  ```
+  | $ sshpass -p !4u2tryhack ssh username@host.example.com
+  ```
 
-__________________________________________
-https://github.com/ycm-core/YouCompleteMe
-- an identifier-based engine that works with every programming language,
-- a powerful clangd-based engine that provides native semantic code
-  completion for C/C++/Objective-C/Objective-C++/CUDA (from now on
-  referred to as "the C-family languages"),
-- a Jedi-based completion engine for Python 2 and 3,
-- an OmniSharp-Roslyn-based completion engine for C#,
-- a Gopls-based completion engine for Go,
-- a TSServer-based completion engine for JavaScript and TypeScript,
-- a rls-based completion engine for Rust,
-- a jdt.ls-based completion engine for Java.
-- a generic Language Server Protocol implementation for any language
+[[security.remote_access.ssh}]]
 
 
-YCM also provides semantic IDE-like features in a number of languages, including:
+[[{monitoring.storage]]
+## How to measure Linux Performance Avoiding Most Typical Mistakes: Disk Storage
 
-- displaying signature help (argument hints) when entering the
-arguments to a function call (Vim only)
-- finding declarations, definitions, usages, etc. of identifiers,
-- displaying type information for classes, variables, functions etc.,
-- displaying documentation for methods, members, etc. in the preview
-window, or in a popup next to the cursor (Vim only)
-- fixing common coding errors, like missing semi-colons, typos, etc.,
-- semantic renaming of variables across files,
-- formatting code,
-- removing unused imports, sorting imports, etc.
-See Autocomplet vs CoC comparative video:
-https://www.youtube.com/watch?v=ICU9OEsNiRA
-____________________
-How to check if CentOS / RHEL needs a full reboot
-- https://www.cyberciti.biz/faq/how-to-check-if-centos-rhel-needs-a-full-reboot/
-_______________
-https://www.2daygeek.com/linux-remove-delete-physical-volume-pv-from-volume-group-vg-in-lvm/
-____________
-Mtr : Stop using ping and traceroute anymore - The Linux Juggernaut
-https://www.linuxnix.com/mtr-stop-using-ping-and-traceroute-anymore/
-####################
-Linux: eBPF Projects Directory
-https://ebpf.io/projects 
-###########################
-Linux: fdupes
-https://www.linuxlinks.com/essential-system-tools-fdupes-find-or-delete-duplicate-files/ 
-#################
-Setting up multi-factor authentication on Linux systems
-https://www.redhat.com/sysadmin/mfa-linux 
-#########################
-How to measure Linux Performance Avoiding Most Typical Mistakes: Disk Storage
-https://ma.ttias.be/how-to-measure-linux-performance-avoiding-most-typical-mistakes-disk-storage/ 
-###################
-Zero Copy Networking in UEK6 | Oracle Linux Blog
-https://blogs.oracle.com/linux/zero-copy-networking-in-uek6 
-#######################
-ASCIInema
-https://github.com/tldr-pages/tldr/blob/master/pages/common/asciinema.md
-################
-man 1 rygel
+* <https://ma.ttias.be/how-to-measure-linux-performance-avoiding-most-typical-mistakes-disk-storage/>
+[[monitoring.storage}]]
 
-- a collection of DLNA/UPnP AV services
-- home media solution that allows you to easily share audio, video and
-  pictures, and control of media player on your home network.
-- UPnP AV MediaServer and MediaRenderer implemented through a plug-in
-  mechanism. Interoperability with other devices in the market is
-  achieved by conformance to very strict requirements of DLNA and on the fly
-  conversion of media to format that client devices are capable of handling.
-#######################
-text utils:
-https://github.com/ggreer/the_silver_searcher
-A code searching tool with a focus on speed.(x30+ faster than alternatives)
-###############
-https://github.com/tldr-pages/tldr/blob/master/pages/common/ajson.md
+[[{performance.network]]
+## Zero Copy Networking in UEK6 
+* <https://blogs.oracle.com/linux/zero-copy-networking-in-uek6 >
+[[performance.network}]]
 
-https://github.com/tldr-pages/tldr/blob/master/pages/common/ag.md
-#####################
-Encrypted overlay filesystem written in Go. More information: https://github.com/rfjakob/gocryptfs.
+## the_silver_searcher: x30+ faster than alternatives
 
-https://github.com/tldr-pages/tldr/blob/master/pages/common/gocryptfs.md
-#####################
-Guacamole:
-- Apache Guacamole is a clientless remote desktop gateway. It supports
-  standard protocols like VNC, RDP, and SSH.
-https://guacamole.apache.org/
-https://github.com/tldr-pages/tldr/blob/master/pages/common/guacd.md
-################
-https://github.com/tldr-pages/tldr/blob/master/pages/common/mmls.md
-Display the partition layout of a volume system. More information:
-https://wiki.sleuthkit.org/index.php?title=Mmls.
-##################
-https://stackoverflow.com/questions/19430200/how-to-clear-vim-registers-effectively
-##################
-eBPF,
-https://netflixtechblog.com/how-netflix-uses-ebpf-flow-logs-at-scale-for-network-insight-e3ea997dca96
-How Netflix uses eBPF flow logs at scale for network insight
+[[{performance.text_search]]
+* <https://github.com/ggreer/the_silver_searcher>
+A code searching tool with a focus on speed.
+[[performance.text_search}]]
 
-Netflix has developed a network observability sidecar called Flow
-Exporter that uses eBPF tracepoints to capture TCP flows at near real
-time. At much less than 1% of CPU and memory on the instance, this
-highly performant sidecar provides flow data at scale for network
-insight.
+[[{monitoring.pipes]]
+## tunning: How big is the pipe buffer? 
 
-###################
-https://stackoverflow.com/questions/17731244/how-to-regex-in-vim
-###################
-https://www.redhat.com/
-https://fedoraproject.org/wiki
-https://ask.fedoraproject.org/
-http://planet.fedoraproject.org/
-https://communityblog.fedoraproject.org/
-https://fedoraproject.org/wiki/Join
-http://fedoramagazine.org/
-https://docs.fedoraproject.org/
-https://spins.fedoraproject.org/
-https://labs.fedoraproject.org/
-https://arm.fedoraproject.org/
-https://alt.fedoraproject.org/
-https://forums.fedoraforum.org/
-https://www.reddit.com/r/Fedora/
-https://diasp.org/u/fedora
-https://discordapp.com/invite/fedora
-https://telegram.me/fedoranews
-#####################
-<pre zoom labels="storage.file_system,storage.block_management,configuration.storage,01_PM.TODO">
-# Partition drives
-<https://opensource.com/article/18/11/partition-format-drive-linux>
-</pre>
-########################
-<pre zoom labels="desktop,01_PM.TODO">
-# DBus
-</pre>
-########################
-<pre zoom  labels="01_PM.TODO">
-<span xsmall  TODO>dtrace (BSD/Linux/Win/...)
-########################
-https://upx.github.io/
-Compression ratio for executables.
-- Not recommended for standard (widely) used execs setIncrementAmount
-  we loose the copy-on-right memory saving features of Linux.
-- Can be interesting for "big singletons" apps.
-</pre>
+* <https://unix.stackexchange.com/questions/11946/how-big-is-the-pipe-buffer >
+[[monitoring.pipes}]]
 
-Linux: perf toolshttp://www.brendangregg.com/
-###################
-Using Rust to Write Safe and Correct Linux Kernel Drivershttps://www.infoq.com/news/2021/04/rust-linux-kernel-development/
-################
-Linux: debugging with bpfilters
-https://tenzir.com/blog/production-debugging-bpftrace-uprobes/ 
-#####################
-Quand les clouds développent leurs propres Linux…https://www.informatiquenews.fr/quand-les-clouds-developpent-leurs-propres-linux-72411
-####################
-Linux, tunning: How big is the pipe buffer? - Unix & Linux Stack Exchangehttps://unix.stackexchange.com/questions/11946/how-big-is-the-pipe-buffer 
-#########################
-Linux: IPTable Cheat Sheet @ma!!!
-http://ipcafe.net/6160/iptable-cheat-sheet.html
-#########################
-Linux: A Complete Guide to Usage of 'usermod' command - 15 Practical Examples with Screenshotshttps://www.tecmint.com/usermod-command-examples/ 
-#################
-Kooha – Screen Recorder with Wayland Supporthttps://www.fossmint.com/kooha-screen-recorder/ 
-________________________________
-5 Rust tools worth trying on the Linux command line | Opensource.comhttps://opensource.com/article/21/7/rust-tools-linux
-__________________________________
-Linux: Cómo monitorizar la carga de trabajo del sistema en Ubuntu 20.04 con Sysdig -
-Paperblog
-https://es.paperblog.com/como-monitorizar-la-carga-de-trabajo-del-sistema-en-ubuntu-2004-con-sysdig-6667378/ 
-______________________________________
-inotifywait(1) - Linux man pagehttps://linux.die.net/man/1/inotifywait When reading trap file kill process tree and send report
-__________________________
-Linux Kernel vs. Memory Fragmentation (Part I) - High Scalability -http://highscalability.com/blog/2021/6/8/linux-kernel-vs-memory-fragmentation-part-i.html
-_________________________________
-Linux: Understanding Processes Running on Linux Host with Percona Monitoring and Management - Percona Database Performance Blog
-https://www.percona.com/blog/2021/04/22/understanding-processes-running-on-linux-host-with-percona-monitoring-and-management/
-___________________________
-Linux Dev:
-List archives on lore.kernel.org
-https://lore.kernel.org/lists.html
-______________________________
-Sysdig Doubles Down on Open Source Commitment with the First eBPF Contribution to the CNCF - Container Journal
-https://containerjournal.com/news/news-releases/sysdig-doubles-down-on-open-source-commitment-with-the-first-ebpf-contribution-to-the-cncf/ 
-_____________________________________
-MattesGroeger/vim-bookmarks: Vim bookmark plugin
-https://github.com/MattesGroeger/vim-bookmarks
-__________________________
-OBS Studio Open Source Live Streaming and Screen Recording Software Gets Wayland Support - 9to5Linux
-https://9to5linux.com/obs-studio-open-source-live-streaming-and-screen-recording-software-gets-wayland-support
+[[{network.iptables.101,doc_has.cheat_sheet]]
+## IPTable Cheat Sheet 
 
-########################33
-Top (GNU Coreutils 9.0)
-https://www.gnu.org/software/coreutils/manual/html_node/index.html
-############################
-# Tmux
-REF: https://www.sitepoint.com/10-killer-tmux-tips/
-
-- tmux Plugin Manager:
-  - PRE-SETUP install:
-    $ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-
-    $ cat << EOF >> ~/.tmux.conf
-    # Init plugin manager.
-    run -b '~/.tmux/plugins/tpm/tpm'    ←  keep line at the
-    EOF                                    "very bottom"
-
-  - Installing Plugins:
-    STEP 1) ~/.tmux.conf:
-            ...
-            set -g @plugin 'tmux-plugins/tmux-resurrect'
-            set -g @plugin 'tmux-plugins/tmux-continuum'
-            #               └─────┬────┘ └─────┬──────┘
-            #               Github user   Github pass.
-
-    STEP 2) "prefix" + I (capital i) to fetch the plugin.
-            (plugins will be cloned to ~/.tmux/plugins/ and then sourced).
-
-  - Uninstalling Plugins:
-    STEP 1) Remove / comment out plugin from ~/.tmux.conf
-    STEP 2) Press "prefix" + alt + u (lowercase u to uninstall)
-
-- Interesting plugins:
-
-  - "Resurrecting tmux": (across system restarts!!!).
-    - To restore also vim sessions:
-      - PRE-SETUP) install Tim Pope's vim-obsession (vim pluging).
-        cd ~/.vim/bundle
-      - tell vim-obsession to track the session.
+* <http://ipcafe.net/6160/iptable-cheat-sheet.html>
+[[network.iptables.101}]]
 
 
-    - Ussage:
-      - save    tmux session: "prefix" + Control + s
-      - restore tmux session: "prefix" + Control + r (run tmux first)
+[[{security.101]]
+## Complete Guide to 'usermod' command 
 
-  - "tmux-continuum": continuously saves tmux sessions at regular intervals.
-                      automatically restores at restart.
+* <https://www.tecmint.com/usermod-command-examples/>
 
-  - "Zooming tmux": (tmux 1.8+) very useful to look at test failures or inspect logs.
-    - Ussage:
-    - swithc on/off zoom into a pane: "prefix" + z
+* Tool, used by admins to make changes to an existing user.
 
-  - "vim-tmux-navigator": Navigate Seamlessly Between vim Splits and tmux Panes
-                          by using Control + hjkl
-_____________________
-auditing
-https://github.com/asciinema/asciinema/wiki/Recording-tmux-session
-_________________________
-https://github.com/gpakosz/.tmux
-______________________________
-https://github.com/cilium/ebpf
-______________________________
-https://stackoverflow.com/search?q=user:20713+[linux]
-______________________________
-https://stackoverflow.com/questions/1009577/selecting-a-linux-i-o-scheduler/1010562#1010562
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/block/switching-sched.rst
-As documented in
-/usr/src/linux/Documentation/block/switching-sched.txt, the I/O
-scheduler on any particular block device can be changed at runtime.
-There may be some latency as the previous scheduler's requests are
-all flushed before bringing the new scheduler into use, but it can be
-changed without problems even while the device is under heavy use.
+[[security.101}]]
 
-# cat /sys/block/hda/queue/scheduler
-noop deadline [cfq]
-# echo anticipatory > /sys/block/hda/queue/scheduler
-# cat /sys/block/hda/queue/scheduler
-noop [deadline] cfq
+[[{storage.block_management.IO_scheduler,performance.storage]]
+## Selecting a Linux I/O scheduler
+
+* <https://stackoverflow.com/questions/1009577/selecting-a-linux-i-o-scheduler/1010562#1010562>
+* <https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/block/switching-sched.rst>
+  As documented in
+  /usr/src/linux/Documentation/block/switching-sched.txt, the I/O
+  scheduler on any particular block device can be changed at runtime.
+  There may be some latency as the previous scheduler's requests are
+  all flushed before bringing the new scheduler into use, but it can be
+  changed without problems even while the device is under heavy use.
+
+  ```
+  | # cat /sys/block/hda/queue/scheduler
+  | noop deadline [cfq]
+  | # echo anticipatory > /sys/block/hda/queue/scheduler
+  | # cat /sys/block/hda/queue/scheduler
+  | noop [deadline] cfq
+  ```
 
 Ideally, there would be a single scheduler to satisfy all needs. It
 doesn't seem to exist yet. The kernel often doesn't have enough
 knowledge to choose the best scheduler for your workload:
 
-· noop is often the best choice for memory-backed block devices
+* noop is often the best choice for memory-backed block devices
   (e.g. ramdisks) and other non-rotational media (flash) where trying
   to reschedule I/O is a waste of resources
-· deadline is a lightweight scheduler which tries to put a hard
-  limit on latency
-· cfq tries to maintain system-wide fairness of I/O bandwidth
+* deadline is a lightweight scheduler which tries to put a hard
+  limit on latency.
+* cfq tries to maintain system-wide fairness of I/O bandwidth
 
-The default was anticipatory for a long time, and it received a lot
+ The default was anticipatory for a long time, and it received a lot
 of tuning, but was removed in 2.6.33 (early 2010). cfq became the
 default some while ago, as its performance is reasonable and fairness
 is a good goal for multi-user systems (and even single-user
@@ -945,431 +531,58 @@ and access patterns, and are often the most important service (so who
 cares about fairness?) -- anticipatory has a long history of being
 tunable for best performance on these workloads, and deadline very
 quickly passes all requests through to the underlying device.
-</pre>
 
-----------------------------------
-Endless OS: "Git like" OS updates.
-https://support.endlessos.org/en/endless-os/updates
-With OSTree, keeping a previous version of the OS does not double the
-disk space used: only the differences between the two versions need
-to be stored. For minor upgrades (such as 3.4.0 to 3.4.1) the
-difference is typically only a few megabytes. For major upgrades
-(such as 3.3.x to 3.4.x) the difference is significantly larger, but
-the ability to roll back to the old version is even more valuable.
+[[storage.block_management.IO_scheduler}]]
 
-https://ostreedev.github.io/ostree/
-As implied above, libostree is both a shared library and suite of
-command line tools that combines a "git-like" model for
-committing and downloading bootable filesystem trees, along with a
-layer for deploying them and managing the bootloader configuration.
-The core OSTree model is like git in that it checksums individual
-files and has a content-addressed-object store. It’s unlike git in
-that it “checks out” the files via hardlinks, and they thus need
-to be immutable to prevent corruption. Therefore, another way to
-think of OSTree is that it’s just a more polished version of Linux
-VServer hardlinks.
 
-Features:
-- Transactional upgrades and rollback for the system
-- Replicating content incrementally over HTTP via GPG signatures and
-  "pinned TLS" support
-- Support for parallel installing more than just 2 bootable roots
-- Binary history on the server side (and client)
-- Introspectable shared library API for build and deployment systems
-- Flexible support for multiple branches and repositories, supporting
-  projects like flatpak which use libostree for applications, rather
-  than hosts.
+[[{use_case.text_processing]]
+##  convert rows to columns with the paste command 
+* by Konstantinos Patronas | Apr, 2022
 
-Endless OS uses libostree for their host system as well as flatpak.
-See their eos-updater and deb-ostree-builder projects.
-Fedora derivatives use rpm-ostree (noted below); there are 4 variants using OSTree:
-- Fedora CoreOS
-- Fedora Silverblue
-- Fedora Kinoite
-- Fedora IoT
-GNOME Continuous is where OSTree was born - as a high performance continuous
-delivery/testing system for GNOME.
+* <https://lovethepenguin.com/linux-convert-rows-to-columns-with-the-paste-command-84d0dd9c0ee6>
+[[use_case.text_processing}]]
 
-OSTree is in many ways very evolutionary. It builds on concepts and
-ideas introduced from many different projects such as Systemd
-Stateless, Systemd Bootloader Spec, Chromium Autoupdate, the much
-older Fedora/Red Hat Stateless Project, Linux VServer and many more.
-_____________________________________
-@ma Linux, txt world domination:  convert rows to columns with the paste command | by Konstantinos Patronas | Apr, 2022 | Medium
-https://lovethepenguin.com/linux-convert-rows-to-columns-with-the-paste-command-84d0dd9c0ee6
-_____________________________________
-Linux, video: FFmpeg 5.0 "Lorentz" Released with New Encoders, Decoders, Muxers, and More - 9to5Linux
-https://9to5linux.com/ffmpeg-5-0-lorentz-released-with-new-encoders-decoders-muxers-and-more
-______________________________
-Linux: Sysdig and Snyk use runtime intelligence to eliminate vulnerability noise
-https://sysdig.com/blog/sysdig-snyk-partnership/
-______________________________
-Security: Nasty Linux netfilter firewall security hole found
-https://www.zdnet.com/article/nasty-linux-netfilter-firewall-security-hole-found/
-________________________________
-Linux: 6 deprecated Linux commands and the tools you should be using instead
-https://www.redhat.com/sysadmin/deprecated-linux-command-replacements
-____________________________
-Linux: Vulnerability in cryptsetup Allows Decrypting Part of LUKS2-Encrypted Device
-https://linuxiac.com/cryptsetup-vulnerability/
-_______________________________
-Linux desktop: 5 open source alternatives to Microsoft Exchange
-https://opensource.com/article/21/11/open-source-alternatives-microsoft-exchange
-____________________________________
-Linux kernel: Cleaning up the Linux kernel's 'Dependency Hell':
-This developer is proposing 2,200 commit changes | ZDNet
-https://www.zdnet.com/article/cleaning-up-the-linux-kernels-dependency-hell-this-developer-is-proposing-2200-commit-changes/
-______________________________
-network: How to Configure IP Networking with nmcli Command in Linux
-https://www.linuxtechi.com/configure-ip-with-nmcli-command-linux/
-______________________________________
-Linux, monitoring.network:
-5 scripts for getting started with the Nmap Scripting Engine
-https://www.redhat.com/sysadmin/nmap-scripting-engine
-____________________________________
-Linux kernel: Rust for Linux Progresses with New Abstractions and Infrastructure
-https://www.infoq.com/news/2021/12/rust-for-linux-patch-2/
-__________________________________
-sysstat - All-in-One System Performance and Usage Activity Monitoring Tool For Linux
-https://www.tecmint.com/install-sysstat-in-linux/
-_________________________________
-Linux, desktop: WirePlumber in Fedora 35
-https://www.collabora.com/news-and-blog/news-and-events/wireplumber-in-fedora-35.html 
-___________________________
-Linux, development, desktop: What’s New for Developers
-https://help.gnome.org/misc/release-notes/41.0/developers.html
-______________________________
-## Linux Barrier keyboard/mouse sharing (software KVM)  [[{desktop]]
-https://www.youtube.com/watch?v=mAGTFAeA2Bo [[}]]
-______________________________
-# apt-get vs apt vs aptitude
-https://juncotic.com/apt-vs-apt-get-vs-aptitude-algunas-notas/
+[[{security.sysdig,monitoring.logs]]
+## Sysdig and Snyk runtime intelligence
+* <https://sysdig.com/blog/sysdig-snyk-partnership/>
+[[security.sysdig}]]
 
-## Linux FS Hierarchy  [[{storage.file_system,linux.101,02_doc_has.standards,01_PM.backlog]]
-- Full FS Hierarchy
-<https://www.tldp.org/LDP/Linux-Filesystem-Hierarchy/html/index.html>
-- /etc
-<http://www.tldp.org/LDP/Linux-Filesystem-Hierarchy/html/etc.html>
+[[{linux.mobile.mobifree]]
+## Mobifree
 
-## Avahi,ZeroConf
-<https://en.wikipedia.org/wiki/Avahi_(software)>
+* <https://mobifree.org/>
 
-## sar
-# https://lintut.com/best-command-line-tools-for-linux-performance-monitring/
+[[linux.mobile.mobifree}]]
+
+[[{monitoring.sysstat,monitoring.101]]
+## sysstat: All-in-One System Performance and Usage Activity Monitoring Tool
+ 
+* <https://www.tecmint.com/install-sysstat-in-linux/>
+
+### sar
+# <https://lintut.com/best-command-line-tools-for-linux-performance-monitring/>
 - 'sar' utility, which is part of the systat package, can be used to
   review history performance data on your server. System resource
   utilization can be seen for given time frames to help troubleshoot
   performance issues, or to optimize performance
 
-# RPM  [[{taxonomy]]
-- Understanding Meta Package Handlers
-- Setting up Yum Repositories
-- Using Repositories
-- Managing Packages with yum
-- Using Yum Groups
-- Understanding yum and RPM Queries
-- Using RPM Queries
-[[}]]
-
-# DNF Full command list
-- https://dnf.readthedocs.io/en/latest/command_ref.html#clean-command-label
-    Performs cleanup of temporary files kept for repositories. This includes any
-    such data left behind from disabled or removed repositories as well as
-    for different distribution release
-    versions.
-- https://dnf.readthedocs.io/en/latest/command_ref.html#distro-sync-command-label
-    As necessary upgrades, downgrades or keeps selected installed packages to
-    match the latest version available from any enabled repository. If no
-    package is given, all installed packages are considered.
-- https://dnf.readthedocs.io/en/latest/command_ref.html#downgrade-command-label
-    Downgrades the specified packages to the highest installable package of all
-    known lower versions if possible. When version is given and is lower than
-    version of installed package then it downgrades to target version.
-- https://dnf.readthedocs.io/en/latest/command_ref.html#group-command-label
-    Groups are virtual collections of packages. DNF keeps track of groups
-    that the user selected (“marked”) installed and can manipulate the
-    comprising packages with simple commands.  (See only manual for more info)
-- https://dnf.readthedocs.io/en/latest/command_ref.html#help-command-label
-- https://dnf.readthedocs.io/en/latest/command_ref.html#history-command-label
-   The history command allows the user to view what has happened in past
-   transactions and act according to this information (assuming the
-   history_record configuration option is set).
-- https://dnf.readthedocs.io/en/latest/command_ref.html#info-command-label
-     list description and summary information about installed and available packages.
-- https://dnf.readthedocs.io/en/latest/command_ref.html#install-command-label
-    DNF makes sure that the given packages and their dependencies are
-    installed on the system. Each <spec> can be either a <package-spec>, or a
-    @<group-spec>. See Install Examples. If a given package or provide cannot
-    be (and is not already) installed, the exit code will be non-zero.
-
-    When <package-spec> that specify exact version of the package is given,
-    DNF will install the desired version, no matter which version of the
-    package is already installed. The former version of the package will be
-    removed in the case of non-installonly package.
-
-    There are also a few specific install commands install-n, install-na and
-    install-nevra that allow the specification of an exact argument in NEVRA
-    format.
-
-    dnf install tito
-        Install package tito (tito is package name).
-    dnf install ~/Downloads/tito-0.6.2-1.fc22.noarch.rpm
-        Install local rpm file tito-0.6.2-1.fc22.noarch.rpm from ~/Downloads/ directory.
-    dnf install tito-0.5.6-1.fc22
-        Install package with specific version. If the package is already
-        installed it will automatically try to downgrade or upgrade to specific version.
-    dnf --best install tito
-        Install the latest available version of package. If the package is
-        already installed it will automatically try to upgrade to the latest
-        version. If the latest version of package cannot be installed, the installation fail.
-    dnf install vim
-        DNF will automatically recognize that vim is not a package name, but
-        provide, and install a package that provides vim with all required
-        dependencies. Note: Package name match has precedence over package provides match.
-    dnf install https://.../packages/tito/0.6.0/1.fc22/noarch/tito-0.6.0-1.fc22.noarch.rpm
-        Install package directly from URL.
-    dnf install '@Web Server'
-        Install environmental group ‘Web Server’
-    dnf install /usr/bin/rpmsign
-        Install a package that provides /usr/bin/rpmsign file.
-    dnf -y install tito --setopt=install_weak_deps=False
-        Install package tito (tito is package name) without weak deps. Weak
-        deps are not required for core functionality of the package, but they
-        enhance the original package (like extended documentation, plugins,
-        additional functions, …).
-- https://dnf.readthedocs.io/en/latest/command_ref.html#list-command-label
-    Dumps lists of packages depending on the packages’ relation to the system
-    . A package is installed if it is present in the RPMDB, and it is
-    available if it is not installed but it is present in a repository that
-    DNF knows about. The list command can also limit the displayed packages
-    according to other criteria, e.g. to only those that update an installed
-    package. The exclude option in configuration file (.conf) might influence
-    the result, but if the command line option --disableexcludes is used, it
-    ensure that all installed packages will be listed
-- https://dnf.readthedocs.io/en/latest/command_ref.html#makecache-command-label
-    dnf [options] makecache
-        Downloads and caches in binary format metadata for all known repos.
-        Tries to avoid downloading whenever possible (e.g. when the local
-        metadata hasn’t expired yet or when the metadata timestamp hasn’t changed).
-    dnf [options] makecache --timer
-        Like plain makecache but instructs DNF to be more resource-aware,
-        meaning will not do anything if running on battery power and will
-        terminate immediately if it’s too soon after the last successful
-        makecache run (see dnf.conf(5), metadata_timer_sync).
-- https://dnf.readthedocs.io/en/latest/command_ref.html#mark-command-label
-    dnf mark install <package-specs>...
-        Marks the specified packages as installed by user. This can be useful
-        if any package was installed as a dependency and is desired to stay on
-        the system when Auto Remove Command or Remove Command along with
-        clean_requirements_on_remove configuration option set to True is executed.
-    dnf mark remove <package-specs>...
-        Unmarks the specified packages as installed by user....
-    dnf mark group <package-specs>...
-        Marks the specified packages as installed by group...
-- https://dnf.readthedocs.io/en/latest/command_ref.html#module-command-label
-- https://dnf.readthedocs.io/en/latest/command_ref.html#provides-command-label
-    Finds the packages providing the given <provide-spec>. This is useful
-    when one knows a filename and wants to find what package (installed or not
-    ) provides this file.
-- https://dnf.readthedocs.io/en/latest/command_ref.html#reinstall-command-label
-- https://dnf.readthedocs.io/en/latest/command_ref.html#remove-command-label
-- https://dnf.readthedocs.io/en/latest/command_ref.html#repoinfo-command-label
-- https://dnf.readthedocs.io/en/latest/command_ref.html#repolist-command-label
-- https://dnf.readthedocs.io/en/latest/command_ref.html#repoquery-command-label
-    dnf [options] repoquery [<select-options>] [<query-options>] [<pkg-spec>]
-        Searches the available DNF repositories for selected packages and
-        displays the requested information about them. It is an equivalent of rpm
-        -q for remote repositories.
-    dnf [options] repoquery --querytags
-        Provides list of recognized tags by repoquery option --queryformat
-        There are also a few specific repoquery commands repoquery-n,
-        repoquery-na and repoquery-nevra that allow the specification of an exact
-        argument in NEVRA format (does not affect arguments of options like –
-        whatprovides <arg>, …).
-- https://dnf.readthedocs.io/en/latest/command_ref.html#repository-packages-command-label
-- https://dnf.readthedocs.io/en/latest/command_ref.html#search-command-label
-    Search package metadata for the keywords. Keywords are matched as case-
-    insensitive substrings, globbing is supported. By default lists packages
-    that match all requested keys (AND operation). Keys are searched in
-    package names and summaries. If option “–all” is used, lists packages
-    that match at least one of keys (OR operation). And in addition keys are
-    searched in package descriptions and URLs. The result is sorted from the
-    most relevant results to the least.
-- https://dnf.readthedocs.io/en/latest/command_ref.html#shell-command-label
-- https://dnf.readthedocs.io/en/latest/command_ref.html#swap-command-label
-    Remove spec and install spec in one transaction. Each "spec" can be
-    either a <package-spec>, which specifies a package directly, or a
-    @"group-spec", which specifies an (environment) group which contains it.
-    Automatic conflict solving is provided in DNF by –allowerasing option
-    that provides functionality of swap command automatically
-- https://dnf.readthedocs.io/en/latest/command_ref.html#updateinfo-command-label
-    Display information about update advisories.
-    Depending on output type, DNF displays just counts of advisory types (
-    omitted or --summary), list of advisories (--list) or detailed
-    information (--info). When --info with -v option is used, the information
-    is even more detailed
-- https://dnf.readthedocs.io/en/latest/command_ref.html#upgrade-command-label
-- https://dnf.readthedocs.io/en/latest/command_ref.html#upgrade-minimal-command-label
-    Upgrade-minimal Command
-
-    $ dnf [options] upgrade-minimal
-        Updates each package to the latest version that provides bugfix, enhancement
-        or fix for security issue (security)
-    $ dnf [options] upgrade-minimal <package-installed-specs>...
-        Updates each specified package to the latest available version that provides
-        bugfix, enhancement or fix for security issue (security). Updates
-        dependencies as necessary.
-- https://dnf.readthedocs.io/en/latest/command_ref.html#upgrade-to-command-label
-
-- ADDITIONAL INFORMATION:
-  https://dnf.readthedocs.io/en/latest/command_ref.html#options-label
-  https://dnf.readthedocs.io/en/latest/command_ref.html#specifying-packages-label
-  https://dnf.readthedocs.io/en/latest/command_ref.html#specifying-packages-versions-label
-  https://dnf.readthedocs.io/en/latest/command_ref.html#specifying-provides-label
-  https://dnf.readthedocs.io/en/latest/command_ref.html#specifying-groups-label
-  https://dnf.readthedocs.io/en/latest/command_ref.html#specifying-transactions-label
-  https://dnf.readthedocs.io/en/latest/command_ref.html#metadata-synchronization-label
-  https://dnf.readthedocs.io/en/latest/command_ref.html#configuration-files-replacement-policy-label
-  https://dnf.readthedocs.io/en/latest/command_ref.html#files-label
-  https://dnf.readthedocs.io/en/latest/command_ref.html#see-also-label
-
-## Flatpack "Sandboxes" [[{app.packaging.flatpak,01_PM.TODO]]
-  https://www.flatpak.org/
-
-- each application is built and run in an isolated 'sandbox' environment
-  containing an application and its runtime.
-- By default, the application can only access the contents of its sandbox.
-- Access to user files, network, graphics sockets, subsystems on the bus and devices
-  have to be explicitly granted.
-- Access to other things, such as other processes, is deliberately NOT possible.
-
--  resources inside the sandbox that need to be exposed outside are known as "exports".
-   (Ex: .desktop file and icon,...)
-
-*Portals*
-- Mechanism through which applications can interact with the host environment
-  from within a sandbox. They give the ability to interact with data, files
-  and services without the need to add sandbox permissions.
-
-- Examples of capabilities that can be accessed through portals include opening
-  files through a file chooser dialog, or printing.
-- Interface toolkits can implement transparent support for portals, so access
-  to resources outside of the sandbox will work securely and out of the box.
-
-*Repositories*
-- applications and runtimes are typically stored and published using repositories,
- which behave very similarly to Git repositories, containing a single object or
- multiple ones. Each object is versioned, allowing the up|down-grade.
-- Remote repository's content can be inspected and searched, and it can
-  be used as the source of applications and runtimes.
-- When an update is performed, new versions of installed applications and
-  runtimes are downloaded from the relevant remotes. (only the difference actually)
-
-### flatpak cli
-NOTE: graphical software management tools exists so command-line is optional
-
-$ flatpak install
-
-$ flatpak uninstall
-
-*Identifiers*
-- unique three-part like
-  com.company.App
-              ^^^
-      final segment is the object's name
+[[monitoring.sysstat}]]
 
 
-*Identifier triple*
-
-   com.company.App/i386/stable         com.company.App//stable       com.company.App/i386//
-   ^^^^^^^^^^^^^^^ ^^^^ ^^^^^^                        ^^                                 ^^
-    Application-ID Arch branch                   Use default                        Use default
-    or name                                      architecture                       branch
-
-
-*System versus user*
-- Flatpak commands/repositories can be used/applied:
-  - system-wide (default)
-  - per-user    (--user option)
-
-*Basic commands*
-$ flatpak remotes # ← list remotes repositores configured on the system
-(output list indicates whether remote has been added per-user or system-wide)
-
-
-$  *URL_FLATPAKREPO*="https://dl.flathub.org/repo/flathub*.flatpakrepo*
-                                                          ^^^^^^^^^^^
-                                                       a .flatpakrepo file
-                                                       contains:
-                                                       - remote details
-                                                       - remote GPG key
-$ flatpak remote-add \          ← Add a remote repository
-     --if-not-exists \
-     flathub \                  ← arbitrary local-name assigned to remote
-      *${URL_FLATPAKREPO}*
-
-$ flatpak remote-delete flathub ← Remove remote-repo from list of known remotes
-
-$ flatpak search gimp           ← return any applications matching search terms.
-(each row-result includes application ID + remote where it was found)
-
-
-$ FLATPAKREF="https://flathub.org/repo/appstream/org.gimp.GIMP.flatpakref"
-$ flatpak install ${FLATPAKREF}         ← install application from FLATPAKREF
-$ flatpak install flathub org.gimp.GIMP ← install application from remote and ID
-                  ^^^^^^^ ^^^^^^^^^^^^^
-                  remote  application ID
-  (the application runtime will also be instaled if not yet present)
-
-*$ flatpak run org.gimp.GIMP     ← Run the application*</b>
-
-$ flatpak update                ← update all your installed applications
-                                  and runtimes to the latest version
-
-$ flatpak list                  ← List installed applications and runtimes
-
-$ flatpak list --app            ← List installed applications only
-
-$ flatpak uninstall ${APP_ID}   ← Uninstall Application
-
-*Full Journey*
-# Add remote "repository"
-$ flatpak remote-add --user --from gnome https://sdk.gnome.org/gnome.flatpakrepo
-# Install monodevelop from remote repository
-$ flatpak install --user --from https://download.mono-project.com/repo/monodevelop.flatpakref
-# Run monodevelop
-$ flatpak run com.xamarin.MonoDevelop
-
-# /proc/sys/kernel/watchdog  [[{QA.SLA}]]
-[[}]]
-
+[[{security.dma_attacks]]
 ## protection against DMA attacks
-  https://www.linkedin.com/posts/shlomi-boutnaru-ba781811a_linux-hardware-dma-activity-7007724440046178305-4miD
+* https://www.linkedin.com/posts/shlomi-boutnaru-ba781811a_linux-hardware-dma-activity-7007724440046178305-4miD
+[[security.dma_attacks}]]
 
-## Linux profiling: Parca - Open Source infrastructure-wide continuous profilinghttps://www.parca.dev/
+[[{profiling.parca,QA.UX,kernel.eBPF]]
+## Parca: Infrastructure-wide continuous profiling
+* <https://www.parca.dev/>
+[[profiling.parca}]]
 
-## Tanel Poder Consultinghttps://tanelpoder.com/categories/linux/
-
-## storage: Formating Drives larger than 2TBs
-  https://www.reddit.com/r/linuxquestions/comments/xpr4n1/formating_drives_larger_than_2tbs/
-## 101 The Difference Between Su, Sudo Su, Sudo -i, and Sudo -s - TREND OCEANS
-  https://trendoceans.com/difference-between-su-sudo-su-sudo-i-and-sudo-s/
-
-## Fedora Devs Plans to Replace DNF with DNF5 in Fedora Linux 39
-  https://linuxiac.com/fedora-devs-plans-to-replace-dnf-with-dnf5-in-fedora-39/
-
-## 8 rescue disks and OS:
-  https://www.genbeta.com/herramientas/8-discos-rescate-sistemas-operativos-que-he-elegido-para-crear-navaja-suiza-pendrive-usb-multiboot 
-Para hacer los discos multi arranque Ventoy es muchísimo mejor
-opción. Basta con instalar ventoy en el pendrive (te creará una
-partición) y te dejará el resto del pendrive libre. Para añadir
-nuevos discos, simplemente copias y pegas la iso (tal cual) en el
-espacio libre y al reiniciar te aparecerán todas las isos para la
-que quieras.
-No necesitarás ningún software para añadir nuevas isos: Copiar y pegar
+@ma
 
 ## Security 101: Endless SSH Denial-of-Service counter-attackhttps://nullprogram.com/blog/2019/03/22/
-ç
+
 
 ## Linux kernel New API (NAPI)
 https://www.linkedin.com/posts/shlomi-boutnaru-ba781811a_linux-networking-interrupts-activity-7070457316214489089-yl4q 
@@ -1568,5 +781,4 @@ About Us
 
 ISRG is a 501(c)(3) nonprofit organization that is 100% supported through the generosity of those who share our vision for ubiquitous, open Internet security. If you'd like to support our work, please consider getting involved, donating, or encouraging your company to become a funder.
 
-## 101 Mobifree
-https://mobifree.org/
+

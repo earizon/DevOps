@@ -1,0 +1,440 @@
+[[{packaging,PM.TODO.markdown]]
+# APPLICATION PACKAGE MANAGERS
+
+## DNF  ("yum++") [[{packaging.rpm,01_PM.WiP]]
+* <https://dnf.readthedocs.io/en/latest/>
+* <https://github.com/rpm-software-management>
+* Fedora Devs Plans to Replace DNF with DNF5 in Fedora Linux 39
+  <https://linuxiac.com/fedora-devs-plans-to-replace-dnf-with-dnf5-in-fedora-39/>
+
+
+
+
+
+### MOST COMMONLY USED COMMANDS
+
+* DNF Full command list
+  <https://dnf.readthedocs.io/en/latest/command_ref.html>
+  ```
+  | $ dnf search  "*myPackage*"     # ← Show matching pattern in package name|description
+  | $ dnf list    "*myPackage*"     # ← Show matching pattern in package name
+  | 
+  | $ sudo dnf install myNewPackage # ← Install package and dependencies
+  |                                     (-y flag to avoid confirmation prompt)
+  | 
+  | $ sudo dnf history              # ← Check dnf install history
+  | $ sudo dnf history undo 13      # ← Undo/rollback install
+  | 
+  | $ sudo dnf upgrade              # ← Upgrade all upgradable packages
+  |                                     (patch security bugs)
+  ```
+
+### Package Report
+  ```
+  | $ dnf list  installed      # ← report all installed packages
+  | $ dnf list  available      # ← report all available packages
+  |                            #   in any accessible repository
+  | $ dnf list  obsoletes      # ← report obsoleted by packages
+  |                                in any accessible repository
+  | $ dnf list  recent         # ← report packages recently added
+  |                                into accessible repositories
+  | $ dnf list  upgrades       # ← report available packages upgrading
+  ```
+
+*Avoid dnf/yum update certain packages:*
+(This can be needed in critical systems where no downtime is allowed for some service)
+
+* Add next line to /etc/dnf/dnf.conf (new Fedora/RedHat distros) or
+                   /etc/yum.conf     ( old Fedora/RedHat distros)
+|exclude=kernel* another_package_name_or_name_pattern
+
+
+* List all available versions of a package
+YUM: sorting by version number:
+$ yum list docker-ce --showduplicates | sort -r
+
+*Report (remote) package repositories*
+
+  ```
+  | $ dnf repolist
+  | (example output)
+  | → ...
+  | → Using metadata from Mon Sep 10 16:21:18 2018
+  | → repo id                  repo name
+  | → base                     CentOS-7 - Base
+  | → centos-openshift-origin  CentOS OpenShift Origin
+  | → centos-sclo-rh           CentOS-7 - SCLo rh
+  | → centos-sclo-sclo         CentOS-7 - SCLo sclo
+  | → code                     Visual Studio Code
+  | → docker-ce-stable         Docker CE Stable - x86_64
+  | → epel                     Extra Packages for Enterprise Linux 7 - x86_64   12,672
+  | → extras                   CentOS-7 - Extras
+  | → go-repo                  go-repo - CentOS
+  | → nodesource               Node.js Packages for Enterprise Linux 7 - x86_64    144
+  | → openlogic                CentOS-7 - openlogic packages for x86_64            113
+  | → pgdg94                   PostgreSQL 9.4 7 - x86_64
+  | → updates                  CentOS-7 - Updates
+  ```
+
+### SCL (Software Collections) [[{]]
+
+* <https://www.softwarecollections.org/en/>
+  ```
+  | $ python --version
+  | Python 2.7.5
+
+  | $ scl enable rh-python35 bash   <··· Example Ussage:
+  | $ python --version
+  | Python 3.5.1
+
+  | $ sudo yum --disablerepo=\* \            <·····  Install from a given repository:
+  |   --enablerepo=my-cool-repo \
+  |   install myPackage
+
+  | $ dnf groupinfo "Development Tools"     <····· $ sudo dnf groupinstall "Development Tools"
+  | Group: Development Tools                       to install all the group
+  | Description: A basic development environment.
+  | Mandatory Packages:
+  |   autoconf
+  |   automake
+  |   binutils
+  |   ...
+  | Default Packages:
+  |   byacc
+  |   cscope
+  |   ...
+  | Optional Packages:
+  |   ElectricFence
+  |   ant
+  |   babel
+  |   ...
+  ```
+[[}]]
+[[packaging.rpm}]]
+
+## apt (Debian/Ubuntu/...)  [[{packaging.apt]]
+
+## apt vs apt-get
+
+* `apt-get` (Debian 1993): target sysadmin. Stable and backward compatible API.
+  Slightly more difficult to use. Mandatory for script.
+* `apt`: (Ubuntu 2014). Targets Linux users with user friendly features,
+  like a status bar with install progress. apt combines apt-get and apt-cache and additional command line options, and removes "obscure" options.
+  Ex: `apt-get update` only reports if you can update package lists in 
+  remote repositories,  while `apt update` add the number of packages
+  that can be upgrades and suggest `apt list --upgradable` to list 
+  upgradable ones.
+
+
+ ```
+ | apt            apt-get              Description
+ |                apt-cache
+ | -------------  ----------------------------------------------
+ | apt install    apt-get   install    Install a package
+ | apt update     apt-get   update     Update all repository info
+ | apt upgrade    apt-get   upgrade    Update all installed packages
+ | apt autoremove apt-get   autoremove Remove packages that are no longer needed
+ | apt remove     apt-get   remove     Remove an installed package
+ | apt purge      apt-get   purge      Remove an installed package and delete configuration files
+ | apt search     apt-cache search     Seach repositories for a package
+ | apt show       apt-cache show       Show details for a package
+ ```
+(o 'aptitude' ncurses variant)
+* <https://help.ubuntu.com/community/AptGet/Howto#Maintenance_commands>
+
+
+  ```
+  | $ apt search regexPackageName                ← Show all package with similar name
+  | $ apt show   package1                        ← Show package details (Version, Origin,
+  |                                                Maintainer,  Bugs Reporting[[qa.ticketing]],
+  |                                                dependencies, recomended extra-packages,
+  |                                                homepage, Description,
+  | $ dpkg -L "package_name"                     ← list files in package
+  | $ dpkg -c foo.deb                            ← lists files in the manually downloaded package
+  |                                                "./foo.deb".
+  | INSTALL/UPDATE
+  | $ sudo apt      install package1 package2    ← (-s to simulate)
+  | $ sudo apt    reinstall package1             ← Reinstall.
+  | $ sudo apt     upgrade  package1             ← Upgrade
+  | $ apt list --upgradable                      <· list what can be updated.
+  | $ sudo apt     update                        ← Refresh local cache with remote info about
+  |                                                newest package version.
+  |                                      KEY-POINT Run periodically and after modifications
+  |                                                to /etc/apt/*.
+  | $ sudo apt      upgrade                     ← upgrade all installed packages.
+  | $ sudo apt full-upgrade                     ← Upgrades packages with dependencies auto-handling
+  | $ sudo apt dist-upgrade                     ← like 'upgrade' adding the "smart upgrade" checkbox.
+  |                                               It tells APT to use "smart" conflict resolution
+  |                                               system, TRYING TO UPGRADE MOST IMPORTANT PACKAGES
+  |                                               AT EXPENSE OF LESS IMPORTANT ONES.
+  |                                            ¡¡¡does not upgrade from a previous version!!!
+  |
+  | $ apt-cache depends --recurse \              ← Show installed package dependencies.
+  |    --installed $package ||grep '[ ]'
+  |
+  | Cleaning/Removal*
+  | $ sudo apt-get remove "package_name"         ← keep   configuration files
+  | $ sudo apt-get purge  "package_name"         ← Remove configuration files
+  | $ sudo apt-get autoclean   ← removes .deb files for packages no longer installed.
+  |                              (saving space in /var/cache/apt/archives)
+  | $ apt-get clean            ← like autoclean, but removing all packages from package-cache.
+  |                              Not recomended with slow-connections.
+  |                              ($ du -sh /var/cache/apt/archives)
+  | $ apt-get autoremove       ← removes packages no longer needed
+  |
+  | $ apt-get check            ← update package lists          [[packaging.apt.troubleshooting]]
+  |                              check for broken dependencies
+  |
+  | $ sudo apt -f install      ← Fix Broken Packages ("complains" about "unmet dependencies")
+  | $ dpkg-reconfigure package1
+  |
+  | $ echo "'package1' hold" |\  ← Put package1 on hold  (AVOID NON-CONTROLLED UPGRADE).
+  | sudo dpkg --set-selections    WARN: (SIDE-EFFECT) prevents upgrades to packages
+  |                                     depending on updated versions of package1.
+  |                                     ('sudo apt dist-upgrade'  will override it)
+  |   Setting http-proxy
+  |   - alt 1: Temporary proxy session:
+  |     # export http_proxy=http://username:password@yourproxyaddress:proxyport
+  |
+  |   - alt 2: APT configuration file method
+  |     Add next line to /etc/apt/apt.conf
+  |     | Acquire::http::Proxy "http://yourproxyaddress:proxyport";
+  ```
+
+
+ *Advanced Package Search*
+  ```
+  | $ dpkg -l $search_term      ← find packages whose names contain "search_term".
+  |                               It also shows whether a package is installed on your system
+  |
+  | $ dpkg -S $search_pattern   ← "what package provides this file/package?" reverse lookup.
+  |                               List packages providing or owning the file
+  |                               or package matching search_pattern. 'dlocate' is a faster
+  |                               (but not installed by default) alternative.
+  |                               'apt-file' also allows to search over all available packages,
+  ```
+
+### APT Sources [[01_PM.TODO]]
+    /etc/apt/sources.list file
+    <https://help.ubuntu.com/community/SourcesList>
+[[packaging.apt}]]
+
+## apk (Alpine)  [[{packaging.apk]]
+<https://wiki.alpinelinux.org/wiki/Alpine_Linux_package_management>
+* Alpine Linux is designed to run from RAM, implying that package management
+  involves two phases:
+
+* Installing / Upgrading / Deleting packages on a running system.
+  Restoring a system to a previously configured state
+  (e.g. after reboot), including all previously installed packages
+  and locally modified configuration files. (RAM-Based Installs Only)
+
+  ```
+  | - apk: tool used to install/upgrade/delete software.
+  | - lbu: tool used to capture the data necessary to
+  |        restore a system to previously configured state.
+  |
+  | - apk:
+  |   add      Add new packages to the running system
+  |   del      Delete packages from the running system
+  |   fix      Attempt to repair or upgrade an installed package
+  |   update   Update the index of available packages
+  |   info     Prints information about installed or available packages
+  |   search   Search for packages or descriptions with wildcard patterns
+  |   upgrade  Upgrade the currently installed packages
+  |   cache    Maintenance operations for locally cached package repository
+  |   version  Compare version differences between installed and available packages
+  |   index    create a repository index from a list of packages
+  |   fetch    download (but not install) packages
+  |   audit    List changes to the file system from pristine package install state
+  |   verify   Verify a package signature
+  |   dot      Create a graphviz graph description for a given package
+  |   policy   Display the repository that updates a given
+  |            package, plus repositories that also offer the package
+  |   stats    Display statistics, including number of
+  |            packages installed and available, number of
+  |            directories and files, etc.
+  |   manifest Display checksums for files contained in a given package
+  ```
+
+
+* Alpine packages:
+
+  ```
+  | Alpine repositories:  directory with *.apk files 
+  | ├ APKINDEX.tar.gz index
+  | ├ file1.apk       ← digitally signed tar.gz (often called "a-pack")
+  | ├ file2.apk
+  | ├ ...
+  |
+  | The list of repositories to check is stored in /etc/apk/repositories
+  | (one repo per line). Ex:
+  | $ cat /media/sda1/apks
+  | http://nl.alpinelinux.org/alpine/v3.7/community
+  | @edge           http://nl.alpinelinux.org/alpine/edge/main
+  | @edgecommunity  http://nl.alpinelinux.org/alpine/edge/community
+  | @testing        http://nl.alpinelinux.org/alpine/edge/testing
+  | └─────┬──────┘
+  |    "tagged" repo will be used like
+  |    # apk add stableapp newapp@edge bleedingapp@testing
+  |                              └───┘            └──────┘
+  |    by default only untagged repositories are used
+  |
+  | Update the Package list  ---------------------------------
+  | # apk update (Fill catche locally from remote APKINDEX.tar.gz)
+  |
+  | $ apk add openssh openntp vim # Add Package/s (plus transitive dependencies)
+  |
+  | # apk add cherokee --update-cache \    # Add package from dev. repository (dangerous!!)
+  |   --repository http://dl-3.alpinelinux.org/alpine/edge/testing/
+  |   --allow-untrusted
+  |
+  | # apk add --allow-untrusted file.apk   # Add local Package
+  | # apk del openssh                      #  Remove a Package
+  |
+  | Upgrade Running System -------------------------------------------
+  | # apk update                           # STEP 1: Update indexes
+  | # apk upgrade                          # STEP 2: Alt 1. Upgrade ALL
+  | # apk add --upgrade busybox            # STEP 2: Alt 2. Upgrade given package
+  |  Remember: when rebooting the machine, the remote repository will
+  |  not be available until after networking is started:
+  |  => packages newer than your boot media will likely not be 
+  |     installed after a reboot. To make an "upgrade" persist
+  |     over a reboot, use a local cache.
+  |
+  | Search for Packages ----------------------------------------------
+  |  # apk search -v        ← list all packages along with descriptions
+  |  # apk search -v 'acf*' ← list all packages part of the ACF system
+  |  # apk search -v --description 'NTP' ← list all packages that list NTP as
+  |                                        part of their description,
+  |
+  |
+  | Information on Packages ------------------------------------------
+  | # apk info -a zlib ← -w: show just webpage info
+  |                      -a: show          all info
+  ```
+[[packaging.apk}]]
+
+# upx: executable compressor 
+
+* <https://upx.github.io/>
+
+- Not recommended for standard (widely) used executable
+  since we loose the copy-on-right memory saving features of Linux.
+- Can be interesting for "big singletons" apps.
+
+
+
+[[{app.packaging.flatpak,01_PM.TODO]]
+## Flatpack "Sandboxes" 
+  https://www.flatpak.org/
+
+- each application is built and run in an isolated 'sandbox' environment
+  containing an application and its runtime.
+- By default, the application can only access the contents of its sandbox.
+- Access to user files, network, graphics sockets, subsystems on the bus and devices
+  have to be explicitly granted.
+- Access to other things, such as other processes, is deliberately NOT possible.
+
+-  resources inside the sandbox that need to be exposed outside are known as "exports".
+   (Ex: .desktop file and icon,...)
+
+*Portals*
+- Mechanism through which applications can interact with the host environment
+  from within a sandbox. They give the ability to interact with data, files
+  and services without the need to add sandbox permissions.
+
+- Examples of capabilities that can be accessed through portals include opening
+  files through a file chooser dialog, or printing.
+- Interface toolkits can implement transparent support for portals, so access
+  to resources outside of the sandbox will work securely and out of the box.
+
+*Repositories*
+- applications and runtimes are typically stored and published using repositories,
+ which behave very similarly to Git repositories, containing a single object or
+ multiple ones. Each object is versioned, allowing the up|down-grade.
+- Remote repository's content can be inspected and searched, and it can
+  be used as the source of applications and runtimes.
+- When an update is performed, new versions of installed applications and
+  runtimes are downloaded from the relevant remotes. (only the difference actually)
+
+### flatpak cli
+NOTE: graphical software management tools exists so command-line is optional
+
+$ flatpak install
+
+$ flatpak uninstall
+
+*Identifiers*
+- unique three-part like
+  com.company.App
+              ^^^
+      final segment is the object's name
+
+
+*Identifier triple*
+
+   com.company.App/i386/stable         com.company.App//stable       com.company.App/i386//
+   ^^^^^^^^^^^^^^^ ^^^^ ^^^^^^                        ^^                                 ^^
+    Application-ID Arch branch                   Use default                        Use default
+    or name                                      architecture                       branch
+
+
+*System versus user*
+- Flatpak commands/repositories can be used/applied:
+  - system-wide (default)
+  - per-user    (--user option)
+
+*Basic commands*
+$ flatpak remotes # ← list remotes repositores configured on the system
+(output list indicates whether remote has been added per-user or system-wide)
+
+
+$  *URL_FLATPAKREPO*="https://dl.flathub.org/repo/flathub*.flatpakrepo*
+                                                          ^^^^^^^^^^^
+                                                       a .flatpakrepo file
+                                                       contains:
+                                                       - remote details
+                                                       - remote GPG key
+$ flatpak remote-add \          ← Add a remote repository
+     --if-not-exists \
+     flathub \                  ← arbitrary local-name assigned to remote
+      *${URL_FLATPAKREPO}*
+
+$ flatpak remote-delete flathub ← Remove remote-repo from list of known remotes
+
+$ flatpak search gimp           ← return any applications matching search terms.
+(each row-result includes application ID + remote where it was found)
+
+
+$ FLATPAKREF="https://flathub.org/repo/appstream/org.gimp.GIMP.flatpakref"
+$ flatpak install ${FLATPAKREF}         ← install application from FLATPAKREF
+$ flatpak install flathub org.gimp.GIMP ← install application from remote and ID
+                  ^^^^^^^ ^^^^^^^^^^^^^
+                  remote  application ID
+  (the application runtime will also be instaled if not yet present)
+
+*$ flatpak run org.gimp.GIMP     ← Run the application*</b>
+
+$ flatpak update                ← update all your installed applications
+                                  and runtimes to the latest version
+
+$ flatpak list                  ← List installed applications and runtimes
+
+$ flatpak list --app            ← List installed applications only
+
+$ flatpak uninstall ${APP_ID}   ← Uninstall Application
+
+*Full Journey*
+# Add remote "repository"
+$ flatpak remote-add --user --from gnome https://sdk.gnome.org/gnome.flatpakrepo
+# Install monodevelop from remote repository
+$ flatpak install --user --from https://download.mono-project.com/repo/monodevelop.flatpakref
+# Run monodevelop
+$ flatpak run com.xamarin.MonoDevelop
+
+# /proc/sys/kernel/watchdog  [[{QA.SLA}]]
+[[}]]
+
+
+[[packaging}]]

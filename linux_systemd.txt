@@ -1,0 +1,234 @@
+[[{linux.configuration.systemd]]
+# .ystemD
+
+[{configuration.systemd.101]]
+
+## SystemD Service Configuration 
+
+* <http://freedesktop.org/wiki/Software/systemd/>
+* <https://www.freedesktop.org/software/systemd/man/systemd.service.html>
+* <http://www.tecmint.com/create-new-service-units-in-systemd/>
+
+  ```
+  | "SERVICE UNIT"                  "TARGETS"
+  | --------------------------      -----------------
+  | * createNew                       unit_collection
+  | * run                             "wants"
+  | * lifespan:daemon|run-once
+  | 
+  | $ systemctl --type=service           <··· Check unit_collections.
+  | 
+  | $ systemctl status firewalld.service <··· Check status of service
+  | 
+  | $ sudo systemctl isolate \           <··· Change to new runlevel (run-level)
+  |         multi-user.target
+  | 
+  | $ sudo systemctl \
+  |    enable|start|stop|restart|disable \
+  |      firewalld.service
+  | 
+  | $ cat /etc/systemd/system/MyCustomScript.service
+  |   [Unit]                                        
+  |   Description = making network connection up
+  |   After = network.target                       
+  |   [Service]                                    
+  |   ExecStart = /root/scripts/conup.sh           
+  |   [Install]                                    
+  |   WantedBy = multi-user.target                 
+  |  
+  | $ sudo systemctl daemon-reload  # <·· Don't forget (config stays on RAM)
+  | 
+  | ◆ SYSTEMD CORE: manager, systemd
+  | 
+  | ◆ SYSTEMD UTILITIES [[{PM.TODO}]]
+  |   · systemctl     : main control tool from systemd.
+  |   · journalctl    : Queyr systemd Journal
+  |   · notify        : Notify Serv.Mgn about start-up,
+  |                     completion/...daemon status changes
+  |   · analyze       : analyze and debug system-manager.
+  |   · systemd-cgls  : recursively shows contents of selected 
+  |                     control group hierarchy in a tree.
+  |   · systemd-cgtop : shows "top" control groups of local 
+  |                     control group hierarchy.
+  |   · loginctl      : Control SystemD login Manager.
+  |   · systemd-nspawn: Spawn a command or OS in a light-weight
+  |                     container.  In many ways it is is similar
+  |                     to chroot(1), but more powerful by fully 
+  |                     virtualizing FS hierarchy, process tree,
+  |                     various IPC subsystems and host+domain name.
+  |                     ("light docker alternative")
+  | 
+  | ◆ SYSTEMD DAEMONS    ◆ SYSTEMD TARGETS
+  |   · systemd       :    · bootmode   · reboot     · logind
+  |   · journald      :    · basic      · multiuser  · graphical
+  |   · networkd      :    · shutdown   · dbus dlog  · user-session
+  |   · logind        :                              · display service
+  |   · user sessiona :
+  ```
+[[configuration.systemd.101}]]
+
+* File name extensions for unit types 
+  ```
+  | .target      : group units. Used to call
+  |                other units that are responsible for 
+  |                services, filesystems ...
+  |                (equivalent to the classical SysV runlevels)
+  | .service     : handle services that SysV-init-based distributions will typically
+  |                start or end using init scripts.
+  | .(auto)mount : mounting and unmounting filesystems
+  | .path        : allow systemd to monitor files and directories specified
+  |                when an access happens in path, systemd will start the appropriate unit
+  | .socket      : create one or more sockets for socket activation.
+  |                service unit associated will start the service when a connection request
+  |                is received.
+  ```
+
+## CONFIG. FILE LAYOUT
+
+(NOTE: /etc takes precedence over /usr)
+ *Maintainer   *: /usr/lib/systemd/system              ( + $ systemctl daemon-reload)
+ *Administrator*: /etc/systemd/system/[name.type.d]/ ) ( + $ systemctl daemon-reload)
+ *runtime      *: /runtime/systemd/system
+
+## chkservice systemd ncurses (UI in terminal)
+
+* <https://github.com/linuxenko/chkservice>
+
+
+[[{monitoring.journalctl,monitoring.101,,security.audit.user]]
+## Journalctl(find logs)
+
+  ```
+  |   Display/filter/search system logs
+  | # journalctl                      # <· all logs
+  | # journalctl -b                   # <· Boot Messages
+  | # journalctl -b -1                # <· Last Boot Messages
+  | # journalctl --list-boots         # <· list system boots
+  | # journalctl --since "3 hour ago" # <· Time range
+  |                      "2 days ago" #
+  |     --until "2015-06-26 23:20:00" #
+  | # journalctl -u nginx.service     # <· by unit (can be specified multiple times)
+  | # journalctl -f                   # <· Follow ("tail")
+  | # journalctl -n 50                # <· most recent (50) entries
+  | # journalctl -r                   # <· reverse chronological order
+  | # journalctl -b -1  -p "crit"     # <· By priority:
+  |                                   #     -b -1     : FROM emergency
+  |                                   #     -p "crit" : TO: Critical
+  | # journalctl _UID=108             # <· By _UID
+  | # journalctl -o json              # -o: output format: [[{qa.UX}]]
+  |                                     short          : (default), syslog style
+  |                                     short-monotonic: like short, but time stamp shown with precision
+  |                                     cat            : very short, no date,time or source server names
+  |                                     json           : json one long-line
+  |                                     json-pretty    :
+  |                                     verbose        :
+  ```
+
+* NOTE: journal is "synchronous". Eacth time someone tries to write it checks if
+  there is space or something needs to be deleted. (vs remove each 24 day,...)
+
+Clean/Compact/Delete logs:
+
+  ```
+  | [[{troubleshooting.storage.logs}]]
+  | $ sudo journalctl --vacuum-time=2d   # <· Retain only last two days
+  | $ sudo journalctl --vacuum-size=500M # <· Retain only last 500 MB
+  ```
+
+[[monitoring.journalctl}]]
+
+[[{monitoring.logs.rsyslog,security.audit.user,02_doc_has.comparative,]]
+## Rsyslog ("ancient" log system) 
+
+* <github.com/rsyslog/rsyslog.git>
+* <https://www.rsyslog.com>
+[[monitoring.logs.rsyslog}]]
+
+* The Rocket-fast Syslog Server
+  * Year: 2004
+  * (primary) author: Rainer Gerhards
+  * Implements and extends syslog protocol (RFC-5424) [[{standards.RFC_5424}]]
+    Extracted from <https://stackoverflow.com/questions/74963994/rfc-5424-and-syslog>
+    """... Logging formats themselves can vary pretty widely, despite 
+     the existence of standards like RFC 5424 and it's predecessor RFC 
+     3164. Windows has it's own system based around the Windows Event Log. 
+     Journald has a wide set of output formats, including JSON. Cisco 
+     device logs typically follow their own special format, which might 
+     require special consideration for some systems. And of course there 
+     are competing standards like the Common Event Format. """
+  * Adopted by RedHat, Debian*, SuSE, Solaris, FreeBSD, ...
+  * Replaced by journald in Fedora 20+
+
+Important extensions include:
+* ISO 8601 timestamp with millisecond and timezone
+* addition of the name of relays in the host fields
+  to make it possible to track the path a given message has traversed
+* reliable transport using TCP
+* GSS-API and TLS support
+* logging directly into various database engines.
+* support for RFC 5424, RFC 5425, RFC 5426
+* support for RELP (Reliable_Event_Logging_Protocol)
+* support for buffered operation modes:
+  messages are buffered locally if the receiver is not ready
+* complete input/output support for systemd journal
+* "Infinite" logs. Can store years of logs from hundreds of machines.
+
+## Journald [[{monitor.logs.journald]]
+<https://www.loggly.com/blog/why-journald/>
+<https://docs.google.com/document/pub?id=1IC9yOXj7j6cdLLxWEBAGRL6wl97tFxgjLUEHIX3MSTs>
+* system service for collecting and storing log data, introduced with systemd.
+* easier for admins to find relevant info.
+* replaces simple plain text log files with a special file format
+  optimized for log messages with index-like queries,
+  adding Structure to Log Files.
+* It does *not* include a well-defined remote logging implementation,
+  relying on existing syslog-protocol implementations to relay
+  to a central log host (and **losing most of the benefits**).
+* retains full syslog compatibility by providing the same API in C,
+  supporting the same protocol, and also forwarding plain-text versions
+  of messages to an existing syslog implementation.
+  Obviously the format, as well as the journald API allow for structured data.
+
+Syslog-protocol Problems:
+* syslog implementations (ussually) write log messages to plain text files
+  with lack of structure.
+* syslog protocol does *NOT* provide a means of separating messages
+  by application-defined targets (for example log messages per virt.host)
+  This means that, for example, web servers generally write their own access
+  logs so that the main system log is not flooded with web server status messages.
+* log files write messages terminated by a newline:<br/>
+  (very) hard for programs to emit multi-line information such as backtraces
+  when an error occurs, and log parsing software must often do a lot of work
+  to combine log messages spread over multiple lines.
+
+* journalctl:
+  * The journald structured file format does not work well with standard
+    UNIX tools optimized for plain text. The journalctl tool will be used.
+  * very fast access to entries filtered by:
+    date, emitting program, program PID, UID, service, ... [[{doc_has.keypoint}]]<br/>
+    (But it just work for single machine, since indexing is lost when 
+    using a remote centralized log system.
+  * Can also access backups in single files or directories of other systems.
+
+## Modern logging and Journald:
+* Modern architectures use many systems where it becomes impractical to
+  read logs on individual machines.
+* Centralized logging are usually stored in a (time-series) database
+  address many of the same issues that journald does without the problems
+* Journald allows applications to send key-value fields that the
+  centralized systems could use directly instead of relying on these heuristics.
+* Sadly, journald does not come with a usable remote logging solution*.
+  * systemd-journal-remote is more of a proof-of-concept than an actually
+    useful tool, lacking good authentication among other things.
+[[monitor.logs.journald}]]
+
+
+[[{security.101]]
+## Systemd Service hardening
+
+* <https://www.ctrl.blog/entry/systemd-service-hardening.html>
+
+Systemd service sandboxing and security hardening 101
+[[security.101}]]
+
+[[linux.configuration.systemd}]]

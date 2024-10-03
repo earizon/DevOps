@@ -64,190 +64,192 @@
 [[}]]
 
 # Real Time OSes: <https://www.osrtos.com/> [[{]]
-  Name      Platforms  Built─in  Description
-  -------   Platforms  Built─in  Description
 
-FreeRTOS    MSP430      FileSystem    popular real─time OS for embedded devices, being ported to 31
-            ARM         Network       microcontrollers. It is distributed under the GPL with an optional exception.
-            AVR         TLS/SSL       V10.0.1     Code    2017─12─26
-            ColdFire    CLI           MIT Lincence
-            PIC         Runtime
-            x86           Analysis
-_______________________________________________________________________________________________
-RT─Thread   ARM         FileSystem    OOSS real─time OS for embedded devices from China.
-            x86         Network       RT─Thread RTOS is a scalable real─time OS: a tiny kernel
-            MIPS        AT Commands   for ARM Cortex─M0, Cortex─M3/4, or a full feature system
-            PowerPC     CLI           in ARM Cortex─A8, ARM Cortex─A9 DualCor     v3.0.4  GitHub  2018─05─31
-            RISC─V      Runtime       GLP v2 License
-            Andes         Analysis
-                        USBHost
-                        USBDevice
-_______________________________________________________________________________________________
-mbed OS     ARM         BLE           embedded OS designed specifically for the "things" in
-                        LoRaWAN       the Internet of Things (IoT). It includes all the features you need
-                        FileSystem    to develop a connected product based on an ARM Cortex─M microcontroller.
-                        Network       mbed─os─5.9.0   GitHub  2018─06─11
-                        6LoWPAN       Apache License
-                        AT Commands
-                        TLS/SSL
-                        Runtime
-                           Analysis
-                        USBHost
-                        USBDevice
-_______________________________________________________________________________________________
-ChibiOS/RT  MSP430      FileSystem    ChibiOS is a complete development environment for embedded applications
-            AVR         Network       including RTOS, an HAL, peripheral drivers, support files and a
-                        USBHost       development environment.    18.2.1  Code    2018─05─01
-                        USBDevice     GPL License
-_______________________________________________________________________________________________
-NuttX       ARM         FileSystem    Real─time OS (RTOS) with an emphasis on standards compliance and small
-            AVR         Network       footprint. Scalable from 8─bit to 32─bit microcontroller environments,
-            8051        6LoWPAN       the primary governing standards in NuttX are Posix and ANSI standards.
-            PIC         CLI           7.25    Code    2018─06─11
-            x86         USBHost       BSD License
-            MIPS        USBDevice
-            Xtensa      GUI
-            RISC─V
-            Freescale
-              HCS12
-            Zilog
-_______________________________________________________________________________________________
-RIOT        MSP430      LoRaWAN       RIOT is a real─time multi─threading OS that supports a range of devices
-            ARM         FileSystem    that are typically found in the Internet of Things (IoT): 8─bit, 16─bit and
-            AVR         Network       32─bit microcontrollers.  2018.04     GitHub  2018─05─11
-            MIPS        6LoWPAN       LGPLv2.1 License
-            RISC─V      GUI
-_______________________________________________________________________________________________
-RTEMS       ARM         FileSystem    RTEMS is an OOSS RTOS that supports open standard application programming
-            x86         Network       interfaces such as POSIX. It is used in space flight, medical, networking
-            MIPS        TLS/SSL       and many more embedded devices.  4.11    Code    2018─02─16
-            PowerPC     CLI           GPL License
-            m68k
-_______________________________________________________________________________________________
-Mongoose OS ARM         FileSystem    Mongoose OS ─ an OOSS OS for Internet of Things. Supported microcontrollers:
-            Xtensa      Network       ESP32, ESP8266, CC3220, CC3200, STM32F4. Amazon AWS IoT & Google IoT Core
-                        TLS/SSL       integrated. Code in C or JavaScript.    2.3     GitHub  2018─06─15
-                                      GPLv2 License
-_______________________________________________________________________________________________
-Xenomai     ARM         FileSystem    Xenomai is a real─time development framework cooperating with the Linux
-            x86         Network       kernel, in order to provide a pervasive, interface─agnostic, hard real─time
-            PowerPC     TLS/SSL       support to user─space applications, seamlessly integrated into the
-                                      GNU/Linux environment.   v3.0.7  Code    2018─07─25
-                                      GPL License
-_______________________________________________________________________________________________
-Atomthreads AVR                       Atomthreads is a free, lightweight, portable, real─time scheduler for
-                                      embedded systems.     release1.3  GitHub  2017─08─27
-                                      BSD License
-_______________________________________________________________________________________________
-StratifyOS  ARM                       StratifyOS is a powerful embedded RTOS for the ARM Cortex M microcontrollers.
-                                      v3.6.0  GitHub  2018─04─20
-                                      GLP License
-_______________________________________________________________________________________________
-distortos   ARM                       Distortos is an advanced RTOS written in C┼┼11.     v0.5.0  GitHub  2017─09─14
-                                      Mozilla License
-_______________________________________________________________________________________________
-Zephyr      ARM                       The Zephyr™ Project is a scalable, real─time OS (RTOS) supporting multiple
-            x86                       hardware architectures, optimized for resource constrained devices, and built with
-                                      security in mind. This Linux Foundation hosted project embraces OOSS development
-                                      values and governance on its mission to unite leaders from across the industry
-                                      to produce a best─in─breed solution.     zephyr─v1.12.0  GitHub  2018─06─11
-                                      Apache License
-______________________________________________________________________________________________
- StateOS    ARM                       Free, extremely simple and amazingly tiny real─time operating system (RTOS) designed
-                                      for deeply embedded applications. Target: ARM Cortex─M family. It was inspired by
-                                      the concept of a state machine.  v6.0    GitHub  2018─05─25
-                                      GPLv3 License
-______________________________________________________________________________________________
-F9          ARM                       F9 microkernel is a microkernel─based (L4─style) kernel to support running real─time
-Microkernel                           and time─sharing applications (for example, wireless communications) for ARM
-                                      Cortex─M series microprocessors with efficiency (performance ┼ power consumption)
-                                      and security (memory protection ┼ isolated execution) in mind.      GitHub  2017─02─02
-                                      BSD License
-_______________________________________________________________________________________________
-BRTOS       MSP430                    BRTOS is a lightweight preemptive real time operating system designed for low end
-            AVR                       microcontrollers.         GitHub  2017─09─17
-            ColdFire                  MIT License
-            PIC
-_______________________________________________________________________________________________
-BeRTOS      AVR                       BeRTOS is a real time open source operating system supplied with drivers and libraries
-            x86                       designed for the rapid development of embedded software.         GitHub  2017─01─23
-            PowerPC                   GPL License
-            x86_64
-_______________________________________________________________________________________________
-Erika       MSP430                    Erika Enterprise is the first open─source Free RTOS that has been certified
-Enterprise  ARM                       OSEK/VDX compliant!.    GH40    GitHub  2018─06─12
-            AVR                       GPL License
-_______________________________________________________________________________________________
-BitThunder  ARM                       A Reliable Real─Time Operating System & Application Framework.
-                                      stable─0.9.2    GitHub  2017─01─25
-                                      GPLv2 License
-_______________________________________________________________________________________________
-TNeo        ARM                       TNeo is a well─formed and carefully tested preemptive real─time kernel for
-                                      16─ and 32─bits MCUs. It is compact and fast.    v1.08   GitHub  2017─02─25
-                                      Other License
-_______________________________________________________________________________________________
-Libre       AVR                       LibreRTOS is a portable single─stack Real Time Operating System.
-RTOS                                  All tasks share the same stack, allowing a large number or tasks to be created
-                                      even on architectures with low RAM, such as ATmega328P (2kB).
-                                      dev─master  GitHub  2017─11─15
-                                      Apache License
-_______________________________________________________________________________________________
-IntrOS      ARM                       Free, simple and tiny cooperative operating system (OS) designed
-                                      for deeply embedded applications.  v4.0    GitHub  2018─05─25
-                                      GPLv3 License
-_______________________________________________________________________________________________
-embox       MSP430                    Embox is a configurable operating system kernel designed for resource constrained
-            ARM                       and embedded systems.
-            MIPS                      v0.3.21     GitHub  2018─03─31
-            PowerPC                   Other
-__________________________________________________________________________________________
-uKOS        ARM                       uKOS is a multi─tasking OS suitable for small embedded µController systems.
-                                      It is based on a preventive multitasking scheduler.
-                                      4.0.0       2017─04─26
-                                      GPLv3 License
-_______________________________________________________________________________________________
-seL4        ARM                       The world's first operating─system kernel with an ºend─to─end proof of implementationº
-                                      correctness and security enforcement is available as open source.
-                                      10.0.0  GitHub  2018─05─28
-                                      Other License
-_______________________________________________________________________________________________
-Trampoline  ARM                       Trampoline is a static RTOS for small embedded systems. Its API is aligned with
-            AVR                       OSEK/VDX OS and AUTOSAR OS 4.2 standards.
-            PowerPC                   dev─master  GitHub  2017─12─07
-                                      GPLv2 License
-_______________________________________________________________________________________________
-eChronos    PowerPC                   The eChronos RTOS is a real─time operating system (RTOS) originally developed by NICTA
-                                      and Breakaway Consulting Pty. Ltd. It is intended for tightly resource─constrained
-                                      devices without memory protection.
-                                      v3.0.2  GitHub  2018─04─01
-                                      Other License
-_______________________________________________________________________________________________
-AliOS       ARM                       AliOS Things is designed for low power, resource constrained MCU, connectivity SoC,
-                                      greatly suitable for IoT devices. AliOS Things is not just a RTOS, it contains full stack of
-                                      software components and tools for building IoT devices.    v1.3.1  GitHub  2018─05─31
-                                      Apache License
-_______________________________________________________________________________________________
-Things
-LiteOS      ARM                       Huawei LiteOS is a lightweight open─source IoT OS and a smart hardware development p
-                                      latform. It simplifies IoT device development and device connectivity, makes services
-                                      smarter, delivers superb user experience, and provides better data protection. Huawei
-                                      LiteOS is designed for smart homes, wearables, IoV, and intelligent manufacturing
-                                      applications.
-                                      v1.1.1  GitHub  2017─04─01
-                                      BSD License
-_______________________________________________________________________________________________
-TizenRT     ARM                       TizenRT is a lightweight RTOS─based platform to support low─end IoT devices
-                                      1.1_Public_Release  GitHub  2017─10─27
-                                      Apache License
-_______________________________________________________________________________________________
-MOE         ARM                       MOE is an event─driven scheduler system for 8/16/32─bit MCUs.
-                                      MOE means "Minds Of Embedded system".
-                                      V0.1.6  GitHub  2017─04─21
-                                      MIT License
-_______________________________________________________________________________________________
-cocoOS      MSP430                    cocoOS is a free, open source, cooperative task scheduler, based on coroutines
-            ARM                       targeted for embedded microcontrollers like AVR, MSP430 and STM32
-            AVR                       BSD License
-_______________________________________________________________________________________________
+```
+|   Name      Platforms  Built─in  Description
+|   -------   ---------  --------  -----------
+| 
+| FreeRTOS    MSP430      FileSystem    popular real─time OS for embedded devices, being ported to 31
+|             ARM         Network       microcontrollers. It is distributed under the GPL with an optional exception.
+|             AVR         TLS/SSL       V10.0.1     Code    2017─12─26
+|             ColdFire    CLI           MIT Lincence
+|             PIC         Runtime
+|             x86           Analysis
+| _______________________________________________________________________________________________
+| RT─Thread   ARM         FileSystem    OOSS real─time OS for embedded devices from China.
+|             x86         Network       RT─Thread RTOS is a scalable real─time OS: a tiny kernel
+|             MIPS        AT Commands   for ARM Cortex─M0, Cortex─M3/4, or a full feature system
+|             PowerPC     CLI           in ARM Cortex─A8, ARM Cortex─A9 DualCor     v3.0.4  GitHub  2018─05─31
+|             RISC─V      Runtime       GLP v2 License
+|             Andes         Analysis
+|                         USBHost
+|                         USBDevice
+| _______________________________________________________________________________________________
+| mbed OS     ARM         BLE           embedded OS designed specifically for the "things" in
+|                         LoRaWAN       the Internet of Things (IoT). It includes all the features you need
+|                         FileSystem    to develop a connected product based on an ARM Cortex─M microcontroller.
+|                         Network       mbed─os─5.9.0   GitHub  2018─06─11
+|                         6LoWPAN       Apache License
+|                         AT Commands
+|                         TLS/SSL
+|                         Runtime
+|                            Analysis
+|                         USBHost
+|                         USBDevice
+| _______________________________________________________________________________________________
+| ChibiOS/RT  MSP430      FileSystem    ChibiOS is a complete development environment for embedded applications
+|             AVR         Network       including RTOS, an HAL, peripheral drivers, support files and a
+|                         USBHost       development environment.    18.2.1  Code    2018─05─01
+|                         USBDevice     GPL License
+| _______________________________________________________________________________________________
+| NuttX       ARM         FileSystem    Real─time OS (RTOS) with an emphasis on standards compliance and small
+|             AVR         Network       footprint. Scalable from 8─bit to 32─bit microcontroller environments,
+|             8051        6LoWPAN       the primary governing standards in NuttX are Posix and ANSI standards.
+|             PIC         CLI           7.25    Code    2018─06─11
+|             x86         USBHost       BSD License
+|             MIPS        USBDevice
+|             Xtensa      GUI
+|             RISC─V
+|             Freescale
+|               HCS12
+|             Zilog
+| _______________________________________________________________________________________________
+| RIOT        MSP430      LoRaWAN       RIOT is a real─time multi─threading OS that supports a range of devices
+|             ARM         FileSystem    that are typically found in the Internet of Things (IoT): 8─bit, 16─bit and
+|             AVR         Network       32─bit microcontrollers.  2018.04     GitHub  2018─05─11
+|             MIPS        6LoWPAN       LGPLv2.1 License
+|             RISC─V      GUI
+| _______________________________________________________________________________________________
+| RTEMS       ARM         FileSystem    RTEMS is an OOSS RTOS that supports open standard application programming
+|             x86         Network       interfaces such as POSIX. It is used in space flight, medical, networking
+|             MIPS        TLS/SSL       and many more embedded devices.  4.11    Code    2018─02─16
+|             PowerPC     CLI           GPL License
+|             m68k
+| _______________________________________________________________________________________________
+| Mongoose OS ARM         FileSystem    Mongoose OS ─ an OOSS OS for Internet of Things. Supported microcontrollers:
+|             Xtensa      Network       ESP32, ESP8266, CC3220, CC3200, STM32F4. Amazon AWS IoT & Google IoT Core
+|                         TLS/SSL       integrated. Code in C or JavaScript.    2.3     GitHub  2018─06─15
+|                                       GPLv2 License
+| _______________________________________________________________________________________________
+| Xenomai     ARM         FileSystem    Xenomai is a real─time development framework cooperating with the Linux
+|             x86         Network       kernel, in order to provide a pervasive, interface─agnostic, hard real─time
+|             PowerPC     TLS/SSL       support to user─space applications, seamlessly integrated into the
+|                                       GNU/Linux environment.   v3.0.7  Code    2018─07─25
+|                                       GPL License
+| _______________________________________________________________________________________________
+| Atomthreads AVR                       Atomthreads is a free, lightweight, portable, real─time scheduler for
+|                                       embedded systems.     release1.3  GitHub  2017─08─27
+|                                       BSD License
+| _______________________________________________________________________________________________
+| StratifyOS  ARM                       StratifyOS is a powerful embedded RTOS for the ARM Cortex M microcontrollers.
+|                                       v3.6.0  GitHub  2018─04─20
+|                                       GLP License
+| _______________________________________________________________________________________________
+| distortos   ARM                       Distortos is an advanced RTOS written in C┼┼11.     v0.5.0  GitHub  2017─09─14
+|                                       Mozilla License
+| _______________________________________________________________________________________________
+| Zephyr      ARM                       The Zephyr™ Project is a scalable, real─time OS (RTOS) supporting multiple
+|             x86                       hardware architectures, optimized for resource constrained devices, and built with
+|                                       security in mind. This Linux Foundation hosted project embraces OOSS development
+|                                       values and governance on its mission to unite leaders from across the industry
+|                                       to produce a best─in─breed solution.     zephyr─v1.12.0  GitHub  2018─06─11
+|                                       Apache License
+| ______________________________________________________________________________________________
+|  StateOS    ARM                       Free, extremely simple and amazingly tiny real─time operating system (RTOS) designed
+|                                       for deeply embedded applications. Target: ARM Cortex─M family. It was inspired by
+|                                       the concept of a state machine.  v6.0    GitHub  2018─05─25
+|                                       GPLv3 License
+| ______________________________________________________________________________________________
+| F9          ARM                       F9 microkernel is a microkernel─based (L4─style) kernel to support running real─time
+| Microkernel                           and time─sharing applications (for example, wireless communications) for ARM
+|                                       Cortex─M series microprocessors with efficiency (performance ┼ power consumption)
+|                                       and security (memory protection ┼ isolated execution) in mind.      GitHub  2017─02─02
+|                                       BSD License
+| _______________________________________________________________________________________________
+| BRTOS       MSP430                    BRTOS is a lightweight preemptive real time operating system designed for low end
+|             AVR                       microcontrollers.         GitHub  2017─09─17
+|             ColdFire                  MIT License
+|             PIC
+| _______________________________________________________________________________________________
+| BeRTOS      AVR                       BeRTOS is a real time open source operating system supplied with drivers and libraries
+|             x86                       designed for the rapid development of embedded software.         GitHub  2017─01─23
+|             PowerPC                   GPL License
+|             x86_64
+| _______________________________________________________________________________________________
+| Erika       MSP430                    Erika Enterprise is the first open─source Free RTOS that has been certified
+| Enterprise  ARM                       OSEK/VDX compliant!.    GH40    GitHub  2018─06─12
+|             AVR                       GPL License
+| _______________________________________________________________________________________________
+| BitThunder  ARM                       A Reliable Real─Time Operating System & Application Framework.
+|                                       stable─0.9.2    GitHub  2017─01─25
+|                                       GPLv2 License
+| _______________________________________________________________________________________________
+| TNeo        ARM                       TNeo is a well─formed and carefully tested preemptive real─time kernel for
+|                                       16─ and 32─bits MCUs. It is compact and fast.    v1.08   GitHub  2017─02─25
+|                                       Other License
+| _______________________________________________________________________________________________
+| Libre       AVR                       LibreRTOS is a portable single─stack Real Time Operating System.
+| RTOS                                  All tasks share the same stack, allowing a large number or tasks to be created
+|                                       even on architectures with low RAM, such as ATmega328P (2kB).
+|                                       dev─master  GitHub  2017─11─15
+|                                       Apache License
+| _______________________________________________________________________________________________
+| IntrOS      ARM                       Free, simple and tiny cooperative operating system (OS) designed
+|                                       for deeply embedded applications.  v4.0    GitHub  2018─05─25
+|                                       GPLv3 License
+| _______________________________________________________________________________________________
+| embox       MSP430                    Embox is a configurable operating system kernel designed for resource constrained
+|             ARM                       and embedded systems.
+|             MIPS                      v0.3.21     GitHub  2018─03─31
+|             PowerPC                   Other
+| __________________________________________________________________________________________
+| uKOS        ARM                       uKOS is a multi─tasking OS suitable for small embedded µController systems.
+|                                       It is based on a preventive multitasking scheduler.
+|                                       4.0.0       2017─04─26
+|                                       GPLv3 License
+| _______________________________________________________________________________________________
+| seL4        ARM                       The world's first operating─system kernel with an ºend─to─end proof of implementationº
+|                                       correctness and security enforcement is available as open source.
+|                                       10.0.0  GitHub  2018─05─28
+|                                       Other License
+| _______________________________________________________________________________________________
+| Trampoline  ARM                       Trampoline is a static RTOS for small embedded systems. Its API is aligned with
+|             AVR                       OSEK/VDX OS and AUTOSAR OS 4.2 standards.
+|             PowerPC                   dev─master  GitHub  2017─12─07
+|                                       GPLv2 License
+| _______________________________________________________________________________________________
+| eChronos    PowerPC                   The eChronos RTOS is a real─time operating system (RTOS) originally developed by NICTA
+|                                       and Breakaway Consulting Pty. Ltd. It is intended for tightly resource─constrained
+|                                       devices without memory protection.
+|                                       v3.0.2  GitHub  2018─04─01
+|                                       Other License
+| _______________________________________________________________________________________________
+| AliOS       ARM                       AliOS Things is designed for low power, resource constrained MCU, connectivity SoC,
+|                                       greatly suitable for IoT devices. AliOS Things is not just a RTOS, it contains full stack of
+|                                       software components and tools for building IoT devices.    v1.3.1  GitHub  2018─05─31
+|                                       Apache License
+| _______________________________________________________________________________________________
+| Things
+| LiteOS      ARM                       Huawei LiteOS is a lightweight open─source IoT OS and a smart hardware development p
+|                                       latform. It simplifies IoT device development and device connectivity, makes services
+|                                       smarter, delivers superb user experience, and provides better data protection. Huawei
+|                                       LiteOS is designed for smart homes, wearables, IoV, and intelligent manufacturing
+|                                       applications.
+|                                       v1.1.1  GitHub  2017─04─01
+|                                       BSD License
+| _______________________________________________________________________________________________
+| TizenRT     ARM                       TizenRT is a lightweight RTOS─based platform to support low─end IoT devices
+|                                       1.1_Public_Release  GitHub  2017─10─27
+|                                       Apache License
+| _______________________________________________________________________________________________
+| MOE         ARM                       MOE is an event─driven scheduler system for 8/16/32─bit MCUs.
+|                                       MOE means "Minds Of Embedded system".
+|                                       V0.1.6  GitHub  2017─04─21
+|                                       MIT License
+| _______________________________________________________________________________________________
+| cocoOS      MSP430                    cocoOS is a free, open source, cooperative task scheduler, based on coroutines
+|             ARM                       targeted for embedded microcontrollers like AVR, MSP430 and STM32
+|             AVR                       BSD License
+| _______________________________________________________________________________________________
 [[}]]
 

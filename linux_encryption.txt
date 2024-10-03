@@ -1,0 +1,354 @@
+[[{security.encryption,security.101]]
+# Linux Encryption 
+
+## Kernel Keyrings [[{security.encryption,security.secret_management]]
+
+* <https://www.kernel.org/doc/Documentation/security/keys.txt>
+
+## in-Kernel cache for cryptographic secrets (encrypted FS passwords, kernel services,...),
+
+* used by various kernel components -file-systems, hardware modules,...- to cache*
+* security data, authentication keys, encryption keys, ... in kernel space*.
+
+  ```
+  | (kernel) KEY OBJECT
+  | ┌── attributes ────┐
+  | │ · type           │ Must be registered in kernel by a kernel service (FS,...)
+  | │                  │ and determine operations allowed for key.
+  | │------------------│ e.g: AFS FS might want to define a Kerberos 5 ticket key type.
+  | │ · serial number  │ 32-bit uint ID ** *
+  | │------------------│
+  | │ · description    │ arbitrary printable string*used in searchs*prefixed with "key-type"
+  | │                  │ prefix allows kernel to invoke proper implementations to type.
+  | │                  │ "description" meaning can be different for a File System, a HSM, ...
+  | │------------------│
+  | │ · Access control │ == ( owner ID, group ID, permissions mask) to control what a process
+  | │                  │ may do to a kernel-key from userspace or whether kernel service
+  | │------------------│ will be able to find the key.
+  | │ · Expiry time    │
+  | │------------------│
+  | │ · payload        │ ← blob of data (*"secret"*) or key-list for keyrings
+  | │------------------│   Optional. Payload can be stored in kernel struct itself
+  | │ · State          │ ← Non garbage collected: Uninstantiated | Instantiated | Negative
+  | │                  │       garbage collected: Expired | Revoked |  Dead
+  | ├─── functions ────┤
+  | │ · Constructor    │ ← Used at key instantiation time. Depends on type
+  | │ · read           │ ← Used to convert the key's internal payload back into blob
+  | │ · "find"         │ ← Match a description to a key.
+  | └──────────────────┘
+  | ** * SPECIAL KEY IDS :
+  | · 0          : No key
+  | · @t  or -1  : Thread  keyring, 1st on searchs, replaced  on (v)fork|exec|clone
+  | · @p  or -2  : Process keyring, 2nd on searchs, replaced  on (v)fork|exec
+  | · @s  or -3  : Session keyring, 3rd on searchs, inherited on (v)fork|exec|clone
+  |                It/They can be named and joined with existing ones.
+  | · @u  or -4  : User specific, shared by processes owned by user.
+  |                Not searched directly, but normally linked to/from @s.
+  | · @us or -5  : User default session keyring upon succesful login (by root login processes)
+  | · @g  or -6  : Group specific keyring,  *not actually implemented yet in the kernel*.
+  | · @a  or -7  : Assumed request_key authorisation key:
+  | · %:${name}  : named      keyring, to be searched for in [process's keyrings , */proc/keys*]
+  | · %$typ:$name: named type:keyring, to be searched for in [process's keyrings , */proc/keys*]
+  ```
+* RELATED PROCFS FILES:
+  ```
+  | · /proc/keys          ← list keys granted View perm/task reading the file.
+  | · /proc/key-users     ← lists quota+stats by user
+  ```
+
+* RELATED SYSCTL PROCFS FILES:
+  ```
+  | /proc/sys/kernel/keys/root_maxkeys
+  | /proc/sys/kernel/keys/root_maxbytes
+  | /proc/sys/kernel/keys/maxkeys
+  | /proc/sys/kernel/keys/maxbytes
+  | /proc/sys/kernel/keys/gc_delay      ← timeout to garbage-collect revoked|expired keys
+  ```
+
+* e.g.: When a filesystem/device calls "file-open", the kernel react by
+  searching for a key, releasing it upon close.
+  (How to deal with conflicting keys due to concurrent users opening
+  the same file is left to the filesystem author to solve)
+
+* `man 1 keyctl summary`  (to be used by scripts, ...)
+
+  ```
+  | $ keyctl show [$ring]      # ← Show (recursively by default) keys and keyrings
+  | Session  Keyring             a process is subscribed-to or just keyring $ring
+  | 84022412 --alswrv  0     -x : display IDs in hex (vs decimal).
+  | 204615789 --alswrv  0 6   0  keyring: _ses
+  | 529474961 --alsw-v  0  5534   \_ keyring: _uid.0
+  | 84022412 --alswrv  0     0   \_ logon: f2fs:28e21cc0c4393da1
+  | └───────┴─ ex key-type used by f2fs file-system.
+  |
+  | $ keyctl add           \   # <· create+add key to $ring.
+  |     $type "${descrip}" \        $data: instantiates new key with $data
+  |     "${data}" $ring             Use padd (vs add) to read $data from STDIN
+  | 26                         # <· New key's ID printed to STDOUT
+  |
+  | $ keyctl request $type $desc # <· Request key lookup in process's keyrings
+  | 26                                of the given type and description. Print Key's ID
+  |                                   to STDOUT in case of match, or ENOKEY otherwise.
+  |                                   If an optional ${dest_keyring} (last option) is
+  |                                   provided, key will be added to it.
+  | $ keyctl request2  $type $desc $info # <· alt: create partial key (type,desc) and calls out
+  | $ keyctl prequest2 $type $desc       #    key creation to /sbin/request-key to (attempt to)
+  |                                           instantiate the key in some manner.
+  |                                           prequest2 (vs request2) reads (callout) $info
+  |                                           from STDIN.
+  |
+  | $ keyctl update $key $data          # < replace key data (pupdate to get data from STDIN)
+  | $ keyctl newring $name $ring        # < Create new keyring $name attached to existing $keyring
+  | e.g.:  $ keyctl newring squelch @us
+  | $ keyctl revoke $key                # < Revoke key
+  | $ keyctl clear $ring                # < Clear $keyring (unlinks all keys attached)
+  |
+  | $ keyctl   link $key $ring          # < Link key to keyring (if there's enough capacity)
+  | $ keyctl unlink $key [$ring]        # < UnLink key. If $ring unset do depth-first search
+  | (unlinking all links found for $key)
+  |
+  | $ keyctl search $ring $type \       # ← Search key non-recursively
+  |   $desc [$dest_ring]                #   ← Id $dset_ring set and key found, attach to it.
+  | $ keyctl search @us user debug:hello # ex:
+  | 23
+  | $ keyctl search @us user debug:bye  # 
+  | keyctl_search: Requested key not available
+  |
+  | # --------------------------------- RESTRICT A KEYRING
+  | $ keyctl restrict_keyring $ring \   # limit linkage-of-keys to the given $ring
+  | [$type [$restriction]]              #  using a provided restriction-scheme
+  | (associated with a given key type)
+  | · If restriction-scheme not provided,
+  | keyring will reject all links.
+  | e.g.:
+  | $ keyctl restrict_keyring $1 \      # Options typically contain a restriction-name
+  | asymmetric builtin_trusted          # possibly followed by key ids or other data
+  | relevant to the restriction.
+
+  | Read (payload) of key:
+  | $ keyctl read  $key                 # <· dumps raw-data to STDOUT as a hex dump
+  | $ keyctl pipe  $key                 # <· dumps raw-data to STDOUT
+  | $ keyctl print $key                 # <· dumps raw-data to STDOUT if entirely printable
+  | or as ":hex:"+hex dump otherwise
+  | "Operation not supported" returned
+  | if key-type does not support payload-reading
+  |
+  | # -------------------------------- LIST CONTENTS OF A KEYRING
+  | $ keyctl  list $ring # ←           pretty-prints $ring list-of-key IDs
+  | $ keyctl rlist $ring #             (rlist) => space separated
+  | e.g.:
+  | $ keyctl list @us  
+  | 2 keys in keyring:
+  | 22: vrwsl----------  4043    -1 keyring: _uid.4043
+  | 23: vrwsl----------  4043  4043 user: debug:hello
+  | $ keyctl rlist @us *
+  | 22 23
+  |
+  | DESCRIBE A KEY
+  | $ keyctl describe @us         # ← pretty prints description
+  | -5: vrwsl-... _uid_ses.4043
+  |
+  | $ keyctl rdescribe @us [$sep] #  ← prints raw data returned from kernel.
+  | keyring;4043;-1;3f1f0000;_uid_ses.4043
+  | └─────┘ └──┘ └┘ └──────┘ └───────────┘
+  | type   uid gid  permis.  description
+  |
+  | # -------------------------------- CHANGE KEY ACCESS CONTROLS
+  | $ keyctl chown $key $uid    # ← change owner: It also governs which
+  | NOT currently supported!        quota a key is taken out of
+  | $ keyctl chgrp $key $gid    # ← change group (process's GID|GID in 
+  |                                 process's groups list for non-root 
+  |                                 users)
+  |
+  | $ keyctl setperm $key $mask # ← Set permissions mask(as "0x..." hex 
+  |                                 or "0..." octal)
+  |
+  | The hex numbers are a combination of:
+  | Possessor UID       GID       Other     Permission Granted
+  | ┌┐======  ==┌┐====  ====┌┐==  ======┌┐
+  | 010.....  ..01....  0...01..  0...  01  View  : allow view  of key type, description, "others"
+  | 020.....  ..02....  0...02..  0...  02  Read  : allow view  of payload|ring list (if supported)
+  | 040.....  ..04....  0...04..  0...  04  Write : allow write of payload|ring list (if supported)
+  | 080.....  ..08....  0...08..  0...  08  Search: allow key to be found in linked keyring.
+  | 100.....  ..10....  0...10..  0...  10  Link  : allow key to be linked to keyring.
+  | 200.....  ..20....  0...20..  0...  20  Set Attribute: allows change of own|grp|per.msk|timeout
+  | 3f0.....  ..3f....  0...3f..  0...  3f  All
+  | └┘======  ==└┘====  ====└┘==  ======└┘
+  |
+  | $ keyctl setperm 27 0x1f1f1f00  # <· e.g.
+  ```
+
+* See man 1 keyctl for further info about how to:
+  * Start a new session with fresh keyrings
+  * Instantiate a new key or mark as invalid, timeout.
+  * Retrieve a key's (SELinux) security context
+  * Give the parent process a new session keyring
+  * Remove/purge keys
+  * Get persistent keyring
+    ```keyctl get_persistent $ring [<uid>]
+    ```
+  * Compute a Diffie-Hellman shared secret or public key from (private, prime, base)
+  * Compute a Diffie-Hellman shared secret and derive key material
+     from (private, prime, base, output_length, hash_type)
+  * Compute a Diffie-Hellman shared secret and apply KDF with other input
+     from (private, prime, base, output_length, hash_type)
+  * Perform public-key operations with an asymmetric key (encrypt/decript, sign/verify)
+[[security.encryption}]]
+
+
+## eCryptfs  Summary [[{storage,security.encryption]]
+
+* Linux Kernel v2.6.19 and ahead
+* <https://www.ostechnix.com/how-to-encrypt-directories-with-ecryptfs-in-linux/>
+
+- Original author: Michael Halcrow and IBM Linux Technology Center.
+  - Actively maintained by Dustin Kirkland and Tyler Hicks from Canonical.
+
+- eCryptfs is not a Kernel-level full disk encryption subsystems like dm-crypt.
+
+- eCryptfs is a stacked filesystem mounted on any directory on top of
+  the local file system (EXT3, EXT4, XFS,, ...) and also
+  **network file systems**(NFS, CIFS, Samba, WebDAV,...) with  some
+  restrictions when compared to local FS.
+
+- No separate partition or pre-allocated space is actually required!
+  eCryptfs stores cryptographic metadata in the headers of files,
+  so the encrypted data can be easily moved between different users and
+  even systems.
+
+### PRE-SETUP install
+
+  ```
+  | $ sudo pacman       -S ecryptfs-utils  # ← Arch, Manjaro,..
+  | $ sudo apt-get install ecryptfs-utils  # ← Debian,Ubuntu,...
+  | $ sudo dnf     install ecryptfs-utils  # ← RedHat, CentOS, Fedora, ..
+  | $ sudo zypper --install ecryptfs-utils # ← openSUSE
+  | ...
+  ```
+
+### ecrypt Ussage
+
+- At first mount, you will be prompted cipher, key bytes,
+  plaintext passthrough, enable/disable filename encryption etc.
+
+  ```
+  | $ sudo mount -t ecryptfs ~/SensitiveData ~/SensitiveData/
+  | 
+  | [sudo] password for sk:
+  | Passphrase:                       ← Enter passphrase. Needed to unlock again
+  | Select cipher:                      on next mounts.
+  |  1) aes: blocksize = 16; min keysize = 16; max keysize = 32
+  |  2) blowfish: blocksize = 8; min keysize = 16; max keysize = 56
+  |  3) des3_ede: blocksize = 8; min keysize = 24; max keysize = 24
+  |  4) twofish: blocksize = 16; min keysize = 16; max keysize = 32
+  |  5) cast6: blocksize = 16; min keysize = 16; max keysize = 32
+  |  6) cast5: blocksize = 8; min keysize = 5; max keysize = 16
+  | Selection [aes]:                  ← Prompt
+  | Select key bytes:
+  |  1) 16
+  |  2) 32
+  |  3) 24
+  | Selection [16]:                          ← [Enter]
+  | Enable plaintext passthrough (y/n) [n]:  ← [Enter]
+  | Enable filename encryption (y/n) [n]:    ← [Enter]
+  | Attempting to mount with the following options:
+  |   ecryptfs_unlink_sigs
+  |   ecryptfs_key_bytes=16
+  |   ecryptfs_cipher=aes
+  |   ecryptfs_sig=8567ee2ae5880f2d
+  | WARNING: Based on the contents of [/root/.ecryptfs/sig-cache.txt],
+  | it looks like you have never mounted with this key
+  | before. This could mean that you have typed your
+  | passphrase wrong.
+  | 
+  | Would you like to proceed with the mount (yes/no)? : yes     ←
+  | Would you like to append sig [8567ee2ae5880f2d] to
+  | [/root/.ecryptfs/sig-cache.txt]
+  | in order to avoid this warning in the future (yes/no)? : yes ←
+  | Successfully appended new sig to user sig cache file
+  | Mounted eCryptfs
+  ```
+
+* A signature file */root/.ecryptfs/sig-cache.txt* will be created
+  to identify the mount passphrase in the kernel keyring.
+* When the directory is un-mounted, files are still visible, but
+completely encrypted and un-readable.
+
+* Changing mount passphrase
+  ```
+  | $ sudo rm -f /root/.ecryptfs/sig-cache.txt
+  | $ sudo mount -t ecryptfs ~/SensitiveData ~/SensitiveData/ # ← Mount again
+  ```
+* Re-mount automatically at reboot
+  ```
+  | PRE-SETUP:
+  | Fetch an USB drive to store the signature and
+  | path of the password file.
+  |
+  | $ sudo mount /dev/sdb1 /mnt/usb # ← sdb1 == "usb". Use $ 'dmesg'
+  |                                 #   to known the exact value
+  | 
+  | $ sudo cat /root/.ecryptfs/sig-cache.txt
+  | 934e8e1fa80152e4
+  | 
+  | $ sudo vim /mnt/usb/password.txt # ← Ej: change!M@1234
+  | 
+  | $ sudo vim /root.ecryptfsrc
+  | key=passphrase:passphrase_passwd_file=/mnt/usb/password.txt
+  | ecryptfs_sig=934e8e1fa80152e4
+  | ecryptfs_cipher=aes
+  | ecryptfs_key_bytes=16
+  | ecryptfs_passthrough=n
+  | ecryptfs_enable_filename_crypto=n
+  ```
+  (Note that USB will need to be mounted for the setup to work properly)
+
+- Finally add next line to /etc/fstab :
+  ```
+  | /home/myUser/SensitiveData /home/myUser/SensitiveData ecryptfs defaults 0 0
+  ```
+[[}]]
+
+## LVM + LUKS encryption  [[{security.encryption.luks,storage.lvm,]]
+
+- LUKS stands for Linux-Unified-Key-Setup encryption toolchain.
+- LVM  integrates nicely with disk encryption
+
+LUKS encrypts full-partitions (vs files  in GnuPG, ...)
+
+NOTICE/WARN: LUKS will prompts for a password during boot.
+             (server-autoboot will fail)
+
+1. format the partition with the "cryptsetup" command*
+  ```
+  # cryptsetup luksFormat /dev/sdx1
+    LUKS will warn that it's going to erase your drive:
+    A prompt will ask for a passphrase: (Enter it to continue) 
+  ```
+
+The partition is encrypted at this point but no filesystem is in yet:
+- In order to partition it you must un-lock it.
+  ```
+  | # cryptsetup luksOpen /dev/sdx1 mySafeDrive # ← Unlock before formating it.
+  |                                 ^^^^^^^^^^^
+  |                                 human-friendly name
+  |                                 will create a symlink
+  |                                 /dev/mapper/mySafeDrive
+  |                                 to auto-generated designator
+  (LUKS will ask for the passphrase to un-lock the drive)
+  ```
+- Check the volume is "OK":
+  ```
+  # ls -ld /dev/mapper/mySafeDrive
+  lrwxrwxrwx. 1 root root 7 Oct 24 03:58 /dev/mapper/mySafeDrive → ../dm-4
+  ```
+2. format with standard-filesystem (ext4,...)
+  ```
+  | # mkfs.ext4 -o Linux -L mySafeExt4Drive /dev/mapper/mySafeDrive
+  ```
+3. Mount the unit
+  ```
+  | # mount /dev/mapper/mySafeExt4Drive /mnt/hd
+  ```
+[[security.encryption.luks}]]
+[[security.encryption}]]

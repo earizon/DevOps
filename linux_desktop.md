@@ -1,4 +1,159 @@
-# Best Screen Recorders for Wayland in Linux [Compared & Tested]
-  https://www.debugpoint.com/screen-recorders-linux-wayland/ 
+[[{linux.desktop,PM.backlog]]
+
+# Linux Desktop
+
+## D-BUS
+
+## Best Screen Recorders for Wayland in Linux [Compared & Tested]
+
+* <https://www.debugpoint.com/screen-recorders-linux-wayland/>
+
+### Desktop recording in Wayland thanks to Pipeware
+
+* <https://www.debugpoint.com/2020/07/kde-plasma-5-20-wayland/>
+* <https://pipewire.org/>
+- It provides a low-latency, graph based processing engine on top of
+  audio and video devices that can be used to support the use cases
+  currently handled by both pulseaudio and JACK. PipeWire was designed
+  with a powerful security model that makes interacting with audio and
+  video devices from containerized applications easy, with supporting
+  Flatpak applications being the primary goal. Alongside Wayland and
+  Flatpak we expect PipeWire to provide a core building block for the
+  future of Linux application development
+
+## Kooha – Screen Recorder with Wayland Support
+
+* <https://www.fossmint.com/kooha-screen-recorder/>
+
+## Script to reduce pdf size x5
+
+* <https://bash.cyberciti.biz/file-management/linux-shell-script-to-reduce-pdf-file-size/>
+
+Linux shell script to reduce PDF file size (x5 or more when embbeding images)
+
+[[{performance.desktop]]
+## Improve Desktop performance (Spanish)
+
+* <https://geekland.eu/mejorar-el-rendimiento-de-un-sistema-operativo-de-escritorio-linux/>
+[[performance.desktop}]]
+
+[[{monitoring.hardware.battery]]
+# Laptop Recipes
+* <https://www.linuxuprising.com/2020/02/tlp-13-linux-laptop-battery-extender.html>
+[[monitoring.hardware.battery}]]
+
+
+## rygel: - easily share multimedia content to your home and media players
+ 
+* man 1 rygel
+
+- a collection of DLNA/UPnP AV services
+- home media solution that allows you to easily share audio, video and
+  pictures, and control of media player on your home network.
+- UPnP AV MediaServer and MediaRenderer implemented through a plug-in
+  mechanism. Interoperability with other devices in the market is
+  achieved by conformance to very strict requirements of DLNA and on the fly
+  conversion of media to format that client devices are capable of handling.
+- Play media stored on a PC via TV, PS3, ...
+- Easily search and play media using a phone, TV or PC
+- Redirect sound to DLNA speakers.
+
+[[{security.remote_access.vnc,security.remote_access.ssh,security.remote_access.rdp,}]]
+## Guacamole clientless remote desktop gateway.
+
+* It supports standard protocols like VNC, RDP, and SSH.
+  * <https://guacamole.apache.org/>
+  * <https://github.com/tldr-pages/tldr/blob/master/pages/common/guacd.md>
+
+## OBS Studio Live Streaming and Screen Recording Gets Wayland Support - 9to5Linux
+
+* <https://9to5linux.com/obs-studio-open-source-live-streaming-and-screen-recording-software-gets-wayland-support>
+
+[[{linux.desktop.OStree]]
+## Endless OS: "Git like" OS updates.
+
+* <https://support.endlessos.org/en/endless-os/updates>
+
+ With OSTree, keeping a previous version of the OS does not double the
+disk space used: only the differences between the two versions need
+to be stored. For minor upgrades (such as 3.4.0 to 3.4.1) the
+difference is typically only a few megabytes. For major upgrades
+(such as 3.3.x to 3.4.x) the difference is significantly larger, but
+the ability to roll back to the old version is even more valuable.
+
+* <https://ostreedev.github.io/ostree/>
+
+  As implied above, libostree is both a shared library and suite of
+command line tools that combines a "git-like" model for
+committing and downloading bootable filesystem trees, along with a
+layer for deploying them and managing the bootloader configuration.
+The core OSTree model is like git in that it checksums individual
+files and has a content-addressed-object store. It’s unlike git in
+that it “checks out” the files via hardlinks, and they thus need
+to be immutable to prevent corruption. Therefore, another way to
+think of OSTree is that it’s just a more polished version of Linux
+VServer hardlinks.
+
+Features:
+- Transactional upgrades and rollback for the system
+- Replicating content incrementally over HTTP via GPG signatures and
+  "pinned TLS" support
+- Support for parallel installing more than just 2 bootable roots
+- Binary history on the server side (and client)
+- Introspectable shared library API for build and deployment systems
+- Flexible support for multiple branches and repositories, supporting
+  projects like flatpak which use libostree for applications, rather
+  than hosts.
+
+  Endless OS uses libostree for their host system as well as flatpak.
+See their eos-updater and deb-ostree-builder projects.
+
+* Fedora derivatives use rpm-ostree (noted below); there are 4 variants 
+using OSTree:
+- Fedora CoreOS
+- Fedora Silverblue
+- Fedora Kinoite
+- Fedora IoT
+
+* GNOME Continuous is where OSTree was born - as a high performance 
+continuous delivery/testing system for GNOME.
+
+* OSTree is in many ways very evolutionary. It builds on concepts and
+ideas introduced from many different projects such as Systemd
+Stateless, Systemd Bootloader Spec, Chromium Autoupdate, the much
+older Fedora/Red Hat Stateless Project, Linux VServer and many more.
+[[linux.desktop.OStree}]]
+
+## 5 OOSS alternatives to Microsoft Exchange
+
+* <https://opensource.com/article/21/11/open-source-alternatives-microsoft-exchange>
+
+[[{]]
+## WirePlumber in Fedora 35
+
+* <https://www.collabora.com/news-and-blog/news-and-events/wireplumber-in-fedora-35.html>
+
+...WirePlumber as the default session manager for PipeWire! ... previously adopted in
+the automotive space by Automotive Grade Linux... it is now the recommended session
+manager to accompany PipeWire
+
+... WirePlumber brings some new and interesting things to the desktop. Most notably, it
+introduces the ability to easily modify the overall behavior of PipeWire for different 
+use cases, using Lua scripts ... customize multimedia experience... 
+[[}]]
+
+## Barrier: keyboard/mouse sharing across machines 
+
+* <https://www.youtube.com/watch?v=mAGTFAeA2Bo>
+
+
+## Avahi,ZeroConf
+
+* <https://en.wikipedia.org/wiki/Avahi_(software)>
+
+
+
+[[linux.desktop}]]
+
 
 

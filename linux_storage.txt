@@ -1,45 +1,38 @@
-[[{linux]]
-LINUX STORAGE [[{storage]]
+[[{linux,storage]]
 
-# BACKUPS
-## bup: Fast incremental backups with deduplication [[{]]
-  https://github.com/bup/backup
-  Very efficient backup system based on git packfile format,
-  providing fast incremental saves and global deduplication (among and
-  within files, including virtual machine images). Current release is
-  0.31, and the development branch is master. Please post problems or
-  patches to the mailing list for discussion (see the end of the README
-  below).
-[[}]]
+[[{storage.block_layer,]]
+# LINUX STORAGE  BLOCK LAYER
 
-# BLOCK LAYER [[{]]
-#[monitor_disk_performance]
 ## Monitoring Disk I/O performance [[{storage.profiling,monitoring.storage.i/o,]]
-$*# iotop --only        * ← show only disk I/O
 
-$*# iostat -dxm         * ← # stats for devices and partitions.
-                           # Monitors time devices and partitions are
-                           # active in relation to their average transfer rates.
-                           # x : Show (more) detailed stats
-                           # d : output only device report
-                           # m : Use MB in stat. output
-
-$*# vmstat -d 1 5       * ← Virt. Memory stats.
-                            d : filter by disk statistics
-                            1 : 1 second interval
-                            5 : repeat 5 times and exit
-
-$*# atop | grep DSK     * ← report every 10 secs process  activity  (included finished ones )
-
-$*# dstat --disk  --io \* ← Extra counters when compared to others
-$*        -D sda        *
-
-$*# ioping /dev/sda1 -c4* ← monitor I/O speed and latency in real time
-                           "how long it takes a disk to respond to requests"
+  ```
+  | # iotop --only        # <· show only disk I/O
+  |
+  | # iostat -dxm         # <· stats for devices and partitions.
+  |                            Monitors time devices and partitions are
+  |                            active in relation to their average transfer rates.
+  |                            x : Show (more) detailed stats
+  |                            d : output only device report
+  |                            m : Use MB in stat. output
+  |
+  | # vmstat -d 1 5       # <· Virt. Memory stats.
+  |                           d : filter by disk statistics
+  |                           1 : 1 second interval
+  |                           5 : repeat 5 times and exit
+  |
+  | # atop | grep DSK     # <· report every 10 secs process
+  |                            activity  (included finished ones )
+  |
+  | # dstat --disk  --io \
+  |         -D sda        # <· Extra counters when compared to others
+  |
+  | # ioping /dev/sda1 -c4# <· monitor I/O speed and latency in real time
+  |                            "how long it takes a disk to respond to requests"
+  ```
 [[}]]
 
 ## Block Storage  [[{storage.block_management,linux.101]]
-REF: <https://opensource.com/article/18/11/partition-format-drive-linux>
+* REF: <https://opensource.com/article/18/11/partition-format-drive-linux>
 
 Linux(UNIX) sees storage devices like block-devices:
 - read and write data is done fixed-size blocks. (4096 bytes or more, ussually)
@@ -48,60 +41,66 @@ Linux(UNIX) sees storage devices like block-devices:
 - block Read/write is done to random places (vs serialized/ordered access).
   Moving to random places is still slower (except for SSD disks).
 
-   $*lsblk* - ← list attached block devices:
-   Example Output:
-01 →  NAME              MAJ:MIN RM   SIZE RO TYPE  MOUNTPOINT
-02 →  sda                 8:0    0 447,2G  0 disk
-03 →  └─sda1              8:1    0 223,6G  0 part  /
-04 →  └─sda2              8:1    0 223,6G  0 part  /var/backups
-05 →  sdb                 8:16   0 931,5G  0 disk
-06 →  └─sdb1              8:17   0   900G  0 part
-07 →    └─md1             9:1    0 899,9G  0 raid1 /home
-08 →  sdc                 8:32   0 931,5G  0 disk
-09 →  └─md1               9:1    0 899,9G  0 raid1 /home
-10 →  ...
-      ^^^^^^^                                      ^^^^^^^^^^^^^^
-      Device name assigned                         Visible File─system path
-      by Linux kernel.                             (mount─point) to apps
-      Only system.admin will                       and users.
-      care about it, usually
-      through a virtual path on
-      the file─system like /dev/sda1,...
+   ```
+   $ lsblk  # <·· list attached block devices:
+   | Example Output:
+   |  NAME              MAJ:MIN RM   SIZE RO TYPE  MOUNTPOINT
+   |  sda                 8:0    0 447,2G  0 disk
+   |  └·sda1              8:1    0 223,6G  0 part  /
+   |  └·sda2              8:1    0 223,6G  0 part  /var/backups
+   |  sdb                 8:16   0 931,5G  0 disk
+   |  └·sdb1              8:17   0   900G  0 part
+   |    └·md1             9:1    0 899,9G  0 raid1 /home
+   |  sdc                 8:32   0 931,5G  0 disk
+   |  └·md1               9:1    0 899,9G  0 raid1 /home
+   |  ...
+   |  ^^^^^^^                                      ^^^^^^^^^^^^^^
+   |  Device name assigned                         Visible File-system path
+   |  by Linux kernel.                             (mount─point) to apps
+   |  Only system.admin will                       and users.
+   |  care about it, usually
+   |  through a virtual path on
+   |  the file-system like /dev/sda1,...
+   |
+   |    Line 02-04: Disk ussually are "big". Partitions are used to make better
+   |    use of them. In this case disk "sda" is split into partition sda1 and sda2
+   ```
 
-      Line 02-04: Disk ussually are "big". Partitions are used to make better
-      use of them. In this case disk "sda" is split into partition sda1 and sda2
+* Access to Block devices is done indirectly through the File-system.
+   ```
+   | │Process│N<·>1│Userspace │ 1<·····>1│Linux │1<··>N│Linux      │N<·> M │Block  │
+   | │       │     │Filesystem│          │Kernel│      │File System│       │Device │
+   |     ^              ^                   ^          │implementa.│         ^
+   |     |              │                   ·             ^              Disk, RAID
+   |  - Shell,   - Isolate Apps             ·             ·              SCSI, Device
+   |  - explorer   from the internals       ·             ·              Mapper, IP...
+   |  - DDBB       of blocks device.        ·            ext4 (standard)
+   |  - ...      - Apps will see files      ·            xfs  (high load)
+   |               distributed in a tree    ·            fsfs (flash memory)
+   |               of parent/children       ·            nfs  (remore network fs)
+   |               directories.
+   |             - i-nodes                 Takes care of all complexities
+   |             - symbolic links          of FS implementation and concurrent
+   |               (if supported by        access to a physical disk by different
+   |               implemen.)              apps.
+   |             - FILE                                                     BLOCK
+   |               CACHE                                                   BUFFERS
+   |               └───┴··················································─┴─────┘
+   |                    - vmstat will show realtime cache/buffers
+   |                    - Kernel tries to cache as much user-space data as possible
+   |                      and just enough buffers for predicted "next-reads" to
+   |                      block devices [[{doc_has.keypoint}]]
+   ```
 
-      Access to Block devices is done indirectly through the File-system.
-                                                                                                                            Block-Device
-                                                                                                                            ────────────
-│Human│ N←─→ M │Applications│N←─→ 1│ User─space│    1←───→ 1     │Linux │       1← ───────→ N   │Linux         │ N←─────→ M SSD Disk
-│Users│        │            │      │ Filesystem│                 │Kernel│                       │Filesystem    │            Magnetic Disk
-                   ^                    ^                           ^                           │implementation│            RAID of 2+ disks
-                   |                    │                           │                               ^                       IP conection
-                - Shell,           - Isolate Apps                 Takes care of                     │                       Device Mapper
-                - explorer GUI       from the internals           all complexities                  │                       ...
-                - DDBB               of blocks device.            of FS implementa.               - ext4 (standard)
-                - ...              - Apps will see files          and concurrent                  - xfs  (high load)
-                                     distributed in a tree        access to a physical            - fsfs (flash memory)
-                                     of parent/children           disk by different apps          - nfs  (remore network fs)
-                                     directories.
-                                   - i-nodes
-                                   - symbolic links
-                                     (if supported by implemen.)
-                                   - File*Cache*                                                  -*Block buffers*
-                                          ^^^^^───────────     vmstat will show  ─────────────────────────^^^^^^^
-                                                            realtime cache/buffers
-                                                    - Kernel tries to cache as much user-space data as possible
-                                                      and just enough buffers for predicted "next-reads" to block devices
-
-   *NOTE:* Some advanced applications like Databases can directly claim access to the block-device
-           skiping kernel control and  taking ownership of the device. This block-device
-           will not be visible to the file-system or accesible to any other
-           application. System. Admins call also skip the standard filesystem and access the
-           block-device directly through the special /dev/ paths. (but is discouraged 99% of the times)
+* NOTE: Some advanced applications like Databases can directly claim access to the block-device
+  skiping kernel control and  taking ownership of the device. This block-device
+  will not be visible to the file-system or accesible to any other
+  application. System. Admins call also skip the standard filesystem and access the
+  block-device directly through the special /dev/ paths. (but is discouraged 99% of the times)
 
 
 ## Setup Disk
+  ```
   $ sudo parted \             ← *STEP 1) Partitioning a disk (optional but recomended)*
      /dev/sdc \               ← Physical disk
      --align opt \            ← let 'parted' find optimal start/end point
@@ -125,391 +124,420 @@ Linux(UNIX) sees storage devices like block-devices:
 
          For RAID systems system.admin first create a virtual RAID device /dev/md0 composed
          of many disks (/dev/sda, /dev/sdb, ...). The STEP 1 is done the virtual RAID device
-
+  ```
 
 ## Annotated /etc/fstab
-   $ cat /etc/fstab | nl -
- → 1 /dev/mapper/fedora-root                        /               ext4   defaults          1 1
- → 2 UUID=735acb4c-29bc-4ce7-81d9-83b778f6fc81      /boot           ext4   defaults          1 2
- → 3 LABEL=backups                                  /mnt/backups    xfs    defaults          1 2
- → 4 /dev/mapper/fedora-home                        /home           ext4   defaults          1 2
- → 5 /dev/mapper/fedora-swap                        swap            swap   defaults          0 0
- → 6 UUID=8C208C30-4E8F-4096-ACF9-858959BABBAA      /var/.../       xfs    defaults,nofail*3 1 2
-          └──────────────┬───────────────────┘      └─────┬────┘   └──┬──┘ └───┬───┘         │ │
-                         ↓                                ↓           ↓        ↓             │ │
-        As returned by $ lsblk -o +uuid             mount point in   FS    CSV mount options │ │
-        partition Universal Unique ID (UUID) or     FS tree hierchy  type  for the FS type.  │ │
-        partition LABEL  or PARTUUID (GPT)                                 Different FSs can │ │
-        identifies the partition.                                          have different    │ │
-        UUID *2 are prefered to /dev/sd...                                 mount opts. plus  │ │
-        like /dev/sdb3 since the device name                               common ones to    │ │
-        can change for USB or plugable devices                             all FS *1         │ │
-                                                                                             │ │
-            this flag determines the                                                         │ │
-            FS check order during boot:                   used by dump(8) to determine ←─────┘ │
-            (0 disables the check)                        which ext2/3 FS need backup          │
-            - root (/)  should be 1                       (default to 0)                       │
-            - Other FSs should be 2                                                            │
-                          ↑                                                                    │
-                          └────────────────────────────────────────────────────────────────────┘
 
- *1 defaults mount options common to all File System types:
-    rw     : Read/write vs 'ro' (read only)
-    suid   : Allow set-user-ID | set-group-ID bits (nosuid: Ignore them)
-    dev    : Interpret character or block special devices
-    exec   : Permit execution of binaries
-    auto   :
-    nouser : Do NOT allow ordinary user to mount the filesystem.
-    async  : Do not force synchronous I/O to file system.
-             (WARN: sync may cause life-cycle shortening in flash drives)
+  ```
+  |  $ cat /etc/fstab | nl -
+  |→ 1 /dev/mapper/fedora-root                        /               ext4   defaults          1 1
+  |→ 2 UUID=735acb4c-29bc-4ce7-81d9-83b778f6fc81      /boot           ext4   defaults          1 2
+  |→ 3 LABEL=backups                                  /mnt/backups    xfs    defaults          1 2
+  |→ 4 /dev/mapper/fedora-home                        /home           ext4   defaults          1 2
+  |→ 5 /dev/mapper/fedora-swap                        swap            swap   defaults          0 0
+  |→ 6 UUID=8C208C30-4E8F-4096-ACF9-858959BABBAA      /var/.../       xfs    defaults,nofail*3 1 2
+  |         └──────────────┬───────────────────┘      └─────┬────┘   └──┬──┘ └───┬───┘         │ │
+  |                        ↓                                ↓           ↓        ↓             │ │
+  |       As returned by $ lsblk -o +uuid             mount point in   FS    CSV mount options │ │
+  |       partition Universal Unique ID (UUID) or     FS tree hierchy  type  for the FS type.  │ │
+  |       partition LABEL  or PARTUUID (GPT)                                 Different FSs can │ │
+  |       identifies the partition.                                          have different    │ │
+  |       UUID *2 are prefered to /dev/sd...                                 mount opts. plus  │ │
+  |       like /dev/sdb3 since the device name                               common ones to    │ │
+  |       can change for USB or plugable devices                             all FS *1         │ │
+  |                                                                                            │ │
+  |           this flag determines the                                                         │ │
+  |           FS check order during boot:                   used by dump(8) to determine ←─────┘ │
+  |           (0 disables the check)                        which ext2/3 FS need backup          │
+  |           - root (/)  should be 1                       (default to 0)                       │
+  |           - Other FSs should be 2                                                            │
+  |                         ↑                                                                    │
+  |                         └────────────────────────────────────────────────────────────────────┘
+
+  |*1 defaults mount options common to all File System types:
+  |   rw     : Read/write vs 'ro' (read only)
+  |   suid   : Allow set-user-ID | set-group-ID bits (nosuid: Ignore them)
+  |   dev    : Interpret character or block special devices
+  |   exec   : Permit execution of binaries
+  |   auto   :
+  |   nouser : Do NOT allow ordinary user to mount the filesystem.
+  |   async  : Do not force synchronous I/O to file system.
+  |            (WARN: sync may cause life-cycle shortening in flash drives)
 
 
 
- *2 Next command list the UUIDs of partitions:
-      $ blkid
-    → /dev/sda1: LABEL="storage" UUID="60e97193-e9b2-495f-8db1-651f3a87d455" TYPE="ext4"
-    → /dev/sda2: LABEL="oldhome" UUID="e6494a9b-5fb6-4c35-ad4c-86e223040a70" TYPE="ext4"
-    → /dev/sdb1:                 UUID="db691ba8-bb5e-403f-afa3-2d758e06587a" TYPE="xfs" ...
-                                 ^^^^
-                                 tags the filesystem actually (vs the partition itself)
+  |*2 Next command list the UUIDs of partitions:
+  |     $ blkid
+  |   → /dev/sda1: LABEL="storage" UUID="60e97193-e9b2-495f-8db1-651f3a87d455" TYPE="ext4"
+  |   → /dev/sda2: LABEL="oldhome" UUID="e6494a9b-5fb6-4c35-ad4c-86e223040a70" TYPE="ext4"
+  |   → /dev/sdb1:                 UUID="db691ba8-bb5e-403f-afa3-2d758e06587a" TYPE="xfs" ...
+  |                                ^^^^
+  |                                tags the filesystem actually (vs the partition itself)
 
- *3 TODO: Differences between nobootwait and nofail:
-    nofail: allows the boot sequence to continue even if the drive fails to mount.
-            On cloud systems it ussually allows for ssh access in case of failure
+  |*3 TODO: Differences between nobootwait and nofail:
+  |   nofail: allows the boot sequence to continue even if the drive fails to mount.
+  |           On cloud systems it ussually allows for ssh access in case of failure
+  ```
 [[}]]
 
-## Device Mapper [[{]]
-┌────────────────┬─────────────────────────────────────────────────────────────────────────────┐
-│*DEVICE MAPPER *│                                                                             │
-├────────────────┘                                                                             │
-│ <https://en.wikipedia.org/wiki/Device_mapper>                                               │
-│ - kernel framework mapping virtual block devices                                             │
-│   to one (or more) physical block device                                                     │
-│ - Optionally can process and filter in/out data                                              │
-│ ┌───────────────────────────────────────────────┬───────────────────────────────┐            │
-│ │*DMSETUP — LOW LEVEL LOGICAL VOLUME MANAGEMENT*│                               │            │
-│ ├───────────────────────────────────────────────┘                               │            │
-│ │<https://linux.die.net/man/8/dmsetup>                                         │            │
-│ │CY&P from <https://wiki.gentoo.org/wiki/Device-mapper>                        │            │
-│ │"""                                                                            │            │
-│ │Normally, users rarely use dmsetup directly. The dmsetup is a very low level.  │            │
-│ │LVM, mdtool or cryptsetup is generally the  preferred way to do it,            │            │
-│ │ as it takes care of saving the metadata and issuing the dmsetup commands.     │            │
-│ │ However, sometimes it is desirable to deal with directly:                     │            │
-│ │sometimes for recovery purposes, or to use a target that han't yet been ported │            │
-│ │to LVM.                                                                        │            │
-│ │"""                                                                            │            │
-│ └───────────────────────────────────────────────────────────────────────────────┘            │
-│ ┌──────────┬──────────────────────────────┐ ┌──────────┬─────────────────────────────────┐   │
-│ │*EXAMPLES*│                              │ │*FEATURES*│                                 │   │
-│ ├──────────┘                              │ ├──────────┘                                 │   │
-│ │- Two disks may be concatenated into one │ │- The device mapper "touch" various layers  │   │
-│ │  logical volume with a pair of linear   │ │  of the Linux kernel's storage stack.      │   │
-│ │  mappings, one for each disk.           │ │                                            │   │
-│ │                                         │ │- Functions provided by the device mapper   │   │
-│ │- crypt target encrypts the data passing │ │ include linear, striped and error mappings,│   │
-│ │  through the specified device,          │ │  as well as crypt and multipath targets.   │   │
-│ │  by using the Linux kernel's Crypto API.│ └────────────────────────────────────────────┘   │
-│ └─────────────────────────────────────────┘                                                  │
-│                                                                                              │
-│ ┌───────────────────────────────────────────────┬─────────────────────────────────┐          │
-│ │*KERNEL FEATURES AND PROJECTS ARE BUILT ON TOP*│                                 │          │
-│ ├───────────────────────────────────────────────┘                                 │          │
-│ │Note: user-space apps talk to the device mapper via *libdevmapper.so *           │          │
-│ │  which in turn issues ioctls to the /dev/mapper/control device node.            │          │
-│ │                                                                                 │          │
-│ │- cryptsetup    : utility to setup disk encryption based on dm-crypt             │          │
-│ │- dm-crypt/LUKS : mapping target providing volume encryption                     │          │
-│ │- dm-cache      : mapping target providing creation of hybrid volumes            │          │
-│ │- dm-integrity  : mapping target providing data integrity, either                │          │
-│ │                  using checksumming or cryptographic verification,              │          │
-│ │                  also used with LUKS                                            │          │
-│ │- dm-log-writes : mapping target that uses two devices, passing through          │          │
-│ │                  the first device and logging the write operations performed    │          │
-│ │                  to it on the second device                                     │          │
-│ │- dm-verity     : validates the data blocks contained in a file system           │          │
-│ │                  against a list of cryptographic hash values, developed as      │          │
-│ │                  part of the Chromium OS project                                │          │
-│ │- dmraid(8)     : provides access to "fake" RAID configurations via the          │          │
-│ │                  device mapper                                                  │          │
-│ │- DM Multipath  : provides I/O failover and load-balancing of block devices      │          │
-│ │                  within the Linux kernel                                        │          │
-│ │                                                                                 │          │
-│ │                  - allows to configure multiple I/O paths between server nodes  │          │
-│ │                    and storage arrays(separate cables|switches|controllers)     │          │
-│ │                    into a single mapped/logical device.                         │          │
-│ │                                                                                 │          │
-│ │                  - Multipathing aggregates the I/O paths, creating a new device │          │
-│ │                    that consists of the aggregated paths.                       │          │
-│ │                                                                                 │          │
-│ │- Docker        : uses device mapper to create copy-on-write storage for         │          │
-│ │                  software containers                                            │          │
-│ │                                                                                 │          │
-│ │- DRBD          : Distributed Replicated Block Device                            │          │
-│ │                                                                                 │          │
-│ │- kpartx(8)     : utility called from hotplug upon device maps creation and      │          │
-│ │                  deletion                                                       │          │
-│ │- LVM2          : logical volume manager for the Linux kernel                    │          │
-│ │                                                                                 │          │
-│ │- Linux version of TrueCrypt                                                     │          │
-│ └─────────────────────────────────────────────────────────────────────────────────┘          │
-│ ┌──────────────────────────────────┬───────────────────────────────────────────────────────┐ │
-│ │*DEVICE─MAPPER LOGICAL-TO-TARGET:*│                                                       │ │
-│ ├──────────────────────────────────┘                                                       │ │
-│ │*MAPPED DEVICE*              │          *MAPPING TABLE*             │*TARGET DEVICE*      │ │
-│ │ (LOGICAL DRIVE)             │                                      │ PLUGIN (INSTANCE/s) │ │
-│ │                             │                                      │                     │ │
-│ │ logical device provided by  │ entry1:                              │ - filters           │ │
-│ │ device-mapper driver.       │ mapped-device1    ←→ target-device1  │ - access physical   │ │
-│ │ It provides an interface to │ └─ start address   └┬─ start address │   devices           │ │
-│ │ operate on.                 │                     └─ sector-length │                     │ │
-│ │                             │ entry2:                              │ Example plugins:    │ │
-│ │ Ex:                         │ mapped-device2    ←→ target-device2  │ - mirror for RAID   │ │
-│ │ - LVM2 logical volumes      │ └─ start address   └┬─ start address │ - linear   for LVM2 │ │
-│ │ - dm-multipath pseudo-disks │                     └─ sector-length │ - stripped for LVM2 │ │
-│ │ - "docker images"           │ entry3:                ^^^^^^^^^^^^^ │ - snapshot for LVM2 │ │
-│ │                             │ ....                   1sector = 512 │ - dm-multipath      │ │
-│ │                             │                                 bytes│                     │ │
-│ │                             │  NOTE: 1 sector = 512 bytes          │                     │ │
-│ └─────────────────────────────┴──────────────────────────────────────┴─────────────────────┘ │
-│ ┌────────────┬───────────────────────────────────────────────────────────────────────┐       │
-│ │*DATA FLOW:*│                                                                       │       │
-│ ├────────────┘                                                                       │       │
-│ │ App → (Data) → MAPPED DEVICE → DEVICE MAPPER     →  TARGET-DEVICE   → Physical     │       │
-│ │                                Route to target      PLUGIN instance   Block Device │       │
-│ │                                based on:                                           │       │
-│ │                                - MAPPED-DEVICE                                     │       │
-│ │                                - MAPPING-TABLE                                     │       │
-│ │                                                                                    │       │
-│ │ Data can be also modified in transition, which is performed, for example,          │       │
-│ │ in the case of device mapper providing disk encryption or simulation of            │       │
-│ │ unreliable hardware behavior.                                                      │       │
-│ └────────────────────────────────────────────────────────────────────────────────────┘       │
-│                                                                                              │
-│ ┌───────────────────────────┬─────────────────────────────────────────────────┐              │
-│ │*AVAILABLE MAPPING TARGETS*│                                                 │              │
-│ ├───────────────────────────┘                                                 │              │
-│ │- cache    : allows creation of hybrid volumes, by using solid-state drives  │              │
-│ │             (SSDs) as caches for hard disk drives (HDDs)                    │              │
-│ │- crypt    : provides data encryption, by using kernel Crypto API            │              │
-│ │- delay    : delays reads and/or writes to different devices (testing)       │              │
-│ │- era      : behaves in a way similar to the linear target, while it keeps   │              │
-│ │             track of blocks that were written to within a user-defined      │              │
-│ │             period of time                                                  │              │
-│ │- error    : simulates I/O errors for all mapped blocks      (testing)       │              │
-│ │- flakey   : simulates periodic unreliable behaviour         (testing)       │              │
-│ │- linear   : maps a continuous range of blocks onto another block device     │              │
-│ │- mirror   : maps a mirrored logical device, while providing data redundancy │              │
-│ │- multipath: supports the mapping of multipathed devices, through usage of   │              │
-│ │             their path groups                                               │              │
-│ │- raid     : offers an interface to Linux kernel's software RAID driver (md) │              │
-│ │- snapshot : (and snapshot-origin) used for creation of LVM snapshots,       │              │
-│ │             as part of the underlying copy-on-write scheme                  │              │
-│ │- striped  : stripes the data across physical devices, with the number of    │              │
-│ │             stripes and the striping chunk size as parameters               │              │
-│ │- thin     : allows creation of devices larger than the underlying           │              │
-│ │             physical device, physical space is allocated only when          │              │
-│ │             written to                                                      │              │
-│ │- zero     : equivalent of /dev/zero, all reads return blocks of zeros,      │              │
-│ │             and writes are discarded                                        │              │
-│ └─────────────────────────────────────────────────────────────────────────────┘              │
-└──────────────────────────────────────────────────────────────────────────────────────────────┘
-[[}]]
+[[{storage.device_mapper]]
+## Device Mapper
 
-## Software RAID 0/1/2/...  [[{storage.block_management.RAID]]
-  NOTE: LVM can also be used to create RAID, but the approach looks
-        to be less mature/supported.
- STEP 0│ D1=/dev/sda ; D2=/dev/sdb ;
-       │ NAME="/dev/md0" # ← (DESIRED NAME for the array)
-       │ MDADM_CREATE="sudo mdadm --create --verbose"
-       │ RAID 0            │ RAID 1           │ RAID 5:           │ RAID 6/10
-         ------------------+------------------+-------------------+----------
-       │ $MDADM_CREATE \   │ $MDADM_CREATE \  │ $MDADM_CREATE \   │ $MDADM_CREATE \
-       │ $NAME \           │ $NAME \          │ $NAME \           │ $NAME \
-       │*--level= * \      │ --level=1 \      │ --level=5 \       │ --level=6 \ (=10)
-       │ --raid-devices=2  │ --raid-devices=2 │ --raid-devices=3  │ --raid-devices=4 \
-       │ $D1 $D2           │ $D1 $D2          │ $D1 $D2 $D3       │ --raid-devices=4 \
-       │                                      │                   │  $D1 $D2 $D3 $D4
-       │                                      │                   │
-       │                                      │ *WARN:*Low perf.  │ RAID 10 admits also
-       │                                      │  in degraded mode │ an extra layout arg.
-       │                                      │                   │ near, far, offset
-       │
-       │ NOTE: For RAID 1,5..  create will take a time.
-       │ To monitor the progress:(*man 4 md, section "RAID10"*)
-       │ $ cat /proc/mdstat
-       │ →  Output
-       │ →  Personalities : [linear] ... [raid1] ....
-       │ →  md0 : active raid1 sdb[1] sda[0]
-       │ →     104792064 blocks super 1.2 [2/2] [UU]
-       │ →    *[==>..........]  resync = 20.2% *
-       │ →    *(212332/1047920) finish=... speed=.../sec*
-       │ → ...
- ──────┼────────────────────────────────────────────────────────────────────────────────────
- STEP 1│Ensure RAID was created properly
-       │
-       │$ cat /proc/mdstat
-       │→  Personalities : [linear] [multipath] ...
-       │→  md0 : active raid0 sdb[1] sda[0]
-       │→        209584128 blocks super 1.2 512k chunks
-       │→
-       │→  ...
- ──────┼────────────────────────────────────────────────────────────────────────────────────
- STEP 2│create ext4|xfs|... filesystem
-       │
-       │$ sudo mkfs.ext4 -F /dev/md0
- ──────┼────────────────────────────────────────────────────────────────────────────────────
- STEP 3│Mount at will somewhere. Optionally add to /etc/fstab
-       │
-       │$ sudo mount /dev/md0 /var/backups
- ──────┼────────────────────────────────────────────────────────────────────────────────────
- STEP 4│Keep layout at reboot
-       │
-       │$ sudo mdadm --detail --scan | \                       *RAID 5 WARN:*  :
-       │  sudo tee -a /etc/mdadm/mdadm.conf                     check again to make sure the array
-       │                                                        has finished assembling. Because of
-       │                                                        the way that mdadm builds RAID 5,
-       │                                                        if the array is still building, the
-       │                                                        number of spares in the array will
-       │                                                        be inaccurately reported:
- ──────┼────────────────────────────────────────────────────────────────────────────────────
- STEP 5│update initramfs, to make RAID available early at boot process
- (OPT.)│
-       │$ sudo update-initramfs -u
- ──────┴────────────────────────────────────────────────────────────────────────────────────
+* <https://en.wikipedia.org/wiki/Device_mapper>
+  - kernel framework mapping virtual block devices
+    to one (or more) physical block device
+  - Optionally can process and filter in/out data
 
-## Mirror existing disk with data
+### DMSETUP — LOW LEVEL LOGICAL VOLUME MANAGEMENT*
+
+* <https://linux.die.net/man/8/dmsetup>
+
+  CY&P from <https://wiki.gentoo.org/wiki/Device-mapper>
+> """
+> Normally, users rarely use dmsetup directly. The dmsetup is a very low level.
+> LVM, mdtool or cryptsetup is generally the  preferred way to do it,
+>  as it takes care of saving the metadata and issuing the dmsetup commands.
+>  However, sometimes it is desirable to deal with directly:
+> sometimes for recovery purposes, or to use a target that han't yet been ported
+> to LVM.
+> """
+
+* FEATURES:
+
+- The device mapper "touch" various layers  of the Linux kernel's storage stack.
+
+- Functions provided by the device mapper include linear, striped and error mappings,
+  as well as crypt and multipath targets.
+
+
+* EXAMPLES:
+
+- Two disks may be concatenated into one logical volume with a pair of linear
+  mappings, one for each disk.
+- crypt target encrypts the data passing through the specified
+  device, by using the Linux kernel's Crypto API.
+
+
+
+### KERNEL FEATURES AND PROJECTS BUILT ON TOP
+
+Note: user-space apps talk to the device mapper via *libdevmapper.so *
+  which in turn issues ioctls to the /dev/mapper/control device node.
+
+  ```
+  | - cryptsetup    : utility to setup disk encryption based on dm-crypt
+  | - dm-crypt/LUKS : mapping target providing volume encryption
+  | - dm-cache      : mapping target providing creation of hybrid volumes
+  | - dm-integrity  : mapping target providing data integrity, either
+  |                   using checksumming or cryptographic verification,
+  |                   also used with LUKS
+  | - dm-log-writes : mapping target that uses two devices, passing through
+  |                   the first device and logging the write operations performed
+  |                   to it on the second device
+  | - dm-verity     : validates the data blocks contained in a file system
+  |                   against a list of cryptographic hash values, developed as
+  |                   part of the Chromium OS project
+  | - dmraid(8)     : provides access to "fake" RAID configurations via the
+  |                   device mapper
+  | - DM Multipath  : provides I/O failover and load-balancing of block devices
+  |                   within the Linux kernel
+  |
+  |                   - allows to configure multiple I/O paths between server nodes
+  |                     and storage arrays(separate cables|switches|controllers)
+  |                     into a single mapped/logical device.
+  |
+  |                   - Multipathing aggregates the I/O paths, creating a new device
+  |                     that consists of the aggregated paths.
+  |
+  | - Docker        : uses device mapper to create copy-on-write storage for
+  |                   software containers
+  |
+  | - DRBD          : Distributed Replicated Block Device
+  |
+  | - kpartx(8)     : utility called from hotplug upon device maps creation and
+  |                   deletion
+  | - LVM2          : logical volume manager for the Linux kernel
+  |
+  | - Linux version of TrueCrypt
+  ```
+  ```
+  | DEVICE-MAPPER LOGICAL-TO-TARGET:
+  |---------------------------------
+  | *MAPPED DEVICE*              │          *MAPPING TABLE*             │*TARGET DEVICE*
+  |  (LOGICAL DRIVE)             │                                      │ PLUGIN (INSTANCE/s)
+  |                              │                                      │
+  |  logical device provided by  │ entry1:                              │ - filters
+  |  device-mapper driver.       │ mapped-device1    ←→ target-device1  │ - access physical
+  |  It provides an interface to │ └─ start address   └┬─ start address │   devices
+  |  operate on.                 │                     └─ sector-length │
+  |                              │ entry2:                              │ Example plugins:
+  |  Ex:                         │ mapped-device2    ←→ target-device2  │ - mirror for RAID
+  |  - LVM2 logical volumes      │ └─ start address   └┬─ start address │ - linear   for LVM2
+  |  - dm-multipath pseudo-disks │                     └─ sector-length │ - stripped for LVM2
+  |  - "docker images"           │ entry3:                ^^^^^^^^^^^^^ │ - snapshot for LVM2
+  |                              │ ....                   1sector = 512 │ - dm-multipath
+  |                              │                                 bytes│
+  |                              │  NOTE: 1 sector = 512 bytes          │
+  | ─────────────────────────────┴──────────────────────────────────────┴────────────────────
+  ```
+
+  ```
+  | DATA FLOW:
+  |───────────
+  | App → (Data) → MAPPED DEVICE → DEVICE MAPPER     →  TARGET-DEVICE   → Physical
+  |                                Route to target      PLUGIN instance   Block Device
+  |                                based on:
+  |                                - MAPPED-DEVICE
+  |                                - MAPPING-TABLE
+  |
+  | Data can be also modified in transition, which is performed, for example,
+  | in the case of device mapper providing disk encryption or simulation of
+  | unreliable hardware behavior.
+  ```
+
+  ```
+  | AVAILABLE MAPPING TARGETS
+  |
+  |- cache    : allows creation of hybrid volumes, by using solid-state drives
+  |             (SSDs) as caches for hard disk drives (HDDs)
+  |- crypt    : provides data encryption, by using kernel Crypto API
+  |- delay    : delays reads and/or writes to different devices (testing)
+  |- era      : behaves in a way similar to the linear target, while it keeps
+  |             track of blocks that were written to within a user-defined
+  |             period of time
+  |- error    : simulates I/O errors for all mapped blocks      (testing)
+  |- flakey   : simulates periodic unreliable behaviour         (testing)
+  |- linear   : maps a continuous range of blocks onto another block device
+  |- mirror   : maps a mirrored logical device, while providing data redundancy
+  |- multipath: supports the mapping of multipathed devices, through usage of
+  |             their path groups
+  |- raid     : offers an interface to Linux kernel's software RAID driver (md)
+  |- snapshot : (and snapshot-origin) used for creation of LVM snapshots,
+  |             as part of the underlying copy-on-write scheme
+  |- striped  : stripes the data across physical devices, with the number of
+  |             stripes and the striping chunk size as parameters
+  |- thin     : allows creation of devices larger than the underlying
+  |             physical device, physical space is allocated only when
+  |             written to
+  |- zero     : equivalent of /dev/zero, all reads return blocks of zeros,
+  |             and writes are discarded
+  ```
+[[storage.device_mapper}]]
+
+
+[[{storage.block_management.RAID]]
+## Software RAID 0/1/2/...
+
+* NOTE: LVM can also be used to create RAID, but the approach looks
+  to be less mature/supported.
+
+SETUP STEPS:
+
+0. STEP 0
+ ```
+ | D1=/dev/sda ; D2=/dev/sdb ;
+ | NAME="/dev/md0" # ← (DESIRED NAME for the array)
+ | MDADM_CREATE="sudo mdadm --create --verbose"
+ | RAID 0            │ RAID 1           │ RAID 5:           │ RAID 6/10
+ | ------------------+------------------+-------------------+----------
+ | $MDADM_CREATE \   │ $MDADM_CREATE \  │ $MDADM_CREATE \   │ $MDADM_CREATE \
+ | $NAME \           │ $NAME \          │ $NAME \           │ $NAME \
+ |*--level= * \      │ --level=1 \      │ --level=5 \       │ --level=6 \ (=10)
+ | --raid-devices=2  │ --raid-devices=2 │ --raid-devices=3  │ --raid-devices=4 \
+ | $D1 $D2           │ $D1 $D2          │ $D1 $D2 $D3       │ --raid-devices=4 \
+ |                                      │                   │  $D1 $D2 $D3 $D4
+ |                                      │                   │
+ |                                      │ *WARN:*Low perf.  │ RAID 10 admits also
+ |                                      │  in degraded mode │ an extra layout arg.
+ |                                      │                   │ near, far, offset
+ |
+ | NOTE: For RAID 1,5..  create will take a time.
+ | To monitor the progress:(*man 4 md, section "RAID10"*)
+ | $ cat /proc/mdstat
+ | →  Output
+ | →  Personalities : [linear] ... [raid1] ....
+ | →  md0 : active raid1 sdb[1] sda[0]
+ | →     104792064 blocks super 1.2 [2/2] [UU]
+ | →    *[==>..........]  resync = 20.2% *
+ | →    *(212332/1047920) finish=... speed=.../sec*
+ | → ...
+ ```
+
+1. STEP 1.  Ensure RAID was created properly
+ ```
+ |
+ | $ cat /proc/mdstat
+ | Personalities : [linear] [multipath] ...
+ | md0 : active raid0 sdb[1] sda[0]
+ |       209584128 blocks super 1.2 512k chunks
+ | ...
+ ```
+
+2. STEP 2. create ext4|xfs|... filesystem
+ ```
+ $ sudo mkfs.ext4 -F /dev/md0
+ ```
+
+3. STEP 3 Mount at will somewhere. Optionally add to /etc/fstab
+ ```
+ | $ sudo mount /dev/md0 /var/backups
+ ```
+4. STEP 4. Keep layout at reboot
+
+ ```
+ | $ sudo mdadm --detail --scan | \
+ |   sudo tee -a /etc/mdadm/mdadm.conf
+ |
+ |  jRAID 5 WARNING: check again to make sure the array has finished assembling. Because of
+ |   the way that mdadm builds RAID 5, if the array is still building, the number of spares
+ |   in the array will be inaccurately reported:
+ ```
+5.  STEP 5, update initramfs, to make RAID available early at boot process (OPT.)
+ ```
+ | $ sudo update-initramfs -u
+ ```
+
+ ## Mirror existing disk with data
+
+
 This section covers the tipical case:
 
-  INITIAL SCENARIO            →  DESIRED FINAL SCENARIO
-  ────────────────────────────┼────────────────────────────────────────────────
- *Disk  *WithO*Important data*│ *Disk  *, part of  *new RAID  *withO*Mirrowed Important data*
-  (/dev/sda1) *──────────────*│                                     *───────────────────────*
- *Disk  *New  Disk            │ *Disk  *, part of  *new RAID  *withO*Mirrowed Important data*
-  (/dev/sdb)  *──────────────*│                                     *───────────────────────*
+  ```
+  INITIAL SCENARIO  ··> DESIRED FINAL SCENARIO
+  ───────────────────┼────────────────────────────────────────────────
+  Disk0  with data   │  Disk0, part of new RAID   with Mirrowed data
+  (/dev/sda1)        │                                 ─────────────
+  Disk1  New  Disk   │  Disk1, part of new RAID   with Mirrowed data
+  (/dev/sdb)         │                                 ─────────────
+  ```
 
  Some care must be taken to avoid loosing the data in the RAID creation procedure.
 Add mirror to existing disk without deleting data:
- ──────┬────────────────────────────────────────────────────────────────────────────────────
- STEP 1│Create *incomplete RAID  * with missing disks:
-       │$ mdadm --create --verbose
-       │     /dev/md0
-       │     --level=1
-       │     --raid-devices=2  */dev/sdb* *missing*
- ──────┼────────────────────────────────────────────────────────────────────────────────────
- STEP 2│ Format partition:
-       │ $ mkfs.ext4 /dev/md0
- ──────┼────────────────────────────────────────────────────────────────────────────────────
- STEP 3│ CopyO*Important data*from  *existing disk* to new array:
-       │
-       │ $ sudo mount /dev/md0 /mnt/newarray
-       │ $ tar -C  */mnt/disk1WithData*-cf - | tar -C  */mnt/newarray/* -xf -
-       │  *WARN:* - Check that there are no errors in the execution. Maybe sudo is needed
-       │          - Inspect visually the content of /mnt/newarray and get sure it contains
-       │            all ourO*Important data* before continuing. Any other tests are welcome.
- ──────┼────────────────────────────────────────────────────────────────────────────────────
- STEP 4│ add original disk to disk array
-       │
-       │ $mdadm /dev/md0 --add  */dev/sda1* ←  *WARN:* if STEP 3 fails or is skipped
-       │                                              *Important data* will be LOST!!!
- ──────┼────────────────────────────────────────────────────────────────────────────────────
- STEP 5│Keep layout at reboot
-       │
-       │$ sudo mdadm --detail --scan | \
-       │  sudo tee -a /etc/mdadm/mdadm.conf
- ──────┴────────────────────────────────────────────────────────────────────────────────────
 
-## Freing RAID Resources
-*PRE-SETUP (OPTIONAL) RESETTING EXISTING RAID DEVICES*
- ────────────────────────────────────────────────────
+1.  STEP 1,Create **incomplete RAID** with missing disks:
+  ```
+  | $ mdadm --create --verbose
+  |   /dev/md0
+  |   --level=1
+  |   --raid-devices=2  /dev/sdb   #  NOTICE: skip /dev/sda1 with important data
+  ```
+2. STEP 2, Format partition:
+  ```
+  | $ mkfs.ext4 /dev/md0
+  ```
 
-  Free physical storage devices to reassign to new data arrays.
+3. STEP 3, Copy Important data from **existing disk** to new array:
+  ```
+  | $ sudo mount /dev/md0 /mnt/newarray
+  | $ tar -C  */mnt/disk0WithData*-cf - | tar -C  */mnt/newarray/* -xf -
+  |  *WARN:* - Check that there are no errors in the execution. Maybe sudo is needed
+  |          - Inspect visually the content of /mnt/newarray and get sure it contains
+  |            all ourO*Important data* before continuing. Any other tests are welcome.
+  ```
 
-   *WARNING!!!!*  - any data stored will be lost
-   *WARNING!!!!*  - Backup your RAID data firt
+4. STEP 4, add original disk to disk array
+  ```
+  | $ mdadm /dev/md0 --add  /dev/sda1 # <··  *WARN:* if STEP 3 fails or is skipped
+  |                                                 *Important data* will be LOST!!!
+  ```
+5. STEP 5, Keep layout at reboot
+  ```
+  | $ sudo mdadm --detail --scan | \
+  |  sudo tee -a /etc/mdadm/mdadm.conf
+  ```
 
-  $ cat /proc/mdstat  ← Find any active array
-    →   Output
-    →   Personalities : [raid0] [linear] [multipath] [raid1] [raid6] [raid5] [raid4] [raid10]
-    →  *md0 : active raid0 sdc[1] sdd[0]*
-    →         209584128 blocks super 1.2 512k chunks
-    →  ...
-  $ sudo umount /dev/md0          ← Unmount the array
-  $ sudo mdadm --stop /dev/md0    ← STOP the array
-  $ sudo mdadm --remove /dev/md0  ← REMOVE the array
+## Releasing/freeing RAID Resources
 
 
+ 0. PRE-SETUP (OPTIONAL) RESETTING EXISTING RAID DEVICES
 
-  $ lsblk -o NAME,SIZE,FSTYPE,TYPE,MOUNTPOINT ← Find the devices used to build the array
-   →  Output
-   →  NAME     SIZE FSTYPE            TYPE MOUNTPOINT
-   →  sda      100G                   disk
-   →  sdb      100G                   disk
-   →  sdc      100G*linux_raid_member*disk
-   →  sdd      100G*linux_raid_member*disk
-   →  vda       20G                   disk
-   →  ├─vda1    20G ext4              part /
-   →  └─vda15    1M                   part
-   →  ...
-      ^^^
-      WARN: /dev/sd* name can change at reboot!
+  ```
+  | *WARN!* any data stored will be lost
+  | *WARN!* Backup your RAID data fisrt
+  |
+  | $ cat /proc/mdstat              # <·· Find any active array
+  | ( Output like )
+  | Personalities : [raid0] [linear]
+  |  [multipath] [raid1] [raid6]
+  |  [raid5] [raid4] [raid10]
+  |  md0 : active raid0 sdc[1] sdd[0]
+  |  209.. blocks super 1.2 512k chunks
+  | ...
+  | $ sudo umount /dev/md0          # <·· Unmount the array
+  | $ sudo mdadm --stop /dev/md0    # <·· STOP the array
+  | $ sudo mdadm --remove /dev/md0  # <·· REMOVE the array
+  |
+  | $ lsblk -o NAME,SIZE,FSTYPE,TYPE,MOUNTPOINT # <·· Find devices used to build the array
+  | (Output like)
+  | NAME     SIZE FSTYPE            TYPE MOUNTPOINT
+  | sda      100G                   disk
+  | sdb      100G                   disk
+  | sdc      100G*linux_raid_member*disk
+  | sdd      100G*linux_raid_member*disk
+  | vda       20G                   disk
+  | ├─vda1    20G ext4              part /
+  | └─vda15    1M                   part
+  | ...
+  | ^^^
+  | WARN: /dev/sd* name can change at reboot!
+  |
+  | $ sudo mdadm --zero-superblock /dev/sdc  # <· zero the superblock to reset to normal
+  | $ sudo mdadm --zero-superblock /dev/sdd  # <· zero the superblock to reset to normal
+  |
+  | $ vim /etc/fstab
+  |   ...
+  |   # /dev/md0 /var/backups ext4 defaults,nofail,discard 0 0 # <·· remove/comment line
+  |
+  | $ vim /etc/mdadm/mdadm.conf
+  |   ...
+  |   # ARRAY /dev/md0 metadata=1.2 name=mdadmwrite:0 UUID=7...# <·· remoe/comment line
+  |
+  | $ sudo update-initramfs -u   ←  Update initramfs
+  ```
+[[storage.block_management.RAID}]]
 
-  $ sudo mdadm --zero-superblock /dev/sdc  ← zero the superblock to reset to normal
-  $ sudo mdadm --zero-superblock /dev/sdd  ← zero the superblock to reset to normal
+[[{storage.block_management.DRDB,storage.distributed]]
+## DRBD (Distributed Replicated Block Device)
+* <https://www.tecmint.com/setup-drbd-storage-replication-on-centos-7/>
 
-  $ vim /etc/fstab
-    ...
-    #*/dev/md0*/var/backups ext4 defaults,nofail,discard 0 0   ←  Comment out/remove any references
+flexible and versatile replicated storage solution for Linux. It mirrors the
+content of block devices such as hard disks, partitions, logical volumes etc.
+between servers. It involves a copy of data on two storage devices, such that
+if one fails, the data on the other can be used.
 
-  $ vim /etc/mdadm/mdadm.conf
-    ...
-    # ARRAY /dev/md0 metadata=1.2 name=mdadmwrite:0 UUID=7...  ←  Comment out/remove the array definition
+- It's a high-performance + low-latency low-level building block for block
+  replication.
 
-  $ sudo update-initramfs -u   ←  Update initramfs
+NOTE:
+* Probably, higher level replication strategies ("Ceph", "GlusterFS") are preferred.
+  CEPH offers integration with OpenStack.<br/>
+  """...However, Ceph's performance characteristics prohibit its
+  deployments in certain low-latency use cases, e.g., as backend for
+  MySQL ddbbs"
+  (So it looks like DRBD is preferred for Databases that basically "ignore" the
+  File System tree structure).
+  [[{02_doc_has.comparative}]]
 
-[[}]]
-
-## DRBD (Distributed Replicated Block Device) [[{storage.block_management.DRDB,storage.distributed]]
-<https://www.tecmint.com/setup-drbd-storage-replication-on-centos-7/>
-  flexible and versatile replicated storage solution for Linux. It mirrors the
-  content of block devices such as hard disks, partitions, logical volumes etc.
-  between servers. It involves a copy of data on two storage devices, such that
-  if one fails, the data on the other can be used.
-
-  - It's a high-performance + low-latency low-level building block for block
-    replication.
-
-  NOTE:
-   Probably, higher level replication strategies ("Ceph", "GlusterFS") are preferred.  [[{02_doc_has.comparative]]
-   CEPH offers integration with OpenStack.
-    """...However, Ceph's performance characteristics prohibit its
-       deployments in certain low-latency use cases, e.g., as backend for
-       MySQL ddbbs"
-   (So it looks like DRBD is preferred for Databases that basically "ignore" the
-   File System tree structure).                                                        [[}]]
-
-- See also DRBD4Cloud research project, aiming at ncreasing the applicability
-  adn functionality for cloud markets.
-  <https://www.ait.ac.at/en/research-topics/cyber-security/projects/extending-drbd-for-large-scale-cloud-deployments/>
-  """RBD is currently storing up to 32full data replicas on remote storage
-     nodes. DRBD4Cloudwill allow for the usage of erasure coding, which allows
-     one to split data into a number of fragments (e.g., nine), such that
-     only a subset (e.g., three) is needed to read the data. This will
-     significantly reduce the required storage and upstream band-width
-     (e.g., by 67 %), which is important, for instance, forgeo-replication with
-      high network latency."""
-[[}]]
-
-[[}]]
+* See also DRBD4Cloud research project, aiming at ncreasing the applicability
+  and functionality for cloud markets.
+  * <https://www.ait.ac.at/en/research-topics/cyber-security/projects/extending-drbd-for-large-scale-cloud-deployments/>
+> """RBD is currently storing up to 32full data replicas on remote storage
+> nodes. DRBD4Cloudwill allow for the usage of erasure coding, which allows
+> one to split data into a number of fragments (e.g., nine), such that
+> only a subset (e.g., three) is needed to read the data. This will
+> significantly reduce the required storage and upstream band-width
+> (e.g., by 67 %), which is important, for instance, forgeo-replication with
+> high network latency."""
+[[storage.block_management.DRDB}]]
 
 
+# FLASH BLOCK STORAGE  [[{storage.flash]]
 
-# BLOCK LAYER FLASH  [[{]]
-## Detecting false Flash [[{storage.flash,security.storage]]
-<https://www.linuxlinks.com/essential-system-tools-f3-detect-fix-counterfeit-flash-storage/>
+## Detecting false Flash [[{storage.flash.f3,security.storage,security.fake_flash,]]
+
+* <https://www.linuxlinks.com/essential-system-tools-f3-detect-fix-counterfeit-flash-storage/>
 2019-02-08  Steve Emms
-- f3: Detect and fix counterfeit flash storage:
-- f3 stands for Fight Flash Fraud, or Fight Fake Flash.
+- f3 (Fight Flash Fraud or Fight Fake Flash) Detect and fix counterfeit flash storage
 
 - flash memory stage is particularly susceptible to fraud.
 - The most commonly affected devices are USB flash drives,
@@ -525,11 +553,13 @@ Add mirror to existing disk without deleting data:
   - open source implementation of the algorithm used by H2testw.
 
 - Installation:
-  $ git clone https://github.com/AltraMayor/f3.git
-  $ make # compile f3write,f3read
-  $ make install # /usr/local/bin by default
-  $ make extra # compile and install f3probe, f3fix, and f3brew
-  $ sudo make install-extra
+  ```
+  | $ git clone https://github.com/AltraMayor/f3.git
+  | $ make # compile f3write,f3read
+  | $ make install # /usr/local/bin by default
+  | $ make extra # compile and install f3probe, f3fix, and f3brew
+  | $ sudo make install-extra
+  ```
 
 - Ussage:
   - f3write fills a drive with 1GB .h2w files to test its real capacity.
@@ -555,431 +585,488 @@ Add mirror to existing disk without deleting data:
 
   - f3brew
     f3brew is designed to help developers determine how fake drives work.
+[[storage.flash.f3}]]
+
+
+## bmaptool ("dd enhanced") [[{]]
+
+* <https://github.com/tldr-pages/tldr/blob/master/pages/common/bmaptool.md>
+
+*  Create or copy block maps intelligently (designed to be faster than cp or dd).
+* <https://source.tizen.org/documentation/reference/bmaptool>
 [[}]]
 
+[[{storage.flash,storage.ssd,performance.storage]]
+## Optimizing SSD
 
-## bmaptool (dd++) [[{]]
- https://github.com/tldr-pages/tldr/blob/master/pages/common/bmaptool.md
-  Create or copy block maps intelligently (designed to be faster than cp or dd).
-  https://source.tizen.org/documentation/reference/bmaptool
-[[}]]
+* REF: <https://searchdatacenter.techtarget.com/tip/Optimizing-Linux-for-SSD-usage>
 
-## Optimizing SSD [[{storage.flash,storage.ssd,performance.storage]]
-  REF: https://searchdatacenter.techtarget.com/tip/Optimizing-Linux-for-SSD-usage
-  *Setting disk partitions*
-  SSD disks uses  4 KB blocks for reading
-                 512KB blocks for deleting!!!
+  * Setting disk partitions:
+  ```
+  | SSD disks uses  4 KB blocks for reading
+  |                512KB blocks for deleting!!!
+  ```
 
   To makes sure partitions are aligned to SSD-friendly settings:
-  $ sudo fdisk -H 32 -C 32 –c ....
-               ^^^^^ ^^^^^
-               head  cylinder
-               size  size
+  ```
+  | $ sudo fdisk -H 32 -C 32 –c ....
+  |              ·   · └───┴─  cylinder size
+  |              └───┴─······  head size
+  ```
 
-- SETTING UP EXT4 FOR SSD)
- - Optimize ext4 erase blocks by ensuring that files smaller
-   than 512 KB are spread across different erase blocks:
-   - specify stripe-width and stride to be used. (default: 4KB)
-     - alt.1: FS creation:
-       $ sudo mkfs.ext4 -E stride=128,stripe-width=128 /dev/sda1
-     - alt.2: existing FS:
-       $ tune2fs -E stride=128,stripe-width=128 /dev/sda1
+### SETTING UP EXT4 FOR SSD)
+- Optimize ext4 erase blocks by ensuring that files smaller
+  than 512 KB are spread across different erase blocks:
+  - specify stripe-width and stride to be used. (default: 4KB)
+    - alt.1: FS creation:
+      ```
+      | $ sudo mkfs.ext4 -E stride=128,stripe-width=128 /dev/sda1
+      ```
+    - alt.2: existing FS:
+      ```
+      | $ tune2fs -E stride=128,stripe-width=128 /dev/sda1
+      ```
 
 - SETTING I/O SCHEDULER FOR SSD)
   - Default value is Complete Fair Queueing.
     SSD benefits from the deadline scheduler:
-    - Include a line like next one in /etc/rc.local:
-
-      echo deadline > /sys/block/sda/queue/scheduler
+    - Include a line like next one in `/etc/rc.local`:
+      ```
+      $ sudo echo deadline > /sys/block/sda/queue/scheduler
+      ```
 
 - TRIMMING THE DATA BLOCKS FROM SSD)
   - Trimming makes sure that when a file is removed, the data blocks
     actually do get wiped.
   - Without trimming, SSD performance degrades as data blocks get
     filled up.
-    /dev/sda1   /     ext4     *discard*,errors=remount-ro,noatime  0 1  <- Add "discard" option to /etc/fstab to enable trimming. Ex:
-                                                           ^^^^^^^
-                                                     do not update file access time
-                                                     EVERY TIME FILE IS READ, minimizing
-                                                     writes to FS.
-[[}]]
+    ```
+       enable trimming ·─┬─────┐
+                         v     v
+    /dev/sda1  /  ext4  discard,errors=remount-ro,noatime  0 1  . Ex:
+                                                  ^     ^
+                do not update file access time ···┴─────┘
+                EVERY TIME FILE IS READ, minimizing
+                writes to FS.
+    ```
+[[storage.flash}]]
 
-#[f2fs_summary]
-## Flash Friendly FS "F2FS" [[{storage.flash,security.encryption]]
-<https://www.usenix.org/conference/fast15/technical-sessions/presentation/lee>
-<https://mjmwired.net/kernel/Documentation/filesystems/f2fs.rst>
-<man mkfs.f2fs>
-## Much better than EXT4 for Flash Storage:
-  - ~3.1x faster with iozone
-  - ~2.0x faster with SQLite
-  - ~2.5x faster in SATA SSD and 1.9 (PCIe SSD).
+[[{storage.flash,security.encryption]]
+## Flash Friendly FS "F2FS"
 
- *#########################*
- *# man mkfs.f2fs summary #*
- *#########################*
-  EXAMPLE:                            *STEP 1:*
-  $*# mkfs.f2fs -O encrypt         * ← Formats to f2fs supporting encrypt.
-  $*  [ -d debugging-level ] \     * ← 0: basic debug
-  $*  - *encrypt*[,options]  \     * ←*encrypt: enable encryption*
-  $*  [ -e extension-list ]  \     * ← treat files with extension as cold files to be stored in
-                                       *cold log*.  Default list includes most multimedia extensions
-                                       (jpg, gif, mpeg, mkv, ...)
-  $*  [ -f ]                 \     * ← Force overwrite if existing FS is detected.
-  $*  [ -l volume-label ]    \     *
-  $*  [ -m ]                 \     * ← Enable block-zoned-feature support
-                                       Useful in NVMe disks according to <https://zonedstorage.io/>
-  $*  [ -q  ]                \     * ← Quiet mode.
-┌→$*  [ other options   ]\   \     * ← ** *
-│ $*    /dev/... [sectors]         *
-└ ** *:
-   [ -a heap-based-allocation ]            [ -t nodiscard/discard ]
-   [ -c device ]                           [ -w specific sector_size for target sectors ]
-   [ -o overprovision-ratio-percentage ]   [ -z #-of-sections-per-zone ]
-   [  -s  #-of-segments-per-section ]
+* <https://www.usenix.org/conference/fast15/technical-sessions/presentation/lee>
+* <https://mjmwired.net/kernel/Documentation/filesystems/f2fs.rst>
+* <man mkfs.f2fs>
+## Much better than EXT4 for Flash Storage:  [[performance.storage]]
+- ~3.1x faster with iozone
+- ~2.0x faster with SQLite
+- ~2.5x faster in SATA SSD and 1.9 (PCIe SSD).
 
-  $*# mount /dev/... ${MNT}         *  *STEP 2:* Mount device partition "somewhere"
-  $*# mkdir ${MNT}/dir1             *
-  $*# mkdir ${MNT}/dir2             *
+`man mkfs.f2fs` summary
 
-                                       *STEP 3:* Use f2fscrypt to encrypt (f2fs-tools v1.9+)
-  $*# f2fscrypt add_key -S 0x1234   * ← create key in session keyring to be used
-      ...                               to set the policy for encrypted directories.
-     Added key with descriptor          [-k $keyring] Use $keyring. (default:Session keyring)
-    *[28e21cc0c4393da1]*                -S 0x1234: use simple salt
-     └────────────────┴────────────   ← Kernel will create a new key with a key descriptor.
-                                        Users apps will later on inform kernel about key
-                                        to use by passing the matching descriptor
+1. STEP 1: Formats to f2fs supporting encrypt.
+  ```
+  | # mkfs.f2fs -O encrypt
+  |   [ -d debugging-level ] \   ← 0: basic debug
+  |   - *encrypt*[,options]  \   ← encrypt: enable encryption
+  |   [ -e extension-list ]  \   ← treat files with extension as cold files to be stored in
+  |                                *cold log*.  Default list includes most multimedia extensions
+  |                                (jpg, gif, mpeg, mkv, ...)
+  |   [ -f ]                 \   ← Force overwrite if existing FS is detected.
+  |   [ -l volume-label ]    \
+  |   [ -m ]                 \   ← Enable block-zoned-feature support
+  |                                Useful in NVMe disks according to <https://zonedstorage.io/>
+  |   [ -q  ]                \   ← Quiet mode.
+  |   [ other options ¹ ]\   \
+  |     /dev/... [sectors]
+  |
+  |  ¹
+  |  [ -a heap-based-allocation ]            [ -t nodiscard/discard ]
+  |  [ -c device ]                           [ -w specific sector_size for target sectors ]
+  |  [ -o overprovision-ratio-percentage ]   [ -z #-of-sections-per-zone ]
+  |  [  -s  #-of-segments-per-section ]
+  ```
 
+2. STEP 2: Mount device partition "somewhere"
+  ```
+  | # mount /dev/... ${MNT}
+  | # mkdir ${MNT}/dir1
+  | # mkdir ${MNT}/dir2
+  ```
 
-(use f2fscrypt new_session to isolate temporal keyring)
+3. STEP 3: Use f2fscrypt to encrypt (f2fs-tools v1.9+).
+   create key in session keyring to be used to set the
+   policy for encrypted directories.
+  ```
+  | # f2fscrypt add_key -S 0x1234 <· -k $keyringX to use keyringX.
+  |   ...                               (default to Session keyring)
+  |  Added key with descriptor       -S 0x1234: use simple salt
+  |   28e21cc0c4393da1
+  |  └──────┬────────┘
+  |  Kernel will create new key with a key-descriptor.
+  |  Users apps will later on inform kernel about key
+  |  to use by passing the matching descriptor
+  ```
+4. use f2fscrypt new_session to isolate temporal keyring
 
-  $*# f2fscrypt set_policy      \   * ← Set enc.policy (8bytes/16-hex sym.key) for dir.
-  $* * *28e21cc0c4393da1*$*     \   *   ← (use by kernel to search for key)
-  $*    ${MNT}/dir1  ${MNT}/dir2 .. *   ← dir.list to apply policy (sym.key encryp.key)
+  ```
+  | # f2fscrypt set_policy      \   * ← Set enc.policy (8bytes/16-hex sym.key) for dir.
+  |     28e21cc0c4393da1        \   *   ← (use by kernel to search for key)
+  |     ${MNT}/dir1  ${MNT}/dir2 .. *   ← dir.list to apply policy (sym.key encryp.key)
+  |
+  | # edit ${MNT}/dir1/test.txt     * ← Create encrypted file
+  |
+  | (..........  REBOOT MACHINE .................)
+  ```
 
-  $*# edit ${MNT}/dir1/test.txt     * ← Create encrypted file
-
- *(..........  REBOOT MACHINE .................)*
-
-  $*# ls -l ${MNT}/dir1             *
-    -rw-r--r-- ... *zbx7tsUEMLzh+...* ← Output after reboot.
-
-  $*# f2fscrypt get_policy $MNT/dir1* ← Retrieve enc.policy
-  $*/.../dir1/: *28e21cc0c4393da1*  *   ← This provide a hint about key (Salt?) to use.
-
-  $*# f2fscrypt add_key -S 0x1234   * ← Recreate same key using same salt
-  $* ...                            *
-  $* Added key with descriptor      *
-    *[28e21cc0c4393da1]*              ← Key descriptor must match
-
-  $*# ls -l ${MNT}/dir1/            *
-    -rw-r--r--. ... *21:41 test.txt*
-
-
-  $*# keyctl show                   * ←  Show process keyring/s  [Troubleshooting]
-   *Session*Keyring
-      84022412 --alswrv  0     0  keyring: _ses
-     204615789 --alswrv  0 65534   \_ keyring: _uid.0
-     529474961 --alsw-v  0     0   \_ logon: f2fs:28e21cc0c4393da1
-                                             └─┬─┘
-                                           ex key-type used by f2fs file-system.
+5. Post reboot checks:
+  ```
+  | # ls -l ${MNT}/dir1
+  | -rw-r--r-- ... *zbx7tsUEMLzh+... <· Output after reboot.
+  |
+  | # f2fscrypt get_policy $MNT/dir1 <· Retrieve enc.policy
+  | /.../dir1/: *28e21cc0c4393da1*      <· This provide a hint about
+  |                                         key (Salt?) to use.
+  | # f2fscrypt add_key -S 0x1234    ← Recreate same key using same salt
+  |  ...
+  |  Added key with descriptor
+  | *[28e21cc0c4393da1]*             ← Key descriptor must match
+  |
+  | # ls -l ${MNT}/dir1/
+  | -rw-r--r--. ... *21:41 test.txt*
+  |
+  | # keyctl show                    ←  Show process keyring/s  [Troubleshooting]
+  |  *Session*Keyring
+  |     84022412 --alswrv  0     0  keyring: _ses
+  |    204615789 --alswrv  0 65534   \_ keyring: _uid.0
+  |    529474961 --alsw-v  0     0   \_ logon: f2fs:28e21cc0c4393da1
+  |                                            └─┬─┘
+  |                                          ex key-type used by f2fs file-system.
+  ```
 [[storage.flash}]]
 
 
-[[}]]
+[[storage.flash}]]
+[[storage.block_layer}]]
 
 # FILE SYSTEM LAYER
-## Find duplicate files [[{]]
-  https://github.com/tldr-pages/tldr/blob/master/pages/common/fdupes.md
-  https://github.com/tldr-pages/tldr/blob/master/pages/common/jdupes.md
-  enhanced fork of fdupes.
-  More information: https://github.com/jbruchon/jdupes.
+
+[[{storage.101.fdupes,troubleshooting.storage.duplicates]]
+## Find duplicate files
+
+* <https://github.com/tldr-pages/tldr/blob/master/pages/common/fdupes.md>
+* <https://github.com/tldr-pages/tldr/blob/master/pages/common/jdupes.md>
+  enhanced fork of fdupes.  More information: <https://github.com/jbruchon/jdupes.>
+[[troubleshooting.storage.duplicates}]]
+
+[[{storage.file_system,linux.101]]
+
+## File System Management Basics
+
+### MOVING AROUND FS
+```
+| BASICS ---------------------------------------------------
+| $ pwd            # (P)rint (W)orking (D)irectory
+| $ cd /my/new/dir # (C)hange (d)irectory
+| $ cd             # move to $HOME directory
+| $ cd ~           # '~' is alias for $HOME
+| $ pushd.         # Remember current dir.
+|                    (put on "FIFO" stack)
+| $ cd ..          # Change to parent directory
+| $ popd           # change to lastest dir. in stack
+|                    (saved with pushd)
+|
+| MANAGING DIRECTORIES -------------------------------------
+| $ mkdir -p ~/projects/project01 # Make directory
+|          ↑
+|      Create any intermediate dirs if needed.
+| $ rm -rf ~/projects/project01/  # Remove recursively (dangerous)
+|
+| COPYING FILES --------------------------------------------
+| $ cp    fileToCopy      /destination/directory/ *
+| $ cp -R directoryToCopy /destination/directory/ *
+|      ^^
+|      -R: Recursive copy of dir.content
+|
+|
+| *RENAME FILES*
+| $ mv myFile1 finalName # ← move myFile1 to new name
+|                        ^   (rename) finalName
+```
+
+### MOVING FILES
+
+```
+| $ mv myFile1 /my/path02/ *  # ← move myFile1 to
+|                       ^      /my/path02 directory
+|                    ┌──┘
+| *WARN*: The final '/' indicates taht path02
+|         is a directory.
+|         Otherwise if "path02" does NOT exits,
+|         myFile1 will move to the '/my/' directory
+|         and renamed as wrongl 'path02' file.
+|
+| *COPYING FILES - Cool and safe way ----------------------
+|   $ tar cf - dirToCopy | \  * ←    Compress to STDOUT
+|     tar -C newBaseDir -xf - * ← Decrompress from STDIN
+|
+|  *REMOVE FILES/DIRECTORIES*
+|   $ rm -r -f dirOrFile * ← Alternative 1: Unsafe way:
+|                            -r recursive deletion of directories
+|                            -f force deletion (do not confirm)
+|                           *Never ever "-r -f" as root*
+|
+|   $ find ./dir -mmtime +10 \ * ← Alternative 2: Find files
+|     | xargs rm -f            *   and send to STDOUT.
+|                                  Exec. rm -f for each line
+|                                  in STDIN
+|
+|  *REMOVE FILES AND CONTENT BY OVERWRITING FIRST*
+|
+|  $ shred -n 2 -z -v /tmp/myImportantSecret
+|             ^  ^  ^
+|             ·  │  └·· show progress
+|             ·  └····· Finally write over with zeroes
+|             └········ Overwrite twice with random data
+|
+|  <https://linux.die.net/man/1/shred>
+|  prevent data from being recovered by
+|  hackers using software (and most
+|  probably hardware)
+```
+
+
+### LISTING  FILES
+```
+| $ ls" -"optionalFlags"   * ← list files in current
+|        ^^^^^^^^^^^^^^^       directory
+| -l: ("long"), show permissions, size,
+|     modification date, ownership
+| -a: ("all" ), shows also hidden (.*) files
+| -d: Show only directory entry(vs directory contents)
+| -F: ("format") append helper symbol
+| -S: sort by size in descending order
+| -R: ("recursive") list recursively children dirs
+```
+
+### CHECK DISK FREE/USED SPACE
+```
+| <https://linux.die.net/man/0/df>
+| $ df -k -h  -x devtmpfs -x tmpfs * ← df: (D)isk (F)ree
+|       ↑  ↑   ↑           ↑
+|       │  │   Skip "false" filesystems(dev,...)
+|       │  └── show in human readable units
+|       └───── scale size by 1K before printing
+| <https://linux.die.net/man/1/du>
+| $ du -sch dir1 file2 # * *isk  * *ssage
+|       ↑↑↑
+|       ││└── show in human readable units
+|       │└─── produce a grand total
+|       └──── display only total for each arg
+```
+
+### FILE/DIRECTORIES PERMISSIONS
+- Change who can read,write or execute to a file or directory
+  ```
+  | $ ls -ld mySecretDir   # Before changing permissions.
+  |  ┌─┬······· owner    can read, write and execute (enter) dir.
+  |  · ·┌─┬···· (g)roup  can read and execute (enter) the directory
+  |  · ·· ·┌─┬─ (o)thers can read and execute (enter) the directory
+  | -rwxr-xr-x. 1 userA groupA ... mySecretDir/
+  |
+  | $ chmod go-rwx mySecretDir
+  | $ chmod go-7   mySecretDir  # Change permissions for (g)roup and (o)thers
+  |         └┘^^
+  |         · ·└·· (r)ead, (w)rite, e(x)ecute
+  |         · ·     4    +  2     + 1
+  |         · └···  - => remove permission
+  |         ·       + => add    permission
+  |         └·····  (u)ser   (owner of file/dir)
+  |                 (g)roup  (group of file/dir)
+  |                 (o)thers
+  |
+  | $ ls -ld mySecretDir   # After changing permissions.
+  |  ┌─┬······· owner    can read, write and execute (enter) dir.
+  |  · ·┌─┬···· (g)roup  can not read/write/exec(enter)
+  |  · ·· ·┌─┬─ (o)thers can not read/write/exec(enter)
+  | -rwx------. 1 userA groupA ... mySecretDir/
+  ```
+
+- Change someFile owner and group
+  ```
+  | $ chown newOwner:newGroup someFile
+  ```
+
+### SEARCHING FILES/DATA
+  ```
+  | REF: <https://linux.die.net/man/1/find>
+  |
+  | $ find /var/lib
+  |    -type f        \              ←     f: only files
+  |                                        d: only directories
+  |                                        l: only sym.links
+  |    -iname "*html" \              ← AND whose name matches *html
+  |                                         name:do NOT ignore case
+  |                                        iname:do     ignore case
+  |    -mmin  -30     \              ← AND whose modification time
+  |                                        is '30 or less'(-30)
+  |                                        minutes (mmin)
+  |    -msize +20k    \              ← AND whose size (msize) is
+  |                                        20k(ilobytes) or more
+  |    -not \(  \                    ← Skip
+  |      -path "./node_modules/*" \  ← node_modules dir.
+  |      -o \                        ← OR
+  |      -path "./build/*"           ← build  dir.
+  |     \)
+  |    -exec   *grep "Variable01" \  ← execute  *command...*
+  |      {} \;                         for each found file
+  ```
+
+### GRAPHICAL TOOLS:
+
+- Easier to use, but not scriptable.
+- Discouraged for system administration.
+
+  ```
+  | $ mc        # launch Midnight Commander. UI running on terminals
+  | $ rancher   # Light and Nice Console File Manager with VI Key Bindings
+  | $ nautius . # GNOME File explorer.
+  | $ dolphin   # KDE File explorer.
+  ```
+
+ ### HARD/SOFT LINKS
+- In UNIX an **inode** is the low-level structure that stores the physical location
+  in disk of a given file. This "inode" is not visible to the user.
+- The user visible entities are the file system paths, that point to the real inodes:
+
+  ```
+  | /my/file/path ·>(points to)·> |inode|·>(points to)·> physical block_on_disk
+  | ^^^^^^^^^^^^^                  ^^^^^                 ^^^^^^^^^^^^^^^^^^^^^^
+  | visible in                  invisible to              managed by HD,
+  | user shells,                users, managed            internal circuit
+  | GUI explorers,..            by the OS kernel          networks NAS,...
+  ```
+
+  ```
+  | $ ln -s /my/file/path  /my/symbolic/link <· create symbolic (-s) link
+  |                                             (shortcut to filepath).
+  |                                             If the original /my/file/path is
+  |                                             deleted or moved the link is broken.
+  | $ ln   /my/file/path  /my/hard/link      <· Hard link  (no -s)
+  |                                             /my/hard/link will point to the
+  |                                             same  *inode* of /my/file/path
+  |
+  |  /my/symbolic/Link <· Sym link creates a new entry with a link to file-path
+  |   ↓
+  |  /my/file/path ──────┐
+  |                      ↓        physical
+  |                    *inode*──→ block
+  |                      ↑ ↑      on disk
+  |  /my/hard/link ──────┘ |
+  |                        |
+  |            - the inode will increase its number of references after a hard-link.
+  |            - the inode and disk content will exists until all hardlinks(references)
+  |              are deleted.
+  |            - Once /my/hard/link is created it is a sibling of original
+  |              /my/file/path. There is no way to know what was the original
+  |              path and the hard-link path.
+  ```
 [[}]]
 
-## File System Management Basics [[{storage.file_system,linux.101]]
- *MOVING AROUND FS*                                       |  *MOVING FILES*
-$*$ pwd            * ← "P"rint "W"orking "D"irectory      | $*$ mv myFile1 /my/path02/ *  # ← move myFile1 to
-                                                          |                         ^      /my/path02 directory
-$*$ cd /my/new/dir * ← "C"hange "d"irectory               |                      ┌──┘
-                                                          |   *WARN*: The final '/' indicates taht path02
-$*$ cd             * ← move to $HOME directory            |           is a directory.
-                                                          |           Otherwise if "path02" does NOT exits,
-$*$ cd ~           * ← '~' is alias for $HOME             |           myFile1 will move to the '/my/' directory
-                                                          |           and renamed as wrongl 'path02' file.
-$*$ pushd.         * ← Remember current dir.              |
-                       (put on FILO stack)                |  *COPYING FILES - Cool way*
-                                                          | $*$ tar cf - dirToCopy | \  * ←    Compress to STDOUT
-$*$ cd ..          * ← Change to parent directory         | $*  tar -C newBaseDir -xf - * ← Decrompress from STDIN
-                                                          |
-$*$ popd           * ← change to last dir. in stack       |  *REMOVE FILES/DIRECTORIES*
-                                                          | $*$ rm -r -f dirOrFile * ← Alternative 1: Unsafe way:
- *DIRECTORIES*                                            |                            -r recursive deletion of directories
-$*$ mkdir -p ~/projects/project01 *←  Make directory      |                            -f force deletion (do not confirm)
-          ↑                                               |                           *Never ever "-r -f" as root*
-      Create any intermediate dir. if it doesn't exists   |
-                                                          | $*$ find ./dir -mmtime +10 \ * ← Alternative 2: Find files
- *COPYING FILES*                                          | $*  | xargs rm -f            *   and send to STDOUT.
-$*$ cp    fileToCopy      /destination/directory/ *       |                                  Exec. rm -f for each line
-$*$ cp -R directoryToCopy /destination/directory/ *       |                                  in STDIN
-       ^^                                                 |
-       -R: Recursive copy of dir.content                  |  *REMOVE FILES AND CONTENT BY OVERWRITING FIRST*
-                                                          |
-                                                          |  $ shred -n 2 -z -v /tmp/myImportantSecret
- *RENAME FILES*                                           |             ↑  ↑  ↑
- $ mv myFile1 finalName # ← move myFile1 to new name      |             │  │  └── show progress
-                        ^   (rename) finalName            |             │  └───── Finally write over with zeroes
-                                                          |             └──────── Overwrite twice with random data
-                                                          |
- *LISTING  FILES*                                         |  <https://linux.die.net/man/1/shred>
-$*$ ls" -"optionalFlags"   * ← list files in current      |  prevent data from being recovered by
-         ^^^^^^^^^^^^^^^       directory                  |  hackers using software (and most
-  -l: ("long"), show permissions, size,                   |  probably hardware)
-      modification date, ownership
-  -a: ("all" ), shows also hidden (.*) files
-  -d: Show only directory entry(vs directory contents)
-  -F: ("format") append helper symbol
-  -S: sort by size in descending order
-  -R: ("recursive") list recursively children dirs
+[[{storage.file_system,performance.storage,troubleshooting.storage]]
+## Tunning Filesystem
 
- *CHECK DISK FREE/USED SPACE*                             |  *FILE PERMISSIONS*
-  <https://linux.die.net/man/0/df>                       |  - Change who can read,write or execute a file
-$*$ df -k -h  -x devtmpfs -x tmpfs * ← df: (D)isk (F)ree  |  $*$ chmod go-rwx mySecretDir                 *
-        ↑  ↑   ↑           ↑                              |              ↑↑
-        │  │   Skip "false" filesystems(dev,...)          |              │└──  (r)ead, (w)rite e(x)ecute
-        │  └── show in human readable units               |              │      4       2        1
-        └───── scale size by 1K before printing           |              │
-  <https://linux.die.net/man/1/du>                       |              └───   - remove
-  $ du -sch dir1 file2 # * *isk  * *ssage                 |                     + add
-        ↑↑↑                                               |
-        ││└── show in human readable units                |  - Change someFile owner and group
-        │└─── produce a grand total                       |  $*$ chown newOwner:newGroup someFile         *
-        └──── display only total for each arg
+### (/etc/fstab) mount options:
 
- *SEARCHING FILES/DATA*                                            |  *GRAPHICAL TOOLS*
- <https://linux.die.net/man/1/find>                               | - Easier to use, but not scriptable.
-$*$ find /var/lib                *                                 | - Discouraged for system administration.
-$*   -type f        \            * ←     f: only files             |
-$*                               *       d: only directories       | $ mc       ← Execute the Midnight Commander
-$*                               *       l: only sym.links         | $ rancher  ← Execute rancher.
-$*   -iname "*html" \            * ←*AND*whose name matches *html  |              Light and Nice Console File Manager
-$*                               *        name:do NOT ignore case  |              with VI Key Bindings
-$*                               *       iname:do     ignore case  | $ nnn      ← one of the fastest and most
-$*   -mmin  -30     \            * ←*AND*whose modification time   |              lightweight file managers:
-$*                               *       is '30 or less'(-30)      |              ~50KB binary using ~3.5MB resident
-$*                               *       minutes (mmin)            |              memory at runtime:
-$*   -msize +20k    \            * ←*AND*whose size (msize) is     |         <https://github.com/jarun/nnn#features>
-$*                               *       20k(ilobytes) or more
-$*   -not \(  \                  * ← Skip
-$*     -path "./node_modules/*" \* ← node_modules dir.
-$*     -o \                      * ← OR
-$*     -path "./build/*"         * ← build  dir.
-$*    \)                         *
-$*   -exec   *grep "Variable01" \* ← execute  *command...*
-$*     {} \;                     *   for each found file
-
- *HARD/SOFT LINKS*
- - In UNIX anO*inode* is the low-level structure that stores the physical location in disk of
-   a given file. This "inode" is not visible to the user.
- - The user visible entities are the file system paths, that point to the real inodes:
-
-  /my/file/path → points to →  *inode* → points to → physical block_on_disk
-  ^^^^^^^^^^^^^                 ^^^^^^               ^^^^^^^^^^^^^^^^^^^^^^
-  visible in                  invisible to           managed by HD,
-  user shells,                users, managed         internal circuit
-  GUI explorers,..            by the OS kernel       networks NAS,...
-
-
-$*$ ln -s /my/file/path  /my/symbolic/link *  ← create symbolic (-s) link
-                                                (shortcut to filepath).
-                                                If the original /my/file/path is
-                                                deleted or moved the link is broken.
-$*$ ln   /my/file/path  /my/hard/link      *  ← Hard link  (no -s)
-                                                /my/hard/link will point to the
-                                                same  *inode* of /my/file/path
-
-   /my/symbolic/Link
-    ↓
-   /my/file/path ──────┐
-                       ↓        physical
-                     *inode*──→ block
-                       ↑ ↑      on disk
-   /my/hard/link ──────┘ |
-                         |
-                   - the inode will increase its number of references after a hard-link.
-                   - the inode and disk content will exists until all hardlinks(references)
-                     are deleted.
+  ```
+  | noatime:    Do not update inode access times on this filesystem.
+  |             It implies nodiratime.
+  |             Recommended for file-systems containing (PostgreSQL,...) databases since their
+  |             engines do not care about this data.
+  |
+  | nodiratime: Do  not  update directory inode access times on this filesystem.
+  |
+  | lazytime  : Only update times (atime, mtime, ctime) on the in-memory version of the file inode.
+  |             Significantly reduces writes to the inode table for workloads with frequent random
+  |             writes to preallocated files.
+  |             The on-disk timestamps are updated only when:
+  |             - the inode needs to be updated for SOME change unrelated to file timestamps
+  |             - the application employs fsync(2), syncfs(2), or sync(2)
+  |             - an undeleted inode is evicted from memory
+  |             - more than 24 hours have passed since the i-node was written to disk.
+  ```
 [[}]]
 
-## Tunning Filesystem [[{storage.file_system,performance.storage,troubleshooting.storage]]
-(/etc/fstab) mount options:
-noatime:    Do not update inode access times on this filesystem.
-            It implies nodiratime.
-            Recommended for file-systems containing (PostgreSQL,...) databases since their
-            engines do not care about this data.
+[[{storage.file_system,monitoring.storage.ussage,profiling.file_system]]
+## Monitor files
 
-nodiratime: Do  not  update directory inode access times on this filesystem.
 
-lazytime  : Only update times (atime, mtime, ctime) on the in-memory version of the file inode.
-            Significantly reduces writes to the inode table for workloads with frequent random
-            writes to preallocated files.
-            The on-disk timestamps are updated only when:
-            - the inode needs to be updated for SOME change unrelated to file timestamps
-            - the application employs fsync(2), syncfs(2), or sync(2)
-            - an undeleted inode is evicted from memory
-            - more than 24 hours have passed since the i-node was written to disk.
+* list files open by a process
+  ```
+  | $ sud  lsof -p 511
+  |              └───┴─ running process with PID=511
+  |
+  | (output will be similar ...)
+  |   COMMAND    *PID*  USER   FD      TYPE     DEVICE SIZE/OFF    NODE NAME
+  |   avahi-dae  *511* avahi  cwd       DIR        8,1       67 1274283 /etc/avahi
+  |   avahi-dae  *511* avahi  txt       REG        8,1   136264 2568376 /usr/sbin/avahi-daemon
+  |   avahi-dae  *511* avahi  DEL       REG        8,1          1713236 /usr/lib64/libnss_sss.so.2;5ae2fcc0
+  |   avahi-dae  *511* avahi  DEL       REG        8,1          1390813 /usr/lib64/...
+  |   avahi-dae  *511* avahi    0r      CHR        1,3      0t0    1028 /dev/null
+  |   avahi-dae  *511* avahi    1u     unix 0xff222c00      0t0   20500 socket
+  |   avahi-dae  *511* avahi    3u     unix 0xffb84400      0t0   18699 /var/run/avahi-daemon/socket
+  |   avahi-dae  *511* avahi    7w     FIFO        0,8      0t0   20324 pipe
+  |   avahi-dae  *511* avahi   11r  a_inode        0,9        0    7017 inotify
+  |   avahi-dae  *511* avahi   12u     IPv4      21553      0t0     UDP *:mdns
+  |   avahi-dae  *511* avahi   13u     IPv4      21554      0t0     UDP *:44720
+  |   avahi-dae  *511* avahi   14u  netlink                 0t0   21555 ROUTE
+  |   ...
+  ```
+
+* list processes using any file in etc
+  ```
+  | $ sudo lsof O*/etc/*
+  | (output can be similar ...)
+  | COMMAND     PID      USER   FD   TYPE DEVICE SIZE/OFF      NODE NAME
+  | avahi-dae   511     avahi  cwd    DIR    8,1       67 101274283 O*/etc/*avahi
+  | avahi-dae   511     avahi  rtd    DIR    8,1       67 101274283 O*/etc/*avahi
+  | java      41043 azureuser  296r   REG    8,1      393       154 O*/etc/*os-release
+  | java      41043 azureuser  297r   REG    8,1      393       154 O*/etc/*os-release
+  | ...
+  ```
+
+* MONITOR FILE/DIR. ACCESS
+  ```
+  | <https://linux.die.net/man/1/inotifywait>             
+  | Ex: Wait for changes, then execute someCommand        
+  | LIST_OF_FILES_TO_MONITOR="file1 file2 ..."            
+  | while  true ; do                                      
+  |   inotifywait -q -e modify ${LIST_OF_FILES_TO_MONITOR}
+  |   someCommandToExecute                                
+  | done                                                  
+  |                                                       
+  | See also                                              
+  | <https://linux.die.net/man/1/inotifywatch>            
+  |   (gather filesystem access statistics)               
+  ```
+                                                         
+
+* AUDIT LAST ACCESS/EXECUTION OF FILE
+  ```
+  | $ stat /usr/bin/sort
+  |   File: /usr/bin/sort
+  |   Size: 144016          Blocks: 288     IO Block: 4096   regular file
+  | Device: fd00h/64768d    Inode: 263476   Links: 1
+  | Access: (0755/-rwxr-xr-x)  Uid: (    0/ root)   Gid: (    0/    root)
+  | Context: system_u:object_r:bin_t:s0
+  | Access: 2019-05-18 15:00:03.242672510 -0400
+  | Modify: 2018-11-07 10:14:42.000000000 -0500
+  | Change: 2019-01-17 08:14:01.789349117 -0500
+  |  Birth: -
+  |
+  | For an executable access will show when it was last executed
+  ```
 [[}]]
-
-## Monitor files:  [[{storage.file_system,monitoring.storage.ussage,profiling.file_system]]
-┌──────────────────────────────┬─────────────────────────────────────────────────────────────────────────┐
-│*LIST FILES OPEN BY A PROCESS*│                                                                         │
-├──────────────────────────────┘                                                                         │
-│<https://linux.die.net/man/8/lsof>                                                                     │
-│$ sudO*lsof*-pO*511*                                                                                    │
-│             ↑                                                                                          │
-│             └── running process with ID=511                                                            │
-│                                                                                                        │
-│(output will be similar ...)                                                                            │
-│  COMMAND    *PID*  USER   FD      TYPE     DEVICE SIZE/OFF    NODE NAME                                │
-│  avahi-dae  *511* avahi  cwd       DIR        8,1       67 1274283 /etc/avahi                          │
-│  avahi-dae  *511* avahi  txt       REG        8,1   136264 2568376 /usr/sbin/avahi-daemon              │
-│  avahi-dae  *511* avahi  DEL       REG        8,1          1713236 /usr/lib64/libnss_sss.so.2;5ae2fcc0 │
-│  avahi-dae  *511* avahi  DEL       REG        8,1          1390813 /usr/lib64/...                      │
-│  avahi-dae  *511* avahi    0r      CHR        1,3      0t0    1028 /dev/null                           │
-│  avahi-dae  *511* avahi    1u     unix 0xff222c00      0t0   20500 socket                              │
-│  avahi-dae  *511* avahi    3u     unix 0xffb84400      0t0   18699 /var/run/avahi-daemon/socket        │
-│  avahi-dae  *511* avahi    7w     FIFO        0,8      0t0   20324 pipe                                │
-│  avahi-dae  *511* avahi   11r  a_inode        0,9        0    7017 inotify                             │
-│  avahi-dae  *511* avahi   12u     IPv4      21553      0t0     UDP *:mdns                              │
-│  avahi-dae  *511* avahi   13u     IPv4      21554      0t0     UDP *:44720                             │
-│  avahi-dae  *511* avahi   14u  netlink                 0t0   21555 ROUTE                               │
-│  ...                                                                                                   │
-└────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-
-┌──────────────────────────────────────┬───────────────────────────────────────────┐
-│*LIST PROCESSES USING ANY FILE IN ETC*│                                           │
-├──────────────────────────────────────┘                                           │
-│$ sudo lsof O*/etc/*                                                              │
-│(output can be similar ...)                                                       │
-│COMMAND     PID      USER   FD   TYPE DEVICE SIZE/OFF      NODE NAME              │
-│avahi-dae   511     avahi  cwd    DIR    8,1       67 101274283 O*/etc/*avahi     │
-│avahi-dae   511     avahi  rtd    DIR    8,1       67 101274283 O*/etc/*avahi     │
-│java      41043 azureuser  296r   REG    8,1      393       154 O*/etc/*os-release│
-│java      41043 azureuser  297r   REG    8,1      393       154 O*/etc/*os-release│
-│...                                                                               │
-└──────────────────────────────────────────────────────────────────────────────────┘
-
-┌──────────────────────────┬───────────────────────────┐ ┌─────────────────────────────────────┬───────────────────────────────┐
-│*MONITOR FILE/DIR. ACCESS*│                           │ │*AUDIT LAST ACCESS/EXECUTION OF FILE*│                               │
-├──────────────────────────┘                           │ ├─────────────────────────────────────┘                               │
-│<https://linux.die.net/man/1/inotifywait>            │ │$*stat*/usr/bin/sort                                                 │
-│Ex:*Wait for changes, then execute someCommand*       │ │  File: /usr/bin/sort                                                │
-│LIST_OF_FILES_TO_MONITOR="file1 file2 ..."            │ │  Size: 144016          Blocks: 288     IO Block: 4096   regular file│
-│while  true ; do                                      │ │Device: fd00h/64768d    Inode: 263476   Links: 1                     │
-│ *inotifywait*-q -e modify ${LIST_OF_FILES_TO_MONITOR}│ │Access: (0755/-rwxr-xr-x)  Uid: (    0/ root)   Gid: (    0/    root)│
-│  someCommandToExecute                                │ │Context: system_u:object_r:bin_t:s0                                  │
-│done                                                  │ │Access: 2019-05-18 15:00:03.242672510 -0400                          │
-│                                                      │ │Modify: 2018-11-07 10:14:42.000000000 -0500                          │
-│See also                                              │ │Change: 2019-01-17 08:14:01.789349117 -0500                          │
-│<https://linux.die.net/man/1/inotifywatch>           │ │ Birth: -                                                            │
-│  (gather filesystem access statistics)               │ │                                                                     │
-└──────────────────────────────────────────────────────┘ │For an executable access will show when it was last executed         │
-                                                         └─────────────────────────────────────────────────────────────────────┘
-[[}]]
-
-## Ceph (BigData Posix FS)[[{storage.file_system,distributed.storage,01_PM.TODO]]
-  - UNIX POSIX compliant distributed storage solution with unified object
-    and block storage capabilities.
-
-    C&P from  https://www.usenix.org/system/files/login/articles/73508-maltzahn.pdf
-    """
-    - Ceph was designed to fulfill the following goals specified by three national
-      laboratories (LLNL, LANL, and Sandia) back in 2005:
-      - Petabytes of data on one to thousands of hard drives
-      - TB/sec aggregate throughput on one to thousands of hard drives pumping
-        out data as fast as they can.
-      - Billions of files organized in one to thousands of files per directory
-      - File sizes that range from bytes to terabytes
-      - Metadata access times in μsecs
-      - High-performance direct access from thousands of clients to
-        - different files in different directories
-        - different files in the same directory
-        - the same file
-      - Mid-performance local data access
-      - Wide-area general-purpose access
-
-    - Management of data differs fundamentally from management of
-      metadata: file data storage is trivially parallelizable and is limited primar-
-      ily by the network infrastructure. Metadata management is much more
-      complex, because hierarchical directory structures impose interdependen-
-      cies (e.g., POSIX access permissions depend on parent directories) and the
-      metadata server must maintain file system consistency. Metadata servers
-      have to withstand heavy workloads: 30–80% of all file system operations
-      involve metadata, so there are lots of transactions on lots of small metadata
-      items following a variety of usage patterns. Good metadata performance is
-      therefore critical to overall system performance. Popular files and directories
-      are common, and concurrent access can overwhelm many schemes.
-      The three unique aspects of Ceph’s design are:
-      - distributed metadata management in separate metadata server (MDS) ...
-      - calculated pseudo-random data placement (very compact state)
-      - distributed object storage using a cluster of intelligent OSDs which
-        forms a reliable object store that can act autonomously and intelligently (RADOS)
-     """
-
-  - Alternatives to Cepth include:
-    - GlusterFS wich creates a cluster FS and offers it to apps through a NFS protocol.
-      (Cepth integrates directly with Kernel through drivers??)
-    - Hadoop HDFS. According to this white-paper, Ceph scalates better:
-      https://www.usenix.org/system/files/login/articles/73508-maltzahn.pdf
-      It also explain how to replace Hadoop HDFS with Ceph for Hadoop tasks.
-
-
-## Ceph Dashboard
-  https://docs.ceph.com/en/quincy/mgr/dashboard/
-  Overseedes OpenAttic (https://openattic.org/)
-  - built-in web-based Ceph management and monitoring.
-  - inspired by openATTIC, actively driven by openATTIC team@SUSE.
-  - Feature Overview:
-    - Multi-User and Role Management, Single Sign-On (SSO): using SAML 2.0 protocol, SSL/TLS support.
-    - Auditing: log all PUT, POST and DELETE API requests in Ceph audit log.
-    - Overall cluster health: performance, capacity metrics, cluster status.
-    - Embedded Grafana Dashboards.
-    - Cluster logs: Display latest updates to cluster’s event and audit log files by priority/date/keyword.
-    - Hosts: Display a list of all cluster hosts along with their storage drives, services running, Ceph version.
-    - Performance counters: Display detailed service-specific statistics for each running service.
-    - Monitors: List all Mons, their quorum status, and open sessions.
-    - Monitoring: Enable (re-)creation, edit and expiration of Prometheus’ silences, alerts,...
-    - Configuration Editor.
-    - Pools: List Ceph pools and details (applications, pg-autoscaling, placement groups,
-             replication size, EC profile, CRUSH rules, quotas etc.)
-    - OSDs: List OSDs, status, usage statistics, ...
-    - Device management:
-    - iSCSI: List all hosts runnint the TCMU runner service,...
-    - RBD: List all RBD images and their properties (size, objects, features).
-    - RBD mirroring:
-    - CephFS: List active file system clients and associated pools, including usage statistics.
-    - Object Gateway: List all active object gateways and their performance counters.
-    - NFS: Manage NFS exports of CephFS file systems and RGW S3 buckets via NFS Ganesha.
-    - Raw Capacity: Displays capacity used out of total physical capacity provided by storage nodes (OSDs).
-    - ...
-
-## openATTIC v3
-  STATUS: maintenance mode. Discontinued in favor of upstream
-          Ceph Dashboard.
-  features:
-  - Monitor/display health status, key performance metrics of cluster
-  - Ceph Pools: Create, manage, monitor individual pools
-    (both replicated and erasure coded pools)
-  - Ceph Block devices (RBDs): create, manage and monitor RBDs
-  - iSCSI: manage iSCSI targets and portals, access control
-  - NFS: create and manage NFS shares (NFS v3/v4, using CephFS|S3 buckets)
-  - Ceph Object Gateway(RGW): manage users, access keys, quotas and buckets
-  - Ceph Node management: list all cluster nodes and their roles,
-    monitor per-node key performance metrics.
-
-[[}]]
-
-
-
 
 # FreeNAS [[{storage.block_management,storage.file_system,storage.network]]
 - "World's #1 storage OS"
@@ -1007,220 +1094,256 @@ lazytime  : Only update times (atime, mtime, ctime) on the in-memory version of 
 [[}]]
 
 
-
-
-
 # SSHFS [[{storage.network,difficulty.easy,01_PM.TODO]]
-  $ sudo aptitude update           PRESETUP) Install (Debian Like)
+
+  ```
+  $ sudo aptitude update
   $ sudo aptitude install sshfs
   $ sudo adduser yourusername fuse
+  ```
 
 - USSAGE:
   - Alternative 1: Manual mount
-  $*$ sshfs HOSTuser@remote_host_or_ip:/path/to/mount /local/mount/poing *
+  ```
+  $ sshfs HOSTuser@remote_host_or_ip:/path/to/mount /local/mount/poing
+  ```
   - Alternative 2: Add to /etc/fstab for automatic mounting
-    sshfs#user01@remote_host_or_ip:/path/to/mount /local/mount/poing fuse defaults,allow_other 0 0
+  ```
+  sshfs#user01@remote_host_or_ip:/path/to/mount /local/mount/poing fuse defaults,allow_other 0 0
+  ```
 [[}]]
 
-# GDrive FUSE: [[{storage.network]]
-<https://www.techrepublic.com/article/how-to-mount-your-google-drive-on-linux-with-google-drive-ocamlfuse/>
-<https://ask.fedoraproject.org/en/question/68813/any-good-client-for-google-drive/>
+[[{storage.network]]
+# GDrive FUSE
+* <https://www.techrepublic.com/article/how-to-mount-your-google-drive-on-linux-with-google-drive-ocamlfuse/>
+* <https://ask.fedoraproject.org/en/question/68813/any-good-client-for-google-drive/>
 [[}]]
 
 
 # LVM Summary [[{storage.lvm]]
- physical drive 1                                     logical-volume 1    [[{02_doc_has.diagram]]
- physical drive 2    N ←→ 1    Volume-Group 1 ←→ M    logical-volume 2
- physical drive 3                                     logical-volume 3
- ...                                                  ...
-                     ^^^^^^^                 ^^^^^^^
-                     The Vol.Group           The Vol.Group
-                     acts as a logical       allows to dynamically
-                     pool of physical        create logical volumes
-                     devices                 isolated from the physical
-                                             resources
-                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                     The Volume-Group acts as a relation
-                     N-to-M between physical resources
-                     and logical partitions
-
-Quick Sumary:
-    CREATE       → ADD Physical drives → Add logical-volumes
-    VOLUME-GROUP   to VOLUME-GROUP       to VOLUME-GROUP.
-                                         ^^^^^^^^^^^^^^^^^^
-                                         logical-volumes can map to:
-                                         - company deparments
-                                         - test/pre/pro enviroment
-                                         - ...                            [[}]]
+ ```
+ | [[{02_doc_has.diagram}]]
+ | physical                                    logical
+ | drives                                      volumes 
+ | ┌────┐                                      ┌──────┐
+ | drive 1                                     volume 1 
+ | drive 2     N<·>1    VOLUME-GROUP   1<·>M   volume 2
+ | drive 3    └──┬──┘                 └──┬──┘  volume 3
+ |               ·                       ·    ...
+ |               ·                       ·
+ |            The Vol.Group           The Vol.Group
+ |            acts as a logical       allows to dynamically
+ |            pool of physical        create logical volumes
+ |            devices                 isolated from the physical
+ |                                    resources
+ |            └─────────────┬───────────────┘
+ |         The Volume-Group acts as a relation
+ |         N-to-M between physical resources
+ |         and logical partitions
+ |
+ | Quick Sumary:
+ |  CREATE       → ADD Physical drives → Add logical-volumes
+ |  VOLUME-GROUP   to VOLUME-GROUP       to VOLUME-GROUP.
+ |                                       ^^^^^^^^^^^^^^^^^^
+ |                                       logical-volumes can map to:
+ |                                       - company deparments
+ |                                       - test/pre/pro enviroment
+ |                                       - ...
+ ```
 
 ## LVM "Full-Journey" SETUP:
-REF: https://opensource.com/article/18/11/manage-storage-lvm
+
+* REF: https://opensource.com/article/18/11/manage-storage-lvm
+
 WARN: You need LVM tools installed. Mount alone is not able to mount LVM volumes
 
-- LVM PRE-SETUP:
+0. LVM PRE-SETUP:
   Format a  *physical drive /dev/sdx* to be included on the pool
-  # dd if=/dev/zero of=O*/dev/sdx* count=8196
-  # parted /dev/sdx print | grep Disk
-  Disk /dev/sdx: 100GB
-  # parted /dev/sdx mklabel gpt
-  # parted /dev/sdx mkpart primary 1s 100%
+  ```
+  | # dd if=/dev/zero of=O*/dev/sdx* count=8196
+  | # parted /dev/sdx print | grep Disk
+  | Disk /dev/sdx: 100GB
+  | # parted /dev/sdx mklabel gpt
+  | # parted /dev/sdx mkpart primary 1s 100%
+  ```
 
    Note: Volume-group is synonym of "physical-storage pool"
 
-- STEP 1) Create an LVM pool (and add a first physical disk to it)*
-  NOTE: Usually, you don't have to set up LVM at all since most distros
-       defaults to creating a virtual "pool" of storage and adding your
-       machine's hard drive(s) to that pool.
-
-  # vgcreate volgroup01 /dev/sdx1  # ← create new storage pool and
-                                        aggregate disk-partition
-
-- STEP 2) Create logical-volumes)
-  # lvcreate volgroup01 --size 49G --name vol0  # ← create logical-volume /dev/volgroup01/vol0
-  # lvcreate volgroup01 --size 49G --name vol1  # ← create logical-volume /dev/volgroup01/vol1
-
-- STEP 3) Switch volume-group online*
-  # vgchange --activate y volgroup01
-
-- STEP 4) make the file systems
-  # mkfs.ext4 -L finance    /dev/volgroup01/vol0
-  # mkfs.ext4 -L production /dev/volgroup01/vol1
-              ^^^^^^^^^^^^^
-              label the drive
-              In this case a logical-volume is used by department
-
-- STEP 6: Mount the volumes)
-  # mount /dev/volgroup01/vol0 /mnt/vol0
-  # mount /dev/volgroup01/vol1 /mnt/vol1
-
-- STEP 7: Adding space to the volume-group)
-  # part /dev/sdy mkpart primary 1s 100%  # ← create partition on new physical-disk
-  # vgextend volgroup01 /dev/sdy1         # ← aggregate to volgroup01
-  # lvextend -L +49G /dev/volgroup01/vol0 # ← Extend the already-existing logical-volume
-
-## vgdisplay
-  (SHOW LVM LAYOUT / VOLUME-GROUPS INFO)
-  --- Volume group ---
-  VG Name               volgroup01
-  System ID
-  Format                lvm2
-  Metadata Areas        1
-  Metadata Sequence No  4
-  VG Access             read/write
-  VG Status             resizable
-  MAX LV                0
-  Cur LV                3
-  Open LV               3
-  Max PV                0
-  Cur PV                1
-  Act PV                1
-  VG Size               <237.47 GiB
-  PE Size               4.00 MiB
-  Total PE              60792
-  Alloc PE / Size       60792 / <237.47 GiB
-  Free  PE / Size       0 / 0
-  VG UUID               j5RlhN-Co4Q-7d99-eM3K-...
-
-## lvdisplay
-  (SHOWS INFO ABOUT LOGICAL VOLUMES)
-  --- Logical volume ---
-  LV Path                /dev/volgroup01/finance
-  LV Name                finance
-  VG Name                volgroup01
-  LV UUID                qPgRhr-s0rS-YJHK-0Cl3-5MME-87OJ-vjjYRT
-  LV Write Access        read/write
-  LV Creation host, time localhost, 2018-12-16 07:31:01 +1300
-  LV Status              available
-  # open                 1
-  LV Size                149.68 GiB
-  Current LE             46511
-  Segments               1
-  Allocation             inherit
-  Read ahead sectors     auto
-  - currently set to     256
-  Block device           253:3
-
-
-## pvs
-  (SHOW (P)HYSICAL (V)OLUMES,VGS,LVS)
-  PV         VG     Fmt  Attr PSize    PFree
-  O*/dev/sda2*  fedora lvm2 a--  <222.57g    0
-
-## vgs
-  (SHOW (V)OLUME (G)ROUPS)
-  VG     #PV #LV #SN Attr   VSize    VFree
-   *fedora*   1   3   0 wz--n- <222.57g    0
-
-## lvs
-  (SHOW (L)ogical (V)olumes)
-  LV   VG     Attr       LSize    Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
-   *home* fedora -wi-ao---- <164.82g
-   *root* fedora -wi-ao----   50.00g
-   *swap* fedora -wi-ao----    7.75g
+  ```
+  | ---------------------------------- STEP 1: Create an LVM pool 
+  | (and add a first physical disk to it)
+  | NOTE: most distros default to creating a virtual "pool" of
+  |       storage and add machine's hard drive/s to it 
+  |
+  | # vgcreate volgroup01 /dev/sdx1  # <·· create new storage pool and
+  |                                        aggregate disk-partition
+  | 
+  | ---------------------------------- STEP 2) Create logical-volumes
+  | # lvcreate volgroup01 --size 49G --name vol0 
+  | # lvcreate volgroup01 --size 49G --name vol1 
+  |  new dev: /dev/volgroup01/vol{0,1} <···─┴──┘
+  | 
+  | ---------------------------------- STEP 3) 
+  | # vgchange --activate y volgroup01 # <· Switch vol.group online
+  | 
+  | ---------------------------------- STEP 4) format with FS
+  | # mkfs.ext4 -L finance /dev/volgroup01/vol0
+  | # mkfs.ext4 -L hhrr    /dev/volgroup01/vol1 
+  |             └────────┴─ label the drive
+  | 
+  | ---------------------------------- STEP 4) Mount volumes
+  | # mount /dev/volgroup01/vol0 /mnt/vol0
+  | # mount /dev/volgroup01/vol1 /mnt/vol1
+  | 
+  | ---------------------------------- STEP 5)  Adding space to vol.group
+  | # part /dev/sdy mkpart primary 1s 100%  # <·· create partition on new physical-disk
+  | # vgextend volgroup01 /dev/sdy1         # <·· aggregate to volgroup01
+  | # lvextend -L +49G /dev/volgroup01/vol0 # <·· Extend the already-existing logical-volume
+  | 
+  | ---------------------------------- STEP 6) Check Volume Group
+  | # vgdisplay
+  | (SHOW LVM LAYOUT / VOLUME-GROUPS INFO)
+  | --- Volume group ---
+  | VG Name               volgroup01
+  | System ID
+  | Format                lvm2
+  | Metadata Areas        1
+  | Metadata Sequence No  4
+  | VG Access             read/write
+  | VG Status             resizable
+  | MAX LV                0
+  | Cur LV                3
+  | Open LV               3
+  | Max PV                0
+  | Cur PV                1
+  | Act PV                1
+  | VG Size               <237.47 GiB
+  | PE Size               4.00 MiB
+  | Total PE              60792
+  | Alloc PE / Size       60792 / <237.47 GiB
+  | Free  PE / Size       0 / 0
+  | VG UUID               j5RlhN-Co4Q-7d99-eM3K-...
+  | 
+  | ---------------------------------- STEP 6) Check Logical Volume/s
+  | # lvdisplay
+  | (SHOWS INFO ABOUT LOGICAL VOLUMES)
+  | --- Logical volume ---
+  | LV Path                /dev/volgroup01/finance
+  | LV Name                finance
+  | VG Name                volgroup01
+  | LV UUID                qPgRhr-s0rS-YJHK-0Cl3-5MME-87OJ-vjjYRT
+  | LV Write Access        read/write
+  | LV Creation host, time localhost, 2018-12-16 07:31:01 +1300
+  | LV Status              available
+  | # open                 1
+  | LV Size                149.68 GiB
+  | Current LE             46511
+  | Segments               1
+  | Allocation             inherit
+  | Read ahead sectors     auto
+  | - currently set to     256
+  | Block device           253:3
+  | 
+  | ---------------------------------- STEP 7) Extra checks
+  | 
+  | # pvs
+  |  (SHOW (P)HYSICAL (V)OLUMES,VGS,LVS)
+  |  PV         VG     Fmt  Attr PSize    PFree
+  |  O*/dev/sda2*  fedora lvm2 a--  <222.57g    0
+  |
+  | # vgs
+  |  (SHOW (V)OLUME (G)ROUPS)
+  |  VG     #PV #LV #SN Attr   VSize    VFree
+  |   *fedora*   1   3   0 wz--n- <222.57g    0
+  |
+  | # lvs
+  |  (SHOW (L)ogical (V)olumes)
+  |  LV   VG     Attr       LSize   Pool ..
+  |  home fedora -wi-ao---- <64.82g
+  |  root fedora -wi-ao----  50.00g
+  |  swap fedora -wi-ao----   7.75g
+  ```
 
 ## Mount LVM in rescue-mode
-- PRE-SETUP) LVM toolchain must ready for use in the rescue-mode environment.
-            (/usr/sbin directory mounted or similar)
 
-  # vgchange --activate y    <·· output will be similar to
-                                 -> 2 logical volume(s) in volume group "volgroup01" now active
-  # mkdir /mnt/finance
-  # mount /dev/volgroup01/finance /mnt/finance
+- PRE-SETUP: LVM toolchain must ready for use in the rescue-mode environment.
+  (/usr/sbin directory mounted or similar)
 
-## Increase LVM LV Size:
-  # fdisk -cu /dev/sdd       <····· STEP 1) Mark physical disk partition as LVM:
-  → new partition ("n")                     (note: 'cfdisk' as ncurses altertanitve to fdisk)
-    → primary partition ("p")
-      → Enter partition number (1-4)
-        → Change type ("t") to Linux LVM  ("8e")
-          → Check status ("p")
-            → Write changes ("c")
+  ```
+  | # vgchange --activate y    <·· output will be similar to
+  |                                -> 2 logical volume(s) in volume group "volgroup01" now active
+  | # mkdir /mnt/finance
+  | # mount /dev/volgroup01/finance /mnt/finance
+  ```
 
-  # pvcreate /dev/sdd1       <····· STEP 2) create new PV (Physical Volume)
-    → Verify the pv:
-      # pvs
+## Increase LVM LV Size
 
-  # vgextend vg_tecmint \    <····· STEP 3) Extending Volume-Group
-    /dev/sdd1
-    → Verify it:
-    # vgs
+  ```
+  | # fdisk -cu /dev/sdd       <····· STEP 1) Mark physical disk partition as LVM:
+  | → new partition ("n")                     (note: 'cfdisk' as ncurses altertanitve to fdisk)
+  |   → primary partition ("p")
+  |     → Enter partition number (1-4)
+  |       → Change type ("t") to Linux LVM  ("8e")
+  |         → Check status ("p")
+  |           → Write changes ("c")
+  |
+  | # pvcreate /dev/sdd1       <····· STEP 2) create new PV (Physical Volume)
+  |   → Verify the pv:
+  |     # pvs
+  |
+  | # vgextend vg_tecmint \    <····· STEP 3) Extending Volume-Group
+  |   /dev/sdd1
+  |   → Verify it:
+  |   # vgs
+  |                                     STEP 4: INCREASE LOGICAL VOLUME SIZE
+  | # vgdisplay | grep -i "Free" <····· STEP 4.1) Check available free space in  Vol.Group.
+  |                                     (max size a logical volume can be extended to.)
+  |
+  | # lvextend -l +4607 \        <····· STEP 4.2) Extend the volume:
+  |    /dev/vg_tecmint/LogVol01
+  |
+  | # lvdisplay                  <····· STEP 4.3) Check changes
+  |
+  | # resize2fs \                <····· STEP 5) re-size File-System
+  |   /dev/vg_tecmint/LogVol01
+  ```
+
+[[{PM.TODO]]
+## Remove physical Volume from Volume Group 
+* <https://www.2daygeek.com/linux-remove-delete-physical-volume-pv-from-volume-group-vg-in-lvm/>
+[[PM.TODO}]]
+
+[[storage.lvm}]]
 
 
-                                      STEP 4: INCREASE LOGICAL VOLUME SIZE
-  # vgdisplay | grep -i "Free" <····· STEP 4.1) Check available free space in  Vol.Group.
-                                      (max size a logical volume can be extended to.)
+[[{storage.file_system,01_PM.WiP]]
+# FILE SYSTEMS 
 
-  # lvextend -l +4607 \        <····· STEP 4.2) Extend the volume:
-     /dev/vg_tecmint/LogVol01
+## EXT4 FS [[{storage.file_system.ext4]]
 
-  # lvdisplay                  <····· STEP 4.3) Check changes
-
-  # resize2fs \                <····· STEP 5) re-size the file-system
-    /dev/vg_tecmint/LogVol01
-[[}]]
-
-
-FILE SYSTEMS [[{storage.file_system,01_PM.WiP]]
-# EXT4 FS [[{storage.file_system.ext4]]
-  Features:
+Features:
 - metadata and journal checksums.
 - timestamps intervals down to nanoseconds.
-- EXT4 extents: described by its starting and ending place on the hard drive.
-  EXT4-Extents make possible to describe very long, physically contiguous files in
-  a single inode pointer entry significantly reducing the number of pointers in large files.
+- EXT4 extents: described by its starting and ending place on the 
+  hard drive.  EXT4-Extents make possible to describe very long, 
+  physically contiguous files in a single inode pointer entry 
+  significantly reducing the number of pointers in large files.
 - New anti-fragmentation algorithms.
 
 ## EXT4: shrinking on LVM
-<https://www.systutorials.com/124416/shrinking-a-ext4-file-system-on-lvm-in-linux/>
+* <https://www.systutorials.com/124416/shrinking-a-ext4-file-system-on-lvm-in-linux/>
 
 ## EXT4: Checks error|fragmentation
-(ussually it must be really low in EXT"N" filesystems):
+
+* (ussually it must be really low in EXT"N" filesystems):
 WARN: Be sure to use the -n flag, preventing fsck to take any action on the file-system
 
- # fsck -fn /dev/sda
-→ ...
-→ ...
-/dev/sda: 613676/3040000 files (*0.3% non-contiguous*), 6838740/12451840 blocks
+ ```
+ | # fsck -fn /dev/sda
+ | → ...
+ | → ...
+ | /dev/sda: 613676/3040000 files (*0.3% non-contiguous*), 6838740/12451840 blocks
+ ```
 
 ## EXT4 Journal
 - for performance reasons, we do not want to write or sync every change to ext4.
@@ -1232,9 +1355,11 @@ WARN: Be sure to use the -n flag, preventing fsck to take any action on the file
   so changes are applied and not lost.
 
 - Journal can be used in three different modes (mount option):
-  - journal:   All data (both metadata and actual data) is written to Journal first, so the safest.
-  - ordered:   This is the default mode. All data is sent to ext4, metadata is sent to Journal also.
-               No protection for data but metadata is protected for crash.
+  - journal:   All data (both metadata and actual data) is written to 
+               Journal first, so the safest.
+  - ordered:   This is the default mode. All data is sent to ext4, 
+               metadata is sent to Journal also.  No protection for data but 
+               metadata is protected for crash.
   - writeback: Data can be written to ext4 before or after being written to Journal.
                On a crash, new data may get lost.
 
@@ -1249,72 +1374,77 @@ The information / blocks is written to Journal following next sequence:
      data will not be written to ext4.
 
 ## EXT4: Tunning performance :
-<a href="https://www.kernel.org/doc/Documentation/filesystems/ext4.txt">REF: Kernel.org doc</a>
-   Contains full list of mount opts, /proc&amp;/sys entries
 
-Mount options:
-journal_async_commit    Commit block can be written to disk without waiting
-            for descriptor blocks. If enabled older kernels cannot
-            mount the device. This will enable 'journal_checksum'
-            internally.
+* <a href="https://www.kernel.org/doc/Documentation/filesystems/ext4.txt">REF: Kernel.org doc</a>
+  Contains full list of mount opts, /proc and /sys entries
 
-
-commit=nrsec    (*) Ext4 can be told to sync all its data and metadata
-            every 'nrsec' seconds. The default value is 5 seconds.
-            This means that if you lose your power, you will lose
-            as much as the latest 5 seconds of work (your
-            filesystem will not be damaged though, thanks to the
-            journaling).  This default value (or any low value)
-            will hurt performance, but it's good for data-safety.
-            Setting it to 0 will have the same effect as leaving
-            it at the default (5 seconds).
-            Setting it to very large values will improve
-            performance.
-
-inode_readahead_blks=n  This tuning parameter controls the maximum
-            number of inode table blocks that ext4's inode
-            table readahead algorithm will pre-read into
-            the buffer cache.  The default value is 32 blocks.
-
-stripe=n    Number of filesystem blocks that mballoc will try
-            to use for allocation size and alignment. For RAID5/6
-            systems this should be the number of data
-            disks *  RAID chunk size in file system blocks.
-
-min_batch_time=usec This parameter sets the commit time (as
-            described above) to be at least min_batch_time.
-            It defaults to zero microseconds.  Increasing
-            this parameter may improve the throughput of
-            multi-threaded, synchronous workloads on very
-            fast disks, at the cost of increasing latency.
+  ```
+  | Mount options:
+  | journal_async_commit    Commit block can be written to disk without waiting
+  |             for descriptor blocks. If enabled older kernels cannot
+  |             mount the device. This will enable 'journal_checksum'
+  |             internally.
+  | 
+  | commit=nrsec (*) Ext4 can be told to sync all its data and metadata
+  |             every 'nrsec' seconds. The default value is 5 seconds.
+  |             This means that if you lose your power, you will lose
+  |             as much as the latest 5 seconds of work (your
+  |             filesystem will not be damaged though, thanks to the
+  |             journaling).  This default value (or any low value)
+  |             will hurt performance, but it's good for data-safety.
+  |             Setting it to 0 will have the same effect as leaving
+  |             it at the default (5 seconds).
+  |             Setting it to very large values will improve
+  |             performance.
+  | 
+  | inode_readahead_blks=n  This tuning parameter controls the maximum
+  |             number of inode table blocks that ext4's inode
+  |             table readahead algorithm will pre-read into
+  |             the buffer cache.  The default value is 32 blocks.
+  | 
+  | stripe=n    Number of filesystem blocks that mballoc will try
+  |             to use for allocation size and alignment. For RAID5/6
+  |             systems this should be the number of data
+  |             disks *  RAID chunk size in file system blocks.
+  | 
+  | min_batch_time=usec This parameter sets the commit time (as
+  |             described above) to be at least min_batch_time.
+  |             It defaults to zero microseconds.  Increasing
+  |             this parameter may improve the throughput of
+  |             multi-threaded, synchronous workloads on very
+  |             fast disks, at the cost of increasing latency.
+  ```
 [[storage.file_system.ext4}]]
 
 # XFS [[{storage.file_system.XFS,01_PM.TODO]]
-<https://www.systutorials.com/docs/linux/man/8-xfs_admin/>
-  https://wiki.archlinux.org/title/XFS [[{01_PM.TODO}]]
-  - mkfs.xfs(8):    - xfs_repair(8)    [[{01_PM.TODO]]
+
+* <https://www.systutorials.com/docs/linux/man/8-xfs_admin/>
+* <https://wiki.archlinux.org/title/XFS> [[01_PM.TODO]]
+* <https://blogs.oracle.com/linux/xfs-2019-development-retrospective> [[01_PM.TODO]]
+  ```
+  - mkfs.xfs(8):    - xfs_repair(8)    [[01_PM.TODO]]
   - xfs_db(8):      - xfs(5)
   - xfs_growfs(8)                      [[}]]
+  ```
 
-- Compared to Ext4:                             [[{02_doc_has.comparative]]
+- Compared to Ext4 [[02_doc_has.comparative]]
   - XFS is prefered for "big" systems with many apps accesing
     the file-system CONCURRENTLY.
   - EXT4 is simpler and -theorically- less buggy.
-  [[}]]
-- TODO: https://blogs.oracle.com/linux/xfs-2019-development-retrospective
 
-- https://blogs.oracle.com/linux/xfs-data-block-sharing-reflink
+- <https://blogs.oracle.com/linux/xfs-data-block-sharing-reflink>
   Three years ago, I introduced to XFS a new experimental "reflink" feature that
-  enables users to share data blocks between files. With this feature, users gain
-  the ability to make fast snapshots of VM images and directory trees; and
-  de-duplicate file data for more efficient use of storage hardware. Copy on write
-  is used when necessary to keep file contents intact, but XFS otherwise
-  continues to use direct overwrites to keep metadata overhead low. The
-  FS automatically creates speculative preallocations when copy on write
-  is in use to combat fragmentation.
+  enables users to share data blocks between files. 
+  - users gain the ability to make fast snapshots of VM images and directory trees;
+  - de-duplicate file data for more efficient use of storage hardware.
+  - Copy on write is used when necessary to keep file contents intact.
+  - XFS otherwise continues to use direct overwrites to keep metadata overhead low.
+    The FS automatically creates speculative preallocations when copy on write
+    is in use to combat fragmentation.
 
 - Btrfs & XFS File-Systems See More Fixes With Linux 5.4:
-  REF: https://www.phoronix.com/forums/forum/software/general-linux-open-source/1127076-btrfs-xfs-file-systems-see-more-fixes-with-linux-5-4
+
+* <https://www.phoronix.com/forums/forum/software/general-linux-open-source/1127076-btrfs-xfs-file-systems-see-more-fixes-with-linux-5-4>
 
 - The mature XFS and BTRFS file-systems continue seeing more fixes and
   cleaning with the now in-development Linux 5.4 kernel.
@@ -1326,451 +1456,374 @@ min_batch_time=usec This parameter sets the commit time (as
   directory entry creation code, some performance improvement in the
   file ACL lookup code, a fix for a logging stall during mount, and
   fixes for concurrency problems." Those XFS details in full here.
-
 [[storage.file_system.XFS}]]
 
 
-# BTRFS [[{storage.file_system.BTRFS]]
-## Bedup: Deduplication for BTRFS
-<https://github.com/g2p/bedup>
-bedup looks for new and changed files, making sure that multiple
-copies of identical files share space on disk. It integrates deeply
-with btrfs so that scans are incremental and low-impact.
-Deduplication is implemented using a Btrfs feature that allows for
-cloning data from one file to the other. The cloned ranges become
-shared on disk, saving space.
+## BTRFS [[{storage.file_system.BTRFS]]
+
+* Bedup: Deduplication for BTRFS <https://github.com/g2p/bedup>
+  bedup looks for new and changed files, making sure that multiple
+  copies of identical files share space on disk. It integrates deeply
+  with btrfs so that scans are incremental and low-impact.
+  Deduplication is implemented using a Btrfs feature that allows for
+  cloning data from one file to the other. The cloned ranges become
+  shared on disk, saving space.
 [[}]]
 
 # Stratis [[{storage.file_system.stratis,01_PM.backlog]]
 <https://opensource.com/article/18/4/stratis-lessons-learned>
 <https://stratis-storage.github.io/StratisSoftwareDesign.pdf>
-WARN: (2022-10): Technology Preview feature only. not supported
-      with Red Hat production service level agreements (SLAs)
-      and might not be functionally complete. Not recommended
-      in production.
+Technology preview as of 2022-10.
+
+> tool to easily configure pools and filesystems with 
+> enhanced storage functionality that works within the 
+> existing Linux storage management stack.
+> Stratis prioritizes a straightforward command-line experience, 
+> rich API, and fully automated approach to storage management.
+> It builds upon device-mapper, LUKS, XFS, and Clevis.
 [[}]]
-[[}]]
+[[storage.file_system}]]
 
-# Encryption [[{security.encryption]]
+[[{storage.block_management,doc_has.comparative,]]
+## GPT vs MBR Partitions 
 
-## Kernel Keyrings [[{security.encryption,security.secret_management]]
+* MASTER BOOT RECORD (MBR, OLD 80'S MS-DOS)
+  - Designed when HD were  tens of megabytes.
+  - First 512 bytes of disk                  
+    - 446 Bytes bootloader                   
+    -  64 Partition table                    
+    -   2 boot signature                     
+  - limited to 4 primary partitions          
+    - A single primary partition can hold an 
+      extended partition with unlimited      
+      logical      partitions.               
+  - original addressing:                     
+      (ylinders, heads, sectors)             
+    -  2TB max size ( 512bytes block)        
+    - 16TB max size (4099bytes block)i       
+      with LBA hack                          
 
-* <https://www.kernel.org/doc/Documentation/security/keys.txt>
-
-## in-Kernel cache for cryptographic secrets (encrypted FS passwords, kernel services,...),
-
-* used by various kernel components -file-systems, hardware modules,...- to cache*
-* security data, authentication keys, encryption keys, ... in kernel space*.
-
+* **GPT/GUID** :
+  - Suported by Linux GRUB 2 and GParted                                
+  - Globally Unique Identifiers in Partition Table                            
+  - Part of UEFI specs                         
+  - Linux can use it with UEFI or legacy BIOS                             
+  - no more primary/logical partitions.        
+  - 64-bit disk pointers allows 264            
+    total sectors:               
+    - 512-byte blocks allows for 8 zebibytes.                             
+  - fault-tolerance: partition table in first, last sector of disk                 
+  ─ cyclic redundancy check (CRC) checksum to verify its own integrity,      
+    and of the partition table.           
+  - Unique IDs for disks and partitions.       
   ```
-  (kernel) KEY OBJECT
-  ┌── attributes ────┐
-  │ · type           │ Must be registered in kernel by a kernel service (FS,...)
-  │                  │ and determine operations allowed for key.
-  │------------------│ e.g: AFS FS might want to define a Kerberos 5 ticket key type.
-  │ · serial number  │ 32-bit uint ID ** *
-  │------------------│
-  │ · description    │ arbitrary printable string*used in searchs*prefixed with "key-type"
-  │                  │ prefix allows kernel to invoke proper implementations to type.
-  │                  │ "description" meaning can be different for a File System, a HSM, ...
-  │------------------│
-  │ · Access control │ == ( owner ID, group ID, permissions mask) to control what a process
-  │                  │ may do to a kernel-key from userspace or whether kernel service
-  │------------------│ will be able to find the key.
-  │ · Expiry time    │
-  │------------------│
-  │ · payload        │ ← blob of data (*"secret"*) or key-list for keyrings
-  │------------------│   Optional. Payload can be stored in kernel struct itself
-  │ · State          │ ← Non garbage collected: Uninstantiated | Instantiated | Negative
-  │                  │       garbage collected: Expired | Revoked |  Dead
-  ├─── functions ────┤
-  │ · Constructor    │ ← Used at key instantiation time. Depends on type
-  │ · read           │ ← Used to convert the key's internal payload back into blob
-  │ · "find"         │ ← Match a description to a key.
-  └──────────────────┘
-  ** * SPECIAL KEY IDS :
-  · 0          : No key
-  · @t  or -1  : Thread  keyring, 1st on searchs, replaced  on (v)fork|exec|clone
-  · @p  or -2  : Process keyring, 2nd on searchs, replaced  on (v)fork|exec
-  · @s  or -3  : Session keyring, 3rd on searchs, inherited on (v)fork|exec|clone
-                 It/They can be named and joined with existing ones.
-  · @u  or -4  : User specific, shared by processes owned by user.
-                 Not searched directly, but normally linked to/from @s.
-  · @us or -5  : User default session keyring upon succesful login (by root login processes)
-  · @g  or -6  : Group specific keyring,  *not actually implemented yet in the kernel*.
-  · @a  or -7  : Assumed request_key authorisation key:
-  · %:${name}  : named      keyring, to be searched for in [process's keyrings , */proc/keys*]
-  · %$typ:$name: named type:keyring, to be searched for in [process's keyrings , */proc/keys*]
+  | NOTE:  GPT-GUIDs identifies disk tables      
+  |            UUIDs identifies filesystems      
+  |            (blkid)                           
+  | $ sudo gdisk /dev/sdc
+  | GPT fdisk (gdisk) version 0.8.1            
+  | Partition table scan:                      
+  |   MBR: protective                          
+  |   BSD: not present                         
+  |   APM: not present                         
+  |   GPT: *present*                           
+  | Found valid GPT with protective MBR;       
+  | using GPT.                                 
+  | Command (? for help):                      
+  | → Disk /dev/sdc: 39070... sectors, 1.8TiB  
+  | → Logical sector size: 512 bytes           
+  |                        ^^^                 
+  |                    4096 physical           
+  |                    in new disks            
+  | → Disk identifier (GUID):                  
+  |   *058D39EE-5D06-409F-AA0C-298A3E6CC302*   
+  | → Partition table holds up to 128 entries  
+  | → First usable sector is 34,               
+  |   last usable sector is 3907029134         
+  | → Partitions will be aligned on 2048-sector
+  |   boundaries                               
+  | → Total free space is ... sectors ... GiB  
+  | → NUMBER  START       END    SIZE CODE NAME
+  | →        SECTOR    SECTOR                  
+  | →    1     2048   1953791  ...MiB 0700     
+  | →    2  1953792  80078847     GiB 0700     
+  | → ...                                      
   ```
-* RELATED PROCFS FILES:
-  ```
-  · /proc/keys                          ← list keys granted View perm/task reading the file.
-  · /proc/key-users                     ← lists quota+stats by user
-  ```
-* RELATED SYSCTL PROCFS FILES:
-  ```
-  /proc/sys/kernel/keys/root_maxkeys
-  /proc/sys/kernel/keys/root_maxbytes
-  /proc/sys/kernel/keys/maxkeys
-  /proc/sys/kernel/keys/maxbytes
-  /proc/sys/kernel/keys/gc_delay      ← timeout to garbage-collect revoked|expired keys
-  ```
+[[storage.block_management}]]
 
-* e.g.: When a filesystem/device calls "file-open", the kernel react by
-  searching for a key, releasing it upon close.
-  (How to deal with conflicting keys due to concurrent users opening
-  the same file is left to the filesystem author to solve)
-
- *########################*
- *# man 1 keyctl summary #* (Used by scripts, ...)
- *########################*
-$*$ keyctl show [$ring]    * ← Show (recursively by default) keys and keyrings     [Troubleshooting]
-   *Session*Keyring            a process is subscribed-to or just keyring $ring
-      84022412 --alswrv  0     -x : display IDs in hex (vs decimal).
-     204615789 --alswrv  0 6   0  keyring: _ses
-     529474961 --alsw-v  0  5534   \_ keyring: _uid.0
-      84022412 --alswrv  0     0   \_ logon: f2fs:28e21cc0c4393da1
-                                             └─┬─┘
-                                           ex key-type used by f2fs file-system.
-
-$*$ keyctl add           \ *  ← create+add key to $ring.
-$*$   $type "${descrip}" \ *    $data: instantiates new key with $data
-$*$   "${data}" $ring      *    Use padd (vs add) to read $data from STDIN
-    26                        ← New key's ID printed to STDOUT
-
-$*$ keyctl request   $type $desc      * ← Request key lookup in process's keyrings
-    26                                    of the given type and description. Print Key's ID
-                                          to STDOUT in case of match, or ENOKEY otherwise.
-                                          If an optional ${dest_keyring} (last option) is
-                                          provided, key will be added to it.
-$*$ keyctl request2  $type $desc $info* ← alt: create partial key (type,desc) and calls out
-$*$ keyctl prequest2 $type $desc      *   key creation to /sbin/request-key to (attempt to)
-                                          instantiate the key in some manner.
-                                          prequest2 (vs request2) reads (callout) $info
-                                          from STDIN.
-
-$*$ keyctl update $key $data          *  ← replace key data (pupdate to get data from STDIN)
-$*$ keyctl newring $name $ring        *  ← Create new keyring $name attached to existing $keyring
-                                           e.g.:  $ keyctl newring squelch @us
-$*$ keyctl revoke $key                *   ← Revoke key
-$*$ keyctl clear $ring                *   ← Clear $keyring (unlinks all keys attached)
-
-$*$ keyctl   link $key $ring          *   ← Link key to keyring (if there's enough capacity)
-$*$ keyctl unlink $key [$ring]        *  ← UnLink key. If $ring unset do depth-first search
-                                                      (unlinking all links found for $key)
-
-$*$ keyctl search $ring $type \*  ← Search key non-recursively
-$*  $desc [$dest_ring]         *  ← Id $dset_ring set and key found, attach to it.
-  e.g.:
-$*$ keyctl search @us user debug:hello *
-  23
-$*$ keyctl search @us user debug:bye   *
-  keyctl_search: Requested key not available
-
-   Restrict a keyring
-$*$ keyctl restrict_keyring $ring \ * ← limit linkage-of-keys to the given $ring
-$*  [$type [$restriction]]          *   using a provided restriction-scheme
-                                        (associated with a given key type)
-                                        · If restriction-scheme not provided,
-                                          keyring will reject all links.
-  e.g.:
-$*$ keyctl restrict_keyring $1 \ *  ← Options typically contain a restriction-name
-$*  asymmetric builtin_trusted   *    possibly followed by key ids or other data
-                                      relevant to the restriction.
-
-                            Read (payload) of key:
-$*$ keyctl read  $key  *  ← dumps raw-data to STDOUT as a hex dump
-$*$ keyctl pipe  $key  *  ← dumps raw-data to STDOUT
-$*$ keyctl print $key  *  ← dumps raw-data to STDOUT if entirely printable
-                                                     or as ":hex:"+hex dump otherwise
-                           "Operation not supported" returned
-                           if key-type does not support payload-reading
-
-                           LIST CONTENTS OF A KEYRING
-$*$ keyctl list  $ring * ←           pretty-prints $ring list-of-key IDs
-$*$ keyctl rlist $ring * ← space-separated  prints $ring list-of-key IDs
-  e.g.:
-$*$ keyctl list @us *
-  2 keys in keyring:
-         22: vrwsl----------  4043    -1 keyring: _uid.4043
-         23: vrwsl----------  4043  4043 user: debug:hello
-$*$ keyctl rlist @us *
-    22 23
-
-                                    DESCRIBE A KEY
-$*$ keyctl describe @us         ª ← pretty prints description
-    -5: vrwsl-... _uid_ses.4043
-$*$ keyctl rdescribe @us [$sep]ª  ← prints raw data returned from kernel.
-    keyring;4043;-1;3f1f0000;_uid_ses.4043
-    └─────┘ └──┘ └┘ └──────┘ └───────────┘
-     type   uid gid  permis.  description
-
-                                    CHANGE KEY ACCESS CONTROLS
-$*$ keyctl chown $key $uid  * ← change owner: It also governs which quota a key is taken out of
-                               *NOT currently supported!*
-$*$ keyctl chgrp $key $gid  * ← change group (process's GID|GID in process's groups list
-                                              for non-root users)
+[[{01_PM.TODO]]
+# Storage Unordered/TODO 
 
 
-$*$ keyctl setperm $key $mask * ← Set permissions mask(as "0x..." hex or "0..." octal)
+[[{doc_has.comparative,security.backups,01_PM.TODO]]
+## glusterfs vs Ceph vs FreeNAS
 
-   The hex numbers are a combination of:
-   Possessor UID       GID       Other     Permission Granted
-   ┌┐======  ==┌┐====  ====┌┐==  ======┌┐
-   010.....  ..01....  0...01..  0...  01  View  : allow view  of key type, description, "others"
-   020.....  ..02....  0...02..  0...  02  Read  : allow view  of payload|ring list (if supported)
-   040.....  ..04....  0...04..  0...  04  Write : allow write of payload|ring list (if supported)
-   080.....  ..08....  0...08..  0...  08  Search: allow key to be found in linked keyring.
-   100.....  ..10....  0...10..  0...  10  Link  : allow key to be linked to keyring.
-   200.....  ..20....  0...20..  0...  20  Set Attribute: allows change of own|grp|per.msk|timeout
-   3f0.....  ..3f....  0...3f..  0...  3f  All
-   └┘======  ==└┘====  ====└┘==  ======└┘
-  e.g.:
-$*$ $ keyctl setperm 27 0x1f1f1f00 *
-
-  See man 1 keyctl for further info about how to:
-  · Start a new session with fresh keyrings
-  · Instantiate a new key or mark as invalid, timeout.
-  · Retrieve a key's (SELinux) security context
-  · Give the parent process a new session keyring
-  · Remove/purge keys
-  · Get persistent keyring
-     keyctl get_persistent $ring [<uid>]
-  · Compute a Diffie-Hellman shared secret or public key from (private, prime, base)
-  · Compute a Diffie-Hellman shared secret and derive key material
-     from (private, prime, base, output_length, hash_type)
-  · Compute a Diffie-Hellman shared secret and apply KDF with other input
-     from (private, prime, base, output_length, hash_type)
-  · Perform public-key operations with an asymmetric key (encrypt/decript, sign/verify)
-[[security.encryption}]]
-
-#[ecryptfs_summary]
-## eCryptfs  [[{storage,security.encryption]]
-  Linux Kernel v2.6.19 and ahead
-  https://www.ostechnix.com/how-to-encrypt-directories-with-ecryptfs-in-linux/
-
-- Original author: Michael Halcrow and IBM Linux Technology Center.
-  - Actively maintained by Dustin Kirkland and Tyler Hicks from Canonical.
-
-- eCryptfs is not a Kernel-level full disk encryption subsystems like dm-crypt
-- eCryptfs is a stacked filesystem mounted on any directory on top of
-  the local file system (EXT3, EXT4, XFS,, ...) and also
- *network file systems*(NFS, CIFS, Samba, WebDAV,...) withR*some
-  restrictions* when compared to local FS.
-
-- No separate partition or pre-allocated space is actually required!
-  eCryptfs stores cryptographic metadata in the headers of files,
-  so the encrypted data can be easily moved between different users and
-  even systems.
-
-*PRE-SETUP*
-- Install it like:
-$ sudo pacman       -S ecryptfs-utils  # ← Arch, Manjaro,..
-$ sudo apt-get install ecryptfs-utils  # ← Debian,Ubuntu,...
-$ sudo dnf     install ecryptfs-utils  # ← RedHat, CentOS, Fedora, ..
-$ sudo zypper --install ecryptfs-utils # ← openSUSE
-
-*Ussage*
-- At first mount, you will be prompted cipher, key bytes,
-  plaintext passthrough, enable/disable filename encryption etc.
-<div cli>
-$ sudo mount -t ecryptfs ~/SensitiveData ~/SensitiveData/
-
-[sudo] password for sk:
-Passphrase:                       ← Enter passphrase. Needed to unlock again
-Select cipher:                      on next mounts.
- 1) aes: blocksize = 16; min keysize = 16; max keysize = 32
- 2) blowfish: blocksize = 8; min keysize = 16; max keysize = 56
- 3) des3_ede: blocksize = 8; min keysize = 24; max keysize = 24
- 4) twofish: blocksize = 16; min keysize = 16; max keysize = 32
- 5) cast6: blocksize = 16; min keysize = 16; max keysize = 32
- 6) cast5: blocksize = 8; min keysize = 5; max keysize = 16
-Selection [aes]:                  ← Prompt
-Select key bytes:
- 1) 16
- 2) 32
- 3) 24
-Selection [16]:                          ← [Enter]
-Enable plaintext passthrough (y/n) [n]:  ← [Enter]
-Enable filename encryption (y/n) [n]:    ← [Enter]
-Attempting to mount with the following options:
-  ecryptfs_unlink_sigs
-  ecryptfs_key_bytes=16
-  ecryptfs_cipher=aes
-  ecryptfs_sig=8567ee2ae5880f2d
-WARNING: Based on the contents of [/root/.ecryptfs/sig-cache.txt],
-it looks like you have never mounted with this key
-before. This could mean that you have typed your
-passphrase wrong.
-
-Would you like to proceed with the mount (yes/no)? : yes     ←
-Would you like to append sig [8567ee2ae5880f2d] to
-[/root/.ecryptfs/sig-cache.txt]
-in order to avoid this warning in the future (yes/no)? : yes ←
-Successfully appended new sig to user sig cache file
-Mounted eCryptfs
-</div>
-
-A signature file */root/.ecryptfs/sig-cache.txt* will be created
-to identify the mount passphrase in the kernel keyring.
-
-When the directory is un-mounted, files are still visible, but
-completely encrypted and un-readable.
-
-
-*Changing mount passphrase* <div cli>
-$ sudo rm -f /root/.ecryptfs/sig-cache.txt
-$ sudo mount -t ecryptfs ~/SensitiveData ~/SensitiveData/ # ← Mount again
-</div>
-*Re-mount automatically at reboot*
- - PRE-SETUP:
-   Fetch an USB drive to store the signature and path of the password file.
-<div cli>
-$ sudo mount /dev/sdb1 /mnt/usb # ← sdb1 == "usb". Use $ 'dmesg'
-                                #   to known the exact value
-
-$ sudo cat /root/.ecryptfs/sig-cache.txt
-934e8e1fa80152e4
-
-$ sudo vim /mnt/usb/password.txt # ← Ej: change!M@1234
-
-$ sudo vim /root.ecryptfsrc
-key=passphrase:passphrase_passwd_file=/mnt/usb/password.txt
-ecryptfs_sig=934e8e1fa80152e4
-ecryptfs_cipher=aes
-ecryptfs_key_bytes=16
-ecryptfs_passthrough=n
-ecryptfs_enable_filename_crypto=n
-</div>
-   (Note that USB will need to be mounted for the setup to work properly)
-
-  - Finally add next line to /etc/fstab :
-    ...
-    /home/myUser/SensitiveData /home/myUser/SensitiveData ecryptfs defaults 0 0
-[[}]]
-
-## LVM + LUKS encryption  [[{storage.lvm,security.encryption]]
-- LUKS stands for Linux-Unified-Key-Setup encryption toolchain.
-- LVM  integrates nicely with disk encryption
-
-LUKS encrypts full-partitions (vs files  in GnuPG, ...)
-
-NOTICE/WARN: LUKS will prompts for a password during boot.
-             (server-autoboot will fail)
-
-
-*STEP 1: format the partition with the "cryptsetup" command*
-  # cryptsetup luksFormat /dev/sdx1
-→ LUKS will warn that it's going to erase your drive: (Accept to continue)
-→ A prompt will ask for a passphrase: (Enter it to continue)
-
-The partition is encrypted at this point but no filesystem is in yet:
-- In order to partition it you must un-lock it.
-
-  # cryptsetup luksOpen /dev/sdx1 mySafeDrive # ← Unlock before formating it.
-                                  ^^^^^^^^^^^
-                                  human-friendly name
-                                  will create a symlink
-                                  /dev/mapper/mySafeDrive
-                                  to auto-generated designator
-
-→ LUKS will ask for the passphrase to un-lock the drive: (Enter it to continue)
-
-- Check the volume is "OK":
-  # ls -ld /dev/mapper/mySafeDrive
-→ lrwxrwxrwx. 1 root root 7 Oct 24 03:58 /dev/mapper/mySafeDrive → ../dm-4
-
-*STEP 2: format with standard-filesystem (ext4,...)*
-  # mkfs.ext4 -o Linux -L mySafeExt4Drive /dev/mapper/mySafeDrive
-
-*STEP 3: Mount the unit*
-  # mount /dev/mapper/mySafeExt4Drive /mnt/hd
-[[}]]
-[[security.encryption}]]
-
-
-# Unordered/TODO [[{01_PM.TODO]]
-## https://forum.proxmox.com/threads/glusterfs-ceph-or-freenas.25866/  [[{security.backups,01_PM.TODO]]
+* https://forum.proxmox.com/threads/glusterfs-ceph-or-freenas.25866/
  """...  Your preferred backup mechanism should mirror your primary storage choice.
 
    If You're already using a ceph/gluster storage solution, you can
    integrate your backup mechanism into your cluster. I'm less
    experienced with gluster, but with ceph you can perform
 
-     $ rbd export-diff --from-snap \     <- create incremental updates.
-       snap1 pool/image@snap2  \
-       pool_image_snap1_to_snap2.diff
-
+   ```
+   $ rbd export-diff --from-snap \     <- create incremental updates.
+     snap1 pool/image@snap2  \
+     pool_image_snap1_to_snap2.diff
+   ```
 
     "...I imagine gluster has a similar function..."
 
-   For ZFS based storage, 'zfs-send' creates incrementals to your freenas box;
-     Proxmox has a nice control tool for this ('pve-zsync')
-
-     If LVM based storage, use something like 'rsnapshot'/'rsync' to accomplish similar
+*  For ZFS based storage, 'zfs-send' creates incrementals to your freenas box;
+   Proxmox has a nice control tool for this ('pve-zsync') [[{security.backups.ZFS}]]<br/>
+  If LVM based storage, use something like 'rsnapshot'/'rsync' to accomplish similar
    functionality.
-
-    vzdump over NFS: last and most granular resort (but the drawbacks of the method are obvious).
+* vzdump over NFS: last and most granular resort (but the drawbacks of the 
+  method are obvious).
   """
-[[}]]
+[[doc_has.comparative}]]
 
 ## Rocky Linux 9.0 (Blue Onyx) Is Here with 10 Years of Support
-  https://linuxiac.com/rocky-linux-9-0-is-here-with-10-years-of-support/ 
+* <https://linuxiac.com/rocky-linux-9-0-is-here-with-10-years-of-support/ >
   Rocky Linux 9.0 comes with Linux kernel 5.14 and systemd 250-6. 
 
   In addition, XFS now enables Direct Access (DAX) operations, which
   provide direct access to byte-addressable persistent memory while
   avoiding the latency associated with typical block I/O conventions.
-_______________________________
 
-## "When Ceph Isn't Enough, There's a New Kid on the Block".  You
-  can watch the replay here.
-  Lightbits disaggregated virtualized NVMe/TCP performs like local
+
+[[{scalability.storage.lightbits]]
+## "When Ceph Isn't Enough, There's a New Kid on the Block".  
+
+* Lightbits disaggregated virtualized NVMe/TCP performs like local
   flash, maximizes utilization, increases flash endurance, and improves
   operational efficiency.
 
-  https://www.lightbitslabs.com/blog/ceph-and-the-quest-for-high-performance-low-latency-storage/?utm_source=oficina24x7.com
+* <https://www.lightbitslabs.com/blog/ceph-and-the-quest-for-high-performance-low-latency-storage/?utm_source=oficina24x7.com>
 
-  ... or join our next webinar, Advanced NVMe SSDs -
-  Addressing the Blast Radius Problem.
+From the inventors of the NVMe® over TCP protocol, Lightbits software-defined
+elastic block storage (EBS) ...  supports any modern application and
+integrates seamlessly with popular orchestration environments Kubernetes, 
+OpenStack, ...
+* **Up to 75M IOPS while maintaining sub-millisecond consistent latency at scale** !!!
+[[scalability.storage.lightbits}]]
 
+[[{scalability.storage.oracle]]
 ## How To Map Oracle ASM Disk Against Physical Disk And LUNs
-  In Linux with the DeviceMapper:
-  https://www.2daygeek.com/shell-script-map-oracle-asm-disks-physical-disk-lun-in-linux/
+
+* In Linux with the DeviceMapper:
+  <https://www.2daygeek.com/shell-script-map-oracle-asm-disks-physical-disk-lun-in-linux/>
 - ASMLib is an optional support library for the Automatic Storage
   Management feature of the Oracle Database.
 - Automatic Storage Management (ASM) simplifies database
   administration and greatly reduces kernel
   resource usage (e.g. the number of open file descriptors).
 - It eliminates the need for the DBA to directly manage potentially
-  thousands of Oracle database files,
-  requiring only the management of groups of disks allocated to the
+  thousands of Oracle database files, requiring only the management
+  of groups of disks allocated to the
   Oracle Database.
+[[scalability.storage.oracle}]]
 
-## MDADM Raid 0 4x 1TB NVME
-https://www.reddit.com/r/linuxadmin/comments/d0xrml/mdadm_raid_0_4x_1tb_nvme/
 
-Cross post from r/sysadmin...
+## MDADM Raid 0 4x 1TB nVME
 
-So, I've been banging my head on this for a while, gone all over the interwebs. And no amount of random button mashing has made a difference...
+* <https://www.reddit.com/r/linuxadmin/comments/d0xrml/mdadm_raid_0_4x_1tb_nvme/>
 
-I've got 4x 1TB NVME disks from Crucial, each getting 4 dedicated PCIe lanes (gotta love AMD Epyc) in an ASRock Epycd8-2t board. And no amount of tweaking chunk/stride/etc.. is getting the sequential write speeds above that of a single drive.
+...  I've got 4x 1TB NVME disks each getting 4 dedicated PCIe lanes 
+(gotta love AMD Epyc) in an ASRock Epycd8-2t board. And no amount of 
+tweaking chunk/stride/etc.. is getting the sequential write speeds above that of a single drive.
 
-sh: 1: Im sure Im: not found
-re-RTFM on MDADM and ext4. But, I'm hoping maybe someone here will
-give me a propper schooling on how lame it is I'm not getting this
-right on my own.
 
 ## NVM Express
-https://en.wikipedia.org/wiki/NVM_Express
-http://manpages.org/nvme-format
+
+* <https://en.wikipedia.org/wiki/NVM_Express>
+* <http://manpages.org/nvme-format>
 
 
-## try: try and abort/commit using overlays file-system [[{]]
-https://github.com/binpash/try
-try lets you run a command and inspect its effects before changing your live system. try uses Linux's namespaces (via unshare) and the overlayfs union filesystem.
+[[{security.try,QA.UX]]
+## try: try and abort/commit using overlays file-system
 
+* <https://github.com/binpash/try>
+* try lets you run a command and inspect its effects before changing
+  your live system. try uses Linux's namespaces (via unshare) and the
+  overlayfs union filesystem.
+[[security.try}]]
+
+## ELF
+
+* <https://en.wikipedia.org/wiki/Executable_and_Linkable_Format>
+* man readelf
+
+## One volume group vs rootvg & appvg
+
+* <https://www.reddit.com/r/linuxadmin/comments/b5pbc6/one_volume_group_vs_rootvg_appvg>
+
+... I have been generally using a separate volume group for the
+application and OS.  ... For VMs I have been carrying over the
+processes by creating one OS disk ~60GB and one disk for the
+application ... I give each a vg then create separate LVMs from there.
+
+ In situations where we have something like Oracle DBs, we generally
+create a couple of volume groups for it and add a lot of luns to the
+devices from a SAN card. From there we create the required LVMs based
+off the DBA's requirements.
+
+I guess this is something I really haven't thought much about, though
+I am curious about what you guys have done?
+
+[[{storage.file_system.glusterFS,storage.distributed,PM.risk]]
+## GlusterFS altering a file's hash?
+
+* <https://www.reddit.com/r/linuxadmin/comments/cht9fg/glusterfs_altering_a_files_hash_wha/>
+[[storage.file_system.glusterFS}]]
+
+[[{scalability.storage]]
+## Virtual Data Optimizer (VDO) block virtualization
+
+* <https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/storage_administration_guide/vdo-integration>
+
+* Virtual Data Optimizer (VDO) is a block virtualization technology
+that allows you to easily create compressed and deduplicated pools of
+block storage.
+
+- Deduplication is a technique for reducing the consumption of
+  storage resources by eliminating multiple copies of duplicate blocks.
+- Compression is a data-reduction technique that works well with file
+formats that do not necessarily exhibit block-level redundancy, such
+as log files and databases. See Section 29.4.8, “Using Compression”
+for more detail.
+[[scalability.storage}]]
+
+[[{scalability.storage.nvme,storage.nvme]]
+
+## nvme-over-tcp
+
+* connecting NVMe flash storage using TCP.
+
+<https://blogs.oracle.com/linux/nvme-over-tcp>
+
+Oracle Linux UEK5 introduced NVMe over Fabrics which allows
+transferring NVMe storage commands over a Infiniband or Ethernet
+network using RDMA Technology. UEK5U1 extended NVMe over Fabrics to
+also include Fibre Channel storage networks. Now with UEK6, NVMe over
+TCP is introduced which again extends NVMe over Fabrics to use a
+standard Ethernet network without having to purchase special
+RDMA-capable network hardware.
+
+The NVMe Multi-Queuing Model implements up to 64k I/O Submission and
+Completion Queues as well as an Administration Submission Queue and a
+Completion Queue within each NVMe controller. For a PCIe attached
+NVMe controller, these queues are implemented in host memory and
+shared by both the host CPUs and NVMe Controller. I/O is submitted to
+a NVMe device when a device driver writes a command to a I/O
+submission queue and then writing to a doorbell register to notify
+the device. When the command has been completed, the device writes to
+a I/O completion queue and generates an interrupt to notify the
+device driver.
+
+NVMe over Fabrics extends this design so submission and completion
+queues in host memory are duplicated in the remote controller so a
+host-based queue-pair is mapped to a controller-based queue-pair.
+NVMe over Fabrics defines Command and Response Capsules that are used
+by queues to communicate across the fabric as well as Data Capsules.
+NVMe-TCP defines how these capsules are encapsulated within a TCP PDU
+(Protocol Data Unit). Each host-based queue-pair and its associated
+controller-based queue-pair maps to its own TCP connection and can be
+assigned to a separate CPU core.
+
+[[scalability.storage.nvme,storage.nvme}]]
+
+## Replacing a failing RAID 6 drive with mdadm
+
+* <https://www.redhat.com/sysadmin/raid-drive-mdadm>
+
+## ZFS on Linux
+
+* <https://github.com/zfsonlinux>
+
+[[{storage.SAN]]
+## Storage Area Network (SAN) 101
+
+* <https://serversuit.com/community/technical-tips/view/storage-area-network,-and-other-storage-methods.html>
+  There are some common misconceptions about the term "SAN", which
+means "Storage Area Network" and as such, strictly speaking, refers
+only to the communication infrastructure connecting storage devices
+(disk arrays, tape libraries, etc.) and storage users (servers).
+However, in common practice the term "SAN" is used to refer to two
+things:
+
+- A complete storage infrastructure, including all the hardware and
+software involved in providing shared access to central storage
+devices from multiple servers. This usage, although not strictly
+correct, is commonly accepted and what most people refers to when
+talking about a "SAN". The rest of this answer will focus on it, thus
+describing every component of an enterprise-level storage
+infrastructure.
+- A single storage array (see later); as in, "we have a Brand X SAN
+with 20 TB storage". This usage is fundamentally incorrect, because
+it doesn't even take into account the real meaning of "SAN" and just
+assumes it's some form of storage device.
+[[storage.SAN}]]
+
+[[{storage.security,security.crytography]]
+## gocryptfs: Encrypted overlay filesystem 
+
+* written in Go. 
+* <https://github.com/rfjakob/>
+* https://github.com/tldr-pages/tldr/blob/master/pages/common/gocryptfs.md
+[[storage.security,security.crytography}]]
+
+[[{storage.block_management]]
+## mmls: Display partition layout of a volume system.
+
+* <https://github.com/tldr-pages/tldr/blob/master/pages/common/mmls.md>
+* <https://wiki.sleuthkit.org/index.php?title=Mmls>
+
+  ```
+  | % mmls -t dos disk.dd
+  | DOS Partition Table
+  | Units are in 512-byte sectors
+
+  |      Slot    Start        End          Length       Description
+  | 00:  Meta    0000000000   0000000000   0000000001   Primary Table (#0)
+  | 01:  -----   0000000000   0000000062   0000000063   Unallocated
+  | 02:  00:00   0000000063   0002056319   0002056257   Win95 FAT32 (0x0B)
+  | 03:  00:01   0002056320   0008209214   0006152895   OpenBSD (0xA6)
+  | 04:  00:02   0008209215   0019999727   0011790513   FreeBSD (0xA5)
+   ```
+[[storage.block_management}]]
+
+[[{]]
+## Advancde Storage  topics
+
+* REF:Alpine Persistence, Storage Summit
+* <https://alpss.at/>
+  ```
+  | 08:30 - 09:00   Zoned Namespaces for NVMe   Matias Bjørling and Christoph Hellwig
+  | 10:00 - 10:30   Copy Offload    Bart van Assche
+  | 10:30 - 11:00   PCI 2P2 and computational storage   Stephen Bates
+  | 11:00 - 11:30   Exciting new stuff in RDMA  Idan Burstein
+  | 12:00 - 12:30   SPI-attached Flash Memory   Boris Brezillon and Miquel Raynal
+  | 12:30 - 13:00   Advanced power-cut testing the MTD stack    Richard Weinberger
+  | 14:00 - 19:00   BOFs and hallway track (or hiking on your own)
+  | 08:30 - 09:00   Qemu as a Memory emulation platform Damien Le Moal
+  | 09:00 - 09:30   UMAP    Adam Manzanares
+  | 10:00 - 10:30   Inode namespacing – COW inodes  Jeff Mahoney
+  | 10:30 - 11:00   Adding filesystem authentication to UBIFS   David Gstir
+  | 11:00 - 11:30   Reverse Engineering APFS (Apple File System)    Johannes Thumshirn
+  | 09:00 - 09:30   Blk-mq and zoned devices    Bart van Assche and Damien Le Moal
+  | 12:00 - 13:00   Blk-mq: timeout handling, power management, etc Bart van Assche
+  ```
 [[}]]
+
+## Formating Drives larger than 2TBs
+
+* <https://www.reddit.com/r/linuxquestions/comments/xpr4n1/formating_drives_larger_than_2tbs/>
+
+
 [[01_PM.TODO}]]
 
-[[storage}]]
+
+
+[[linux,storage}]]
+
+
