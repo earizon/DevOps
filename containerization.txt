@@ -1,0 +1,1121 @@
+[[{containerization]]
+# Summary
+
+## External Refs:
+* <http://container.training/>
+
+[{containerization.101]]
+
+  In the late 1990's UNIX/Linux web servers exposed to public
+Internet (and public attackers) were protected by "change-rooting"
+the file sistem:
+  ```
+                          
+  Kernel              change-rooted
+  and apps FS         Web Server FS 
+  ───────────         ─────────────
+  /             ····> /
+  ├─ usr/       ·     ├─ cgi/
+  ├─ bin/       ·     └─ html/
+  ├─ var/       ·     ^^^^^^^^ 
+  |  ├─ www/ ····     The web server can NOT see the full file
+  |     ├─ cgi/       -system. It is "jailed" into the /var/ww
+  |     ├─ html/      w.  /usr/, /home/, ... are never visible
+  ├─ ...               to the server.  If a remote attacker ma
+                      nages to take control of the server, it                   
+                      can not "scape" from the jailed file-sys
+                      tem.
+  ```
+* The idea of "change rooting" the file system was extended to other
+  resources controlled by the Linux kernel, including the network,
+  in what is called "linux namespaces". A degree of indirection around
+  real resource.
+* Containers are just a human-friendly way to launch linux processes
+  into a change-rooted file system with a "change-rooted" network,
+  change-rooted namespace, ... . Consult `man 1 nsenter` for more
+  details about namespaces.
+   In practice containers behave as virtual (isolated) machines, but
+  they start and stop much faster, since they are no more than
+  normal linux processes running in isolated file-system, network,
+  pid, ...namespaces.
+* Docker containers add another big advantage: **Reproducible Builds**.
+  Following best patterns, containers tools and running enviroments
+  have been designed to create source-to-binary builds that can be
+  replicated in developer's laptops or servers in test or production
+  enviroments.
+[containerization.101}]]
+
+* Docker Architecture
+
+  ```
+  |      ┌─ container1 ─┐ 
+  |      └─────^────────┘ 
+  |            ·           
+  |    /usr/bin/docker-runc <· cli running apps packages
+  |            ·               according to OCI spec.
+  |            ·               It is quickly replaced by
+  |            ·               docker-containerd-shim
+  |            ·
+  |   ┌ /usr/bin/ ────────┐ <· Manage container  life cycle
+  |   │ docker-containerd │    Q: Why not in dockerd? 
+  |   └─────────^─────────┘    A: To allow reuse in dockerd, 
+  |           (fork)              kubelet, swarm, ECS, ...
+  |             ·                 APIs to control docker, k8s, ...
+  |   ┌ /usr/bin/dockerd ─┐       differ, but the container life-cycle
+  |   └─────────┬─────────┘       is similar. [[{containerization.101}]]
+  |             o  
+  |     /var/run/docker.sock (default), tcp or fd
+  |     exposing gRPC API waiting for orders
+  |
+  | $ docker command args  # <· Cli. invokes the API 
+  |                             through the UNIX socket
+  ```
+
+  A similar architecture is used by newer docker "clones" (podman, ...)
+
+## docker / podman command line summary  <!-- { $command -->
+
+  ```
+  | $ docker <options> command args
+  | 
+  | options:
+  | --config string      Location of client config files (default "/root/.docker")
+  | --debug              Enable debug mode
+  | --host list          Daemon socket(s) to connect to
+  | --log-level $level   := "debug"|"info"*|"warn"|"error"|"fatal"
+  | --tls                Use TLS; implied by --tlsverify
+  | --tlscacert ...      Trust certs signed only by this CA (default "/root/.docker/ca.pem")
+  | --tlscert string     Path to TLS certificate file       (default "/root/.docker/cert.pem")
+  | --tlskey string      Path to TLS key file               (default "/root/.docker/key.pem")
+  | --tlsverify          Use TLS and verify the remote
+  | --version            Print version information and quit
+  |
+  | Management Commands
+  |             Manage ...
+  | config      Docker configs (for swarms)
+  | container   (run, exec, attach, stop/start, ...)
+  | network     (create, dis/connect,inspect,ls,prune,rm)
+  | node        Swarm (ls,promote,update,demote,ps,rm)
+  | plugin      (create,dis/enable,inspect,install,ls,push,rm,set,upgrade)
+  | secret      (create,inspect,ls,rm)
+  | service     (create,update,ls,ps,rm,rollback,scale,inspect,logs)
+  | swarm       (init,join)
+  | system      (events,df,info,prune)
+  | trust       trust on
+  |             Docker images
+  | volume      volumes
+  | 
+  | RUNNING CONTAINERS
+  | run         Start new container by running a command on it. 
+  |             alt: create + start as alternative to run (weird use)
+  | stop        Stop 1+ running containers
+  | start       (re)Start 1+ stopped containers
+  | attach      Attach local STDIN/OUT/ERR streams to a running container.
+  | cp          Copy files/folders between container <··> local filesystem
+  | exec        Run a command in a running container
+  | kill        Kill one or more running containers
+  | logs        Fetch the logs from container
+  | pause       Pause all processes within one or more containers
+  | restart     Restart one or more containers
+  | rm          Remove 1+ stopped containers
+  |             WARN: Non persistent volumes will be removed also.
+  |             Make a `docker cp` to save data in non-persistent volumes.
+  | top         Display running processes for container
+  |             NOTE: '$ docker stats' is really what most people want
+  |                   when searching for a tool similar to UNIX "top".
+  | port        List port mappings or specific mapping for container
+  | unpause     Unpause all processes within 1+ containers
+  | wait        Block until 1+ containers stop, print their exit codes
+  | rename      Rename a container
+  | stats       Display a live stream of container(s) resource usage statistics
+  | update      Update configuration of 1+ containers
+  |             (cpu-quota, shared, kernel-memory, pids-limit, ...)
+  ```
+
+  ```
+  | Throubleshoot/debug Commands :  [[troubleshooting]]
+  |
+  | $ docker system events  # <·· Get real time events from the server
+  |
+  | $ docker events \       # <·· Get real time events from the server
+  |   --filter ... \              <·· Can be repeated (AND added) e.g:
+  |                                   "container=7805c1d35632"
+  |                                   "type=volume"
+  |                                   "type=network"
+  |   --format ... \              eg: '{{json .}}' | go-templace (https://docs.docker.com/go/formatting/9
+  |   --since ... \               eg: '2015-01-28' '3m'
+  |   --until ...
+  |   └───────┬───────────┘
+  |   EVENTS CAN COME      EVENT EMMITED
+  |   from ...
+  |   -------------------  -----------------------------------------
+  |   · containers - - - - attach|commit|copy|create|destroy|detach|
+  |                        die|exec_create|exec_detach|exec_start|
+  |                        export|kill|oom|pause|rename|resize|
+  |                        restart|start|stop|top|unpause|update
+  |   · images     - - - - delete|import|load|pull|push|save|tag|untag
+  |   · volume     - - - - create|mount|unmount|destroy
+  |   · network    - - - - create|connect|disconnect|destroy
+  |   · plugin     - - - - enable|disable|install|remove
+  |   · daemon     - - - - reload
+  |   · docker services  - create|remove|update
+  |   · Docker Swarn nodes create|remove|update
+  |   · Docker secrets - - create|remove|update
+  |   · Docker configs - - create|remove|update
+  ```
+
+  ```
+  | $ docker system df # --verbose
+  | TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+  | Images          96        13        13.03GB   9.378GB (71%)
+  | Containers      17        11        37.42MB   2.909MB (7%)
+  | Local Volumes   28        7         14.4GB    8.532GB (59%)
+  | Build Cache     844       0         50.97GB   50.97GB
+
+  | $ docker system info    # <·· Global Info
+  |   Containers: 23
+  |      Running: 10
+  |       Paused: 0
+  |      Stopped: 1
+  |   Images: 36
+  |   Server Version: 17.03.2-ce
+  |   *Storage Driver: devicemapper*
+  |    Pool Name: docker-8:0-128954-pool
+  |    Pool Blocksize: 65.54 kB
+  |    Base Device Size: 10.74 GB
+  |    Backing Filesystem: ext4
+  |    Data file: /dev/loop0
+  |    Metadata file: /dev/loop1
+  |        Data Space Used      : 3.014 GB *
+  |        Data Space Total     : 107.4 GB *
+  |        Data Space Available : 16.11 GB *
+  |    Metadata Space Used      : 4.289 MB *
+  |    Metadata Space Total     : 2.147 GB *
+  |    Metadata Space Available : 2.143 GB
+  |   *Thin Pool Min. Free Space: 10.74 GB*
+  |    Udev Sync Supported: true
+  |    Deferred Removal Enabled: false
+  |    Deferred Deletion Enabled: false
+  |    Deferred Deleted Device Count: 0
+  |        Data loop file: /var/...devicemapper/data
+  |    Metadata loop file: /var/.../devicemapper/metadata
+  |    Library Version: 1.02.137 (2016-11-30)
+  |    Logging Driver: json-file
+  |    Cgroup Driver: cgroupfs
+  |   Plugins:
+  |    Volume: local
+  |    Network: bridge host macvlan null overlay
+  |   Swarm: inactive
+  |   Runtimes: runc
+  |   Default Runtime: runc
+  |   Init Binary: docker-init
+  |   containerd version: 4ab9917febca...
+  |   runc       version: 54296cf40ad8143b62...
+  |   init       version: 949e6fa
+  |   Security Options:    [[{security]]
+  |    seccomp
+  |     Profile: default   [[}]]
+  |   Kernel Version: 4.17.17-x86_64-linode116
+  |   Operating System: Debian GNU/Linux 9 (stretch)
+  |   OSType: linux
+  |   Architecture: x86_64
+  |   CPUs: 4
+  |   Total Memory: 3.838 GiB
+  |   Name: MyLaptop01
+  |   ID: ZGYA:L4MN:CDCP:DANS:IEHQ:...
+  |   *Docker Root Dir: /var/lib/docker*
+  |   *Debug Mode (client): false*
+  |   *Debug Mode (server): false*
+  |   *Registry: https://index.docker.io/v1/*
+  |   Experimental: false
+  |   Insecure Registries:
+  |    127.0.0.0/8
+  |   Live Restore Enabled: false
+
+  | $ docker inspect $DOCKER_OBJ_ID # <·· Dump low-level information on image|container|...
+
+  | $ docker ps --all     List running containers summary
+  |                       -a/-all: show also exited containers.
+
+  | $ docker version      Show Docker version information
+  ```
+[[}]]
+
+## Networks [[{networking]]
+  ```
+  $ docker network create  network01   <·· Create new network
+
+  $ docker run \
+    --network network01 \              <·· Run container in new network
+    -h redis        \                      <·· "ping redis" will work on network01
+    -name redis-server01
+
+  $ docker run --rm -ti \
+    --network  network01 \             <·· Use it. Now client can connect
+    -d redis                               to server in shared network01.
+
+  $ docker network ls                  <·· List existing networks
+
+  $ docker disconnect \                <·· Disconnect server from network
+    network01 redis-server01
+
+  $ docker connect --alias db \        <- Connect server to network
+    network01  redis-server01
+  ```
+[[}]]
+
+## Docker Volumes [[{storage]]
+  ```
+  ───────────────────────────────────────── REUSING HOST VOLUMES:
+  $ docker run -it --name alpha \        <- Create new container mounting
+    -v $(pwd)/log:/var/log  \               host directory as volume
+    ubuntu bash
+
+  $ docker run \
+    --volumes-from alpha                 <- Share volumes from alpha container
+    --name beta
+    ubuntu
+
+  ───────────────────────────────────────── CREATING REUSABLE VOLUME
+  $ docker volume create --name=www_data <- Create Volume
+  $ docker run -d -p 8888:80 \
+    -v www_data:/var/www/html            <- reuse in new (nginx) container
+    -v logs:/var/log/nginx nginx
+
+  $ docker run \
+    -v  www_data:/website                <- reuse in (vi) container
+    -w /website \                           <- Make it writable to container
+    -it alpine vi index.html
+  ```
+[[}]]
+
+
+
+
+## Managing Runing Containers [[{]]
+
+```
+$ docker run \                   <·· Create and run container based on imageXX
+  --rm \                         <·· Remove on exit (remove to see container's logs after exit)
+  --name name01 \                <·· assign name (or fail if name already assigned)
+  --network network01 \          <·· attach to network01 (that must have been created previously)
+  somerepo/image01
+
+$ docker logs $container \       <·· Dump full container logs
+    --since "2023-11-22T10:00" \    <·· Optional
+    --until "2023-11-22T10:30" \    <·· Optional
+    --tail 100 \                    <·· Optional
+    --follow                        <·· "follow" future logs
+
+$ docker stop $container  && \   <- Try to stop container properly.
+  sleep 30 && \
+  docker kill containerXX        <- Finally if it doesn't respond in 30 secs.
+
+$ docker system df # --verbose
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          96        13        13.03GB   9.378GB (71%)
+Containers      17        11        37.42MB   2.909MB (7%)
+Local Volumes   28        7         14.4GB    8.532GB (59%)
+Build Cache     844       0         50.97GB   50.97GB
+```
+
+## Prunning Storage [[troubleshooting.101,storage.host]]
+
+* [REF](https://docs.docker.com/engine/reference/commandline/builder_prune/)
+```
+$ docker volume prune # <- Prune stopped containers
+                      # --all           Remove all unused build cache, not just dangling ones
+                      # --keep-storage  Amount of disk space to keep for cache
+                      # --filter        Provide filter values (e.g. until=24h)
+                      # --force
+[[troubleshooting.101}]]
+```
+
+## Monitoring running containers [[{monitoring]]
+
+* List containers instances:
+  ```
+   $ docker ps     # only running
+   $ docker ps -a  # also finished, but not yet removed (docker rm ...)
+   $ docker ps -lq # TODO:
+  ```
+* "top" containers showing Net IO read/writes, Disk read/writes:
+  ```
+   $ docker stats
+   CONTAINER ID   NAME                    CPU %   MEM USAGE / LIMIT     MEM %   NET I/O          BLOCK I/O      PIDS
+   c420875107a1   postgres_trinity_cache  0.00%   11.66MiB / 6.796GiB   0.17%   22.5MB / 19.7MB  309MB / 257kB  16
+   fdf2396e5c72   stupefied_haibt         0.10%   21.94MiB / 6.796GiB   0.32%   356MB / 693MB    144MB / 394MB  39
+
+   $ docker top 'containerID'
+   UID       PID     PPID    C  STIME  TTY   TIME     CMD
+   systemd+  26779   121423  0  06:11  ?     00:00:00 postgres: ddbbName cache 172.17.0.1(35678) idle
+   ...
+   systemd+  121423  121407  0  Jul06  pts/0 00:00:44 postgres
+   systemd+  121465  121423  0  Jul06  ?     00:00:01 postgres: checkpointer process
+   systemd+  121466  121423  0  Jul06  ?     00:00:26 postgres: writer process
+   systemd+  121467  121423  0  Jul06  ?     00:00:25 postgres: wal writer process
+   systemd+  121468  121423  0  Jul06  ?     00:00:27 postgres: autovacuum launcher process
+   systemd+  121469  121423  0  Jul06  ?     00:00:57 postgres: stats collector process
+  ```
+[[}]]
+
+## Rootless Mode [[{PM.TODO,security]]
+
+* Docker (v20.10+)
+* https://docs.docker.com/engine/security/rootless/
+[[}]]
+
+## Dockviz: dependency graph [[{monitoring,troubleshooting]]
+* <https://github.com/justone/dockviz>
+* Show a graph of running containers-dependencies and image-dependencies.
+* Example ussage:
+  ```
+  $ dockviz images -
+  └─511136ea3c5a Virtual Size: 0.0 B
+    ├─f10ebce2c0e1 Virtual Size: 103.7 MB
+    │ └─82cdea7ab5b5 Virtual Size: 103.9 MB
+    │   └─5dbd9cb5a02f Virtual Size: 103.9 MB
+    │     └─74fe38d11401 Virtual Size: 209.6 MB Tags: ubuntu:12.04, ubuntu:precise
+    ├─ef519c9ee91a Virtual Size: 100.9 MB
+    └─02dae1c13f51 Virtual Size: 98.3 MB
+      └─e7206bfc66aa Virtual Size: 98.5 MB
+        └─cb12405ee8fa Virtual Size: 98.5 MB
+          └─316b678ddf48 Virtual Size: 169.4 MB Tags: ubuntu:13.04, ubuntu:raring
+  ```
+
+  ```
+  $ dockviz images -t -l                   #  <- show only labelled images
+  └─511136ea3c5a Virtual Size: 0.0 B
+    ├─f10ebce2c0e1 Virtual Size: 103.7 MB
+    │ └─74fe38d11401 Virtual Size: 209.6 MB Tags: ubuntu:12.04, ubuntu:precise
+    ├─ef519c9ee91a Virtual Size: 100.9 MB
+    │ └─a7cf8ae4e998 Virtual Size: 171.3 MB Tags: ubuntu:12.10, ubuntu:quantal
+    │   ├─5c0d04fba9df Virtual Size: 513.7 MB Tags: nate/mongodb:latest
+    │   └─f832a63e87a4 Virtual Size: 243.6 MB Tags: redis:latest
+    └─02dae1c13f51 Virtual Size: 98.3 MB
+      └─316b678ddf48 Virtual Size: 169.4 MB Tags: ubuntu:13.04, ubuntu:raring
+  ```
+
+  ```
+  $ dockviz images - -i *                 #  <- Show incremental size (vs cumulative)
+  └─511136ea3c5a Virtual Size: 0.0 B
+    ├─f10ebce2c0e1 Virtual Size: 103.7 MB
+    │ └─82cdea7ab5b5 Virtual Size: 255.5 KB
+    │   └─5dbd9cb5a02f Virtual Size: 1.9 KB
+    │     └─74fe38d11401 Virtual Size: 105.7 MB Tags: ubuntu:12.04, ubuntu:precise
+    └─02dae1c13f51 Virtual Size: 98.3 MB
+      └─e7206bfc66aa Virtual Size: 190.0 KB
+        └─cb12405ee8fa Virtual Size: 1.9 KB
+          └─316b678ddf48 Virtual Size: 70.8 MB Tags: ubuntu:13.04, ubuntu:raring
+  ```
+[[}]]
+
+# docker compose [[{orchestration.docker-compose]]
+
+* "Self documenting" YAML file defining services, networks and volumes.
+* Full ref: <https://docs.docker.com/compose/compose-file/>
+* Ideal to create development/production enviroments running just on a single host
+  (vs a pool of workers, like it's the case with Kubernetes, AWS EC2, ...)
+* Best Patterns: https://docs.docker.com/compose/production/  [[PM.TODO]]
+* Docker compose example:
+  C&P from <https://github.com/bcgov/moh-prime/blob/develop/docker-compose.yml>
+  ```
+  ---
+  version: "3"
+
+  services:
+  ######################################################### Database #
+    postgres:
+      restart: always                       # <- "always", "on-failure:5", "no"
+      container_name: primedb
+     *image: postgres:10. *                 # use pre-built image
+      environment:
+        POSTGRES_PASSWORD: postgres
+        ...
+      ports:
+        - "5432:5432"
+      volumes:
+        - local_postgres_data:/var/lib/postgresql/data
+     *networks:*                            # ← Networks to connect to
+     *  - primenet*
+  ########################################################## MongoDB #
+    mongo:
+      restart: always
+      container_name: primemongodb
+      image: mongo:3
+      environment:
+        MONGO_INITDB_ROOT_USERNAME: root
+        ...
+      ports:
+        - 8081:8081
+      volumes:
+        - local_mongodb_data:/var/lib/mongodb/data
+     *networks:*
+     *  - primenet*
+  ############################################################## API #
+    dotnet-webapi:
+      container_name: primeapi
+      restart: always
+     *build:*                               # ← use Dockerfile to build image
+        context: prime-dotnet-webapi/   *WARN*: remember to rebuild image and recreate
+                                              app’s containers like:
+                                            ┌───────────────────────────────────────────────┐
+                                            │ $ docker-compose build dotnet-webapi          │
+                                            │                                               │
+                                            │ $ docker-compose up \ ← stop,destroy,recreate │
+                                            │   --no-deps           ← prevents from also    │
+                                            │   -d dotnet-webapi      recreating any service│
+                                            │                         primeapi depends on.  │
+                                            └───────────────────────────────────────────────┘
+      command: "..."
+      environment:
+        ...
+     *ports:          *  ← Exposed ports outside private "primenet" network
+     *  - "5000:8080" *  ← Map internal port (right) to "external" port
+     *  - "5001:5001" *
+     *expose:*          ←   Expose ports without publishing to host machine
+     *   - "5001"*          (only accessible to linked services).
+                             Use internal port.
+     *networks:*
+     *  - primenet*
+      depends_on:
+        - postgres
+  ##################################################### Web Frontend #
+    nginx-angular:
+      build:
+           context: prime-angular-frontend/
+      ...
+  ################################################ Local SMTP Server #
+    mailhog:
+      container_name: mailhog
+      restart: always
+      image: mailhog/mailhog:latest
+      ports:
+        - 25:1025
+        - 1025:1025
+        - 8025:8025 # visit localhost:8025 to see the list of captured emails
+      ...
+  ########################################################### Backup #
+    backup:
+      ...
+      restart: on-failure
+      volumes:
+       *- db_backup_data:/opt/backup*
+      ...
+
+  volumes:
+    local_postgres_data:
+    local_mongodb_data:
+    db_backup_data:
+
+ *networks:*
+    primenet:
+      driver: bridge
+
+ *Example  *
+  ---
+  version: '3.6'
+
+  # reusable yaml template ############################################
+  x-besu-bootnode-def:
+    &besu-bootnode-def
+    restart: "on-failure"
+    image: hyperledger/besu:${BESU_VERSION:-latest}
+    environment:
+      - LOG4J_CONFIGURATION_FILE=/config/log-config.xml
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        /opt/besu/bin/besu public-key export --to=/tmp/bootnode_pubkey;
+        /opt/besu/bin/besu \
+        --config-file=/config/config.toml \
+        --p2p-host=$$(hostname -i) \
+        --genesis-file=/config/genesis.json \
+        --node-private-key-file=/opt/besu/keys/key \
+        --min-gas-price=0 \
+        --rpc-http-api=EEA,WEB3,ETH,NET,PERM,${BESU_CONS_API:-IBFT} \
+        --rpc-ws-api=EEA,WEB3,ETH,NET,PERM,${BESU_CONS_API:-IBFT} ;
+
+  # reusable yaml template ############################################
+  x-besu-def:
+    &besu-def
+    restart: "on-failure"
+    image: hyperledger/besu:${BESU_VERSION:-latest}
+    environment:
+      - LOG4J_CONFIGURATION_FILE=/config/log-config.xml
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        while [ ! -f "/opt/besu/public-keys/bootnode_pubkey" ]; do sleep 5; done ;
+        /opt/besu/bin/besu \
+        --config-file=/config/config.toml \
+        --p2p-host=$$(hostname -i) \
+        --genesis-file=/config/genesis.json \
+        --node-private-key-file=/opt/besu/keys/key \
+        --min-gas-price=0 \
+        --rpc-http-api=EEA,WEB3,ETH,NET,PERM,${BESU_CONS_API:-IBFT} \
+        --rpc-ws-api=EEA,WEB3,ETH,NET,PERM,${BESU_CONS_API:-IBFT} ;
+
+  services:
+  # using the YAML template ####################################################
+    validator1:
+      << : *besu-bootnode-def
+      volumes:
+        - public-keys:/tmp/
+        - ./config/besu/config.toml:/config/config.toml
+        - ./config/besu/permissions_config.toml:/config/permissions_config.toml
+        - ./config/besu/log-config.xml:/config/log-config.xml
+        - ./logs/besu:/var/log/
+        - ./config/besu/${BESU_CONS_ALGO:-ibft2}Genesis.json:/config/genesis.json
+        - ./config/besu/networkFiles/validator1/keys:/opt/besu/keys
+      networks:
+        quorum-dev-quickstart:
+          ipv4_address: 172.16.239.11
+  # using the YAML template ####################################################
+    validator2:
+      << : *besu-def
+      volumes:
+        - public-keys:/opt/besu/public-keys/
+        - ./config/besu/config.toml:/config/config.toml
+        - ./config/besu/permissions_config.toml:/config/permissions_config.toml
+        - ./config/besu/log-config.xml:/config/log-config.xml
+        - ./logs/besu:/var/log/
+        - ./config/besu/${BESU_CONS_ALGO:-ibft2}Genesis.json:/config/genesis.json
+        - ./config/besu/networkFiles/validator2/keys:/opt/besu/keys
+      depends_on:
+        - validator1
+      networks:
+        quorum-dev-quickstart:
+          ipv4_address: 172.16.239.12
+  # using the YAML template ####################################################
+    ...
+  volumes:
+    public-keys:
+    prometheus:
+    grafana:
+
+  networks:
+    quorum-dev-quickstart:
+      driver: bridge
+      ipam:
+        config:
+          - subnet: 172.16.239.0/24
+  ```
+
+## SystemD Integration <!-- { systemD -->
+* STEP 1) Create some config at /etc/compose/docker-compose.yml
+* STEP 2) Create systemd Service:
+  ```
+  $ cat /etc/systemd/system/docker-compose.service
+  | (Service unit to start and manage docker compose)
+  | [Unit]
+  | Description=Docker Compose container starter
+  | After=docker.service network-online.target
+  | Requires=docker.service network-online.target
+  |
+  | [Service]
+  | WorkingDirectory=/etc/compose
+  | Type=oneshot
+  | RemainAfterExit=yes
+  |
+  | ExecStartPre=-/usr/local/bin/docker-compose pull --quiet
+  | ExecStart=/usr/local/bin/docker-compose up -d
+  |
+  | ExecStop=/usr/local/bin/docker-compose down
+  |
+  | ExecReload=/usr/local/bin/docker-compose pull --quiet
+  | ExecReload=/usr/local/bin/docker-compose up -d
+  |
+  | [Install]
+  | WantedBy=multi-user.target
+  ```
+
+  ```
+  $ cat  /etc/systemd/system/docker-compose-reload.service
+  | (Executing unit to trigger reload on docker-compose.service)
+  | [Unit]
+  | Description=Refresh images and update containers
+  |
+  | [Service]
+  | Type=oneshot
+  |
+  | ExecStart=/bin/systemctl reload-or-restart docker-compose.service
+  ```
+
+  ```
+  $ cat /etc/systemd/system/docker-compose-reload.timer
+  | (Timer unit to plan the reloads)
+  | [Unit]
+  | Description=Refresh images and update containers
+  | Requires=docker-compose.service
+  | After=docker-compose.service
+  |
+  | [Timer]
+  | OnCalendar=*:0/15
+  |
+  | [Install]
+  | WantedBy=timers.target
+  ```
+<!-- systemD } -->
+[[orchestration.docker-compose}]]
+
+# Podman [[{runtime.podman,DOC_HAS.comparative,PM.TODO]]
+
+- Docker alternative.
+- No system daemon required and daemon required running
+  "at native Linux speeds".
+  (no daemon getting in the way of handling client/server requests)<br/>
+- "rootless" enviroment. No need for root/sudo. [[{security}]]
+  Looks like newer versions of Docker are also rootless. Review.
+- Podman is set to be the default container engine for the single-node
+  use case in Red Hat Enterprise Linux 8.
+  (CRI-O for OpenShift clusters)
+- easy to use and intuitive.
+- Most users can simply alias Docker to Podman (alias docker=podman)
+  but podman also allows to manage Kubernetes pods (groups of containers
+  with a shared life cycle working as a single "logical" application).
+  [[{doc_has.keypoint}]]
+- `$ podman generate kube` creates a Pod that can then be exported as
+  Kubernetes-compatible YAML. [[{qa.UX,dev_stack.kubernetes}]]
+- enables users to run different containers in different user namespaces
+- OCI compliant Container Runtime (runc, crun, runv, etc)
+  to interface with the OS.
+- Podman  libpod library manages container ecosystem:
+  (pods, containers, container images, container volumes, ...)
+
+- Podman Introduction:
+
+  ```
+  | $ podman search busybox
+  | INDEX     NAME                         DESCRIPTION         STARS OFFICIAL AUTOMATED
+  | docker.io docker.io/library/busybox    Busybox base image. 1882  [OK]
+  | docker.io docker.io/radial/busyboxplus ...                 30    [OK]
+  | ...
+  | $ podman run -it docker.io/library/busybox
+  | / #
+  | 
+  | $ URL="https://raw.githubusercontent.com/nginxinc/docker-nginx"
+  | $ URL="${URL}/594ce7a8bc26c85af88495ac94d5cd0096b306f7/       "
+  | $ URL="${URL}/mainline/buster/Dockerfile                      "
+  | $ podman build -t nginx ${URL}                                   ← build Nginx web server using
+  |                   └─┬─┘                                            official Nginx Dockerfile
+  |                     └────────┐
+  |                            ┌─┴─┐
+  | $ podman run -d -p 8080:80 nginx                                 ← run new image from local cache
+  |                    └─┬─┘└┘
+  |                      │   ^Port Declared @ Dockerfile
+  |                Effective
+  |                (Real)port
+  ```
+
+- To make it public publish to any other Register compatible with the
+ *Open Containers Initiative (OCI) format*. The options are:
+  - Private Register:
+  - Public  Register:
+    - quay.io
+    - docker.io
+
+  ```
+  | $ podman login quay.io                            # <·· Login into quay.io
+  | $ podman tag localhost/nginx quay.io/${USER}/nginx# <·· re-tag the image
+  | $ podman push quay.io/${USER}/nginx               # <·· push the image
+  | → Getting image source signatures
+  | → Copying blob 38c40d6c2c85 done
+  | → ..
+  | → Writing manifest to image destination
+  | → Copying config 7f3589c0b8 done
+  | → Writing manifest to image destination
+  | → Storing signatures
+  | 
+  | $*$ podman inspect quay.io/${USER}/nginx            * ← Inspect image
+  | → [
+  | →     {
+  | →         "Id": "7f3589c0b8849a9e1ff52ceb0fcea2390e2731db9d1a7358c2f5fad216a48263",
+  | →         "Digest": "sha256:7822b5ba4c2eaabdd0ff3812277cfafa8a25527d1e234be028ed381a43ad5498",
+  | →         "RepoTags": [
+  | →             "quay.io/USERNAME/nginx:latest",
+  | →             ...
+  | →         ]
+  | →     }
+  | → ]
+  ```
+
+## Pod Checkpoint/Live Migration
+
+  ```
+  | container checkpoint Checkpoints one or more containers
+  | container restore    Restores one or more containers from a checkpoint
+  |
+  | $ podman container checkpoint $container_id\ <·· Checkpoint and prepare migration archive
+  |     -e /tmp/checkpoint.tar.gz                
+  | $ podman container restore \                 <·· Restore from archive at new server
+  |   -i /tmp/checkpoint.tar.gz
+  |
+  | container create     Create (but do not start) a container
+  | events       Show podman events
+  | exec         Run process "inside" running container ( == container exec)
+  | healthcheck  Manage Healthcheck.
+  | info         Display podman system information
+  | init         Initialize one or more containers ( == container init)
+  | kill         Kill running container/s with specific signal ( == container kill)
+  | login        Login  to container registry
+  | logout       Logout of container registry
+  | logs         Fetch the logs of a container ( == container logs)
+  | network      Manage Networks
+  | pause        Pause all the processes in one or more containers ( == container pause)
+  | play         Play a pod
+  | pod          Manage pods
+  | port         List port mappings or a specific mapping for the container ( == container port)
+  | ps           List containers
+  | restart      Restart one or more containers ( == container restart)
+  | rm           Remove one or more containers ( == container rm)
+  | run          Run a command in a new container ( == container run)
+  | start        Start one or more containers ( == container start)
+  | stats        Display a live stream of container resource usage statistics (== container stats)
+  | stop         Stop one or more containers ( == container stop)
+  | system       Manage podman
+  | top          Display the running processes of a container ( == container top)
+  | unpause      Unpause the processes in one or more containers ( == container unpause)
+  | unshare      Run a command in a modified user namespace
+  | version      Display the Podman Version Information
+  | volume       Manage volumes
+  | wait         Block on one or more containers ( == container wait)
+  ```
+
+  ```
+  | Pod Control: File system
+  | cp           Copy files/folders container ←→ filesystem (== container cp)
+  | diff         Inspect changes on container’s file systems ( == container diff)
+  | export       Export container’s filesystem contents as a tar archive ( ==  container export )
+  | mount        Mount a working container’s root filesystem  ( == container mount)
+  | umount       Unmounts working container’s root filesystem ( == container mount)
+  ```
+
+  ```
+  | Podman Integration
+  | generate kube   : Generate Kubernetes pod YAML from a container or pod
+  | generate systemd: Generate *SystemD unit file* for Podman container
+  ```
+
+### Managing Pods (vs containers) with Podman [[{PM.TODO.0}]]
+
+* <https://developers.redhat.com/blog/2019/01/15/podman-managing-containers-pods#shortcut_to_create_pods>
+
+
+### Podman SystemD Integration:
+
+* [REF@redhat](https://www.redhat.com/sysadmin/improved-systemd-podman)
+* auto-updates help to make managing containers even more straightforward.
+* SystemD is used in Linux to  managing services (background
+  long-running jobs listening for client requests) and their
+  dependencies.
+* Podman running SystemD inside a container:
+  ```
+  └ /run               ← tmpfs
+    /run/lock          ← tmpfs
+    /tmp               ← tmpfs
+    /var/log/journald  ← tmpfs
+    /sys/fs/cgroup      (configuration)(depends also on system running cgroup V1/V2 mode).
+    └───────┬───────┘
+     Podman automatically mounts next file-systems in the container when:
+     - entry point of the container is either */usr/sbin/init or /usr/sbin/systemd*
+     -*--systemd=always*flag is used
+  ```
+### Podman running inside SystemD services
+* SystemD needs to know which processes are part of a service so it
+  can manage them, track their health, and properly handle dependencies.
+* This is problematic in Docker  (according to RedHat rival) due to the
+  server-client architecture of Docker:
+  - It's practically impossible to track container processes, and
+    pull-requests to improve the situation have been rejected.
+  - Podman implements a more traditional architecture by forking processes:
+    - Each container is a descendant process of Podman.
+    - Features like sd-notify and socket activation make this integration
+      even more important.
+      - sd-notify service manager allows a service to notify SystemD that
+        the process is ready to receive connections
+      - socket activation permits SystemD to launch the containerized process
+        only when a packet arrives from a monitored socket.
+
+* Compatible with audit subsystem (track records user actions).
+  The forking architecture allows systemd to track processes in a
+  container and hence opens the door for seamless integration of
+  Podman and systemd.
+  ```
+  $ podman generate systemd --new $container*  ← Auto-generate containerized systemd units:
+                            └─┬─┘
+                            Ohterwise it will be tied to creating host
+  ```
+  Pods are also supported in Podman 2.0 Container units that are part
+  of a pod can now be restarted.  especially helpful for auto-updates.
+
+* Podman auto-update  (1.9+):
+  To use auto-updates:
+  containers must be created with `--label "io.containers.autoupdate=image"`
+
+  run in a SystemD unit generated by:
+  ```
+  $ podman generate systemd --new.
+
+  $ podman auto-update    ← Podman will first looks up running containers with the
+                            "io.containers.autoupdate" label set to "image" and then
+                            query the container registry for new images.
+                           *If that's the case Podman restarts the corresponding *
+                           *SystemD unit to stop the old container and create a  *
+                           *new one with the modified image.                     *
+  (still marked as experimental as of 202? while collecting user feedback)
+  ```
+[[}]]
+
+[[{troubleshooting.containerization]]
+# CONTAINERIZATION TROUBLESHOOTING 
+
+## /var/lib/docker/.../data consumes too much space
+$ sudo du -sch /var/lib/docker/devicemapper/devicemapper/data
+14g     /var/lib/docker/devicemapper/devicemapper/data
+
+($ docker logs 'container' knocks down the host server when output is processed)
+
+* Probably logs are not configured to be rotated creating "huge" files. Fix: [[{troubleshooting.storage,monitoring.logs}]]
+  ```
+     $ editor /etc/docker/daemon.json
+     {
+       "log-driver": "json-file",
+   +   "log-opts": {
+   +     "max-size": "10m",
+   +     "max-file": "3"
+   +   }
+     }
+
+     $ sudo systemctl restart docker.service
+   ```
+
+## DNS works on host, fails at build and/or in running containers:
+* SOLUTION 1) ALT 1:
+  1) Add next lines to /etc/docker/daemon.json:
+      {
+    +   "dns": ["8.8.8.8","4.4.4.4"],
+    +   "dns-search": ["companydomain",...]
+      }
+  2) $ sudo systemctl restart docker.service
+  3) $ journalctl -u docker.service --since "1m ago"  # Check logs for related errors.
+
+* SOLUTION 1) ALT 2:
+  1) Edit     /lib/systemd/system/docker.service
+         (/usr/lib/systemd/system/docker.service)
+     to look somthing like:
+     ...
+  +  ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock \
+        --dns 8.8.8.8 --dns 8.8.4.4  --dns-search default.svc.cluster.local \
+        --dns-search svc.cluster.local --dns-opt ndots:2 \
+        --dns-opt timeout:2 --dns-opt attempts:2
+
+   NOTE/WARN!!!: This configuration can be overriden by values in:
+   /etc/systemd/system/docker.service.d/*.conf
+
+  2) $ sudo systemctl daemon-reload
+  3) $ sudo systemctl restart docker.service
+  4) $ journalctl -u docker.service --since "1m ago"  # Check logs for related errors.
+
+* SOLUTION 2)  try to launch with --network host flag. ex.:
+      ...
+      docker_opts="${docker_opts} *--network host*"
+      script="wget https://repo.maven.apache.org/maven2" # ← dns can fail with bridge
+      echo "${mvn_script}" | docker run ${docker_opts} ${script}
+
+[[{troubleshooting.debug.container,monitoring.containers,]]
+## Debug running container  
+* If the container contains a shell (discouraged for security
+  reasons, but quite normal in practice) we can just:
+  ```
+  $ docker exec -ti $containerId /bin/sh
+  ```
+
+  The first problem is that, once inside the container,  we are limited
+to the shell and the few utilities prepackaged into the container.
+Possible we lack curl, tcpdump, vi, ... to debug any issue as we
+will do normally "outside" the container.
+
+  Solution: Instead of `docker exec ...`  use `nsenter`( util-linux
+package) to "switch" to the container (network, filesystem, ipc, ...)
+namespace while keeping all the standard tooling of the host Linux
+system (editors, scanners, diagnostic tools, ...).<br/>
+  WARN: It works in a local machine, not in a k8s cluster, since
+we do not have access to `nsenter`.
+
+  ```
+  | $ cat enternetworknamespace.sh
+  | #!/bin/bash
+  |
+  | # ref: man nsenter
+  | # run shell with network namespace of container.
+  | # allows to use ping, ss/netstat, wget, trace,.. in
+  | # in contect of the container.
+  | # useful to check network setup is the appropiate one.
+  | cont_pid=$( sudo docker inspect -f '{{.state.pid}}' $1 )
+  | shift 1
+  | sudo nsenter -t ${cont_pid} -n
+  |                             ^^
+  |                        use network namespace of container
+  ```
+
+  ```
+  | ex ussage:
+  | $ ./enternetworknamespace.sh mywebcontainer01
+  | $ netstat -ntlp  # <·· command installed on host (vs container)
+  | active internet connections (only servers)
+  | proto recv-q send-q local address           foreign address         state
+  | tcp        0      0 0.0.0.0:80              0.0.0.0:*               listen
+  ```
+[[troubleshooting.debug.container}]]
+
+## Global containers `ulimit` [[{PM.TODO}]]
+
+[[troubleshooting.containerization}]]
+
+## `/var/run/docker.sock`  [[{]]
+* REF: <https://medium.com/better-programming/about-var-run-docker-sock-3bfd276e12fd>
+* Unix socket the Docker daemon listens on by default,
+  used to communicate with the daemon from within a container.
+* Can be mounted on containers to allow them to control Docker:
+  This is potentially a security hole and must be restricted to
+  "special" container (e.g: Kubernetes controlers,...)
+  ```
+  $ docker run -v /var/run/docker.sock:/var/run/docker.sock ....
+  ```
+[[}]]
+
+@ma
+
+
+
+[[{PM.TODO]]
+# Containerization TODO/un-ordered/classify 
+
+## sysdig troubleshooting&monitoring tools  [[{monitoring,security,troubleshooting,PM.TODO]]
+"""... once sysdig is installed as a process (or container) on the server,
+  it sees every process, every network action, and every file action
+  on the host. you can use sysdig "live" or view any amount of historical
+  data via a system capture file.
+
+  example: take a look at the total cpu usage of each running container:
+     $ sudo sysdig -c topcontainers\_cpu
+     | cpu% container.name
+     | ----------------------------------------------------
+     | 80.10% postgres
+     | 0.14% httpd
+     | ...
+     |
+
+  example: capture historical data:
+     $ sudo sysdig -w historical.scap
+
+  example: "zoom into a client":
+     $ sudo sysdig -pc -c topprocs\_cpu container. name=client
+     | cpu% process container.name
+     | ----------------------------------------------
+     | 02.69% bash client
+     | 31.04%curl client
+     | 0.74% sleep client
+[[}]]
+
+## cadvisor [[{monitoring.cadavisor]]
+
+* cadvisor analyzes resource usage and performance characteristics of
+  running containers.
+
+### cadvisor+prometheus+grafana
+
+* <https://blog.couchbase.com/monitoring-docker-containers-docker-stats-cadvisor-universal-control-plane/>
+* <https://dzone.com/refcardz/intro-to-docker-monitoring?chapter=6>
+* <https://github.com/google/cadvisor/blob/master/docs/running.md#standalone>
+[[monitoring.cadavisor}]]
+
+[[{]]
+## live restore 
+* <https://docs.docker.com/config/containers/live-restore/]
+* keep containers alive during daemon downtime
+[[}]]
+
+[[{monitoring.containers,pm.low_code,ci/cd.gitops,PM.TODO]]
+## weave
+
+* <https://github.com/weaveworks/weave>
+
+* """ connect, observe and control docker containers. """"
+* weave net repository: over 8 million downloads to date.
+- Get started with docker clusters and portable
+  apps in a fraction of the time required by other solutions.
+- quickly, easily, and securely network and cluster containers
+  across any environment. whether on premises, in the cloud, or hybrid,
+  there’s no code or configuration.
+- build an ‘invisible infrastructure’.
+- powerful cloud native networking toolkit. it creates a virtual network
+  that connects docker containers across multiple hosts and enables their
+  automatic discovery. set up subsystems and sub-projects that provide
+  dns, ipam, a distributed virtual firewall and more.
+
+### Weave scope:
+
+* understand your application quickly by seeing it in a real time
+  interactive display. pick open source or cloud hosted options.
+* zero configuration or integration required — just launch and go.
+* automatically detects processes, containers, hosts.
+  no kernel modules, agents, special libraries or coding.
+* seamless integration with docker, kubernetes, dcos and aws ecs.
+
+[[}]]
+
+## clair vulnerabilities static analysis [[{security.clair,qa,PM.todo]]
+
+* <https://coreos.com/clair/docs/latest/>
+open source project for the static analysis of vulnerabilities in
+appc and docker containers.
+
+vulnerability data is continuously imported from a known set of sources and
+correlated with the indexed contents of container images in order to produce
+lists of vulnerabilities that threaten a container. when vulnerability data
+changes upstream, the previous state and new state of the vulnerability along
+with the images they affect can be sent via webhook to a configured endpoint.
+all major components can be customized programmatically at compile-time
+without forking the project.
+[[}]]
+
+
+## lazydocker UI  [[{containerization.lazydocker,qa.UX]]
+* <https://github.com/jesseduffield/lazydocker>
+a simple terminal ui for both docker and docker-compose, written in
+go with the gocui library.
+[[containerization.lazydocker}]]
+
+## TODO: Review next docker/podman commands
+
+* <https://podman.readthedocs.io/en/latest/Commands.html>
+
+* commit    Create new image based on the changed container
+
+* history   Show history of a specified image
+
+* image history: Show history of a specified image
+
+* image sign   : Sign an image   [[{image.build,security}]]
+
+* image tree   : Prints layer hierarchy of image as tree.
+
+* image trust  : Manage container image trust policy [[{image.build,security}]]
+
+
+* disk free: 
+ ``` 
+ | $ docker system df  
+ | TYPE          TOTAL ACTIVE SIZE     RECLAIMABLE
+ | ------------- ----- ------ -------  --------------
+ | Images        54    0      25.44GB  25.44GB (100%)
+ | Containers    2     0      0B       0B
+ | Local Volumes 46    4      6.362GB  5.977GB (93%)
+ | Build Cache   854   0      9.684GB  9.684GB
+ ``` 
+[[PM.TODO}]]
+[[containerization}]]
