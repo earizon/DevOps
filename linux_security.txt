@@ -113,13 +113,16 @@ Endlessh exploits a little paragraph in RFC 4253, the SSH protocol specification
   ``` 
   SSH-protoversion-softwareversion SP comments CR LF
   ``` 
+
+
 - The RFC also notes: """ server MAY send other lines of data before sending the
-  version string.```
+  version string....
   There is no limit on the number of lines, just that these lines must not begin
   with “SSH-“ ... Endlessh sends and endless stream of randomly-generated 
   “other lines of data” without ever intending to send a version string. 
   By default it waits 10 seconds between each line. This slows down the protocol,
-  but prevents it from actually timing out.
+  but prevents it from actually timing out."""
+  
 - This means Endlessh need not know anything about cryptography or the vast majority
   of the SSH protocol. It’s dead simple.
    
