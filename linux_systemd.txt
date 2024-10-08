@@ -40,7 +40,7 @@
   | 
   | ◆ SYSTEMD CORE: manager, systemd
   | 
-  | ◆ SYSTEMD UTILITIES [[{PM.TODO}]]
+  | ◆ SYSTEMD UTILITIES [[PM.TODO]]
   |   · systemctl     : main control tool from systemd.
   |   · journalctl    : Queyr systemd Journal
   |   · notify        : Notify Serv.Mgn about start-up,
@@ -115,7 +115,7 @@
   |                                   #     -b -1     : FROM emergency
   |                                   #     -p "crit" : TO: Critical
   | # journalctl _UID=108             # <· By _UID
-  | # journalctl -o json              # -o: output format: [[{qa.UX}]]
+  | # journalctl -o json              # -o: output format: [[qa.UX]]
   |                                     short          : (default), syslog style
   |                                     short-monotonic: like short, but time stamp shown with precision
   |                                     cat            : very short, no date,time or source server names
@@ -137,27 +137,29 @@ Clean/Compact/Delete logs:
 
 [[monitoring.journalctl}]]
 
-[[{monitoring.logs.rsyslog,security.audit.user,02_doc_has.comparative,]]
+[[{monitoring.logs.rsyslog,security.audit.user,doc_has.comparative,]]
 ## Rsyslog ("ancient" log system) 
 
 * <github.com/rsyslog/rsyslog.git>
 * <https://www.rsyslog.com>
 [[monitoring.logs.rsyslog}]]
 
-* The Rocket-fast Syslog Server
-  * Year: 2004
-  * (primary) author: Rainer Gerhards
-  * Implements and extends syslog protocol (RFC-5424) [[{standards.RFC_5424}]]
-    Extracted from <https://stackoverflow.com/questions/74963994/rfc-5424-and-syslog>
-    """... Logging formats themselves can vary pretty widely, despite 
-     the existence of standards like RFC 5424 and it's predecessor RFC 
-     3164. Windows has it's own system based around the Windows Event Log. 
-     Journald has a wide set of output formats, including JSON. Cisco 
-     device logs typically follow their own special format, which might 
-     require special consideration for some systems. And of course there 
-     are competing standards like the Common Event Format. """
-  * Adopted by RedHat, Debian*, SuSE, Solaris, FreeBSD, ...
-  * Replaced by journald in Fedora 20+
+[[{monitoring.logs.syslog]]
+## The Rocket-fast Syslog Server
+
+* Year: 2004
+* (primary) author: Rainer Gerhards
+* Implements and extends syslog protocol (RFC-5424) [[standards.RFC_5424]]
+  Extracted from <https://stackoverflow.com/questions/74963994/rfc-5424-and-syslog>
+  """... Logging formats themselves can vary pretty widely, despite 
+   the existence of standards like RFC 5424 and it's predecessor RFC 
+   3164. Windows has it's own system based around the Windows Event Log. 
+   Journald has a wide set of output formats, including JSON. Cisco 
+   device logs typically follow their own special format, which might 
+   require special consideration for some systems. And of course there 
+   are competing standards like the Common Event Format. """
+* Adopted by RedHat, Debian*, SuSE, Solaris, FreeBSD, ...
+* Replaced by journald in Fedora 20+
 
 Important extensions include:
 * ISO 8601 timestamp with millisecond and timezone
@@ -172,8 +174,9 @@ Important extensions include:
   messages are buffered locally if the receiver is not ready
 * complete input/output support for systemd journal
 * "Infinite" logs. Can store years of logs from hundreds of machines.
+[[monitoring.logs.syslog}]]
 
-## Journald [[{monitor.logs.journald]]
+## Journald [[{monitoring.logs.journald]]
 <https://www.loggly.com/blog/why-journald/>
 <https://docs.google.com/document/pub?id=1IC9yOXj7j6cdLLxWEBAGRL6wl97tFxgjLUEHIX3MSTs>
 * system service for collecting and storing log data, introduced with systemd.
@@ -205,7 +208,7 @@ Syslog-protocol Problems:
   * The journald structured file format does not work well with standard
     UNIX tools optimized for plain text. The journalctl tool will be used.
   * very fast access to entries filtered by:
-    date, emitting program, program PID, UID, service, ... [[{doc_has.keypoint}]]<br/>
+    date, emitting program, program PID, UID, service, ... [[doc_has.keypoint]]<br/>
     (But it just work for single machine, since indexing is lost when 
     using a remote centralized log system.
   * Can also access backups in single files or directories of other systems.
@@ -220,7 +223,7 @@ Syslog-protocol Problems:
 * Sadly, journald does not come with a usable remote logging solution*.
   * systemd-journal-remote is more of a proof-of-concept than an actually
     useful tool, lacking good authentication among other things.
-[[monitor.logs.journald}]]
+[[monitoring.logs.journald}]]
 
 
 [[{security.101]]
@@ -230,5 +233,24 @@ Syslog-protocol Problems:
 
 Systemd service sandboxing and security hardening 101
 [[security.101}]]
+
+[[{job_control.task_scheduling.systemd-run,PM.TODO]]
+## systemd-run
+
+...  Turns out, I can run arbitrary programs as background services 
+with a simple systemd-run </path/to/executable> ...<br/>
+ It's officially my new favorite way to demonize long-running tasks:
+- No more forgotten nohup 
+- Handy resource limits
+- Status and logs out of the box
+
+
+## run0
+
+Symbolic link to systemd-run that imitates "sudo", but much safer since 
+no context is inherited from "non-trustable" client.
+[[job_control.task_scheduling.systemd-run}]]
+
+
 
 [[linux.configuration.systemd}]]

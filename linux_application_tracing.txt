@@ -3,7 +3,7 @@
 # Tracing (Application&Kernel fine grined monitoring)
 
 [[{profiling,security.encryption]]
-[[{dev_stack.mysql,dev_stack.postgresql,dev_stack.java}]]
+[[dev_stack.mysql,dev_stack.postgresql,dev_stack.java]]
 ## Dynamic Tracing Tools 
 
 * Extracted from "Best linux monitoring tools" (<https://www.tecmint.com/bcc-best-linux-performance-monitoring-tools/>)
@@ -150,10 +150,10 @@
 
 [[monitoring.storage}]]
 
-[[{monitoring.bft,kernel.bft]]
+[[{monitoring.eBPF,kernel.eBPF]]
 ### bpflist
 
-* displays information on running BPF programs and optionally also
+* displays information on running eBPF programs and optionally also
   prints open kprobes and uprobes.
 [[monitoring.bft}]]
 

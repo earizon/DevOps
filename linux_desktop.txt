@@ -151,6 +151,18 @@ use cases, using Lua scripts ... customize multimedia experience...
 
 * <https://en.wikipedia.org/wiki/Avahi_(software)>
 
+[[{]]
+## 101:    postmarketOS: real Linux distribution for phones
+https://postmarketos.org/ 
+
+Real OS for Smartphones
+
+Writing packages is easy, by the way: as long as you know how to 
+write shell scripts, you are good to go. We have continuous 
+integration in place that makes sure everything builds that gets 
+submitted to our packages repository, among other sanity checks.
+[[}]]
+
 
 
 [[linux.desktop}]]

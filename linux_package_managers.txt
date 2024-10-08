@@ -1,14 +1,25 @@
-[[{packaging,PM.TODO.markdown]]
+[[{linux,packaging]]
 # APPLICATION PACKAGE MANAGERS
 
-## DNF  ("yum++") [[{packaging.rpm,01_PM.WiP]]
+[[{packaging.rpm,packaging.dnf,01_PM.WiP,doc_has.cheatsheet]]
+# DNF  ("yum++") 
+
+## *.rpm
+
+* rpm files contains single (ussually compiled) packages plus install scripts. 
+  If the depends on other dependencies, dnf can take care of dowloading and 
+  installing them first. To manually (trying to) install some package:
+  ```
+  $ rpm -qa  # <·· list all installed packages on the system.
+  $ rpm -qi packageABC # <· display information on a given package (version, install date)
+  $ rpm -ql packageABC # <· list all files installed by package.
+  ```
+
+
 * <https://dnf.readthedocs.io/en/latest/>
 * <https://github.com/rpm-software-management>
 * Fedora Devs Plans to Replace DNF with DNF5 in Fedora Linux 39
   <https://linuxiac.com/fedora-devs-plans-to-replace-dnf-with-dnf5-in-fedora-39/>
-
-
-
 
 
 ### MOST COMMONLY USED COMMANDS
@@ -16,11 +27,13 @@
 * DNF Full command list
   <https://dnf.readthedocs.io/en/latest/command_ref.html>
   ```
-  | $ dnf search  "*myPackage*"     # ← Show matching pattern in package name|description
-  | $ dnf list    "*myPackage*"     # ← Show matching pattern in package name
+  | $ dnf search  myPackage         # <· Show matching pattern in package name|description
+  | $ dnf list    myPackage         # <· Show matching pattern in package name
   | 
-  | $ sudo dnf install myNewPackage # ← Install package and dependencies
+  | $ sudo dnf install myNewPackage # <· Install package and dependencies
   |                                     (-y flag to avoid confirmation prompt)
+  | $ dnf info myPackage            # <·dump detailed information, including dependencies.
+  | $ sudo dnf remove myPakcage     # <· Removes package
   | 
   | $ sudo dnf history              # ← Check dnf install history
   | $ sudo dnf history undo 13      # ← Undo/rollback install
@@ -112,7 +125,21 @@ $ yum list docker-ce --showduplicates | sort -r
 [[}]]
 [[packaging.rpm}]]
 
-## apt (Debian/Ubuntu/...)  [[{packaging.apt]]
+[[{packaging.apt,packaging.deb,doc_has.cheatsheet]]
+# apt (Debian/Ubuntu/...) 
+
+## .deb packages
+
+* A .deb package is a (ussually) precompiled application plus initialization scripts.
+  .deb packages can fail to install if they depends on other deb packages not yet
+  installed. Finding and donwloading dependencies can be tedious, and this is solved by
+  apt, that takes care of downloading and installing transitive dependencies transparently.
+  To install a .deb package manually (without apt):
+   ```
+   | $ dpkg -i packageABC.deb  # <·· Install
+   | $ dpkg -r packageABC.deb  # <·· remove
+   | $ dpkg -L  packageABC     # <·· list all files installed by package.
+   ```
 
 ## apt vs apt-get
 
@@ -141,6 +168,8 @@ $ yum list docker-ce --showduplicates | sort -r
  ```
 (o 'aptitude' ncurses variant)
 * <https://help.ubuntu.com/community/AptGet/Howto#Maintenance_commands>
+
+
 
 
   ```
@@ -172,7 +201,7 @@ $ yum list docker-ce --showduplicates | sort -r
   | $ apt-cache depends --recurse \              ← Show installed package dependencies.
   |    --installed $package ||grep '[ ]'
   |
-  | Cleaning/Removal*
+  | Cleaning/Removal
   | $ sudo apt-get remove "package_name"         ← keep   configuration files
   | $ sudo apt-get purge  "package_name"         ← Remove configuration files
   | $ sudo apt-get autoclean   ← removes .deb files for packages no longer installed.
@@ -323,118 +352,53 @@ $ yum list docker-ce --showduplicates | sort -r
   since we loose the copy-on-right memory saving features of Linux.
 - Can be interesting for "big singletons" apps.
 
+[[{packaging.packer,doc_has.cheatsheet]]
+# Packer  (Arch Linux)
 
+* packer: bash wrapper to aur+pacman
 
-[[{app.packaging.flatpak,01_PM.TODO]]
-## Flatpack "Sandboxes" 
-  https://www.flatpak.org/
+  ```
+  | packer -Syu:              update all installed packages, including AUR packages.
+  | packer -S [package-name]: install package/s from the AUR.
+  | packer -Rs [package-name]:remove package, including its dependencies.
+  | packer -Ss [search-term]: search for packages in AUR.
+  | packer -Qi [package-name]:display information about AUR package, including dependencies.
+  | packer -Qm:               list all installed packages from the AUR.
+  | packer -Ql [package-name]:list all files installed by an AUR package.
+  | packer -U [package-name]: update an AUR package if a new version is available.
+  ```
+[[packaging.packer}]]
 
-- each application is built and run in an isolated 'sandbox' environment
-  containing an application and its runtime.
-- By default, the application can only access the contents of its sandbox.
-- Access to user files, network, graphics sockets, subsystems on the bus and devices
-  have to be explicitly granted.
-- Access to other things, such as other processes, is deliberately NOT possible.
+[[{packaging.yaourt,doc_has.cheatsheet]]
+# Yaourt (Arch Linux)
 
--  resources inside the sandbox that need to be exposed outside are known as "exports".
-   (Ex: .desktop file and icon,...)
+* yaourt: Yet Another User Repository Tool
+  ```
+  | yaourt -Syua:              update all installed packages, including AUR packages.
+  | yaourt -S [package-name]:  install package/s from the AUR.
+  | yaourt -Rs [package-name]: remove package, including its dependencies.
+  | yaourt -Ss [search-term]:  search for packages.
+  | yaourt -Qi [package-name]: display detailed information, including dependencies.
+  | yaourt -Qm:                list all installed packages from the AUR.
+  | yaourt -Ql [package-name]: list all files installed by an AUR package.
+  | yaourt -U [package-name]:  update an AUR package if a new version is available.
+  ```
+[[packaging.yaourt}]]
 
-*Portals*
-- Mechanism through which applications can interact with the host environment
-  from within a sandbox. They give the ability to interact with data, files
-  and services without the need to add sandbox permissions.
+[[{packaging.pacman,doc_has.cheatsheet]]
+# Pacman  (Arch Linux)
 
-- Examples of capabilities that can be accessed through portals include opening
-  files through a file chooser dialog, or printing.
-- Interface toolkits can implement transparent support for portals, so access
-  to resources outside of the sandbox will work securely and out of the box.
+ ```
+ | pacman -Syu              : This command is used to update all installed packages on the system.
+ | pacman -S [package-name] : This command is used to install a specific package or multiple packages.
+ | pacman -Rs [package-name]: This command is used to remove a specific package from the system.
+ | pacman -Ss [search-term] : This command is used to search for packages based on a search term.
+ | pacman -Qi [package-name]: This command is used to display detailed information about a package, including its dependencies.
+ | pacman -Q                : This command is used to list all installed packages on the system.
+ | pacman -Ql [package-name]: This command is used to list all files installed by a package.
+ | pacman -U [package-file]:: This command is used to install a package from a local file.
+ | pacman -Sc               : This command is used to clean up the package cache, removing old and unused package versions.
+ ```
+[[packaging.pacman}]]
 
-*Repositories*
-- applications and runtimes are typically stored and published using repositories,
- which behave very similarly to Git repositories, containing a single object or
- multiple ones. Each object is versioned, allowing the up|down-grade.
-- Remote repository's content can be inspected and searched, and it can
-  be used as the source of applications and runtimes.
-- When an update is performed, new versions of installed applications and
-  runtimes are downloaded from the relevant remotes. (only the difference actually)
-
-### flatpak cli
-NOTE: graphical software management tools exists so command-line is optional
-
-$ flatpak install
-
-$ flatpak uninstall
-
-*Identifiers*
-- unique three-part like
-  com.company.App
-              ^^^
-      final segment is the object's name
-
-
-*Identifier triple*
-
-   com.company.App/i386/stable         com.company.App//stable       com.company.App/i386//
-   ^^^^^^^^^^^^^^^ ^^^^ ^^^^^^                        ^^                                 ^^
-    Application-ID Arch branch                   Use default                        Use default
-    or name                                      architecture                       branch
-
-
-*System versus user*
-- Flatpak commands/repositories can be used/applied:
-  - system-wide (default)
-  - per-user    (--user option)
-
-*Basic commands*
-$ flatpak remotes # ← list remotes repositores configured on the system
-(output list indicates whether remote has been added per-user or system-wide)
-
-
-$  *URL_FLATPAKREPO*="https://dl.flathub.org/repo/flathub*.flatpakrepo*
-                                                          ^^^^^^^^^^^
-                                                       a .flatpakrepo file
-                                                       contains:
-                                                       - remote details
-                                                       - remote GPG key
-$ flatpak remote-add \          ← Add a remote repository
-     --if-not-exists \
-     flathub \                  ← arbitrary local-name assigned to remote
-      *${URL_FLATPAKREPO}*
-
-$ flatpak remote-delete flathub ← Remove remote-repo from list of known remotes
-
-$ flatpak search gimp           ← return any applications matching search terms.
-(each row-result includes application ID + remote where it was found)
-
-
-$ FLATPAKREF="https://flathub.org/repo/appstream/org.gimp.GIMP.flatpakref"
-$ flatpak install ${FLATPAKREF}         ← install application from FLATPAKREF
-$ flatpak install flathub org.gimp.GIMP ← install application from remote and ID
-                  ^^^^^^^ ^^^^^^^^^^^^^
-                  remote  application ID
-  (the application runtime will also be instaled if not yet present)
-
-*$ flatpak run org.gimp.GIMP     ← Run the application*</b>
-
-$ flatpak update                ← update all your installed applications
-                                  and runtimes to the latest version
-
-$ flatpak list                  ← List installed applications and runtimes
-
-$ flatpak list --app            ← List installed applications only
-
-$ flatpak uninstall ${APP_ID}   ← Uninstall Application
-
-*Full Journey*
-# Add remote "repository"
-$ flatpak remote-add --user --from gnome https://sdk.gnome.org/gnome.flatpakrepo
-# Install monodevelop from remote repository
-$ flatpak install --user --from https://download.mono-project.com/repo/monodevelop.flatpakref
-# Run monodevelop
-$ flatpak run com.xamarin.MonoDevelop
-
-# /proc/sys/kernel/watchdog  [[{QA.SLA}]]
-[[}]]
-
-
-[[packaging}]]
+[[linux,packaging}]]

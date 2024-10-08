@@ -1,7 +1,8 @@
-[[{linux]]
+[[{linux.kernel,PM.draft]]
 # Linux Kernel
 
 
+[[{doc_has.external_resource]]
 ## External Links
 
 - https://www.kernel.org/doc/html/
@@ -17,165 +18,19 @@
   Linux-mm.org is a wiki for documenting how
   memory management works and for coordinating
   new memory management development projects.
-- Searchable Linux Syscall Table: <https://filippo.io/linux-syscall-table/>  [[{kernel.101}]]
+- Searchable Linux Syscall Table: <https://filippo.io/linux-syscall-table/>  [[kernel.101]]
 - <https://lore.kernel.org/lists.html>
-
-
+- Linux Kernel 101 Teaching: 
+  <https://linux-kernel-labs.github.io/refs/heads/master/index.html>
+* Linux Kernel Module Programming Guide
+  <https://sysprog21.github.io/lkmpg/>
+[[doc_has.external_resource}]]
 
 ## A zoological guide to kernel data structures
 * <https://blogs.oracle.com/linux/a-zoological-guide-to-kernel-data-structures>
 
-## Micro-kernel Alternatives [[{]]
-- OX kernel: <http://www.oxkernel.com/>
-- Mirage OS: <http://www.openmirage.org/>
-  Mirage OS is a library operating system that constructs unikernels
-  for secure, high-performance network applications across a variety
-  of cloud computing and mobile platforms.  Code can be developed on a normal OS
-  such as Linux or MacOS X, and then compiled into a fully-standalone,
-  specialised unikernel that runs under the Xen hypervisor.
-- Fiasco: <http://os.inf.tu-dresden.de/fiasco/>
-  Fiasco is a µ-kernel (microkernel) running on various platforms.
-
-   The Fiasco.OC kernel can be used to construct flexible systems. Fiasco.OC is the base for our
-  TUDO:OS system which supports running real-time, time-sharing and virtualization applications
-  concurrently on one computer.  However, Fiasco.OC is both suitable for big and complex systems,
-   but also for small, embedded applications. We have developed the L4 Runtime Environment which
-   provides the necessary infrastructure on top of Fiasco.OC for conveniently developing applications.
-   Please refer to the Features page for more information on the capabilities of Fiasco.OC.
-
-  Fiasco is a preemptible real-time kernel supporting hard priorities.  It uses non-blocking
-  synchronization for its kernel objects.  This guarantees priority inheritance and makes sure
-  that runnable high-priority processes never block waiting for lower-priority processes.
-
-- Genode:<http://genode.org/documentation/general-overview/index>
-- Nucleus RTOS:<http://www.mentor.com/embedded-software/nucleus/>
-- Linux,Nucleus or both:<http://www.techdesignforums.com/practice/technique/linux-nucleus-or-both/>
-
-- L4.verified:<http://ssrg.nicta.com.au/projects/TS/l4.verified/>
-  Formal functional correctness verified kernel:
-  Trustworthy Systems represents the confluence of <em>formal methods</em> and
-  operating systems, applying the former in the context of the latter,
-  and advancing the state of the art in both areas.
-
-  Aim: Unprecedented security, safety, reliability and
-  efficiency for software systems, and especially critical cyber-physical systems.
-  **Approach**: large, complex, performant systems, built on a
-  formally verified microkernel, which isolates untrusted
-  components from formally verified or correct-by-construction
-  synthesised trusted components. Formal, machine-checked proof for
-  safety and security properties on the code level for systems with
-  over a million lines of code.
-
-## Other RT and/or embedded) Alternatives
-
-* <https://www.osrtos.com/>
-List of OOSS real-time OSs
-
-  ```
-Name        Platforms   Built─in      Description                                                                                Name        Platforms   Built─in      Description
-                        Components                                                                                                                       Components
-
-
-
-
-FreeRTOS    MSP430      FileSystem    popular real─time OS for embedded devices, being ported to 31                         │    StateOS     ARM                       Free, extremely simple and amazingly tiny real─time operating system (RTOS) designed
-            ARM         Network       microcontrollers. It is distributed under the GPL with an optional exception.         │                                          for deeply embedded applications. Target: ARM Cortex─M family. It was inspired by
-            AVR         TLS/SSL       V10.0.1     Code    2017─12─26                                                        │                                          the concept of a state machine.  v6.0    GitHub  2018─05─25
-            ColdFire    CLI           MIT Lincence                                                                          │                                          GPLv3 License
-            PIC         Runtime                                                                                             │    _______________________________________________________________________________________________
-            x86           Analysis                                                                                          │    F9          ARM                       F9 microkernel is a microkernel─based (L4─style) kernel to support running real─time
-_______________________________________________________________________________________________                             │    Microkernel                          and time─sharing applications (for example, wireless communications) for ARM
-RT─Thread   ARM         FileSystem    OOSS real─time OS for embedded devices from China.                                    │                                          Cortex─M series microprocessors with efficiency (performance ┼ power consumption)
-            x86         Network       RT─Thread RTOS is a scalable real─time OS: a tiny kernel                              │                                          and security (memory protection ┼ isolated execution) in mind.      GitHub  2017─02─02
-            MIPS        AT Commands   for ARM Cortex─M0, Cortex─M3/4, or a full feature system                              │                                          BSD License
-            PowerPC     CLI           in ARM Cortex─A8, ARM Cortex─A9 DualCor     v3.0.4  GitHub  2018─05─31                │    _______________________________________________________________________________________________
-            RISC─V      Runtime       GLP v2 License                                                                        │    BRTOS       MSP430                    BRTOS is a lightweight preemptive real time operating system designed for low end
-            Andes         Analysis                                                                                          │                AVR                       microcontrollers.         GitHub  2017─09─17
-                        USBHost                                                                                             │                ColdFire                  MIT License
-                        USBDevice                                                                                           │                PIC
-_______________________________________________________________________________________________                             │    _______________________________________________________________________________________________
-mbed OS     ARM         BLE           embedded OS designed specifically for the "things" in                                 │    BeRTOS      AVR                       BeRTOS is a real time open source operating system supplied with drivers and libraries
-                        LoRaWAN       the Internet of Things (IoT). It includes all the features you need                   │                x86                       designed for the rapid development of embedded software.         GitHub  2017─01─23
-                        FileSystem    to develop a connected product based on an ARM Cortex─M microcontroller.              │                PowerPC                   GPL License
-                        Network       mbed─os─5.9.0   GitHub  2018─06─11                                                    │                x86_64
-                        6LoWPAN       Apache License                                                                        │    _______________________________________________________________________________________________
-                        AT Commands                                                                                         │    Erika       MSP430                    Erika Enterprise is the first open─source Free RTOS that has been certified
-                        TLS/SSL                                                                                             │    Enterprise  ARM                       OSEK/VDX compliant!.    GH40    GitHub  2018─06─12
-                        Runtime                                                                                             │                AVR                       GPL License
-                           Analysis                                                                                         │    _______________________________________________________________________________________________
-                        USBHost                                                                                             │    BitThunder  ARM                       A Reliable Real─Time Operating System & Application Framework.
-                        USBDevice                                                                                           │                                          stable─0.9.2    GitHub  2017─01─25
-_______________________________________________________________________________________________                             │                                          GPLv2 License
-ChibiOS/RT  MSP430      FileSystem    ChibiOS is a complete development environment for embedded applications               │    _______________________________________________________________________________________________
-            AVR         Network       including RTOS, an HAL, peripheral drivers, support files and a                       │    TNeo        ARM                       TNeo is a well─formed and carefully tested preemptive real─time kernel for
-                        USBHost       development environment.    18.2.1  Code    2018─05─01                                │                                          16─ and 32─bits MCUs. It is compact and fast.    v1.08   GitHub  2017─02─25
-                        USBDevice     GPL License                                                                           │                                          Other License
-_______________________________________________________________________________________________                             │    _______________________________________________________________________________________________
-NuttX       ARM         FileSystem    Real─time OS (RTOS) with an emphasis on standards compliance and small                │    Libre       AVR                       LibreRTOS is a portable single─stack Real Time Operating System.
-            AVR         Network       footprint. Scalable from 8─bit to 32─bit microcontroller environments,                │    RTOS                                  All tasks share the same stack, allowing a large number or tasks to be created
-            8051        6LoWPAN       the primary governing standards in NuttX are Posix and ANSI standards.                │                                          even on architectures with low RAM, such as ATmega328P (2kB).
-            PIC         CLI           7.25    Code    2018─06─11                                                            │                                          dev─master  GitHub  2017─11─15
-            x86         USBHost       BSD License                                                                           │                                          Apache License
-            MIPS        USBDevice                                                                                           │    _______________________________________________________________________________________________
-            Xtensa      GUI                                                                                                 │    IntrOS      ARM                       Free, simple and tiny cooperative operating system (OS) designed
-            RISC─V                                                                                                          │                                          for deeply embedded applications.  v4.0    GitHub  2018─05─25
-            Freescale                                                                                                       │                                          GPLv3 License
-              HCS12                                                                                                         │    _______________________________________________________________________________________________
-            Zilog                                                                                                           │    embox       MSP430                    Embox is a configurable operating system kernel designed for resource constrained
-_______________________________________________________________________________________________                             │                ARM                       and embedded systems.
-RIOT        MSP430      LoRaWAN       RIOT is a real─time multi─threading OS that supports a range of devices               │                MIPS                      v0.3.21     GitHub  2018─03─31
-            ARM         FileSystem    that are typically found in the Internet of Things (IoT): 8─bit, 16─bit and           │                PowerPC                   Other
-            AVR         Network       32─bit microcontrollers.  2018.04     GitHub  2018─05─11                              │    __________________________________________________________________________________________
-            MIPS        6LoWPAN       LGPLv2.1 License                                                                      │    uKOS        ARM                       uKOS is a multi─tasking OS suitable for small embedded µController systems.
-            RISC─V      GUI                                                                                                 │                                          It is based on a preventive multitasking scheduler.
-_______________________________________________________________________________________________                             │                                          4.0.0       2017─04─26
-RTEMS       ARM         FileSystem    RTEMS is an OOSS RTOS that supports open standard application programming             │                                          GPLv3 License
-            x86         Network       interfaces such as POSIX. It is used in space flight, medical, networking             │    _______________________________________________________________________________________________
-            MIPS        TLS/SSL       and many more embedded devices.  4.11    Code    2018─02─16                           │    seL4        ARM                       The world's first operating─system kernel with an ºend─to─end proof of implementationº
-            PowerPC     CLI           GPL License                                                                           │                                          correctness and security enforcement is available as open source.
-            m68k                                                                                                            │                                          10.0.0  GitHub  2018─05─28
-_______________________________________________________________________________________________                             │                                          Other License
-Mongoose OS ARM         FileSystem    Mongoose OS ─ an OOSS OS for Internet of Things. Supported microcontrollers:          │    _______________________________________________________________________________________________
-            Xtensa      Network       ESP32, ESP8266, CC3220, CC3200, STM32F4. Amazon AWS IoT & Google IoT Core             │    Trampoline  ARM                       Trampoline is a static RTOS for small embedded systems. Its API is aligned with
-                        TLS/SSL       integrated. Code in C or JavaScript.    2.3     GitHub  2018─06─15                    │                AVR                       OSEK/VDX OS and AUTOSAR OS 4.2 standards.
-                                      GPLv2 License                                                                         │                PowerPC                   dev─master  GitHub  2017─12─07
-_______________________________________________________________________________________________                             │                                          GPLv2 License
-Xenomai     ARM         FileSystem    Xenomai is a real─time development framework cooperating with the Linux               │    _______________________________________________________________________________________________
-            x86         Network       kernel, in order to provide a pervasive, interface─agnostic, hard real─time           │    eChronos    PowerPC                   The eChronos RTOS is a real─time operating system (RTOS) originally developed by NICTA
-            PowerPC     TLS/SSL       support to user─space applications, seamlessly integrated into the                    │                                          and Breakaway Consulting Pty. Ltd. It is intended for tightly resource─constrained
-                                      GNU/Linux environment.   v3.0.7  Code    2018─07─25                                   │                                          devices without memory protection.
-                                      GPL License                                                                           │                                          v3.0.2  GitHub  2018─04─01
-_______________________________________________________________________________________________                             │                                          Other License
-Atomthreads AVR                       Atomthreads is a free, lightweight, portable, real─time scheduler for                 │    _______________________________________________________________________________________________
-                                      embedded systems.     release1.3  GitHub  2017─08─27                                  │    AliOS       ARM                       AliOS Things is designed for low power, resource constrained MCU, connectivity SoC,
-                                      BSD License                                                                           │                                          greatly suitable for IoT devices. AliOS Things is not just a RTOS, it contains full stack of
-_______________________________________________________________________________________________                             │                                          software components and tools for building IoT devices.    v1.3.1  GitHub  2018─05─31
-StratifyOS  ARM                       StratifyOS is a powerful embedded RTOS for the ARM Cortex M microcontrollers.         │                                          Apache License
-                                      v3.6.0  GitHub  2018─04─20                                                            │    _______________________________________________________________________________________________
-                                      GLP License                                                                           │    Things
-_______________________________________________________________________________________________                             │    LiteOS      ARM                       Huawei LiteOS is a lightweight open─source IoT OS and a smart hardware development p
-distortos   ARM                       Distortos is an advanced RTOS written in C┼┼11.     v0.5.0  GitHub  2017─09─14        │                                          latform. It simplifies IoT device development and device connectivity, makes services
-                                      Mozilla License                                                                       │                                          smarter, delivers superb user experience, and provides better data protection. Huawei
-_______________________________________________________________________________________________                             │                                          LiteOS is designed for smart homes, wearables, IoV, and intelligent manufacturing
-Zephyr      ARM                       The Zephyr™ Project is a scalable, real─time OS (RTOS) supporting multiple            │                                          applications.
-            x86                       hardware architectures, optimized for resource constrained devices, and built with    │                                          v1.1.1  GitHub  2017─04─01
-                                      security in mind. This Linux Foundation hosted project embraces OOSS development      │                                          BSD License
-                                      values and governance on its mission to unite leaders from across the industry        │    _______________________________________________________________________________________________
-                                      to produce a best─in─breed solution.     zephyr─v1.12.0  GitHub  2018─06─11           │    TizenRT     ARM                       TizenRT is a lightweight RTOS─based platform to support low─end IoT devices
-                                      Apache License                                                                        │                                          1.1_Public_Release  GitHub  2017─10─27
-_______________________________________________________________________________________________                             │                                          Apache License
-                                                                                                                            │    _______________________________________________________________________________________________
-                                                                                                                            │    MOE         ARM                       MOE is an event─driven scheduler system for 8/16/32─bit MCUs.
-                                                                                                                            │                                          MOE means "Minds Of Embedded system".
-                                                                                                                            │                                          V0.1.6  GitHub  2017─04─21
-                                                                                                                            │                                          MIT License
-                                                                                                                            │    _______________________________________________________________________________________________
-                                                                                                                            │    cocoOS      MSP430                    cocoOS is a free, open source, cooperative task scheduler, based on coroutines
-                                                                                                                            │                ARM                       targeted for embedded microcontrollers like AVR, MSP430 and STM32
-                                                                                                                            │                AVR                       BSD License
-                                                                                                                            │    _______________________________________________________________________________________________
-  ```
-[[}]]
+## Definitive guide to Syscalls 
+* <https://blog.packagecloud.io/eng/2016/04/05/the-definitive-guide-to-linux-system-calls/>
 
 ## Kernel architecture
 
@@ -496,35 +351,6 @@ targeting the Linux kernel entry code on x86.
 
 
 
-[[{monitoring.eBPF,monitoring,storage]]
-## trace FS requests with eBPF
-<https://www.collabora.com/news-and-blog/blog/2018/11/21/gaining-ebpf-vision-tracing-linux-filesystem-disk-requests/>
-[[monitoring.eBPF}]]
-
-[[{monitoring.netflix_vector,kernel.eBPF,]]
-
-## vector-ebpf-container
-
-* <https://www.infoq.com/news/2019/03/>
-* Vector Performance Monitoring Tool Adds eBPF, Unified Host-Container Metrics Support
-
-Vector, the open source performance monitoring tool from Netflix,
-added support for eBPF based tools using a PCP daemon, a unified view
-of container and host metrics, and UI improvements.
-
-Netflix had earlier released a performance monitoring tool called
-Vector as open source. Vector can "visualize and analyze system and
-application-level metrics in near real-time". These metrics include
-CPU, memory, disk and network, and application profiling using
-flamegraphs. Vector is build on top of Performance Co-Pilot (PCP), a
-performance analysis toolkit. PCP works in a distributed fashion with
-a daemon on each monitored host, which controls and routes metric
-requests to individual agents which collect the actual metrics. There
-are agents for most popular software, and custom application metrics
-can be collected by writing one's own agent. Client applications
-connect to the daemon.
-[[monitoring.netflix_vector}]]
-
 ## libweston compositor for automotive grade linux
 
 * <https://www.collabora.com/news-and-blog/news-and-events/a-libweston-based-compositor-for-automotive-grade-linux.html>
@@ -603,242 +429,12 @@ other writeups on medium - https://lnkd.in/drU__sCj #Linux #Memory
   $ ps -eo min_flt,maj_flt,comm | grep -v 0 
   ```
 
+[[{monitoring.kernel.systemtap]]
 
-[[{PM.low_code.eBFP,security.eBFP,kernel.eBFP]]
-## Linux XDP (eXpress Data Path) eBFP
-
-* Major Applications:<https://ebpf.io/projects>
-  * bcc: Toolkit and library for efficient BPF-based kernel tracing
-  * Cilium: eBPF-based Networking, Security, and Observability, designed for Kubernetes.
-  * bpftrace: High-level tracing language for Linux eBPF. Inspired by awk and C and
-    predecessor tracers such as DTrace and SystemTap.
-  * Falco: behavioral activity monitor designed to detect anomalous activity in applications.
-    Falco audits a system at the Linux kernel layer with the help of eBPF. It enriches gathered
-    data with other input streams such as container runtime metrics and Kubernetes metrics,
-    and allows to continuously monitor and detect container, application, host, and network activity.
-  * Pixie: observability tool for Kubernetes applications. No  need for manual instrumentation.
-    Developers can use Pixie to view the high-level state of their cluster (service maps,
-    cluster resources, application traffic) and also drill down into more detailed views 
-    (pod state, flame graphs, individual full body application requests).
-  * Calico: eBPF dataplane for networking, load-balancing and in-kernel security for containers and Kubernetes.
-  * Katran: Layer 4 load balancer.  Katran leverages the XDP infrastructure from the Linux kernel
-   to provide an in-kernel facility for fast packet processing. Its performance scales linearly with
-   the number of NIC's receive queues and it uses RSS friendly encapsulation for forwarding to L7 load balancers.
-  * Parca: Continuous Profiling Platform.  Track memory, CPU, I/O bottlenecks broken down by method name,
-    class name, and line number over time. Without complex overhead, in any language or framework.
-    Parca's UI allows data to be globally explored and analyzed using various visualizations 
-  * Tetragon: eBPF-based Security Observability & Runtime Enforcement
-    Observability combined with real-time runtime enforcement without application changes
-[[PM.low_code.eBFP}]]
-
-
-[[{]]
-## XDP
-* <https://www.linkedin.com/feed/update/activity:6974013631831179264 >
-
-* XDP is a powerful network feature which allows sending and 
-  receiving network traffic at high rates. XDP has been part of the 
-  Linux kernel since version 4.8. There is also an implementation of 
-  XDP for Windows (https://bit.ly/3qx2kkB), 
-* There are some drawbacks in kernel bypass by eBPF:
-  * eBPF programs are needed to write their own drivers and
-    that they need implement any functionality without relaying
-    on the kernel’s network stack there was a need for a framework
-    which will reduce those kinds of headaches - that is XDP.
-
-* Use case: firewalls, DDoS mitigation, load balancing, network monitoring, 
-  high speed forwarding, flow sampling and more. 
-
-* Basically, XDP runs a BPF program immediately after a packet is received by a NIC
-  by attaching hooks in specific places such as the network device drivers.
-
-* “Generic XDP”:  the program is loaded into the kernel in the normal (generic) network path,
-  thus it does not provide all of the benefits of high performance (but very easy way to test...).
-* “Native XDP”: program is loaded by the network card driver, thus it requires support from the driver.
-* “Offload XDP”: program is loaded directly by the NIC, thus executed outside the CPU (offloaded)
-  - this needs support from the network device itself. 
-
-... we can perform different operations on the received packets:
-* drop packets (XDP_DROP)
-* forward the packets to the normal network stack (XDP_PASS),
-* forward the packets to the the same interface it received it from (XDP_TX) 
-* bypass the normal stack and forward the packets to the network by a different NIC (XDP_REDIRECT). 
-
-Benefits:
-* you don’t have to use specialized hardware (you can if you want).
-* works in coordination with the TCP/IP stack.
-
-You can follow me on twitter - @boutnaru (https://lnkd.in/dkYSgHHZ)
-[[}]]
-
-[[{monitoring.ftrace]]
-## ftrace
-
-by Shlomi Boutnaru
-
-Linux - Instrumentation: Part 3 - ftrace
-
-* Ftrace (function tracer): tracing framework which allows tapping 
-into the execution flow of the kernel 
-* merged in 2008.  (CONFIG_FTRACE=true)
-
-* two types of probes:
-  * static (which is added at compile time, also called "events") 
-  * dynamic (injected into the kernel code at runtime).
-
-* When the kernel is compiled using gcc flags '-pg' (prof, gprof), gcc add machine instructions 
-  will be added to the prologue for each non-inlined function.
-* This code will redirect the execution flow to the ftrace's trampolines/tracer's
-  plugin (they will run the tracing code we want). It also generates extra code which
-  writes profile information needed for the analysis prof and gprof.
-* data collected is stored in a ring buffer for consumption.
-
-* tracefs virtual FS is used to configure ftrace and watch the tracing information
-  that was collected, usually mounted on `/sys/kernel/tracing` or just:
-  ```
-  $ sudo mount -t tracefs tracefs /sys/kernel/tracing??).
-  ```
-
-* types of traces:
-  * function tracers:
-  * latency tracers:
-  * I/O tracers:
-  * :..
-  Full list is available at `/sys/kernel/tracing/available_tracers`.
-
-* To enable a tracer write its name to the file `current_tracer`.
-* To watch tracing data we just read `trace` or `trace_pipe`.
-* To avoid a flood of data we can also using filtering:
-  ```
-  $ echo "s*" > set_ftrace_filter # such as by name/pid/other patterns.  
-  ```
-* events (syscall, scheduling, ..) are shown under the `events` directory.
-  * Enable like:
-    ```
-    $ echo 1 > events/gpio/enable
-    ```
-
-* Tools: 
-  * trace-cmd
-  * kernelshark 
-
-
-* See also:
-  * Debugging the kernel with ftrace:1  http://lwn.net/Articles/365835/
-  * Debugging the kernel with ftrace:2  http://lwn.net/Articles/366796/
-  * Debugging the kernel with ftrace:3  http://lwn.net/Articles/370423/
-
-Note: ftrace is started soon after kernel start. dmesg output shows:
-
-  ```
-  |  $ sudo dmesg
-  |  1 [    0.073437] smpboot: Allowing 15 CPUs, 11 hotplug CPUs
-  |    ...
-  |  8 [    0.073460] [mem 0xf0000000-0xfbffffff] available for PCI devices
-  |    ...
-  | 19 [    0.074347] Kernel command line: BOOT_IMAGE=/boot/vmlinuz-5.15.0-1022-aws root....
-  |    ...
-  | 22 [    0.078058] Inode-cache hash table entries: 1048576 (order: 11, 8388608 bytes, linear)
-  | 23 [    0.078296] mem auto-init: stack:off, heap alloc:on, heap free:off
-  |    ...
-  | 24 [    0.148173] Memory: 16369016K/16776820K available ....
-  | 25 [    0.148535] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=15, Nodes=1
-  | 26 [    0.148555] Kernel/User page tables isolation: enabled
-  | 27 [    0.148582] ftrace: allocating 50194 entries in 197 pages   <······························
-  | 28 [    0.173428] ftrace: allocated 197 pages with 4 groups
-  | 29 [    0.173682] rcu: Hierarchical RCU implementation.
-  | 30 [    0.173684] rcu:     RCU restricting CPUs from NR_CPUS=8192 to nr_cpu_ids=15.
-  | ...
-  ```
-
-
-See also:
-- ptrace, uditd, dTrace, OProfile or SystemTap, audtctl
-- Systemtap/Dtrace/LTTng/perf Comparison:
-  <http://sourceware.org/systemtap/wiki/SystemtapDtraceComparison>
-- <http://people.redhat.com/srostedt/kernelshark/HTML/>:
-  KernelShark is a front end reader of trace-cmd(1) output. 
-  `trace-cmd record` and `trace-cmd extract` create.
-  - a trace.dat (trace-cmd.dat(5)) file. kernelshark can read this file
-    and produce a graph and list view of its data."
-[[monitoring.ftrace}]]
-
-## calling hidden kernel syscall with Python
-
-* Using ctypes and the exported “syscall” by libc.
-* This allows to call any syscall by passing its number and parameters. 
-  Searchable Linux Syscall Table: <https://filippo.io/linux-syscall-table/>
-
-## Linux proccess journey
-
-By Shlomi Boutnaru
-
-... After explaining about PID 1, now we are going to talk about PID 2.
-Basically, kthreadd is the “kernel thread daemon". Creation of a new kernel
-thread is done using kthreadd (We will go over the entire flow). Thus, the
-PPID of all kernel threads is 2 (checkout ps to verify this). As explained 
-in the post about PID 1 (init) the creation of “kthreadd” is done by the
-kernel function “rest_init” (https://bit.ly/3zxc6r9 - shows the source code). 
-
-There is a call to the function “kernel_thread” (after the creation of init). 
-
-Basically, the kernel uses “kernel threads” (kthreads from now on) in 
-order to run background operations. Thus, it is not surprising that 
-multiple kernel subsystems are leveraging kthreads in order to 
-execute async operations and/or periodic operations. In summary, the 
-goal of kthreadd is to make available an interface in which the 
-kernel can dynamically spawn new kthreads when needed.
-
-kthreadd continuously runs (infinite loop–https://bit.ly/3AsjrtG) and checks
-“kthread_create_list” for new kthreads to be created (You can check the code
-here -https://bit.ly/3SUgwkS). 
-
-... 
-
-
-[[{monitorization.kernel.bpftrace]]
-## BPFtrace
-* <https://www.brendangregg.com/blog/2018-10-08/dtrace-for-linux-2018.html>
-
-* built on top of eBPF, as a higher level front-end for tracing "competing" wit
-  h Solaris DTrace.
-
-* Looks to enhance over SystemTap (that basically was an IBM/RedHat internal 
-  project).
-A typical script looks like:
-
-  ```
-  | bpftrace
-  | 
-  | BEGIN { printf("Tracing... Hit Ctrl-C to end.\n"); }
-  | 
-  | // Process io start */
-  | tracepoint:block:block_rq_insert
-  | /@last[args->dev]/ {
-  |     $last = @last[args->dev];                      // calculate seek distance
-  |     $dist = (args->sector - $last) > 0 ?
-  |         args->sector - $last : $last - args->sector;
-  |     @size[pid, comm] = hist($dist);                // store details
-  | }
-  | 
-  | tracepoint:block:block_rq_insert {
-  |     @last[args->dev] = args->sector                // save last position of disk head
-  |                      + args->nr_sector;
-  | }
-  | 
-  | END {
-  |   printf("\n@[PID, COMM]:\n");
-  |   print(@size); clear(@size); clear(@last);
-  | }
-  ```
-[[monitorization.kernel.bpftrace}]]
-
-[[{monitorization.kernel.systemtap]]
 ## SystemTap Kernel Monit
 
+* "Internal" IBM/Red Hat project. "Deprecated" in favor of eBPFtrace.
 * <https://sourceware.org/systemtap/>
-- Eclipse SystemTap Integration
-
 * <https://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.linuxtools.docker.docs%2FLinux_Tools_Project%2FDocker_Tooling%2FUser_Guide%2FUser-Guide.html&cp=15_0>
 
 - <https://sourceware.org/systemtap/tutorial/>
@@ -852,9 +448,7 @@ A typical script looks like:
   arrays, function overloading, new scripting samples, scripting 
   language changes, and more.
 
-## Definitive guide to Syscalls 
-* <https://blog.packagecloud.io/eng/2016/04/05/the-definitive-guide-to-linux-system-calls/>
-[[monitorization.systemtap}]]
+[[monitoring.systemtap}]]
 
 ## Zswap linux
 
@@ -920,6 +514,52 @@ A typical script looks like:
 <https://www.zdnet.com/article/cleaning-up-the-linux-kernels-dependency-hell-this-developer-is-proposing-2200-commit-changes/>
 * This developer is proposing 2,200 commit changes
 
+[[{]]
+## Linux kernel New API (NAPI)
 
-[[linux}]]
+* <https://wiki.linuxfoundation.org/networking/napi>
+* <https://www.linkedin.com/posts/shlomi-boutnaru-ba781811a_linux-networking-interrupts-activity-7070457316214489089-yl4q >
+
+"New API" or NAPI is used to reduce the number of received interrupts.
+
+Think of Gigabit network drivers receiving large number of packets at a fast pace.
+(https://www.hitchhikersguidetolearning.com/2023/04/09/handling-receive-packets-via-napi/)
+(~90K interrupts/sec)
+
+NAPI does not break backward compatibility.  "NAPI" is a kernel thread 
+which is created using the “kthread_run()” function 
+... NAPI combines hardware interrupts and polling.
+[[}]]
+
+[[{]]
+## Good Book on Linux Memory Management and File Systems
+
+(Frédéric YhuelFrédéric Yhuel • 1st) I would love to find a Linux 
+textbook equivalent to the excellent Egor Rogov's PostgreSQL 14 
+Internals. Linux is bigger project, but I'm particulary interested in 
+memory management and file systems.
+
+For example, I'd like to understand exactly what happens when we want 
+to increase the huge pages pool (with sysctl vm.nr_hugepages=N), and 
+there's not enough contigous free memory available.
+Is there a direct reclaim followed by a direct compaction?
+
+* By the way, how do kcompactd and khugepaged work together?
+* Don't they overlap in some way?
+
+... Things like that. I'm not sure if such a book exists... but if 
+you happen to know of one, please let me know!
+[[}]]
+
+## Linux cache
+
+* <https://biriukov.dev/docs/page-cache/0-linux-page-cache-for-sre/>
+
+## Debugging the Linux kernel with GDB
+
+* <https://sergioprado.blog/debugging-the-linux-kernel-with-gdb/?trk=feed_main-feed-card_feed-article-content >
+NOTE: GEF (GDB Enhanced Features) is a better alternative to GDB.
+
+
+[[linux.kernel}]]
 

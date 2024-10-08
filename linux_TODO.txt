@@ -363,7 +363,7 @@ Achieving maximum performance from a fixed size Ceph object storage cluster
 ## Why Debian does not create wheel group by default
 https://unix.stackexchange.com/questions/4460/why-is-debian-not-creating-the-wheel-group-by-default
 
-[[{virtualization.kvm.virsh,doc_has.cheat_sheet]]
+[[{virtualization.kvm.virsh,doc_has.cheatsheet]]
 * <https://computingforgeeks.com/virsh-commands-cheatsheet/>
 
 Related:
@@ -474,7 +474,7 @@ A code searching tool with a focus on speed.
 * <https://unix.stackexchange.com/questions/11946/how-big-is-the-pipe-buffer >
 [[monitoring.pipes}]]
 
-[[{network.iptables.101,doc_has.cheat_sheet]]
+[[{network.iptables.101,doc_has.cheatsheet]]
 ## IPTable Cheat Sheet 
 
 * <http://ipcafe.net/6160/iptable-cheat-sheet.html>
@@ -547,13 +547,6 @@ quickly passes all requests through to the underlying device.
 * <https://sysdig.com/blog/sysdig-snyk-partnership/>
 [[security.sysdig}]]
 
-[[{linux.mobile.mobifree]]
-## Mobifree
-
-* <https://mobifree.org/>
-
-[[linux.mobile.mobifree}]]
-
 [[{monitoring.sysstat,monitoring.101]]
 ## sysstat: All-in-One System Performance and Usage Activity Monitoring Tool
  
@@ -578,207 +571,5 @@ quickly passes all requests through to the underlying device.
 ## Parca: Infrastructure-wide continuous profiling
 * <https://www.parca.dev/>
 [[profiling.parca}]]
-
-@ma
-
-## Security 101: Endless SSH Denial-of-Service counter-attackhttps://nullprogram.com/blog/2019/03/22/
-
-
-## Linux kernel New API (NAPI)
-https://www.linkedin.com/posts/shlomi-boutnaru-ba781811a_linux-networking-interrupts-activity-7070457316214489089-yl4q 
-
-The Linux Process Journey - “napi” (New API)NAPI stands for “New API” which is used to reduce the number of received interrupts. Think about cases in which the network driver receives a large number of packets at a fast pace. (https://lnkd.in/dANvkcbw). If we think about it in the case of a Gigabit network card and an MTU of 1500 the CPU will get about 90K of interrupt per second.Thus, we can say that NAPI is an extension to the Linux packet processing framework, which is done for improving performance for high-speed networking. This is performed using interrupt mitigation and packet throttling. It is important to say that the addition of NAPI does not break backward compatibility (https://lnkd.in/dK_2MYG6). “napi” is a kernel thread which is created using the “kthread_run()” function (https://lnkd.in/d5Xxq8XS) which is part of the NAPI (New API) subsystem. The name of the kernel thread is based on the pattern “napi[DeviceName]-[NAPI-ID]”. The kernel thread executes the “napi_threaded_poll” function (https://lnkd.in/dnsDuqpF).Due to that, drivers that support NAPI can disable hardware interrupts as a mechanism for packet reception. In that case the network stack relies on polling for new packets at a specific interval. It might seem that polling is less efficient but in case the network device is busy any time the kernel will poll for a packet it will get something (https://lnkd.in/dfDktJAd). Lastly, the way NAPI does that is by combining hardware interrupts and polling. When a hardware interrupt is received, the driver disables it and notifies the kernel to read the packets.Then a kernel software interrupt polls the network device for a specific time. When the time runs out/there is no more data the kernel will enable the hardware interrupt again (https://lnkd.in/dycdJRPe). A detailed diagram of the NAPI flow is shown in the diagram below (https://lnkd.in/dEJcFuRZ). See you next time ;-)You can also follow me on twitter - @boutnaru (https://lnkd.in/dkYSgHHZ). Also, you can read my other writeups on medium - https://lnkd.in/drU__sCj.  
-
-##  ThinLinc Vnc++https://www.cendio.com
-
-## Linux Package Management Command Cheat Sheet
-https://www.linuxteck.com/linux-package-management-command-cheat-sheet/ 
-
-
-
-## Linux Kernel 101 Teaching — The Linux Kernel documentation
-
-https://linux-kernel-labs.github.io/refs/heads/master/index.html 
-
-## 101 Great overview of persistence techniques in Linux environments by Pepe Berba
-
-https://pberba.github.io/security/2022/02/07/linux-threat-hunting-for-persistence-systemd-generators/
-
-https://pberba.github.io/security/2021/11/23/linux-threat-hunting-for-persistence-account-creation-manipulation/
-
-https://pberba.github.io/security/2022/01/30/linux-threat-hunting-for-persistence-systemd-timers-cron/
-
-https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/
-
-https://pberba.github.io/assets/posts/common/20220201-linux-persistence.pdf
-
-https://pberba.github.io/security/2021/11/22/linux-threat-hunting-for-persistence-sysmon-auditd-webshell/
-
-## systemd-runTIL: systemd-run
- Turns out, I can run arbitrary programs as background services with a simple systemd-run </path/to/exe> It's officially my new favorite way to demonize long-running tasks: - No more forgotten nohup - Handy resource limits - Status and logs out of the box
-
-## History of git in Linux Kernel Mailing List
-https://lkml.org/lkml/2005/4/6/121
-
-
-## How to Create a Bootable Windows 10 USB in Linux
-https://itsfoss.com/bootable-windows-usb-linux/
-
-## Linux Kernel
-Frédéric YhuelFrédéric Yhuel • 1st
-
-I would love to find a Linux textbook equivalent to the excellent Egor Rogov's PostgreSQL 14 Internals. Linux is bigger project, but I'm particulary interested in memory management and file systems.
-
-For example, I'd like to understand exactly what happens when we want to increase the huge pages pool (with sysctl vm.nr_hugepages=N), and there's not enough contigous free memory available.
-Is there a direct reclaim followed by a direct compaction?
-By the way, how do kcompactd and khugepaged work together? Don't they overlap in some way?
-
-Things like that. I'm not sure if such a book exists... but if you happen to know of one, please let me know!
-
-
-## Linux: Systemd v256 Introduces run0: A Safer Alternative to sudo
-https://linuxiac.com/systemd-v256-introduces-run0/
-
-## 101 Linux Kernel Module Programming Guide
-https://sysprog21.github.io/lkmpg/ 
-
-## Linux cache
-https://biriukov.dev/docs/page-cache/0-linux-page-cache-for-sre/
-
-## 101:    postmarketOS: real Linux distribution for phones
-https://postmarketos.org/ 
-
-Real OS for Smartphones
-
-Writing packages is easy, by the way: as long as you know how to write shell scripts, you are good to go. We have continuous integration in place that makes sure everything builds that gets submitted to our packages repository, among other sanity checks.
-
-
-## Debugging the Linux kernel with GDB
-sergioprado.blog
-https://sergioprado.blog/debugging-the-linux-kernel-with-gdb/?trk=feed_main-feed-card_feed-article-content 
-NOTE: GEF (GDB Enhanced Features) is a better alternative to GDB.
-
-## Redka Debuts as a Scalable Alternative to Redis with SQLite Integration
-https://linuxiac.com/redka-new-redis-alternative-with-sqlite-integration/ 
-
-Redka’s Redis-Compatible Features
-
-Redka does Redix, following it in its support for the core data types of strings, lists, sets, hashes, and sorted sets, as well as many commands for dealing with these types. Here are some examples of commands and features you might expect from it.
-
-Strings: Operations like GET, SET, and INCR are available to handle basic data manipulation.
-Lists and Sets: Commands for managing ordered and unordered collections, such as LPOP for lists and SADD for sets.
-Hashes: You can manipulate field-value pairs using commands like HSET and HGET.
-Sorted Sets: ZADD and ZRANK are ready to use for ordered data with scores.
-Key Management: Key lifecycle is manageable with commands like DEL and EXPIRE.
-
-Installation & Performance
-
-First things first in regard to Redka: its usage is a real no-brainer. It’s available as a single-file binary, which one is able to download and run on both Linux and MacOS systems, or pull as a Docker image to deploy easily into a container. Also, Redka is available to developers as a Go module in applications.
-
-On the performance front, Redka may be unable to compete with Redis on a raw speed basis because it relies on SQLite. However, according to the developers, preliminary benchmarks seem to indicate that it is actually able to write and read tens of thousands of times per second.
-
-For more information, visit the project’s GitHub repository.
-
-
-## Security 101: Ebury botnet compromises 400,000+ Linux servers - Help Net Security
-https://www.helpnetsecurity.com/2024/05/16/ebury-botnet/ 
-
-Ebury botnet compromises 400,000+ Linux servers
-
-ESET researchers released its deep-dive investigation into one of the most advanced server-side malware campaigns. It is still growing and has seen hundreds of thousands of compromised servers in its at least 15-year-long operation.
-
-The Ebury group and botnet have been involved in the spread of spam, web traffic redirections, and credential stealing over the years. In recent years, they have diversified to credit card and cryptocurrency theft.
-
-Additionally, Ebury has been deployed as a backdoor to compromise almost 400,000 Linux, FreeBSD, and OpenBSD servers; more than 100,000 were still compromised as of late 2023. In many cases, Ebury operators could gain full access to large servers of ISPs and well-known hosting providers.
-
-Ebury, active since at least 2009, is an OpenSSH backdoor and credential stealer. It is used to deploy additional malware to monetize the botnet (such as modules for web traffic redirection), proxy traffic for spam, perform adversary-in-the-middle attacks (AitM), and host supporting malicious infrastructure. In AitM attacks, ESET has observed over 200 targets across over 75 networks in 34 countries between February 2022 and May 2023.
-
-Its operators have used the Ebury botnet to steal cryptocurrency wallets, credentials, and credit card details. ESET has uncovered new malware families authored and deployed by the gang for financial gain, including Apache modules and a kernel module to redirect web traffic. Ebury operators also used zero-day vulnerabilities in administrator software to compromise servers in bulk.
-
-After a system is compromised, several details are exfiltrated. Using the known passwords and keys obtained on that system, credentials are reused to try logging into related systems. Each Ebury’s major version introduces important changes, new features, and obfuscation techniques.
-
-“We have documented cases where the infrastructure of hosting providers was compromised by Ebury. In these cases, we have seen Ebury being deployed on servers rented out by those providers, with no warning to the lessees. This resulted in cases where the Ebury actors were able to compromise thousands of servers at once,” says Marc-Etienne M. Léveillé, the ESET researcher who investigated Ebury for more than a decade. There is no geographical boundary to Ebury; there are servers compromised with Ebury in almost all countries in the world. Whenever a hosting provider was compromised, it led to a vast number of compromised servers in the same data centers.
-
-At the same time, no verticals appear more targeted than others. Victims include universities, small and large enterprises, internet service providers, cryptocurrency traders, Tor exit nodes, shared hosting providers, and dedicated server providers, to name a few.
-
-In late 2019, the infrastructure of a large and popular US-based domain registrar and web hosting provider was compromised. In total, approximately 2,500 physical and 60,000 virtual servers were compromised by the attackers. A very large portion, if not all, of these servers are shared between multiple users to host the websites of more than 1.5 million accounts. In another incident, a total of 70,000 servers from that hosting provider were compromised by Ebury in 2023. Kernel.org, hosting the source code of the Linux kernel, had been a victim of Ebury too.
-
-“Ebury poses a serious threat and a challenge to the Linux security community. There is no simple fix that would make Ebury ineffective, but a handful of mitigations can be applied to minimize its spread and impact. One thing to realize is that it doesn’t only happen to organizations or individuals that care less about security. A lot of very tech-savvy individuals and large organizations are among the list of victims,” concludes Léveillé.
-
-More about
-
-backdoor
-botnet
-cybercrime
-ESET
-Linux
-malware
-
-Share
-
-Featured news
-
-US exposes scheme enabling North Korean IT workers to bypass sanctions
-The importance of access controls in incident response
-Organizations struggle to defend against ransomware
-
-Download: The Ultimate Guide to the CISSP
-
-Sponsored
-
-eBook: Do you have what it takes to lead in cybersecurity?
-eBook: Why CISSP?
-The CISO’s guide to reducing the SaaS attack surface
-
-Don't miss
-
-US exposes scheme enabling North Korean IT workers to bypass sanctions
-The importance of access controls in incident response
-Organizations struggle to defend against ransomware
-Critical Git vulnerability allows RCE when cloning repositories with submodules (CVE-2024-32002)
-Google fixes third exploited Chrome zero-day in a week (CVE-2024-4947)
-
-Cybersecurity news
-Daily Newsletter
-Weekly Newsletter
-(IN)SECURE - monthly newsletter with top articles
-I have read and agree to the terms & conditions
-© Copyright 1998-2024 by Help Net Security
-Read our privacy policy | About us | Advertise
-
-
-## Is the SSHFS Project Still Active?
-https://linuxiac.com/is-the-sshfs-project-still-active/ 
-One notable alternative is Rclone, a versatile file management tool that supports many protocols, including SSH, FTP, S3, and more. It provides a viable replacement for SSHFS and brings additional features and active support, making it an attractive option for those seeking stability and continuity in their remote file management tools.
-
-
-## Bringing Memory Safety to sudo and su - Prossimo
-https://www.memorysafety.org/blog/sudo-and-su/ 
-
-Bringing Memory Safety to sudo and su
-
-Josh Aas
-Apr 26, 2023
-
-Our Prossimo project has historically focused on creating safer software on network boundaries. Today however, we're announcing work on another critical boundary - permissions. We're pleased to announce that we're reimplementing the ubiquitous sudo and su utilities in Rust.
-
-Sudo was first developed in the 1980s. Over the decades, it has become an essential tool for performing changes while minimizing risk to an operating system. But because it's written in C, sudo has experienced many vulnerabilities related to memory safety issues.
-
-When we're thinking about what software we want to invest in we think primarily about four risk criteria:
-
-Very widely used (nearly every server and/or client)
-On a critical boundary
-Performing a critical function
-Written in languages that are not memory safe (e.g. C, C++, asm)
-
-Sudo fits this risk criteria squarely. It's important that we secure our most critical software, particularly from memory safety vulnerabilities. It's hard to imagine software that's much more critical than sudo and su.
-
-This work is being done by a joint team from Ferrous Systems and Tweede Golf with generous support from Amazon Web Services. The work plan is viewable here. The GitHub repository is here.
-
-If you'd like to support Prossimo's work to improve memory safety, please consider contributing.
-
-About Us
-
-ISRG is a 501(c)(3) nonprofit organization that is 100% supported through the generosity of those who share our vision for ubiquitous, open Internet security. If you'd like to support our work, please consider getting involved, donating, or encouraging your company to become a funder.
 
 

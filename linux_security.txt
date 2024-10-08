@@ -1,24 +1,234 @@
-[[{linux.security,PM.draft]]
+[[{security,PM.draft]]
 # Security Hardening
 
 [[{security.101,doc_has.comparative]]
+
 ## Difference Between su, sudo su, sudo -i, and sudo -s 
 
 * <https://trendoceans.com/difference-between-su-sudo-su-sudo-i-and-sudo-s/>
+
+## Systemd v256 Introduces run0: Safer Alternative to sudo
+
+* <https://linuxiac.com/systemd-v256-introduces-run0/>
+
+... run0 is not just a new tool but a reimagined systemd-run,
+accessible via a symlink, that mimics sudo without actually
+being an SUID binary.
+
+  It operates by requesting the service manager to execute commands 
+under the target user’s UID, creating a new PTY (pseudoterminal), and 
+transferring data between the original TTY and this PTY.<br/>
+
+  This setup ensures that the command executes in an isolated 
+environment, freshly forked off from PID 1, without inheriting any 
+problematic context from the client. [[doc_has.keypoint]]
+
+run0 eschews traditional configuration complexities by utilizing
+polkit for authorization, streamlining user interactions, and
+further securing the execution process.
+
+
+The tool also adds a touch of user-friendly flair:
+when operating with elevated privileges, it modifies the 
+terminal background to a reddish hue, serving as a visual cue
+of one’s elevated status—a simple yet effective reminder to 
+manage privileges responsibly. [[qa.UX]]
+
+## Bringing Memory Safety to sudo and su - Prossimo
+
+* <https://www.memorysafety.org/blog/sudo-and-su/ >
+
+* Today we're announcing work on another critical boundary - permissions.
+  We're pleased to announce that we're reimplementing the ubiquitous 
+  sudo and su utilities in Rust.
+
+* Sudo was first developed in the 1980s. ... written in C, it has
+  experienced many vulnerabilities related to memory safety issues.
+
+* This work is being done by a joint team from Ferrous Systems and Tweede Golf
+  with generous support from Amazon Web Services. 
+
+* The work plan is viewable here.
+* The GitHub repository is here.
+
+* If you'd like to support Prossimo's work to improve memory safety, 
+  please consider contributing.
+  [[PM.needs_funding]]
+
+
 [[security.101}]]
 
 [[{security.rescue_disk,security.101]]
-## 8 rescue disks and OS:
+## Ventoy.net
 
-* <https://www.genbeta.com/herramientas/8-discos-rescate-sistemas-operativos-que-he-elegido-para-crear-navaja-suiza-pendrive-usb-multiboot>
-Para hacer los discos multi arranque Ventoy es muchísimo mejor
-opción. Basta con instalar ventoy en el pendrive (te creará una
-partición) y te dejará el resto del pendrive libre. Para añadir
-nuevos discos, simplemente copias y pegas la iso (tal cual) en el
-espacio libre y al reiniciar te aparecerán todas las isos para la
-que quieras.
-No necesitarás ningún software para añadir nuevas isos: Copiar y pegar
+* tool to create bootable USB drive for ISO/WIM/IMG/VHD(x)/EFI files.
+* No need to format the disk over and over, just copy 
+  ISO/WIM/IMG/VHD(x)/EFI files to the USB drive and boot them directly.
+* Copy many files at a time: 
+  * ventoy will provide a boot menu to select them (screenshot).
+* Browse ISO/WIM/IMG/VHD(x)/EFI files in local disks and boot them.
+* x86 Legacy BIOS, IA32 UEFI, x86_64 UEFI, ARM64 UEFI and MIPS64EL UEFI
+  are supported in the same way.
+* Most OS supported (Windows/WinPE/Linux/ChromeOS/Unix/VMware/Xen...) 
+* MBR and GPT partition styles are supported
+* ISO files larger than 4GB supported
+* Password protect supported
+* Linux vDisk(vhd/vdi/raw...) boot solution
 [[security.rescue_disk}]]
+
+[[{security.101,scalability.101]]
+## Endless: SSH Tarpit (Denial-of-Service counter-attack)
+
+* <https://nullprogram.com/blog/2019/03/22/>
+
+By Chris Wellons, wellons@nullprogram.com (PGP)
+
+* Endlessh: an SSH Tarpit
+
+* tarpits: network service that intentionally inserts delays in its protocol,
+  slowing down clients by forcing them to wait. ...  When done well, a tarpit
+  imposes more cost on the attacker than the defender.
+
+* Endlessh: an SSH tarpit: 
+  This program opens a socket and pretends to be an SSH server. However, it actually 
+  just ties up SSH clients with false promises indefinitely — or at least until the 
+  client eventually gives up.
+  ```
+  | $ make
+  | $ ./endlessh &
+  | $ ssh -p2222 localhost
+  ```
+  SSH clients will hang there and wait for at least several days before finally
+giving up.
+
+  **As I write, my Internet-facing SSH tarpit currently has 27 clients trapped in it**
+A few of these have been connected for weeks. In one particular spike it had
+1,378 clients trapped at once, lasting about 20 hours.
+
+  tarpit server runs on port 22, while the real ssh server runs in other places.
+
+Endlessh exploits a little paragraph in RFC 4253, the SSH protocol specification: 
+- Immediately after the TCP connection is established, and before negotiating
+  the cryptography, both ends send an identification string:
+  ``` 
+  SSH-protoversion-softwareversion SP comments CR LF
+  ``` 
+- The RFC also notes: """ server MAY send other lines of data before sending the
+  version string.```
+  There is no limit on the number of lines, just that these lines must not begin
+  with “SSH-“ ... Endlessh sends and endless stream of randomly-generated 
+  “other lines of data” without ever intending to send a version string. 
+  By default it waits 10 seconds between each line. This slows down the protocol,
+  but prevents it from actually timing out.
+- This means Endlessh need not know anything about cryptography or the vast majority
+  of the SSH protocol. It’s dead simple.
+   
+**Even when many clients have been trapped, Endlessh spends more than 99.999% of its time
+waiting around, doing nothing**.
+
+Implementation Details:
+
+
+  ```
+  [[{scalability.poll(2)},scalability.raw_sockets]]
+
+  fork new process ··> new thread      ··> single-thread 
+  per ssh client       per ssh client      poll(2) server
+                                           └─────┬──────┘
+                                            Endlessh!!¹ ²
+  
+  ```
+¹ Clients that are being delayed are not registered in poll(2).
+  Their only overhead is the socket object in the kernel, and
+  another 78 bytes to track them in Endlessh. Most of those
+  bytes are used only for accurate logging. Only those clients
+  that are overdue for a new line are registered for poll(2).<br/>
+  When clients are waiting, but no clients are overdue, poll(2)
+  is essentially used in place of sleep(3). Though since it 
+  still needs to manage the accept server socket, it (almost)
+  never actually waits on nothing. <br/>
+  ...  epoll (Linux) or kqueue (BSD) are more efficient than poll(2).
+  poll(2) is "good enough" and portable.
+
+² Raw sockets to tarpit TCP protocol itself could be used.
+
+[[{scalability.python.coroutines]]
+### Python asyncio and other tarpits:
+
+Since writing Endless I’ve learned about Python’s asyncio, and it’s 
+actually a near perfect fit for this problem. I should have just used 
+it in the first place. The hard part is already implemented within 
+asyncio, and the problem isn’t CPU-bound, so being written in Python 
+doesn’t matter.
+
+Here’s a simplified (no logging, no configuration, etc.) version of
+Endlessh implemented in about 20 lines of Python 3.7:
+
+  ```
+  | import asyncio
+  | import random
+  | 
+  | async def handler(_reader, writer):
+  |     try:
+  |         while True:
+  |             await asyncio.sleep(10)
+  |             writer.write(b'%x\r\n' % random.randint(0, 2**32))
+  |             await writer.drain()
+  |     except ConnectionResetError:
+  |         pass
+  | 
+  | async def main():
+  |     server = await asyncio.start_server(handler, '0.0.0.0', 2222)
+  |     async with server:
+  |         await server.serve_forever()
+  | 
+  | asyncio.run(main())
+  ```
+[[scalability.python.coroutines}]]
+
+Since Python coroutines are stackless, the per-connection memory 
+overhead is comparable to the C version. So it seems asyncio is 
+perfectly suited for writing tarpits! [[{doc_has.keypoint}]]
+
+
+ Here’s an HTTP tarpit to trip up attackers trying to exploit
+HTTP servers. It slowly sends a random, endless HTTP header:
+
+  ```
+  | import asyncio
+  | import random
+  | 
+  | async def handler(_reader, writer):
+  |   writer.write(b'HTTP/1.1 200 OK\r\n')
+  |   try:
+  |     while True:
+  |       await asyncio.sleep(5)
+  |       header = random.randint(0, 2**32)
+  |       value = random.randint(0, 2**32)
+  |       writer.write(b'X-%x: %x\r\n' % (header, value))
+  |       await writer.drain()
+  |   except ConnectionResetError:
+  |     pass
+  | 
+  | async def main():
+  |   server = await asyncio.start_server(handler, '0.0.0.0', 8080)
+  |   async with server:
+  |     await server.serve_forever()
+  | 
+  | asyncio.run(main())
+  ```
+
+... Firefox and Chrome will spin on that server for hours before giving up!!!
+
+
+Parting exercise for the reader: implement an SMTP tarpit using asyncio.
+
+Bonus points for using TLS connections and testing it against real spammers.
+
+    ```
+    | netsec python c posix asyncio 
+    ```
+[[security.101}]]
 
 
 
@@ -149,7 +359,7 @@ ability to write their own custom LSMs with eBPF. Additionally, he
 highlighted the emergence of seccomp BPF.
 [[}]]
 
-[[{linux.security.SSSD,security.remote_access.identity]]
+[[{security.SSSD,security.remote_access.identity]]
 ## SSSD (NSS, PAM, ...)
 
 * <https://docs.pagure.org/SSSD.sssd/>
@@ -159,7 +369,7 @@ highlighted the emergence of seccomp BPF.
   provide caching and offline support to the system. 
 * It provides several interfaces, including NSS and PAM modules or
   a D-Bus interface.
-[[linux.security.SSSD}]]
+[[security.SSSD}]]
 
 [[{security.101,security.selinux,security.AppArmor,security.Auditd,security.SecComp,security.Falco,doc_has.comparative]]
 ## SELinux, AppArmor, Auditd, SecComp, SecComp-bpf, Falco compared
@@ -189,4 +399,67 @@ noted previously.
 
 
 
-[[linux.security,PM.draft}]]
+## Hunting for Persistence in Linux 
+
+(Part 1): Auditd, Sysmon, Osquery (and Webshells) 
+https://pberba.github.io/security/2021/11/22/linux-threat-hunting-for-persistence-sysmon-auditd-webshell/
+
+
+Welcome to this blog series “Hunting for Persistence in Linux”! This 
+is a series that explores methods attackers might use to maintain 
+persistent access to a compromised linux system. To do this, we will 
+take an “offense informs defense” approach by going through 
+techniques listed in the MITRE ATT&CK Matrix for Linux. I will try to:
+
+* Give examples of how an attacker might deploy one of these backdoors
+* Show how a defender might monitor and detect these installations
+
+
+Chapters:
+
+  ```
+  | Hunting for Persistence in Linux (Part 1): Auditing, Logging and Webshells
+  |   1  - Server Software Component: Web Shell
+  | Hunting for Persistence in Linux (Part 2): Account Creation and Manipulation
+  |   2  - Create Account: Local Account
+  |   3  - Valid Accounts: Local Accounts
+  |   4  - Account Manipulation: SSH Authorized Keys
+  | Hunting for Persistence in Linux (Part 3): Systemd, Timers, and Cron
+  |   5  - Create or Modify System Process: Systemd Service
+  |   6  - Scheduled Task/Job: Systemd Timers
+  |   7  - Scheduled Task/Job: Cron
+  | Hunting for Persistence in Linux (Part 4): Initialization Scripts and Shell Configuration
+  |   8  - Boot or Logon Initialization Scripts: RC Scripts
+  |   9  - Boot or Logon Initialization Scripts: init.d
+  |   10 - Boot or Logon Initialization Scripts: motd
+  |   11 - Event Triggered Execution: Unix Shell Configuration Modification
+  | Hunting for Persistence in Linux (Part 5): Systemd Generators
+  |   12 - Boot or Logon Initialization Scripts: systemd-generators
+  | (WIP) Hunting for Persistence in Linux (Part 6): Rootkits, Compromised Software, and Others 
+  ```
+
+
+[[{security.101]]
+## Security 101: Ebury botnet compromises 400,000+ Linux servers - Help Net Security
+https://www.helpnetsecurity.com/2024/05/16/ebury-botnet/ 
+
+Ebury botnet compromises 400,000 Linux, FreeBSD, and OpenBSD servers; 
+more than 100,000 were still compromised as of late 2023...
+ It is still growing and has seen hundreds of thousands of compromised 
+servers in its at least 15-year-long operation.
+
+Active since at least 2009, is an OpenSSH backdoor and credential stealer.
+
+Used to deploy additional malware to monetize the botnet (modules for web
+traffic redirection), proxy traffic for spam, perform adversary-in-the-middle 
+attacks (AitM), and host supporting malicious infrastructure. 
+In AitM attacks, ESET has observed over 200 targets across over 75 
+networks in 34 countries between February 2022 and May 2023.
+
+... Ebury operators also used zero-day vulnerabilities in 
+administrator software to compromise servers in bulk.
+
+... Kernel.org, hosting the source code of the Linux kernel, had been a victim of Ebury too.
+[[security.101}]]
+
+[[security,PM.draft}]]

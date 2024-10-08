@@ -1,103 +1,214 @@
-[[{linux.]]
-[[{monitoring.perf,monitoring.kernel.counters,profiling.jobs,dev_stack.java]]
+[[{linux.perf,monitoring.perf]]
+[[{monitoring.perf,monitoring.kernel,monitoring.apps,profiling.jobs]]
 [[profiling.perf,troubleshooting.locks,PM.TODO]]
 
-# perf "Performance Counters for Linux" (PCL)
-
-* perf is a performance analyzing tool introduced in linux kernel (kernel 2.6.31+, 2009)
-  and controlled by user space `perf`.
-* It is capable of statistical profiling of the entire system (both kernel and userland code)
-  "It provides a framework for all things related to performance analysis """
-  [[doc_has.keypoint]]
+# perf "Performance Counters for Linux" (PCL), also known as perf events.
 
 * External Refs:
   * <http://www.brendangregg.com/perf.html>
   * <http://www.brendangregg.com/flamegraphs.html>
 
-* It covers hardware level (CPU/PMU, Performance Monitoring Unit)
-  features and software features (software counters, tracepoints) as well.
+* perf is a performance analyzing (multi-)tool introduced in linux kernel (kernel 2.6.31+, 2009)
+  and controlled by user space `perf`.
+* It is capable of statistical profiling of the entire system (both kernel and userland code)
+  "It provides a framework for all things related to performance analysis """
+  [[doc_has.keypoint]]
 
+*  perf_events can instrument in three ways:
+   1. counting events in-kernel context, where a summary of counts is printed by perf.
+      (generate a perf.data file)
+   2. sampling events, which writes event data to a kernel buffer, which is read at
+      a gentle asynchronous rate by the perf command to write to the perf.data file.
+      This file is then read by the perf report or perf script commands.
+   3. bpf programs on events, a new feature in Linux 4.4+ kernels that can execute 
+      custom user-defined programs in kernel space, which can perform efficient 
+      filters and summaries of the data. Eg, efficiently-measured latency histograms.
+
+* Details about the events can be collected, including:
   ```
-  | $ perf stat           <- -gather perf-counter stats. <https://linux.die.net/man/1/perf-stat>
-  |      [--event=EVENT]  ← PMU event in the form:
-  |                         - symbolic event name (perf list to list)
-  |                         - raw PMU event (eventsel+umask) with format
-  |                           rNNN where NNN is an hexadecimal event descriptor
-  |      [--no-inherit]   ← child tasks do not inherit counters
-  |      [--all-cpus]
-  |      [--pid=$pid]     ← comma separated list of existing processes
-  |      [--tid=$tid]     ← comma separated list of existing thread id
-  |      [--scale]        ← scale/normalize counter values
-  |      [--repeat=n]     ← repeat command, print average + stddev (max: 100)
-  |      [--big-num]      ← print large numbers with thousands-local-separator
-  |      [--cpu=]         ← comma separated list of cpus (All if not provided)
-  |      [--no-aggr]      ← Do not aggregate counts across all monitored CPUs
-  |                         in system-wide mode (-a). Only valid in system-wide mode.
-  |      [--null]         ← don't start any counters
-  |      [--verbose]      ← show counter open errors, etc,...
-  |      [--field-separator SEP]
-  |      [--cgroup name]  ← monitor only the container (cgroup) called "name".
-  |                         - Only available in per-cpu mode. The cgroup filesystem
-  |                         must be mounted. All threads belonging to container "name"
-  |                         are monitored when they run on the monitored CPUs.
-  |                         - Multiple cgroups can be provided. Each cgroup is applied
-  |                         to the corresponding event, i.e., first cgroup to first event,
-  |                         - It is possible to provide an empty cgroup
-  |                           (monitor all the time) using, e.g., -G foo,,bar.
-  |                         - Cgroups must have corresponding events, i.e., they always
-  |                           refer to events defined earlier on the command line.
-  |      [--output file]
-  |      [--append]
-  |      [--log-fd]      ← append to given fd instead of stderr.
-  |      (-)
-  |      <command> [<options>]
-  |      ^^^^^^^^^
-  |      Any command you can specify in a shell.
+  ┌───────────────────────────────────┐
+  │ event                             │
+  ├───────────────────────────────────┤
+  │ + timestamp                       │
+  │ + path leading to it (stack trace)│
+  │ + details (ex: value of stack,...)│
+  │ + ...                             │
+  └───────────────────────────────────┘
   ```
 
-* Example:
-
+* Event covered: <!-- { -->
   ```
-  |                    ┌─────┬─ Command to be traced.
-  | $ perf stat  --    make -j
+  | $ sudo perf list # list currently known-to-kernel events that
+  |                  # can be gathered.  >650
   |
-  | (Output will be similar to)
-  | → Performance counter stats for 'make -j':
-  | →
-  | → 8117.370256  task clock ticks     #      11.281 CPU utilization factor
-  | →         678  context switches     #       0.000 M/sec
-  | →         133  CPU migrations       #       0.000 M/sec
-  | →      235724  pagefaults           #       0.029 M/sec (page faults)
-  | → 24821162526  CPU cycles           #    3057.784 M/sec
-  | → 18687303457  instructions         #    2302.138 M/sec
-  | →   172158895  cache references     #      21.209 M/sec
-  | →    27075259  cache misses         #       3.335 M/sec
-  | →
-  | → Wall-clock time elapsed:   719.554352 msecs
+  | List of pre-defined events (to be used in -e): 
+  |                                    event-type 
+  |                                    ----------
+  |   cpu-cycles OR cycles               Hardware
+  |   instructions                       Hardware
+  |   cache-references                   Hardware
+  |   cache-misses                       Hardware
+  |   branch-instructions OR branches    Hardware
+  |   branch-misses                      Hardware
+  |   bus-cycles                         Hardware
+  |   (stalled|iddle)-cycles-frontend    Hardware
+  |   (stalled|iddle)-cycles-backend     Hardware
+  |   ref-cycles                         Hardware
+  |   cpu-clock                          Software
+  |   task-clock                         Software
+  |   page-faults OR faults              Software
+  |   context-switches OR cs             Software
+  |   cpu-migrations OR migrations       Software
+  |   minor-faults                       Software
+  |   major-faults                       Software
+  |   alignment-faults                   Software
+  |   emulation-faults                   Software
+  |   bpf-output                         Software
+  |   dummy                              Software
+  |   L1-dcache-loads                    Hardw.cache
+  |   L1-dcache-load-misses              Hardw.cache
+  |   L1-dcache-stores                   Hardw.cache
+  | [...]
+  |   rNNN                               Raw hard.descriptor
+  |   cpu/t1=v1[,t2=v2,t3 ...]/modifier  Raw hard.descriptor
+  |    (see 'man perf-list' on how
+  |     to encode it)
+  |   mem:<addr>[:access]                Hard.breakpoint
+  |   probe:tcp_sendmsg                  Tracepoint <· Dyn.Tracing 
+                                                       extends `perf list` ¹ 
+  | [...]                                          
+  |   sched:sched_process_exec           Tracepoint
+  |   sched:sched_process_fork           Tracepoint
+  |   sched:sched_process_wait           Tracepoint
+  |   sched:sched_wait_task              Tracepoint
+  |   sched:sched_process_exit           Tracepoint
+  | [...]                                └───┬────┘
+  | ┌─ event types ──────────────────────────┘
+  |   [[{doc_has.keypoint]]
+  | · Hardware: CPU performance monitoring counters.
   |
-  | example
-  | $ perf stats -r 4 --event=cycles:{k,u} -- make -j
-  |              ^^^^          ^     ^^^^^
-  |              repeat        ·  split into
-  |              4 times       · kernel/userspace
-  | ...                        ·
-  | 123,123,11  cycles:k       ·
-  |   1,123,11  cycles:u       ·
-  |                            ·
-  | 0.00013913  secs elapsed   ·
-  |                            ·
-  |                     - 'perf list' will show all predefined
-  |                       events (cycles, cache-misses, ...) organized
-  |                       by hardware/software/tracepoint
+  | · Software: CPU migrations, minor faults, major faults, etc.
+  |
+  | · Kernel Tracepoint: static kernel-level instrumentation points
+  |       hardcoded in interesting places.
+  | · User Statically-Defined Tracing (USDT): static tracepoints for 
+  |       user-level programs and applications.
+  | · ¹ Dynamic Tracing: events created in any location
+  |     For kernel software, `kprobes` framework is used.
+  |     For user   software, `uprobes` framework is used.
+  | · Timed Profiling: Snapshots can be collected at arbitrary 
+  |   frequency, (`perf record -F`).  Commonly used for CPU
+  |   usage profiling, and works by creating custom timed 
+  |   interrupt events.
+  | [[doc_has.keypoint}]]
+  |
+  | $ perf list 'sched:*'  <· Listing sched tracepoints
+  ```
+<!-- } -->
+
+Start juggling with perf like:
+
+  ```
+  |   ┌───────┬─···· Lowest system overhead, while 
+  |   ·       ·      "good enough" for many purposes. 
+  |   ·       ·      
+  |   v       v    ┌─────┬─ any binary or shell command will work
+  | $ perf stat -- make -j
+  | (Output will be similar to ...)
+  |  Performance counter stats for 'make -j':
+  |
+  |     83723.452481  task-clock:u (msec) #   1.004 CPUs utilized
+  |                0  context-switches:u  #   0.000 K/sec
+  |                0  cpu-migrations:u    #   0.000 K/sec
+  |        3,228,188  page-faults:u       #   0.039 M/sec
+  |  229,570,665,834  cycles:u            #   2.742 GHz
+  |  313,163,853,778  instructions:u      #   1.36  insn per cycle
+  |   69,704,684,856  branches:u          # 832.559 M/sec
+  |    2,078,861,393  branch-misses:u     #   2.98% of all branches
+  |
+  |  83.409183620 seconds time elapsed
+  |
+  |  74.684747000 seconds user
+  |   8.739217000 seconds sys
+  | 
+  | $ perf stats \
+  |   -r 4 \                    <· repeat 4 times
+  |   --event=cycles:{k,u} \    <· spring into {k}ernel/{u}ser
+  |   -- \
+  |   make -j                   <· alternatively -a for system-wide
+  | ...                            events.
+  | 123,123,11  cycles:k
+  |   1,123,11  cycles:u
+  |                         
+  | 0.00013913  secs elapsed
   ```
 
-# PROFILING
+[[{profiling.jobs.IO.BLOCK]]
+### Example: tracing/profiling disk I/O:
 
-## CPU Profiling
-
-* <https://linux.die.net/man/1/perf-top>
   ```
-  | $ perf top
+  | $ sudo perf record \             
+  |  -e block:block_rq_issue \  # <· fires when a block device I/O request is issued 
+  |  -a \                       # <· trace all CPUs.
+  |  -g     # <·                # <· catpure call graphs (stack traces)
+  | (ouput is dutmp to perf.data)
+  |
+  | $ sudo perf report          # <· takes perf.data as input
+  |                             #    build tree from the stack traces.
+  |                             #    coalescing common paths and showing
+  |                             #    percentages for each path.
+  |  ... 
+  | # Samples: 2K of event 'block:block_rq_issue'
+  | # Event count (approx.): 2216                      <·· related events captured
+  | #
+  | # Over  Com  Shared            Symbol
+  | # head  mand  Object
+  | # ....  ...  ................  ...................
+  | #
+  |   32.1% dd  [kernel.kallsyms]  [k] blk_peek_request
+  |         |                       └ issued by kernel func.
+  |         -- blk_peek_request
+  |            virtblk_request
+  |            _blk_run_queue
+  |           |         
+  |           |-98.31%- queue_unplugged
+  |           |        blk_flush_plug_list
+  |           |        |          
+  |           |        |-91.00%-blk_queue_bio
+  |           |        |        generic_make_request
+  |           |        |        submit_bio
+  |           |        |        ext4_io_submit
+  |           |        |        |          
+  |           |        |        |-58.71%-ext4_bio_write_page
+  |           |        |        |        mpage_da_submit_io
+  |           |        |        |        mpage_da_map_and_submit
+  |           |        |        |        write_cache_pages_da
+  |           |        |        |        ext4_da_writepages
+  |           |        |        |        do_writepages
+  |           |        |        |        __filemap_fdatawrite_range
+  |           |        |        |        filemap_flush
+  |           |        |        |        ext4_alloc_da_blocks
+  |           |        |        |        ext4_release_file
+  |           |        |        |        __fput
+  |           |        |        |        ____fput
+  |           |        |        |        task_work_run
+  |           |        |        |        do_notify_resume
+  |           |        |        |        int_signal
+  |           |        |        |        close
+  |           |        |        |        0x0
+  |           |        |        |         
+  |           |        |        -41.29%-mpage_da_submit_io
+  | [...]
+  ```
+
+[[profiling.jobs.IO}]]
+
+
+###  perf-top
+
+  ```
+  | $ perf top # <· Sort of detailed/advanced "top"
+  | 
   |   Samples: 12K of event 'cycles:ppp', Event count (approx.): 54543453553535
   | Overhead  Shared Object              Symbol
   | 13.11%    libQT5Core.so.5.7.0        [.] QHashData:NextNode
@@ -106,6 +217,241 @@
   | ...
   ```
 
+## perf "one liners" recipes
+
+* Summary from <http://www.brendangregg.com/perf.html>, by Brendan Gregg
+
+* event-oriented observability tool, which solve advanced performance and troubleshooting questions like:
+  * Why is the kernel on-CPU so much? What code-paths?  [[troubleshooting.performance,monitoring.cpu]]
+  * Which code-paths are causing CPU level 2 cache misses? [[monitoring.cpu.cache]]
+  * Are the CPUs stalled on memory I/O? [[profiling.memory]]
+  * Which code-paths are allocating memory, and how much?  [[profiling.memory]]
+  * What is triggering TCP retransmits? [[profiling.network,monitoring.network]]
+  * Is a certain kernel function being called, and how often? [[profiling.kernel]]
+  * What reasons are threads leaving the CPU? [[profiling.threads]]
+
+
+  ```
+  | $ perf stat -a sleep 5 # <· # CPU counter statistics for the entire system, for 5 seconds:
+  |
+  | "LLC-load-misses" # <· Slast level cache misses
+  | "cycles:k"        # <· CPU kernel instructions.
+  | "cycles:u"        # <· CPU user   instructions.
+  | "cycles:up"       # <· CPU user   instructions, precisely (using PEBS)
+  | "context-switches"
+  | 
+  | ──────────────────────────────────────────────────────  # collect counter statistics (perf stat) for ...
+  | $ EVENT_L00="cycles,instructions,cache-references" 
+  | $ EVENT_L00="${EVENT_L00},cache-misses,bus-cycles"      # <· basic CPU statistics
+  | $ EVENT_L01="L1-dcache-loads,L1-dcache-load-misses"
+  | $ EVENT_L01="${EVENT_L01},L1-dcache-stores"             # <· Level 1 data cache stats.
+  | $ EVENT_L02="dTLB-loads,dTLB-load-misses
+  | $ EVENT_L02="${EVENT_L02},dTLB-prefetch-misses"         # <· Various CPU data TLB statistics.
+  | $ EVENT_L03="LLC-loads,LLC-load-misses,LLC-stores" 
+  | $ EVENT_L03="${EVENT_L03},LLC-prefetches"               # <· CPU last level cache statistics 
+  | $ EVENT_L04="r003c"                                     # <· eg of raw PMC counters, (unhalted core cycles)
+  | $ EVENT_L05="cycles"                                    # <· counting cycles
+  | $ EVENT_L06="cpu/event=0x0e,umask=0x01,inv,cmask=0x01/" # <· frontend stalls via raw specification
+  | $ EVENT_L07="raw_syscalls:sys_enter"                    # <· system calls
+  | $ EVENT_L08="syscalls:sys_enter_*"                      # <· system calls by type
+  | $ EVENT_L09="sched:*"                                   # <· scheduler events
+  | $ EVENT_L10="ext4:*"                                    # <· ext4 events
+  | $ EVENT_L10="block:*"                                   # <· block device I/O events
+  | $ EVENT_L10="vmscan:*"                                  # <· vmscan events
+  | $ EVENT_L..="vmscan:mm_vmscan_wakeup_kswapd"            # <· vmscan: kswapd wakeup events
+  | $ EVENT_L..="migrations"                                # CPU migrations
+  | $ EVENT_L..="syscalls:sys_enter_connect"                # connect()s (outbound connections)
+  | $ EVENT_L..="syscalls:sys_enter_accept*"                # accepts()s (inbound connections)
+  | $ EVENT_L..="block:block_rq_insert"                     # block device (disk I/O) requests
+  | $ EVENT_L..="block:block_rq_insert"                     # block device requests 
+  | $ EVENT_L..="block:block_rq_issue"                      # block device issues 
+  | $ EVENT_L..="block:block_rq_complete"                   # block device  completions (has timestamps)
+  |                                                         # filter completion examples:
+  |                                                           --filter 'nr_sector > 200' : size at least 100 Kbytes
+  |                                                           --filter 'rwbs == "WS"'    : synchronous writes only
+  |                                                           --filter 'rwbs ~ "*W*"'    : all types of writes.
+  | $ EVENT_L..="minor-faults"                              # minor faults (RSS growth)
+  | $ EVENT_L..="page-faults"
+  | 
+  | $ sudo perf stat \                        # -I 1000: collect per-second (-I 1000)
+  |  -e ${EVENT_L0} -e ${EVENT_L1} -e ...
+  |  \  command ¹
+  | 
+  |     ¹: alternatively:
+  |        -a:  System-wide 
+  |        -p,      --pid=<pid_list> stat over running list of processes. 
+  |        -t,      --tid=<tid_list> stat over running list of threads.
+  |        --cgroup=docker/1d567f...  : container identified by its /sys/fs/cgroup/perf_event cgroup
+  |        -b, --bpf-prog=<bid_list> star over running list of bpf program.
+  |                                  bpf programs can be listed like:
+  |              # bpftool prog | head -n 1
+  |              17247: tracepoint  name sys_enter  tag 192d548b9d754067  gpl
+  | 
+  |              # perf stat -e cycles,instructions --bpf-prog 17247 --timeout 1000
+  | 
+  |              Performance counter stats for 'BPF program(s) 17247':
+  | 
+  |              85,967      cycles
+  |              28,982      instructions              #    0.34  insn per cycle
+  | 
+  |              1.102235068 seconds time elapsed
+  ```
+
+### Oneliners perf PROFILING
+
+  ```
+  |                              # Sample ...
+  | # perf record -F 99 command  #     on-CPU functions, at 99 Hertz:
+  |                              # -g: on-CPU stack traces (via frame pointers)
+  |                              # --call-graph dwarf: on-CPU stack traces. use dwarf (dbg info)
+  |                              #                     to unwind stacks.
+  |                              # --call-graph lbr: on-CPU stack traces using last branch record for stacks
+  |                              #                   (>= Linux 4.?).
+  |                              # -p: branch tracing (needs HW support)
+  |                              # -T: record timestamp
+  |   
+  | # perf record \              # <·· Sample CPU stack traces, 
+  |    -e L1-dcache-load-misses \#     <· once every 10,000 Level 1 data cache misses, 
+  |    -c 10000 \                #       
+  |    -a \                      #     <· system wide
+  |    -g \                      #     # <· catpure call graphs (stack traces)
+  |    -- sleep 5                #     for 5 seconds
+  |   
+  | # perf top -F 49             # show top addresses and symbols, live (no perf.data file):
+  |                              # -ns comm,dso: Show also names and segments  
+ ```
+   
+ ```
+ | $ perf buildid-cache --add `which node` # Add Node.js USDT probes (Linux 4.10+):
+ ```
+   
+### Onliners Dynamic Tracing recipes (`perf probe kernel_function`)
+
+* Remember: dynamics probes add events anyhwere in kernel or userspace code.
+   
+   ```
+   | $ perf probe -l                         # <· List currently available dynamic probes
+   | $ perf probe --add tcp_sendmsg          # Add tracepoint for tcp_sendmsg function entry
+   | $ perf probe --add 'tcp_sendmsg%return' # Add tracepoint for tcp_sendmsg function return
+   | $ perf probe -d tcp_sendmsg             # Remove tracepoint 
+   | $ perf probe -V tcp_sendmsg             # Show available variables for tcp_sendmsg function (needs debuginfo)
+   | $ perf probe -V tcp_sendmsg --externs   # --externs: show also external vars (needs debuginfo)
+   | $ perf probe -L tcp_sendmsg             # Show available line probes (needs debuginfo):
+   | $ perf probe -V tcp_sendmsg:81          # Show available variables for tcp_sendmsg at line 81 (needs debuginfo).
+   |
+   | $ perf probe ...                        # Add tracepoint for tcp_sendmsg ...
+   |   ...'tcp_sendmsg %ax %dx %cx'          # <· with 3 entry argument registers (platform specific)
+   |   ...'tcp_sendmsg bytes=%cx'            # <· with an alias ("bytes") for the %cx register (platform specific)
+   |                                         #    --filter 'bytes > 100' # trace only when bytes > 100
+   |   ...'tcp_sendmsg size'                 # <· with "size" entry argument     (reliable, needs debuginfo)
+   |   ...'tcp_sendmsg size sk->_sk_common.skc_state'   # <· "size"+socket state ( "      , "     "        )
+   |   ...'tcp_sendmsg:81 seglen'            # <· in line 81 with local variable seglen (needs debuginfo)
+   |
+   | $ perf probe ...                        # Add tracepoint ...
+   |   .. 'do_sys_open filename:string'      # <· for do_sys_open() with the filename as a string (needs debuginfo)
+   |   .. 'myfunc%return +0($retval):string' # <· for myfunc() return, and include the retval as a string
+   |   .. -x /lib64/libc.so.6 malloc         # <· for the user-level malloc() function from libc
+   |                                         #    (-x => file separator)
+   |   .. -x /usr/lib64/libpthread-2.24.so \ # <· for user-level static probe (USDT, aka SDT event)
+   |       %sdt_libpthread:mutex_entry 
+   | └─┬────────────────────────────────┘
+   |   Add --null --verbose (or -nv) to simulate without running collecting. 
+   |
+   | $ perf record \                         # Trace previous probe
+   |    -e probe:tcp_sendmsg \
+   |    --filter 'size > 0 && skc_state != 1'# <· 1 == TCP_ESTABLISHED(1) (needs debuginfo):
+   |    -a                                   # <· global (all processes and threads)
+   | 
+   | 
+   | Mixed
+   | 
+   | $ perf top \                           # Show summary by process every 2 seconds
+   |   -e raw_syscalls:sys_enter \          # for system calls
+   |   -ns comm                             
+   |
+   | $ stdbuf -oL \                         # Trace sent network packets by on-CPU process,
+   |   perf top -e net:net_dev_xmit \       # rolling output (no clear):
+   |     -ns comm | \
+   |     strings
+   | 
+   | $ perf record -F99 \                   # Sample stacks+context switches at 99 Hz
+   |   -e cpu-clock -e cs -a -g             # system wide.
+   | 
+   | $ perf record -F99 \                   # Sample stacks to 2 levels deep, and, 
+   |     -e cpu-clock/max-stack=2/ \        # context switch stacks (5 levels) (needs 4.8)
+   |     -e cs/max-stack=5/ -a -g 
+   | 
+   | $ perf c2c record -a -- sleep 10       # Record cacheline events (Linux 4.10+):
+   |
+   | REPORTING ─────────────────────────────
+   | $ perf c2c report                      # Report it. (ncurser browser by default)
+   | $ perf report -n                       # Report it with a column for sample count.
+   | $ perf report --stdio                  # Report as text with data coalesced and percentages
+   | $ perf report --stdio -n -g folded     # Report, with stacks in folded format: 
+   |                                        # one line per stack (needs 4.4)
+   | $ perf script                          # List all events from perf.data
+   | $ perf script --header                 # List all perf.data events, with data header
+   |                                          (newer kernels; was previously default)
+   | $ perf script -F time,event,trace      # List all with customized fields (Linux > 4.1) 
+   |                                          (-f for Linux <= 4.1)
+   |                                          "my recomended fields":
+   |                                          comm,pid,tid,cpu,time,event,ip,sym,dso 
+   | $ perf annotate --stdio                # Disassemble and annotate instructions with percentages
+   |                                        # (needs some debuginfo)
+   ```
+
+
+...It may tell you to install another related package (linux-tools-kernelversion).
+... To get the most out perf, you'll want symbols and stack traces. 
+
+... I find it useful to add both libc6-dbgsym and coreutils-dbgsym, to provide
+some symbol coverage of user-level OS codepaths.
+
+   ```
+   | # file .../some_executable_ELF
+   | ... ELF 64-bit LSB executable, ... not stripped
+   |                                    └─────┬────┘
+   |           => note stripped => symbols included
+   ```
+   
+...  Kernel-level symbols are in the kernel debuginfo package, or when compiled with CONFIG_KALLSYMS.
+
+
+
+[[{dev_stack.java,dev_stack.nodeJS]]
+... JIT Symbols for VMs (JVM, Node.js,...)
+   
+when profiling with `perf_events`, you'll see symbols for the VM engine, which have some use (
+identify GC cycles,...), but you won't see the language-level context you might be expecting.
+
+**perf_events has JIT support to solve this**, which requires the VM to maintain a
+/tmp/perf-PID.map file for symbol translation. 
+
+* Java can do this with perf-map-agent.<br/>
+  full stacks may not be shown, due to hotspot on x86 omitting the frame pointer (just like gcc).
+  `-XX:+PreserveFramePointer` (JDK v 8u60+) fix it.
+* Node.js 0.11.13+ with --perf_basic_prof.
+[[dev_stack.java,dev_stack.nodeJS}]]
+
+
+
+[[{qa.best_patterns]]
+...  Always compile with frame pointers. Omitting them (-O2 gcc optimization) is an evil 
+compiler optimization that breaks debuggers, and sadly, is often the 
+default. They lead to incomplete stacks. 
+Fix like:
+- use dwarf (kernel 3.9+) data to unwind the stack using user-level stacks:
+  libunwind, which uses dwarf. This can be enabled using "--call-graph dwarf" 
+- using last branch record (LBR) if available (a processor feature disabled 
+  in most cloud enviroments).
+- returning the frame pointers.
+   
+other stack walking techniques include:
+- BTS (Branch Trace Store)
+- new ORC unwinder.
+[[qa.best_patterns}]]
+ 
+<!-- { -->
 ## flamegraph
 
 * <https://github.com/flamegraph-rs/flamegraph>
@@ -114,6 +460,7 @@
   It can be used to profile anything, not just Rust projects!
 
 *  See also notes on latencytop
+<!-- } -->
 
 ## Syscall Pofiling:
   ```
@@ -144,10 +491,42 @@
   | 1877.189 (1000.372 ms): dockerd/32491 futex(uaddr: 0xc420c83948)                                            = 0
   ```
 
-* record command's profile into perf.data: <https://linux.die.net/man/1/perf-record>
-* display recorded perf.data: <https://linux.die.net/man/1/perf-report>
-* General framework for bench.suites: <https://linux.die.net/man/1/perf-bench>
-* Analyze lock events: <https://linux.die.net/man/1/perf-lock>   [[{troubleshooting.locks}]]
+[[{troubleshooting.locks]]
+
+## perf-lock
+* Analyze lock events
+* <https://linux.die.net/man/1/perf-lock>   
+
+
+  ```
+  | perf lock {record|report|script|info}
+  | 
+  | $  perf lock record <command>'  # <· records lock events for <command>
+  |                                      into perf.data
+  | $  perf lock report.            # <· reports statistical data.
+  | 
+  | $  perf lock script             # <· shows raw lock events.
+  | 
+  | $  perf lock info               # <·  shows metadata like threads or addresses
+  |                                       of lock instances.
+  | 
+  | Common Options
+  | 
+  |   --input=<file>  : (or stdin)
+  |   --verbose       : (show symbol address, etc). 
+  |   --dump-raw-trace: (in ASCII)
+  | 
+  | Common Report Options
+  | 
+  |   --key=<value> Sorting key. One of acquired* | contended | wait_total | wait_max | wait_min
+  | 
+  | Common Info Options
+  | 
+  |   --threads       : dump thread list in perf.data 
+  |   --map           : dump (address:name) map of lock instances 
+  ```
+
+[[troubleshooting.locks}]]
 
 [[{scalability.profiling]]
 ## Profiling 60 Terabytes of input data with Perf at Facebook
@@ -167,4 +546,22 @@ Extracted from: "Apache Spark @Scale: A  production use case"
 
 
 [[monitoring.perf}]]
+
+* special purpose perf "tools":
+  ```
+  | perf c2c (Linux 4.10+): cache-2-cache and cacheline false sharing analysis.
+  | perf kmem: kernel memory allocation analysis.
+  | perf kvm: KVM virtual guest analysis.
+  | perf lock: lock analysis.
+  | perf mem: memory access analysis.
+  | perf sched: kernel scheduler statistics.
+  | perf-bench: General framework for benchmark suites
+  ```
+
+[[}]]
+
+
+
+
+ 
 [[linux.}]]

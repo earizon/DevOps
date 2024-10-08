@@ -131,7 +131,7 @@ login "sshd" service (ssh is an acronymn for secure-shell) will
 change the child-process user/permission to a less privileged
 account.
 
-  A simplified process-tree of a running-system will look like:      [[{02_doc_has.diagram]]
+  A simplified process-tree of a running-system will look like:      [[{doc_has.diagram]]
 
   ```
   | PROCESS                                       USER    PROCESS   PARENT-ID
@@ -267,7 +267,6 @@ REF:<https://www.server-world.info/en/note?os=Fedora_25&p=ntp&f=2>
   ```
 [[}]]
 
-#[linux_users_groups_summary]
 ## User Management [[{security.aaa.101,linux.101,]]
   |```
   | $ useradd -D                       ← display (D)efault values to apply when creating new uses.
@@ -314,7 +313,7 @@ REF:<https://www.server-world.info/en/note?os=Fedora_25&p=ntp&f=2>
   ```
 
 
-## su/sudo: Switch user:  [[{security.aaa,linux.101,01_PM.WiP]]
+## su/sudo: Switch user:  [[{security.aaa,linux.101,PM.WiP]]
 
 * su and sudo are mostly used to allow temporal root/superuser access
   to standard users for administrative tasks like installing new applications,
@@ -336,14 +335,14 @@ REF:<https://www.server-world.info/en/note?os=Fedora_25&p=ntp&f=2>
   ```
 [[}]]
 
-## Linux ACLs  [[{security.aaa,01_PM.TODO]]
+## Linux ACLs  [[{security.aaa,PM.TODO]]
 <https://wiki.archlinux.org/index.php/Access_Control_Lists>
 [[}]]
 [[security.aaa.101}]]
 
-#[sysctl_summary]
-## Kernel Tunning [[{configuration.sysctl,configuration.network,storage.fs,troubleshooting.performance,]]
-## sysctl
+[[{configuration.sysctl,kernel.tunning,configuration.network,storage.fs,troubleshooting.performance]]
+# sysctl: Kernel Tunning 
+
 * Cli app to view/modify kernel parameters affecting the runtime behavior
   of network, file-systems, kernel logging, ...
 * Not to be confused with (SystemD) 'systemctl' used to add/remove/modify/...
@@ -413,9 +412,10 @@ REF:<https://www.server-world.info/en/note?os=Fedora_25&p=ntp&f=2>
   $ sysctl -a                    ← View all configured kernel params
 [[configuration.sysctl}]]
 
-## Kernel Tunning with 'tuned' [[{linux.101,monitoring.101,configuration.kernel,01_PM.TODO,qa.UX]]
+[[{kernel.tunning.tuned,kernel.tunning.101,PM.TODO,qa.UX]]
+## Kernel Tunning with 'tuned'
 
-* `/proc/sys/vm/`: Kernel FS "control pannel"   [[{01_PM.TODO}]]
+* `/proc/sys/vm/`: Kernel FS "control pannel"   
   <https://tuned-project.org/>
 
 * About tuned:
@@ -483,9 +483,9 @@ REF:<https://www.server-world.info/en/note?os=Fedora_25&p=ntp&f=2>
   |
   | $ *sudo tuned-adm profile  powersave* # ←  select profile
   ```
-[[}]]
+[[kernel.tunning.tuned}]]
 
-## Job/Process control: Scheduling Tasks  [[{101,job_control.task_scheduling,01_PM.TODO]]
+## Job/Process control: Scheduling Tasks  [[{101,job_control.task_scheduling,PM.TODO]]
 Officially in Linux/UNIX/Posix, a Job or task is a running process.
 
 * cron    : program task to be run periodically
@@ -745,7 +745,7 @@ Example ussage:
 * (Used by AWS, ..)
 [[}]]
 
-## Glances [[{monitoring.101,01_PM.low_code,QA.UX,troubleshooting]]
+## Glances [[{monitoring.101,PM.low_code,QA.UX,troubleshooting]]
 * <https://www.tecmint.com/glances-an-advanced-real-time-system-monitoring-tool-for-linux/>
 * <https://github.com/tldr-pages/tldr/blob/master/pages/common/glances.md>
 * Alternative to top
@@ -816,7 +816,7 @@ Example ussage:
 [[}]]
 
 [[{monitoring.101,monitoring.memory,monitoring.I/O,]]
-[[monitoring.network,monitoring.cpu,troubleshooting,01_PM.TODO]]
+[[monitoring.network,monitoring.cpu,troubleshooting,PM.TODO]]
 ## Dstat (vmstat + iostat+ ifstat + mpstat)
 
   NOTE: There is a conflict between Red Hat Dstat and the original dstat-real.
@@ -831,7 +831,7 @@ Example ussage:
 * TODO: Compare with [dool](https://github.com/scottchiefbaker/dool)
 
 <https://linux.die.net/man/1/dstat>
-* Dstat: moderm replacement joining the info from    [[{02_doc_has.comparative]]
+* Dstat: moderm replacement joining the info from    [[{doc_has.comparative]]
   vmstat, iostat, ifstat an mpstat.                  [[}]]
 * Dstat overcomes some of the limitations and adds some extra features.
 * Dstat allows you to view all of your system resources instantly,
@@ -841,7 +841,7 @@ Example ussage:
 [[}]]
 
 ## pidstat: process stats [[{monitoring.jobs,job_control,monitoring.i/o]]
-                         [[profiling.jobs.IO.block,profiling.storage,storge.profiling]]
+                         [[profiling.jobs.IO.block,profiling.storage,storage.profiling]]
 * By Sebastien Godard (http://pagesperso-orange.fr/sebastien.godard/)
  ```
  | -d Report I/O statistics
@@ -921,7 +921,7 @@ Example ussage:
  ```
 [[}]]
 
-## iostat(CPU, I/O, FS)  [[{MONITORING.I/O,MONITORING.STORAGE,01_PM.TODO]]
+## iostat(CPU, I/O, FS)  [[{MONITORING.I/O,MONITORING.STORAGE,PM.TODO]]
 * <https://linux.die.net/man/1/iostat>
   ```
   | $ iostat -xt 2  # -x Show extended statistics
@@ -1065,8 +1065,8 @@ Allows to:
 
 
 
-## SystemTap (stap) [[{monitoring.jobs,troubleshooting,01_PM.TODO]]
-* C&P from https://lwn.net/Articles/852112/:  [[{02_doc_has.comparative]]
+## SystemTap (stap) [[{monitoring.jobs,troubleshooting,PM.TODO]]
+* C&P from https://lwn.net/Articles/852112/:  [[{doc_has.comparative]]
   SystemTap has been available since 2005, while bpftrace is a more
   recent contender that, to some, may appear to have made SystemTap
   obsolete. However, SystemTap is still the preferred tool for some
@@ -1085,7 +1085,7 @@ Allows to:
 * See real example: <https://developers.redhat.com/blog/2019/07/24/probing-golang-runtime-using-systemtap/>
 [[}]]
 
-## latrace LD audit [[{monitoring.jobs,monitoring.libc,troubleshooting,01_PM.TODO]]
+## latrace LD audit [[{monitoring.jobs,monitoring.libc,troubleshooting,PM.TODO]]
 
 * man 1 latrace
 
@@ -1566,9 +1566,10 @@ $ sudo tcpdump \    "snif" IP traffic
   goes down.
 * It also allows to split the terminal in panes and "project trees".
 
+[[{security.audit.user,use_case.tutorials]]
 * recording/auditing tmux sessions with ASCIInema:
   <https://github.com/asciinema/asciinema/wiki/Recording-tmux-session>
-  [[{security.audit.user,use_case.tutorials}]]
+[[security.audit.user}]]
 
 * Oh my tmux!. pretty and versatile tmux configuration
   <https://github.com/gpakosz/.tmux>
@@ -2007,7 +2008,7 @@ using port "pings")
   only the minimum amount of data needed
 [[security.backups.bup}]]
 
-## CLP  [[{monitor.logs.clp,security.audit,scalability.storage,01_PM.low_cost]]
+## CLP  [[{monitoring.logs.clp,security.audit,scalability.storage,PM.low_cost]]
 
 * <https://github.com/y-scope/clp>
 
@@ -2019,7 +2020,7 @@ using port "pings")
      the logs as our engineers requested: we were able to restore the
      logging level from WARN back to INFO, increase our retention period
      by 10x, and still reduce our storage costs by 17x."""
-[[monitor.logs.clp}]]
+[[monitoring.logs.clp}]]
 
 ## tar (tape-archive) 
 * man 1 tar
@@ -2132,7 +2133,7 @@ Examples:
      user@host:/some/Remote/FolderOrFile      <· use ssh to connect and launch remote rsync peer
   ```
 
-[[{storage.compression,scalability.backups,performance.CPU,02_doc_has.comparative]]
+[[{storage.compression,scalability.backups,performance.CPU,doc_has.comparative]]
 ## multi-core compression tools 
 
 * NOTE: bzip2 offers a much better compression than gz when source
@@ -2189,7 +2190,7 @@ From: <https://www.linuxlinks.com/best-linux-multi-core-compression-tools/>
 [[}]]
 
 
-## Zstandard, superfast compression  [[{scalability.backups.zstandard,01_PM.TODO,]]
+## Zstandard, superfast compression  [[{scalability.backups.zstandard,PM.TODO,]]
 
 * <https://www.2daygeek.com/zstandard-a-super-faster-data-compression-tool-for-linux/>
 [[]]
@@ -2289,7 +2290,7 @@ Execution Example:
     https://github.com/mvndaemon/mvnd
 [[}]]
 
-[[{monitoring.audit_framework,02_doc_has.diagram]]
+[[{monitoring.audit_framework,doc_has.diagram]]
 ## Linux Audit framework 
 
 * REF: <https://www.youtube.com/watch?v=x2u_prS2HmM>
@@ -2679,14 +2680,14 @@ Execution Example:
   ```
 [[}]]
 
-## Logreduce(IA)filter [[{security.audit.user.IA,QA.UX,01_PM.TODO,security.audit.logreduce]]
+## Logreduce(IA)filter [[{security.audit.user.IA,QA.UX,PM.TODO,security.audit.logreduce]]
 
 * <https://opensource.com/article/18/9/quiet-log-noise-python-and-machine-learning>
 * <https://pypi.org/project/logreduce/> logreduce@pypi
   * Quiet log noise with Python and machine learning
 [[}]]
 
-## Tiger: Kiss-IDS [[{security.IDS,01_PM.low_code,qa.UX,security.audit.user,security.intrusion_detection]]
+## Tiger: Kiss-IDS [[{security.IDS,PM.low_code,qa.UX,security.audit.user,security.intrusion_detection]]
 
 * <https://www.nongnu.org/tiger/>
 * open source shell-scripts collection for security audit and host intrusion detection.
@@ -2803,7 +2804,7 @@ Execution Example:
 [[{monitoring.notifications]]
 # Notification 
 
-## Sending eMails with CURL [[{monitoring.notifications,security.notifications,01_PM.low_code]]
+## Sending eMails with CURL [[{monitoring.notifications,security.notifications,PM.low_code]]
 
 * <https://blog.edmdesigner.com/send-email-from-linux-command-line/>
   (cross-platform)
@@ -2975,7 +2976,7 @@ REF: <https://www.cyberciti.biz/mobile-devices/android/how-to-push-send-message-
     ```
 [[}]]
 
-[[{security.notifications,qa.best_patterns,monitoring.notifications,01_PM.WiP]]
+[[{security.notifications,qa.best_patterns,monitoring.notifications,PM.WiP]]
 ## alert/monitoring best-patterns
 * Simple e-mail/telegram do NOT scale:<br/>
   You will receive many useless notification from proper behaviour
@@ -3108,7 +3109,7 @@ REF: <https://www.cyberciti.biz/mobile-devices/android/how-to-push-send-message-
 
 [[101.text_utils}]]
 
-# Integrated Admin Tools [[{configuration.foreman,QA.UX,01_PM.TODO]]
+# Integrated Admin Tools [[{configuration.foreman,QA.UX,PM.TODO]]
 
 
 ## cockpit Web UI [[{QA.UX,configuration.cockpit,monitoring,security.aaa,security.selinux]]

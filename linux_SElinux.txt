@@ -1,5 +1,5 @@
-[[{linux.security.selinux,security.aaa,linux.kernel.101]]
-# SElinux Summary 
+[[{security.selinux,security.aaa,kernel.100]]
+# SElinux Summary
 
 - Ext.Refs
   - <https://github.com/SELinuxProject/selinux/wiki>
@@ -10,73 +10,133 @@
   - (Book) "SElinux by example"
   - (Book) <https://www.freetechbooks.com/the-selinux-notebook-the-foundations-t785.html>
   - [Stop disabling SELinux](https://www.youtube.com/watch?v=cNoVgDqqJmM&feature=youtu.be)
+  ```
+  | SE-LINUX GLOBAL SUMMARY ──────────────────────────────────────
+  |
+  |    KERNEL
+  |  OBJECTS CLASSES
+  |  ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+  |Represent type─of─resources
+  |handled by kernel(vs app)  Each type─of─resource has a set of
+  |that must be protected     HARDCODED  list of   actions  defined
+  |by Mandatory access Rules  for each se-linux kernel object class
+  |  ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓       ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+  |  File        class     ←→ [append, create, lock,         ... ]
+  |  Process     class     ←→ [dyntransition, ptrace, fork,  ... ]
+  |  INET Socket class     ←→ [bind, read, ...               ... ]
+  |  login       class     ←→ [action1, action2, ...         ... ]
+  |  user        class     ←→ [action1, action2, ...         ... ]
+  |   ...
+  |
+  |─TheG Process objects differ from the rest in the sense that
+  |they are the "active" kernel object triggering a new system call,
+  |probably as a result of a user intention to access some other
+  |resource (kernel object instance in SELinux parlance)
+  |
+  |─  File alike objects (Files, directories,...) must be first
+  | "manually" labelled through extended file─system attributes.
+  | Other object labelling is done by kernel automatically
+  |
+  | KERNEL─OBJECT─INSTANCE CONTEXT
+  |
+  | ┌── SELinux  context ────┐
+  |  user:role:"  type ":level
+  |
+  | - All  Kernel Object   instances  are labeled with
+  |   a 4-tuple  SELINUX-CONTEXT  (user:role:type:level)
+  |
+  |  The   type  is the core data used for MACO TYPE─ENFORCEMENT
+ ```
 
-```
-┌──────────────────────────┬──────────────────────────────────────┐┌─────────────────────┬────────────────────────────────────────┐
-│ SE─LINUX GLOBAL SUMMARY :│                                      ││ DAC+MAC FLOW SUMMARY│                                        │
-│──────────────────────────┘                                      │├─────────────────────┘                                        │
-│    KERNEL                                                       ││ USER          ┌─────────→ ┌─────────┐                        │
-│  OBJECTS CLASSES                                                ││ SPACE         │ ┌───────→ │ PROCESS │ ←─────────────────┐    │
-│  ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑                                               ││               │ │ ┌─────→ │"SUBJECT"│                   │    │
-│Represent type─of─resources                                      ││               │ │ │       │ type1   │                   │    │
-│handled by kernel(vs app)  Each type─of─resource has a set of    ││               │ │ │       └─────────┘                   │    │
-│that must be protected     HARDCODED  list of   actions  defined ││               │ │ │       1)   ↓                        │    │
-│by Mandatory access Rules  for each se─linux kernel object class ││ ───────────── │ │ │ ───── system─call ───────────────── │ ───│
-│  ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓       ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓   ││ KERNEL        │ │ │            │☝request(hardcoded)     │    │
-│  File        class     ←→ [append, create, lock,         ... ]  ││ SPACE         │ │ │            │  action1 over targeted │    │
-│  Process     class     ←→ [dyntransition, ptrace, fork,  ... ]  ││               │ │ │            │object (labeled with    │    │
-│  INET Socket class     ←→ [bind, read, ...               ... ]  ││               │ │ │            │SEContext   type2 )     │    │
-│  login       class     ←→ [action1, action2, ...         ... ]  ││               │ │ │       2)   ↓                        │    │
-│  user        class     ←→ [action1, action2, ...         ... ]  ││               │ │ │          Lookup                     │    │
-│   ...                                                           ││               │ │ │           data                   8) │Sys.│
-│                                                                 ││               │ │ │            │            ┌────────┐  │call│
-│─TheG Process objects differ from the rest in the sense that     ││               │ │ │   KO  3)   ↓            │target  │  │Res.│
-│they are the "active" kernel object triggering a new system call,││               │ │ └─────────  Error    ┌────│object  ├──┘    │
-│probably as a result of a user intention to access some other    ││               │ │            Checks    │    │  type2 │       │
-│resource (kernel object instance in SELinux parlance)            ││               │ │              │       │    └────────┘       │
-│                                                                 ││               │ │              │  OK   │ 7)                  │
-│─  File alike objects (Files, directories,...) must be first     ││               │ │         4)   ↓       │  OK :exec  gaction1 │
-│ "manually" labelled through extended file─system attributes.    ││               │ │     KO      DAC      │on target object     │
-│ Other object labelling is done by kernel automatically          ││               │ └───────── permission  │                     │
-│                                                                 ││               │              checks    │                     │
-│ KERNEL─OBJECT─INSTANCE CONTEXT                                  ││               │  KO            │       │                     │
-│                                                                 ││               │  (audit)  7)   ↓       │                     │
-│ ┌── SELinux  context ────┐                                      ││               └─────────────  LSM  ────┘                     │
-│  user:role:"  type ":level                                      ││                              hooks                           │
-│ ☝                                                               ││                           5)  │ ^  6)                        │
-│ ─  All  Kernel Object   instances  are labeled with             ││              type1  is allowed│ │  OK       ☜   MAC          │
-│ a 4─tuple  SELINUX─CONTEXT  (user:role:type:level)              ││                  action1  over│ │  KO           TYPE         │
-│                                                                 ││                        type2 ?↓ │               ENFORCEMENT  │
-│ ─The   type  is the core data used for MACO TYPE─ENFORCEMENT    ││                           ┌───────────┐                      │
-└─────────────────────────────────────────────────────────────────┘│                           │ Security  │                      │
-┌────────────────────────────┬───────────────────────────────┐     │                           │Enhance(SE)│                      │
-│ INITIAL PRE─SETUP SUMMARY: │                               │     │                           │  Server   │                      │
-├────────────────────────────┘                               │     │                           └───────────┘                      │
-│ Define SE-Linux System policy with a flow similar to:      │     │                               ☝                              │
-│                                                            │     │        The server will first query the AVC(ache) and return  │
-│ create modules → load into → Init bitmap─"matrix"          │     │        OK/KO if a match is found.                            │
-│                  kernel      context1─to─[context2,action] │     │        If nothing is found the server will:                  │
-│                              ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ │     │        1) work over the AV─hash table for matching rules     │
-│                                        Access Vector  (AV) │     │        2) calculate the result,                              │
-└────────────────────────────────────────────────────────────┘     │        3) put the result back in AVC(ache)                   │
-                                                                   │        4) Return with OK/KO                                  │
-                                                                   └──────────────────────────────────────────────────────────────┘
-┌──────────────────────────┬───────┐ ┌─────────────────────┬───────────────────────────────────────────────────────┐
-│  SELinux bootup sequence │       │ │ /etc/selinux/config │                                                       │
-├──────────────────────────┘       │ ├─────────────────────┘                                                       │
-│ kernel start →                   │ │SELINUX=enforcing    ← ─  enforcing   (Enables MAC)                          │
-│ load policy into memory          │ │                       ─  permissive  (Use for tracing/debugging new apps)   │
-│   (organized in modules)         │ │                       ─ "some other value that you must never use"          │
-│                                  │ │SELINUXTYPE=targeted ← ─  targeted    Apply MAC to targeted processes        │
-│ semodule  command manages the    │ │                                      (listening for      remote connections)│
-│install, remove, reload, upgrade, │ │                          minimum     Subset of targeted:                    │
-│enable or disable fo modules      │ │                                      Only selected processes are protected. │
-│Ex. lists modules currently loaded│ │                          mls         Multi Level Security protection.       │
-│~ sudo semodule ─l                │ │                                      (Rarely used)                          │
-│→abrt       1.2.0                 │ └─────────────────────────────────────────────────────────────────────────────┘
+ ```
+┌─────────────────────┬────────────────────────────────────────┐
+│ DAC+MAC FLOW SUMMARY│                                        │
+├─────────────────────┘                                        │
+│ USER          ┌─────────→ ┌─────────┐                        │
+│ SPACE         │ ┌───────→ │ PROCESS │ ←─────────────────┐    │
+│               │ │ ┌─────→ │"SUBJECT"│                   │    │
+│               │ │ │       │ type1   │                   │    │
+│               │ │ │       └─────────┘                   │    │
+│               │ │ │       1)   ↓                        │    │
+│ ───────────── │ │ │ ───── system─call ───────────────── │ ───│
+│ KERNEL        │ │ │            │☝request(hardcoded)     │    │
+│ SPACE         │ │ │            │  action1 over targeted │    │
+│               │ │ │            │object (labeled with    │    │
+│               │ │ │            │SEContext   type2 )     │    │
+│               │ │ │       2)   ↓                        │    │
+│               │ │ │          Lookup                     │    │
+│               │ │ │           data                   8) │Sys.│
+│               │ │ │            │            ┌────────┐  │call│
+│               │ │ │   KO  3)   ↓            │target  │  │Res.│
+│               │ │ └─────────  Error    ┌────│object  ├──┘    │
+│               │ │            Checks    │    │  type2 │       │
+│               │ │              │       │    └────────┘       │
+│               │ │              │  OK   │ 7)                  │
+│               │ │         4)   ↓       │  OK :exec  gaction1 │
+│               │ │     KO      DAC      │on target object     │
+│               │ └───────── permission  │                     │
+│               │              checks    │                     │
+│               │  KO            │       │                     │
+│               │  (audit)  7)   ↓       │                     │
+│               └─────────────  LSM  ────┘                     │
+│                              hooks                           │
+│                           5)  │ ^  6)                        │
+│              type1  is allowed│ │  OK       ☜   MAC          │
+│                  action1  over│ │  KO           TYPE         │
+│                        type2 ?↓ │               ENFORCEMENT  │
+│                           ┌───────────┐                      │
+│                           │ Security  │                      │
+│                           │Enhance(SE)│                      │
+│                           │  Server   │                      │
+│                           └───────────┘                      │
+│                               ☝                              │
+│        The server will first query the AVC(ache) and return  │
+│        OK/KO if a match is found.                            │
+│        If nothing is found the server will:                  │
+│        1) work over the AV─hash table for matching rules     │
+│        2) calculate the result,                              │
+│        3) put the result back in AVC(ache)                   │
+│        4) Return with OK/KO                                  │
+└──────────────────────────────────────────────────────────────┘
+ ```
+
+
+
+
+ ```
+┌────────────────────────────┬───────────────────────────────┐
+│ INITIAL PRE─SETUP SUMMARY: │                               │
+├────────────────────────────┘                               │
+│ Define SE-Linux System policy with a flow similar to:      │
+│                                                            │
+│ create modules → load into → Init bitmap─"matrix"          │
+│                  kernel      context1─to─[context2,action] │
+│                              ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ │
+│                                        Access Vector  (AV) │
+└────────────────────────────────────────────────────────────┘
+ ```
+
+
+ ```
+┌──────────────────────────┬───────┐
+│  SELinux bootup sequence │       │
+├──────────────────────────┘       │
+│ kernel start →                   │
+│ load policy into memory          │
+│   (organized in modules)         │
+│                                  │
+│ semodule  command manages the    │
+│install, remove, reload, upgrade, │
+│enable or disable fo modules      │
+│Ex. lists modules currently loaded│
+│~ sudo semodule ─l                │
+│→abrt       1.2.0                 │
 │→accountsd  1.0.6                 │
 │...                               │
 └──────────────────────────────────┘
+ ```
+
+ ```
 ┌─────────────────────────────────┐
 │QUERY SOURCE TO TARGET RELATIONS:│
 ├─────────────────────────────────┴─────────────────────────────────────────────────────┐
@@ -90,154 +150,184 @@
 │ → allow   httpd_t httpd_content_type   :   file    { ioctl read getattr lock open }  ;│
 │ → allow   httpd_t httpdcontent         :   file    { ioctl read write create .... }  ;│
 └─────────────────────────────────┴─────────────────────────────────────────────────────┘
-┌────────────────────────────────────────┬──────┐ ┌─────────────┬────────────────────────────────────┐
-│ DISPLAYING SELINUX CONTEXT ATTRIBUTES: │      │ │ sestatus(8) │                                    │
-├────────────────────────────────────────┘      │ ├─────────────┘                                    │
-│- Use "-Z" flag to shell commands              │ │ Return various status info, such as enforcing    │
-│┌────────────────────────────────────────────┐ │ │ mode, current policy version and name, ...       │
-││FILE SYSTEM OBJECT (files, dirs,..)         │ │ │ $ sudo  sestatus                                 │
-││$ ls -ldZ                                   │ │ │ → SELinux status:                 enabled        │
-││  /usr/sbin/httpd   →   httpd_exec_t        │ │ │ → SELinuxfs mount:                /sys/fs/selinux│
-││  /var/www/html/    →   httpd_sys_content_t │ │ │ → SELinux root directory:         /etc/selinux   │
-││  /etc/apache2/     →   httpd_config_t      │ │ │ → Loaded policy name:             targeted       │
-││  /var/log/httpd/   →   httpd_log_t         │ │ │ → Current mode:                   permissive     │
-││  /etc/init.d/httpd →   httpd_initrc_exec_t │ │ │ → Mode from config file:          error (Success)│
-│├────────────────────────────────────────────┤ │ │ → Policy MLS status:              enabled        │
-││SUBJECTS (running processes)                │ │ │ → Policy deny_unknown status:     allowed        │
-││$ ps axZ │ grep [h]ttpd                     │ │ │ → Max kernel policy version:      28             │
-││unconfined_u:system_r:  httpd_ t:s0 ...     │ │ └──────────────────────────────────────────────────┘
-│├────────────────────────────────────────────┤ │ ┌───────────────┬─────────────────────────────────┐
-││SOCKET                                      │ │ │show AVC stats:│                                 │
-││$ sudo netstat ─tnlpZ │ grep httpd          │ │ ├───────────────┘                                 │
-││....  unconfined_u:system_r:  httpd_ t:s0 ..│ │ │$ sudO avcstat                                   │
-│├────────────────────────────────────────────┤ │ │lookups    hits  misses  allocs reclaims   frees │
-││PORT                                        │ │ │6688846 5637360 1051486  051486   968960 1050979 │
-││$ sudo semanage port ─l │ grep http         │ │ └─────────────────────────────────────────────────┘
-││http_cache_port_t  tcp 3128,8080, ...       │ │ ┌──────────────────────┬────────────────────────┐
-││  ...                                       │ │ │ SHELL SCRIPTS SUPORT:│                        │
-││  http_port_t        tcp 80, 443            │ │ ├──────────────────────┘                        │
-│└────────────────────────────────────────────┘ │ │ getenforce(8)      Returns status like:       │
-└───────────────────────────────────────────────┘ │                    "permissive" │ "enforcing" │
-                                                  │                                               │
-                                                  │ selinuxenabled(1)  exits with 0 if enabled    │
-                                                  │                               1 if not        │
-                                                  └───────────────────────────────────────────────┘
-┌─────────────────┬────────┬────────────────────────────────────────────────────────────────────────┐
-│ TERMINOLOGY     │ACRONYM │    DESCRIPTION                                                         │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ Access  Vector  │AV      │ - bit map representing a set of permissions such as open, read, ...    │
-│                 │        │ - Each policy defines a different AV.                                  │
-│                 │        │ - Actually is implemented as a hash table where the key is the tuple   │
-│                 │        │   (source-type, targeted-type, targeted-kernel-object-class)           │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ Access Vector   │AVC     │ ─ SELinux Security  Server can take a time to calculate                │
-│ Cache           │        │   access decissions based on SE─rules.                                 │
-│                 │        │ ─ The AVC stores such decissions to speed up following                 │
-│                 │        │   access avoiding to recompute.                                        │
-│                 │        │ ─ two AVCs exists:                                                     │
-│                 │        │   ─ 1.kernel AVC caching decisions from Security Server                │
-│                 │        │       on behalf of kernel based object managers.                       │
-│                 │        │   ─ 2.userspace AVC built into libselinux that caches                  │
-│                 │        │       decisions when SELinux─aware applications use                    │
-│                 │        │       avc_open(3) with avc_has_perm (3) or avc_has_perm_noaudit(3)     │
-│                 │        │       function calls saving kernel calls after first                   │
-│                 │        │       decision has been made.                                          │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ Bell─La Padula  │BLP     │                                                                        │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ Common  Criteria│CC      │                                                                        │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ Common          │CIL     │                                                                        │
-│ Intermediate    │        │                                                                        │
-│ Language        │        │                                                                        │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ Discretionary   │DAC     │                                                                        │
-│ Access          │        │                                                                        │
-│ Control         │        │                                                                        │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ SELinux         │        │ ─ consists of one or more processes associated                         │
-│ Domain          │        │   to the type component of a Security Context.                         │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ Flux  Advanced  │FLASK   │ ─ See Flux  Research  Group  (http://www.cs.utah.edu/flux/)            │
-│ Security Kernel │        │   μ─kernel Environment (Fluke)                                         │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ Linux Security  │LSM     │ ─ framework providing hooks into kernel components                     │
-│ Module          │        │   (e.g. disk, net─services,...) used by                                │
-│                 │        │   security modules (SELinux, ....) to perform                          │
-│                 │        │   access control checks.                                               │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ Mandatory Access│MAC     │ ─ access control mechanism enforced by the system,                     │
-│ Control         │        │   e.g. 'hard─wiring' the OS and applications or                        │
-│                 │        │   via policies enforced by the administrator.                          │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ Multi─Category  │MCS     │                                                                        │
-│ Security        │        │                                                                        │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ Multi─Level     │MLS     │ ─ Based on Bell─La Padula model for                                    │
-│ Security        │        │   confidentiality in that (for example) a                              │
-│                 │        │   process running at a 'Confidential' level                            │
-│                 │        │   can read / write at their current level but                          │
-│                 │        │   only read down levels or write up levels.                            │
-│                 │        │ ─ "Today" it is more commonly used for                                 │
-│                 │        │   application separation utilising the                                 │
-│                 │        │   Multi─Category Security variant.                                     │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ SELinux Policy  │        │ - Set of (thousands of) rules that define the type-enforcement rules   │
-│                 │        │   in the AV bitmap matrix/hashtable                                    │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ Object  Manager │OM      │ ─ Userspace&amp;kernel components responsible                          │
-│                 │        │   management (object labeling, creation, access, destruction)          │
-│                 │        │   of SELinux object under their control.                               │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ Security        │SID     │                                                                        │
-│ Identifier      │        │                                                                        │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ Simplified      │SMACK   │                                                                        │
-│ Mandatory       │        │                                                                        │
-│ Access Control  │        │                                                                        │
-│ Kernel          │        │                                                                        │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ Super─user      │SUID    │                                                                        │
-│ Identifier      │        │                                                                        │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ Type Enforcement│TE      │ ─ set of rules declared in Policy describe                             │
-│                 │        │   how the domain will interact with objects                            │
-│                 │        │ ─ In practice: the AV bit─map used to check                            │
-│                 │        │   where type1 is allowed actionN over type2                            │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ User  Identifier│UID     │                                                                        │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ X(window) Access│XACE    │                                                                        │
-│ Control         │        │                                                                        │
-│ Extension       │        │                                                                        │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ Security Server │        │   A sub─system in the Linux kernel that makes access decisions         │
-│                 │        │   and computes security contexts based on Policy on behalf of          │
-│                 │        │   SELinux─aware applications and Object Managers.                      │
-│                 │        │   The Security Server does not enforce a decision, it merely           │
-│                 │        │   states whether the operation is allowed or not according to the      │
-│                 │        │   Policy. It is  the  SELinux─aware  application  or Object            │
-│                 │        │   Manager responsibility to enforce the decision.                      │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ Security Context│        │   An SELinux Security Context is a variable length string that         │
-│                 │        │   consists  of  the  following  mandatory  components                  │
-│                 │        │   user:role:type and an optional [:range] component.                   │
-│                 │        │   Generally abbreviated  to 'context', and sometimes  called a         │
-│                 │        │   'label'.                                                             │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ Security        │SID     │   SIDs are unique opaque integer values mapped by the kernel           │
-│ Identifier      │        │   Security Server and userspace AVC that represent a Security Context. │
-│                 │        │   The SIDs generated by the kernel Security Server are u32             │
-│                 │        │   values that are  passed via the Linux Security Module                │
-│                 │        │   hooks to/from the kernel Object Managers.                            │
-│─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
-│ Type Enforcement│        │   SELinux makes use of a specific style of type enforcement            │
-│                 │        │   (TE) to enforce Mandatory Access Control. This is where all          │
-│                 │        │   subjects and objects have a type identifier associated to them       │
-│                 │        │   that can then be used to enforce rules laid down by                  │
-│                 │        │   Policy                                                               │
-└─────────────────┴────────┴────────────────────────────────────────────────────────────────────────┘
-```
+ ```
+
+ ```
+ │ DISPLAYING SELINUX CONTEXT ATTRIBUTES ────────
+ |
+ | - Use "-Z" flag to shell commands
+ |
+ | - FILE SYSTEM OBJECT (files, dirs,..) ───────
+ |   $ ls -ldZ
+ |     /usr/sbin/httpd   →   httpd_exec_t
+ |     /var/www/html/    →   httpd_sys_content_t
+ |     /etc/apache2/     →   httpd_config_t
+ |     /var/log/httpd/   →   httpd_log_t
+ |     /etc/init.d/httpd →   httpd_initrc_exec_t
+ | - SUBJECTS (running processes) ──────────────
+ |   $ ps axZ │ grep [h]ttpd
+ |     unconfined_u:system_r:  httpd_ t:s0 ...
+ | - SOCKET ────────────────────────────────────
+ |   $ sudo netstat ─tnlpZ │ grep httpd
+ |     ... unconfined_u:system_r: httpd_ t:s0 ..
+ | - PORT ──────────────────────────────────────
+ |   $ sudo semanage port ─l │ grep http
+ |     http_cache_port_t  tcp 3128,8080, ...
+ |       ...
+ |       http_port_t        tcp 80, 443
+ ```
+
+ ```
+ | sestatus(8) ─────────────────────────────────────
+ | Return various status info: ex:
+ | $ sudo  sestatus
+ | → SELinux (enforcing) status: enabled
+ | → SELinuxfs mount           : /sys/fs/selinux
+ | → SELinux root directory    : /etc/selinux
+ | → Loaded policy name        : targeted
+ | → Current mode              : permissive
+ | → Mode from config file     : error (Success)
+ | → Policy MLS status         : enabled
+ | → Policy deny_unknown status: allowed
+ | → Max kernel policy version : 28
+ ```
+
+
+ ```
+ | show AVC stats ───────────────────────────────
+ | $ sudo avcstat
+ | lookups    hits  misses  allocs reclaims   frees
+ | 6688846 5637360 1051486  051486   968960 1050979
+ ```
+
+ ```
+ |  SHELL SCRIPTS SUPORT ───────────────────────
+ |
+ |  getenforce(8)   Returns status like:
+ |                  "permissive" │ "enforcing"
+ |
+ |  selinuxenabled  exits with 
+ |                  0 exit if enabled
+ |                  1 exit if not
+ ```
+
+ ```
+ | ┌─────────────────┬────────┬────────────────────────────────────────────────────────────────────────┐
+ | │ TERMINOLOGY     │ACRONYM │    DESCRIPTION                                                         │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ Access  Vector  │AV      │ - bit map representing a set of permissions such as open, read, ...    │
+ | │                 │        │ - Each policy defines a different AV.                                  │
+ | │                 │        │ - Actually is implemented as a hash table where the key is the tuple   │
+ | │                 │        │   (source-type, targeted-type, targeted-kernel-object-class)           │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ Access Vector   │AVC     │ ─ SELinux Security  Server can take a time to calculate                │
+ | │ Cache           │        │   access decissions based on SE─rules.                                 │
+ | │                 │        │ ─ The AVC stores such decissions to speed up following                 │
+ | │                 │        │   access avoiding to recompute.                                        │
+ | │                 │        │ ─ two AVCs exists:                                                     │
+ | │                 │        │   ─ 1.kernel AVC caching decisions from Security Server                │
+ | │                 │        │       on behalf of kernel based object managers.                       │
+ | │                 │        │   ─ 2.userspace AVC built into libselinux that caches                  │
+ | │                 │        │       decisions when SELinux─aware applications use                    │
+ | │                 │        │       avc_open(3) with avc_has_perm (3) or avc_has_perm_noaudit(3)     │
+ | │                 │        │       function calls saving kernel calls after first                   │
+ | │                 │        │       decision has been made.                                          │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ Bell─La Padula  │BLP     │                                                                        │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ Common  Criteria│CC      │                                                                        │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ Common          │CIL     │                                                                        │
+ | │ Intermediate    │        │                                                                        │
+ | │ Language        │        │                                                                        │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ Discretionary   │DAC     │                                                                        │
+ | │ Access          │        │                                                                        │
+ | │ Control         │        │                                                                        │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ SELinux         │        │ ─ consists of one or more processes associated                         │
+ | │ Domain          │        │   to the type component of a Security Context.                         │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ Flux  Advanced  │FLASK   │ ─ See Flux  Research  Group  (http://www.cs.utah.edu/flux/)            │
+ | │ Security Kernel │        │   μ─kernel Environment (Fluke)                                         │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ Linux Security  │LSM     │ ─ framework providing hooks into kernel components                     │
+ | │ Module          │        │   (e.g. disk, net─services,...) used by                                │
+ | │                 │        │   security modules (SELinux, ....) to perform                          │
+ | │                 │        │   access control checks.                                               │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ Mandatory Access│MAC     │ ─ access control mechanism enforced by the system,                     │
+ | │ Control         │        │   e.g. 'hard─wiring' the OS and applications or                        │
+ | │                 │        │   via policies enforced by the administrator.                          │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ Multi─Category  │MCS     │                                                                        │
+ | │ Security        │        │                                                                        │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ Multi─Level     │MLS     │ ─ Based on Bell─La Padula model for                                    │
+ | │ Security        │        │   confidentiality in that (for example) a                              │
+ | │                 │        │   process running at a 'Confidential' level                            │
+ | │                 │        │   can read / write at their current level but                          │
+ | │                 │        │   only read down levels or write up levels.                            │
+ | │                 │        │ ─ "Today" it is more commonly used for                                 │
+ | │                 │        │   application separation utilising the                                 │
+ | │                 │        │   Multi─Category Security variant.                                     │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ SELinux Policy  │        │ - Set of (thousands of) rules that define the type-enforcement rules   │
+ | │                 │        │   in the AV bitmap matrix/hashtable                                    │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ Object  Manager │OM      │ ─ Userspace&amp;kernel components responsible                          │
+ | │                 │        │   management (object labeling, creation, access, destruction)          │
+ | │                 │        │   of SELinux object under their control.                               │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ Security        │SID     │                                                                        │
+ | │ Identifier      │        │                                                                        │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ Simplified      │SMACK   │                                                                        │
+ | │ Mandatory       │        │                                                                        │
+ | │ Access Control  │        │                                                                        │
+ | │ Kernel          │        │                                                                        │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ Super─user      │SUID    │                                                                        │
+ | │ Identifier      │        │                                                                        │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ Type Enforcement│TE      │ ─ set of rules declared in Policy describe                             │
+ | │                 │        │   how the domain will interact with objects                            │
+ | │                 │        │ ─ In practice: the AV bit─map used to check                            │
+ | │                 │        │   where type1 is allowed actionN over type2                            │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ User  Identifier│UID     │                                                                        │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ X(window) Access│XACE    │                                                                        │
+ | │ Control         │        │                                                                        │
+ | │ Extension       │        │                                                                        │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ Security Server │        │   A sub─system in the Linux kernel that makes access decisions         │
+ | │                 │        │   and computes security contexts based on Policy on behalf of          │
+ | │                 │        │   SELinux─aware applications and Object Managers.                      │
+ | │                 │        │   The Security Server does not enforce a decision, it merely           │
+ | │                 │        │   states whether the operation is allowed or not according to the      │
+ | │                 │        │   Policy. It is  the  SELinux─aware  application  or Object            │
+ | │                 │        │   Manager responsibility to enforce the decision.                      │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ Security Context│        │   An SELinux Security Context is a variable length string that         │
+ | │                 │        │   consists  of  the  following  mandatory  components                  │
+ | │                 │        │   user:role:type and an optional [:range] component.                   │
+ | │                 │        │   Generally abbreviated  to 'context', and sometimes  called a         │
+ | │                 │        │   'label'.                                                             │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ Security        │SID     │   SIDs are unique opaque integer values mapped by the kernel           │
+ | │ Identifier      │        │   Security Server and userspace AVC that represent a Security Context. │
+ | │                 │        │   The SIDs generated by the kernel Security Server are u32             │
+ | │                 │        │   values that are  passed via the Linux Security Module                │
+ | │                 │        │   hooks to/from the kernel Object Managers.                            │
+ | │─────────────────┼────────┼────────────────────────────────────────────────────────────────────────│
+ | │ Type Enforcement│        │   SELinux makes use of a specific style of type enforcement            │
+ | │                 │        │   (TE) to enforce Mandatory Access Control. This is where all          │
+ | │                 │        │   subjects and objects have a type identifier associated to them       │
+ | │                 │        │   that can then be used to enforce rules laid down by                  │
+ | │                 │        │   Policy                                                               │
+ | └─────────────────┴────────┴────────────────────────────────────────────────────────────────────────┘
+ | ```
 
 # SELinux Kernel Object Classes:
 
@@ -250,7 +340,7 @@ Reminder:
   <https://github.com/SELinuxProject/refpolicy/blob/master/policy/fl ask/access_vectors>
 
 ```
-  ┌ FILE─ALIKE RELATED OBJECTS ─────────────────────────────────────────────────────┐
+  ┌ FILE-ALIKE RELATED OBJECTS ─────────────────────────────────────────────────────┐
   │ common file │class dir      │class file       │class lnk_file │class chr_file   │
   │             │inherits file  │inherits file    │inherits file  │inherits file    │
   │             │               │                 │               │                 │
@@ -273,7 +363,7 @@ Reminder:
   │ quotaon     │                  │                              │                 │
   │ mounton                                                                         │
   └─────────────────────────────────────────────────────────────────────────────────┘
-  
+
   ┌ NETWORK RELATED OBJECTS ─────────────────────────────────────────────┐
   │                                                                      │
   │  COMMON SOCKET   │CLASS SOCKET             │class rawip_socket       │
@@ -306,45 +396,45 @@ Reminder:
   │  send_msg                                                            │
   │  name_bind                                                           │
   └──────────────────────────────────────────────────────────────────────┘
- 
-  PROCESS  RELATED    CAPABILITY RELATED    SYTEM OPERATIONS    COMMON IPC    
-  │                   │                     │ class system      │             
-  │ class process     │  common cap         │ ipc_info          │create       
-  │                   │                     │ syslog_read       │destroy      
-  │ fork              │  chown              │ syslog_mod        │getattr      
-  │ transition        │  dac_override       │ syslog_console    │setattr      
-  │ sigchld           │  dac_read_search    │ module_request    │read         
-  │ sigkill           │  fowner             │ module_load       │write        
-  │ sigstop           │  fsetid             │ halt              │associate    
-  │ signull           │  kill               │ reboot            │unix_read    
-  │ signal            │  setgid             │ status            │unix_write   
-  │ ptrace            │  setuid             │ start           
-  │ getsched          │  setpcap            │ stop              │COMMON X        
-  │ setsched          │  linux_immutable    │ enable            │ X_DEVICE       
-  │ getsession        │  net_bind_service   │ disable           │pointer,keyb.   
-  │ getpgid           │  net_broadcast      │ reload            │getattr         
-  │ setpgid           │  net_admin                              │setattr         
-  │ getcap            │  net_raw            CLASS FS            │use             
-  │ setcap            │  ipc_lock           │ mount             │read            
-  │ share             │  ipc_owner          │ remount           │write           
-  │ getattr           │  sys_module         │ unmount           │getfocus        
-  │ setexec           │  sys_rawio          │ getattr           │setfocus        
-  │ setfscreate       │  sys_chroot         │ relabelfrom       │bell            
-  │ noatsecure        │  sys_ptrace         │ relabelto         │force_cursor    
-  │ siginh            │  sys_pacct          │ transition        │freeze          
-  │ setrlimit         │  sys_admin          │ associate         │grab           
-  │ rlimitinh         │  sys_boot           │ quotamod          │manage         
-  │ dyntransition     │  sys_nice           │ quotaget          │list_property  
-  │ setcurrent        │  sys_resource                           │get_property   
-  │ execmem           │  sys_time           │COMMON DDBB        │set_property   
-  │ execstack         │  sys_tty_config     │                   │add            
-  │ execheap          │  mknod              │create             │remove         
-  │ setkeycreate      │  lease              │drop               │create         
-  │ setsockcreate     │  audit_write        │getattr            │destroy        
-  │ getrlimit         │  audit_control      │setattr     
-                      │  setfcap            │relabelfrom 
-                                            │relabelto   
-                               
+
+  PROCESS  RELATED    CAPABILITY RELATED    SYTEM OPERATIONS    COMMON IPC
+  │                   │                     │ class system      │
+  │ class process     │  common cap         │ ipc_info          │create
+  │                   │                     │ syslog_read       │destroy
+  │ fork              │  chown              │ syslog_mod        │getattr
+  │ transition        │  dac_override       │ syslog_console    │setattr
+  │ sigchld           │  dac_read_search    │ module_request    │read
+  │ sigkill           │  fowner             │ module_load       │write
+  │ sigstop           │  fsetid             │ halt              │associate
+  │ signull           │  kill               │ reboot            │unix_read
+  │ signal            │  setgid             │ status            │unix_write
+  │ ptrace            │  setuid             │ start
+  │ getsched          │  setpcap            │ stop              │COMMON X
+  │ setsched          │  linux_immutable    │ enable            │ X_DEVICE
+  │ getsession        │  net_bind_service   │ disable           │pointer,keyb.
+  │ getpgid           │  net_broadcast      │ reload            │getattr
+  │ setpgid           │  net_admin                              │setattr
+  │ getcap            │  net_raw            CLASS FS            │use
+  │ setcap            │  ipc_lock           │ mount             │read
+  │ share             │  ipc_owner          │ remount           │write
+  │ getattr           │  sys_module         │ unmount           │getfocus
+  │ setexec           │  sys_rawio          │ getattr           │setfocus
+  │ setfscreate       │  sys_chroot         │ relabelfrom       │bell
+  │ noatsecure        │  sys_ptrace         │ relabelto         │force_cursor
+  │ siginh            │  sys_pacct          │ transition        │freeze
+  │ setrlimit         │  sys_admin          │ associate         │grab
+  │ rlimitinh         │  sys_boot           │ quotamod          │manage
+  │ dyntransition     │  sys_nice           │ quotaget          │list_property
+  │ setcurrent        │  sys_resource                           │get_property
+  │ execmem           │  sys_time           │COMMON DDBB        │set_property
+  │ execstack         │  sys_tty_config     │                   │add
+  │ execheap          │  mknod              │create             │remove
+  │ setkeycreate      │  lease              │drop               │create
+  │ setsockcreate     │  audit_write        │getattr            │destroy
+  │ getrlimit         │  audit_control      │setattr
+                      │  setfcap            │relabelfrom
+                                            │relabelto
+
  ┌ OTHERS ─────────────────────────────────────────────────────────────┐
  │ security, capability, X─Windows, Netlink, D─BUS,  nscd, IPSEC,      │
  │ dccp,memprotect db_database/db_table/db_column/..., (network) peer, │
@@ -364,7 +454,7 @@ Reminder:
   ```
   | $ sudo chcon --type   var_t  index.html  ← Changes context *temporarely*
   |        └───┘          └───┘               (FS relabel will revert changes)
-  | 
+  |
   | $ sudo restorecon  -v index.html
   | $ sudo restorecon  reset index.html       ← similar to fixfiles(8) suited
   |   unconfined_u:object_r: var_t:s0 ->        for individual file or dir. relabeling
@@ -372,11 +462,11 @@ Reminder:
   ```
 
 ## OTHERS:
-* `fixfiles(8)`: Relabels FS objects. By default relabel all mounted 
-  FSs that support SELinux unless mounted with the context mount 
-  option, automatically detemining the file sec.ctx specs to use for 
+* `fixfiles(8)`: Relabels FS objects. By default relabel all mounted
+  FSs that support SELinux unless mounted with the context mount
+  option, automatically detemining the file sec.ctx specs to use for
   the labeling.
-* `genhomedircon(8)`: Script for generating correct file ctx specs 
+* `genhomedircon(8)`: Script for generating correct file ctx specs
   for user's home directories.
 
 See also: Troubleshooting with restorecon
@@ -405,36 +495,36 @@ See also: Troubleshooting with restorecon
   ```
   | │Linux│N<·¹·>1│SELinux│1<·²·>N│roles│·³>│process     │
   | │User │       │user   │       │     │   │domain (*_t)│
-  |                                          
+  |
   | ¹ To show N─to─1 relationship:
-  |   #  semanage login ─ 
-  |   (Example CentOS 7 output)                                       
+  |   #  semanage login ─
+  |   (Example CentOS 7 output)
   |   Login Name           SELinux User MLS/MCS Range        Service
-  |                                                                 
-  |   __default__          unconfined_u s0─s0:c0.c1023       *      
-  |   root                 unconfined_u s0─s0:c0.c1023       *      
-  |   system_u             system_u     s0─s0:c0.c1023       *      
-  |   └────┬────┘          └────┬─────┘ └────┬────┘                 
+  |
+  |   __default__          unconfined_u s0─s0:c0.c1023       *
+  |   root                 unconfined_u s0─s0:c0.c1023       *
+  |   system_u             system_u     s0─s0:c0.c1023       *
+  |   └────┬────┘          └────┬─────┘ └────┬────┘
   |     linux 1 <········>1 SE user      Multi Level/
-  |     user                             /Category Sec.   
+  |     user                             /Category Sec.
   |
   | ² A user "enters a roll" when policy grants it.
-  |   To show the 1-to-N relationship: 
-  |   # semanage user 
-  |   (Example CentOS 7 output)                                              
-  |                   Labeling  ...                                        
-  |   SELinux User    Prefix    ... SELinux Roles                          
-  |                                                                        
-  |   guest_u         user      ... guest_r                                
-  |   root            user      ... staff_r sysadm_r system_r unconfined_r 
-  |   staff_u         user      ... staff_r sysadm_r system_r unconfined_r 
-  |   sysadm_u        user      ... sysadm_r                               
-  |   system_u        user      ... system_r unconfined_r                  
-  |   unconfined_u    user      ... system_r unconfined_r                  
-  |   user_u          user      ... user_r                                 
-  |   xguest_u        user      ... xguest_r                               
+  |   To show the 1-to-N relationship:
+  |   # semanage user
+  |   (Example CentOS 7 output)
+  |                   Labeling  ...
+  |   SELinux User    Prefix    ... SELinux Roles
   |
-  | ³ A role "access a process domain" when policy grants it. 
+  |   guest_u         user      ... guest_r
+  |   root            user      ... staff_r sysadm_r system_r unconfined_r
+  |   staff_u         user      ... staff_r sysadm_r system_r unconfined_r
+  |   sysadm_u        user      ... sysadm_r
+  |   system_u        user      ... system_r unconfined_r
+  |   unconfined_u    user      ... system_r unconfined_r
+  |   user_u          user      ... user_r
+  |   xguest_u        user      ... xguest_r
+  |
+  | ³ A role "access a process domain" when policy grants it.
   ```
 
   ```
@@ -461,39 +551,39 @@ See also: Troubleshooting with restorecon
 * Example: Restricting su/sudo
 
   ```
-  |[regularuser@localhost ~]$ id ─               
-  |unconfined_u:unconfined_r:unconfined_t:s0     
-  |                                               
-  | regularuser@localhost ~]$ su ─ switcheduser   
-  | Password: XXXX                                
-  | → [switcheduser@localhost ~]$                 
-  |                                               
-  | #~ semanage login ─a ─s user_u regularuser    
-  |             └────────────────┬───────────┘   
-  |             Remap linux_user to selinux user  
-  |                                               
-  | [regularuser@localhost ~]$ id ─               
-  | user_u:user_r:user_t:s0                       
-  |                                             
+  |[regularuser@localhost ~]$ id ─
+  |unconfined_u:unconfined_r:unconfined_t:s0
+  |
+  | regularuser@localhost ~]$ su ─ switcheduser
+  | Password: XXXX
+  | → [switcheduser@localhost ~]$
+  |
+  | #~ semanage login ─a ─s user_u regularuser
+  |             └────────────────┬───────────┘
+  |             Remap linux_user to selinux user
+  |
+  | [regularuser@localhost ~]$ id ─
+  | user_u:user_r:user_t:s0
+  |
   | [regularuser@localhost ~]$ su ─ switcheduser
-  | Password: XXXX                              
-  | → su:  Authentication failure               
+  | Password: XXXX
+  | → su:  Authentication failure
   ```
 
 * Example: disable script execution
   ```
-  | By default, SELinux allows users mapped to the 
-  | guest_t account to exec $HOME/  scripts        
-  |                                                
-  | #~ getsebool   allow_guest_exec_content        
-  | guest_exec_content ─  → hon                  
-  |                                                
-  | [guestuser@localhost ~]$ ~/myscript.sh         
-  | This is a test script                        
-  |                                                
-  | #~ setsebool   allow_guest_exec_content  off   
-  | [guestuser@localhost ~]$ ~/myscript.sh         
-  | bash: myscript.sh:  Permission denied        
+  | By default, SELinux allows users mapped to the
+  | guest_t account to exec $HOME/  scripts
+  |
+  | #~ getsebool   allow_guest_exec_content
+  | guest_exec_content ─  → hon
+  |
+  | [guestuser@localhost ~]$ ~/myscript.sh
+  | This is a test script
+  |
+  | #~ setsebool   allow_guest_exec_content  off
+  | [guestuser@localhost ~]$ ~/myscript.sh
+  | bash: myscript.sh:  Permission denied
   ```
 
 ## SELINUX PROCESS CONTEXT-SWITCH
@@ -516,11 +606,12 @@ See also: Troubleshooting with restorecon
     file. Ussually used to restart system
     services in new intended domain
 
-## PROCESS LABELING FLOW AT LOGIN  [[{PM.TODO}]]
+## PROCESS LABELING FLOW AT LOGIN
 
 - Login process sets a default context (unconfined for targeted policy)
   Policy defined Context transitions will change children process context
   at runtime.
+
 
 ## PROCESS CONTEXT TRANSITION
 
@@ -532,24 +623,24 @@ See also: Troubleshooting with restorecon
   ```
   |                    app_1            → Execute /usr/bin/app_2 → app_2
   |
-  | domain/type        src_t                      app_exec_t       target_t 
+  | domain/type        src_t                      app_exec_t       target_t
   |                     ↑                          ↑
   | Requirements   1)- policy must define     2)- policy must define
   |                    exec permission to         app_exec_t  as entrypoint
-  |                    app_exec_t  entry-point    to   target_t 
+  |                    app_exec_t  entry-point    to   target_t
   |                3)- policy must allow
-  |                    transition from   src_t 
-  |                    to   target_t 
+  |                    transition from   src_t
+  |                    to   target_t
   ```
 
   ```
   | Check 1):       | Check 2):       | Check 3):
   | # sesearch      | # sesearch      | # sesearch
-  |   -s src_t      |   -s  target_t  |   -s   src_t 
-  |   -t app_exec_t |   -t  target_t  |   -t   target_t 
-  |   -c file       |   -c file       |   -c process ¹   
-  |   -p execute    |   -p entrypoint |   -p transition ² 
-  |   -Ad           |   -Ad           |   -Ad               
+  |   -s src_t      |   -s  target_t  |   -s   src_t
+  |   -t app_exec_t |   -t  target_t  |   -t   target_t
+  |   -c file       |   -c file       |   -c process ¹
+  |   -p execute    |   -p entrypoint |   -p transition ²
+  |   -Ad           |   -Ad           |   -Ad
 
   ¹ (selinux-kernel)class
   ² action requite for class(See selinux object classes)
@@ -584,18 +675,18 @@ See also: Troubleshooting with restorecon
   |
   | List Modified Booleans Set: ------------------------------
   | $ cat /etc/selinux/targeted/booleans.subs_dist
-  | # This file is auto─generated by libsemanage. Do not edit directly.                        
-  | httpd_read_user_content=1                      
-  | httpd_enable_homedirs=1                        
+  | # This file is auto─generated by libsemanage. Do not edit directly.
+  | httpd_read_user_content=1
+  | httpd_enable_homedirs=1
 
   | Change Booleans ------------------------------------------
   | # getsebool -          # <· Show all booleans
-  |                                                  
-  | # setsebool  \         # <· Set boolean      
+  |
+  | # setsebool  \         # <· Set boolean
   |   ─P "mySELinBool" 0│1      -P: (optional) Persist reboot
-  |                                                  
-  | # togglesebool  \      # <· toggle 1<>0 value 
-  |  ─P "mySELinBool"                          
+  |
+  | # togglesebool  \      # <· toggle 1<>0 value
+  |  ─P "mySELinBool"
   ```
 
 - Example. Fix Apache DNS problem:
@@ -616,25 +707,25 @@ It can means:
 1.  file-system labeling is wrong
 
   ```
-  | Fix examples:                                                
-  | Ex 1:                                                        
-  |   # sudo  chcon  --reference /var/www/html ..../index.html   
-  | Ex 2:                                                        
-  |   # restorecon -vR /var/www/html                             
-  |     ^^^^^^^^^^                                               
-  |     uses info from                                           
-  |     /etc/selinux/targeted/contexts/files/file_contexts, ...  
-  |     to determine what a file or dir's ctx should be          
-  | Ex 3:                                                        
-  |   # semanage  fcontext -a -e /var/www/ /my/alternative/www/  
-  |               ^^^^^^^^                                       
-  |      WARN: we are just defining what the context is,         
-  |            we are not writing what the                       
-  |            extended attributes are. It just means:           
-  |            "On relable it must look like this"               
-  |   # restorecon -vR /my/alternative/www                       
-  |     ^^^^^^^^^^                                               
-  |     must be run to actually proceed with relabeling          
+  | Fix examples:
+  | Ex 1:
+  |   # sudo  chcon  --reference /var/www/html ..../index.html
+  | Ex 2:
+  |   # restorecon -vR /var/www/html
+  |     ^^^^^^^^^^
+  |     uses info from
+  |     /etc/selinux/targeted/contexts/files/file_contexts, ...
+  |     to determine what a file or dir's ctx should be
+  | Ex 3:
+  |   # semanage  fcontext -a -e /var/www/ /my/alternative/www/
+  |               ^^^^^^^^
+  |      WARN: we are just defining what the context is,
+  |            we are not writing what the
+  |            extended attributes are. It just means:
+  |            "On relable it must look like this"
+  |   # restorecon -vR /my/alternative/www
+  |     ^^^^^^^^^^
+  |     must be run to actually proceed with relabeling
   ```
 
 2. Policy needs to be tweaked
@@ -646,24 +737,24 @@ It can means:
 
 3. A bug in the policy
   ```
-  | App vendors must supply policy modules for SELinux systems.  
-  | You must submit a ticket to the app vendor following steps:  
-  | 
+  | App vendors must supply policy modules for SELinux systems.
+  | You must submit a ticket to the app vendor following steps:
+  |
   | STEP 1 ------------------------------------------------------
-  | # setenforce 0 <· change to "permissive" mode and run         
-  |                   the application through all its paces       
-  |                   to log  all SELinux denials                 
+  | # setenforce 0 <· change to "permissive" mode and run
+  |                   the application through all its paces
+  |                   to log  all SELinux denials
   | STEP 2 ------------------------------------------------------
-  | From /var/log/messages Copy and Paste the proposed solution: 
-  | # grep httpd /var/log/audit/audit.log │ \                    
-  |   audit2allow  -MO quirrellocal                              
-  |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                              
-  |   generate  new policy file                                  
-  |   (See also audit2why(1)                                     
+  | From /var/log/messages Copy and Paste the proposed solution:
+  | # grep httpd /var/log/audit/audit.log │ \
+  |   audit2allow  -MO quirrellocal
+  |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   generate  new policy file
+  |   (See also audit2why(1)
   | STEP 3 ------------------------------------------------------
-  | # semodule -     squirrellocal.pp  ← Import the new module   
+  | # semodule -     squirrellocal.pp  ← Import the new module
   | STEP 4 ------------------------------------------------------
-  | # setenforce 1                     ← Re─enable enforcement   
+  | # setenforce 1                     ← Re─enable enforcement
   ```
 
 4.  You have been, or are being, broken into!!
@@ -672,79 +763,79 @@ It can means:
   ```
 <!-- } -->
 
-### SELinux BUG FIXING GENERAL PROCEDURE 
+### SELinux BUG FIXING GENERAL PROCEDURE
   ```
-  | STEP 01: Check /var/log/messages for messages like         
-  | ...                                                         
-  | ...  setroubleshoot: SELinux is preventing /usr/bin/httpd \ 
-  |      from getattr access on the directory /home/fred.     \ 
-  |       For complet SELinux messages, run                   \ 
-  |      sealert -l 37acc7d8-e955-4333-123a-1d027dbcea72        
-  |                                                             
-  | STEP 02: Run the indicated command                          
-  | ~# sealert -l 37acc7d8-e955-4333-123a-1d027dbcea72          
+  | STEP 01: Check /var/log/messages for messages like
+  | ...
+  | ...  setroubleshoot: SELinux is preventing /usr/bin/httpd \
+  |      from getattr access on the directory /home/fred.     \
+  |       For complet SELinux messages, run                   \
+  |      sealert -l 37acc7d8-e955-4333-123a-1d027dbcea72
+  |
+  | STEP 02: Run the indicated command
+  | ~# sealert -l 37acc7d8-e955-4333-123a-1d027dbcea72
   | → SELinux is preventing /usr/sbin/httpd from search access \
-  |   on the directory /home/fred                               
-  | → ...                                                       
-  | →   Do                                                      
-  | →   setsebool -P httpd_read_user_content 1                  
-  | →   ...                                                     
-  | →   setsebool -P httpd_enable_homedirs 1                    
+  |   on the directory /home/fred
+  | → ...
+  | →   Do
+  | →   setsebool -P httpd_read_user_content 1
+  | →   ...
+  | →   setsebool -P httpd_enable_homedirs 1
   ```
 
 ### AUDITING SELINUX ERROR MESSAGES
 
   ```
-  | #~ ausearch   -m  avc           -c httpd                                                   
-  |    └──────┘       └──┘                                                                     
-  |    standard       filter by                                                                
-  |    linux          AVC related                                                              
-  |    audit          messaged                                                                 
-  |    framework                                                                               
-  |    tool                                                                                    
-  |    (auditd daemon                                                                          
-  |     must be running)                                                                       
-  | → ...                                                                                      
-  | → time → Thu Aug 21 16:42:17 2014                                                          
-  | → type=AVC msg=audit(1408603337.115:914): avc:  denied  { getattr } for  \                 
-  |   pid=10204 comm="httpd" path="/www/html/index.html" dev="dm─0" ino=8445484 \              
-  |   scontext=system_u:system_r:httpd_t:s0 \                                                  
-  |   tcontext=unconfined_u:object_r:default_t:s0 tclass=file                                  
-  |   └ translates to:                                                                         
-  |     type=AVC: ...: avc: The message comes from the AVC log and it's an AVC event           
-  |     denied { getattr }: The permission that was attempted and the result it got.           
-  |                         In this case the get attribute operation was denied.               
-  |     pid=10204           process id of the process that attempted the access.               
-  |     comm="httpd"        shows the process command for the pid                              
-  |     path:               resource trying to be accessed.                                    
-  |     dev :               device                                                             
-  |     ino :               inode                                                              
-  |     scontext:           source security context of the process.                            
-  |     tcontext:           target security context of the resource.                           
-  |     tclass:             target resource class.                                             
-  |                                                                                            
-  |  sealert tool                                                                              
-  | #~ cat /var/log/messages │ grep "SELinux is preventing"                                    
-  | → ...                                                                                      
-  | → ... setroubleshoot: SELinux is preventing /usr/bin/su from using the setuid capability \ 
-  |       For complete SELinux messages. run sealert -l   e9e6c6d8-f217-414c-a14e-4bccb70cfbce 
-  | #~ sealert -l   e9e6c6d8-f217-414c-a14e-4bccb70cfbce                                       
-  | → SELinux is preventing /usr/bin/su from using the setuid capability.                      
-  | → ...                                                                                      
-  | → Raw Audit Messages                                                                       
-  | → type=AVC msg=audit(1408931985.387:850): avc:  denied  { setuid } for  pid=5855 \         
-  |   comm="sudo" capability=7  scontext=user_u:user_r:user_t:s0 \                             
-  |   tcontext=user_u:user_r:user_t:s0 tclass=capability                                       
-  | → type=SYSCALL msg=audit(1408931985.387:850): arch=x86_64 syscall=setresuid success=no \   
-  |   exit=EPERM a0=ffffffff a1=1 a2=ffffffff a3=7fae591b92e0 items=0 ppid=5739 pid=5855 \     
+  | #~ ausearch   -m  avc           -c httpd
+  |    └──────┘       └──┘
+  |    standard       filter by
+  |    linux          AVC related
+  |    audit          messaged
+  |    framework
+  |    tool
+  |    (auditd daemon
+  |     must be running)
+  | → ...
+  | → time → Thu Aug 21 16:42:17 2014
+  | → type=AVC msg=audit(1408603337.115:914): avc:  denied  { getattr } for  \
+  |   pid=10204 comm="httpd" path="/www/html/index.html" dev="dm─0" ino=8445484 \
+  |   scontext=system_u:system_r:httpd_t:s0 \
+  |   tcontext=unconfined_u:object_r:default_t:s0 tclass=file
+  |   └ translates to:
+  |     type=AVC: ...: avc: The message comes from the AVC log and it's an AVC event
+  |     denied { getattr }: The permission that was attempted and the result it got.
+  |                         In this case the get attribute operation was denied.
+  |     pid=10204           process id of the process that attempted the access.
+  |     comm="httpd"        shows the process command for the pid
+  |     path:               resource trying to be accessed.
+  |     dev :               device
+  |     ino :               inode
+  |     scontext:           source security context of the process.
+  |     tcontext:           target security context of the resource.
+  |     tclass:             target resource class.
+  |
+  |  sealert tool
+  | #~ cat /var/log/messages │ grep "SELinux is preventing"
+  | → ...
+  | → ... setroubleshoot: SELinux is preventing /usr/bin/su from using the setuid capability \
+  |       For complete SELinux messages. run sealert -l   e9e6c6d8-f217-414c-a14e-4bccb70cfbce
+  | #~ sealert -l   e9e6c6d8-f217-414c-a14e-4bccb70cfbce
+  | → SELinux is preventing /usr/bin/su from using the setuid capability.
+  | → ...
+  | → Raw Audit Messages
+  | → type=AVC msg=audit(1408931985.387:850): avc:  denied  { setuid } for  pid=5855 \
+  |   comm="sudo" capability=7  scontext=user_u:user_r:user_t:s0 \
+  |   tcontext=user_u:user_r:user_t:s0 tclass=capability
+  | → type=SYSCALL msg=audit(1408931985.387:850): arch=x86_64 syscall=setresuid success=no \
+  |   exit=EPERM a0=ffffffff a1=1 a2=ffffffff a3=7fae591b92e0 items=0 ppid=5739 pid=5855 \
   |   auid=1008 uid=0 gid=1008 euid=0 suid=0 fsuid=0 egid=0 sgid=1008 fsgid=0 tty=pts2 ses=22 \
-  |   comm=sudo exe=/usr/bin/sudo subj=user_u:user_r:user_t:s0 key=(null)                      
-  | →                                                                                          
-  | → Hash: su,user_t,user_t,capability,setuid                                                 
-  | →                                                                                          
+  |   comm=sudo exe=/usr/bin/sudo subj=user_u:user_r:user_t:s0 key=(null)
+  | →
+  | → Hash: su,user_t,user_t,capability,setuid
+  | →
   ```
-                                                                    
 
-[[linux.security.selinux}]]
+
+[[security.selinux}]]
 
 

@@ -516,7 +516,7 @@ NOTE:
   MySQL ddbbs"
   (So it looks like DRBD is preferred for Databases that basically "ignore" the
   File System tree structure).
-  [[{02_doc_has.comparative}]]
+  [[{doc_has.comparative}]]
 
 * See also DRBD4Cloud research project, aiming at ncreasing the applicability
   and functionality for cloud markets.
@@ -1094,7 +1094,7 @@ NOTE:
 [[}]]
 
 
-# SSHFS [[{storage.network,difficulty.easy,01_PM.TODO]]
+# SSHFS [[{storage.network,PM.TODO]]
 
   ```
   $ sudo aptitude update
@@ -1122,7 +1122,7 @@ NOTE:
 
 # LVM Summary [[{storage.lvm]]
  ```
- | [[{02_doc_has.diagram}]]
+ | [[{doc_has.diagram}]]
  | physical                                    logical
  | drives                                      volumes 
  | ┌────┐                                      ┌──────┐
@@ -1316,7 +1316,7 @@ WARN: You need LVM tools installed. Mount alone is not able to mount LVM volumes
 [[storage.lvm}]]
 
 
-[[{storage.file_system,01_PM.WiP]]
+[[{storage.file_system,PM.WiP]]
 # FILE SYSTEMS 
 
 ## EXT4 FS [[{storage.file_system.ext4]]
@@ -1416,18 +1416,18 @@ The information / blocks is written to Journal following next sequence:
   ```
 [[storage.file_system.ext4}]]
 
-# XFS [[{storage.file_system.XFS,01_PM.TODO]]
+# XFS [[{storage.file_system.XFS,PM.TODO]]
 
 * <https://www.systutorials.com/docs/linux/man/8-xfs_admin/>
-* <https://wiki.archlinux.org/title/XFS> [[01_PM.TODO]]
-* <https://blogs.oracle.com/linux/xfs-2019-development-retrospective> [[01_PM.TODO]]
+* <https://wiki.archlinux.org/title/XFS> [[PM.TODO]]
+* <https://blogs.oracle.com/linux/xfs-2019-development-retrospective> [[PM.TODO]]
   ```
-  - mkfs.xfs(8):    - xfs_repair(8)    [[01_PM.TODO]]
+  - mkfs.xfs(8):    - xfs_repair(8)    [[PM.TODO]]
   - xfs_db(8):      - xfs(5)
   - xfs_growfs(8)                      [[}]]
   ```
 
-- Compared to Ext4 [[02_doc_has.comparative]]
+- Compared to Ext4 [[doc_has.comparative]]
   - XFS is prefered for "big" systems with many apps accesing
     the file-system CONCURRENTLY.
   - EXT4 is simpler and -theorically- less buggy.
@@ -1470,7 +1470,7 @@ The information / blocks is written to Journal following next sequence:
   shared on disk, saving space.
 [[}]]
 
-# Stratis [[{storage.file_system.stratis,01_PM.backlog]]
+# Stratis [[{storage.file_system.stratis,PM.backlog]]
 <https://opensource.com/article/18/4/stratis-lessons-learned>
 <https://stratis-storage.github.io/StratisSoftwareDesign.pdf>
 Technology preview as of 2022-10.
@@ -1551,11 +1551,11 @@ Technology preview as of 2022-10.
   ```
 [[storage.block_management}]]
 
-[[{01_PM.TODO]]
+[[{PM.TODO]]
 # Storage Unordered/TODO 
 
 
-[[{doc_has.comparative,security.backups,01_PM.TODO]]
+[[{doc_has.comparative,security.backups,PM.TODO]]
 ## glusterfs vs Ceph vs FreeNAS
 
 * https://forum.proxmox.com/threads/glusterfs-ceph-or-freenas.25866/
@@ -1820,7 +1820,7 @@ assumes it's some form of storage device.
 * <https://www.reddit.com/r/linuxquestions/comments/xpr4n1/formating_drives_larger_than_2tbs/>
 
 
-[[01_PM.TODO}]]
+[[PM.TODO}]]
 
 
 

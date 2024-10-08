@@ -1,12 +1,13 @@
+[[{linux]]
 # Linux Administration Advanced
 
-[[{storage.file_system,linux.101,02_doc_has.standards,01_PM.backlog]]
+[[{storage.file_system,linux.101,01_PM.backlog]]
 ## Linux FS Hierarchy  
 - Full FS Hierarchy
 <https://www.tldp.org/LDP/Linux-Filesystem-Hierarchy/html/index.html>
 - /etc
 <http://www.tldp.org/LDP/Linux-Filesystem-Hierarchy/html/etc.html>
-[[{storage.file_system}]]
+[[storage.file_system}]]
 
 ## Tracing Systems and how they fit together
 * <https://jvns.ca/blog/2017/07/05/linux-tracing-systems/> (Julia Evans)
@@ -181,22 +182,21 @@ The hidepid option in the procfs defines how much info
 about processes we want to be available for non-owners.
 
   ```
-  hidepid=0 : (default old behavior), anybody may read
-              all world-readable /proc/PID/* files</li>
-  hidepid=1 : users may not access any /proc/ / directories,
-              but their own.
-              Sensitive files like cmdline, sched*, status
-              are NOW protected against other users
-
-  hidepid=2 : equals to hidepid=1 plus :
-              - /proc/PID/  will be invisible to other users.
-                It complicates intruder's task of gathering info
-                about running processes, whether some daemon
-                runs with elevated privileges, whether another user
-                runs some sensitive program, whether other users run any
-                program at all, etc.Linux kernel protection.
+  | hidepid=0 : (default old behavior), anybody may read
+  |             all world-readable /proc/PID/* files</li>
+  | hidepid=1 : users may not access any /proc/ / directories,
+  |             but their own.
+  |             Sensitive files like cmdline, sched*, status
+  |             are NOW protected against other users
+  | hidepid=2 : equals to hidepid=1 plus :
+  |             - /proc/PID/  will be invisible to other users.
+  |               It complicates intruder's task of gathering info
+  |               about running processes, whether some daemon
+  |               runs with elevated privileges, whether another user
+  |               runs some sensitive program, whether other users run any
+  |               program at all, etc.Linux kernel protection.
   ```
-Example:
+* Example:
   ```
   | $ mount -o remount,rw,hidepid=2 /proc
   | Alternatively edit /etc/fstab:
@@ -204,6 +204,74 @@ Example:
   ```
 
 
+[[{monitoring.*,qa.SLA]]
+## Watchdog daemon
+
+* <https://linux.die.net/man/8/watchdog>
+
+* The watchdog daemon tells the kernel through `/dev/watchdog` the system is
+  working fine, about once per minute. If the daemon stops sending the 
+  "OK", the system is reset either through hardware or (less reliable) software.
+  
+ussage:
+ ```
+ | $ watchdog \        <· After initial set, it puts itself into background
+ |   --force           <· Force usage of interval or max-load-average 
+ |                        given in config file.
+ |   --config-file ... <· Def: /etc/watchdog.conf
+ |   --verbose         <· if compiled with SYSLOG feature.
+ |                        Useful to see what happened until
+ |                        watchdog rebooted the system
+ |                        (logs temperature, load average, 
+ |                        change date for monitored files,...)
+ |   --sync            <· Try to synchronize FS every time
+ |                        watchdog process is awake.
+ |                        NOTE: System will be rebooted if synch
+ |                              takes longer than 1 minute.
+ |   --softboot        <· reboot system if error occurs during main-loop
+ |   --no-action       <· Do not reboot or halt the machine. used
+ |                        for testing / watchdog tunning.
+ ```
+
+
+* NOTE: Under high system load, watchdog might be swapped out of memory
+  and the Linux kernel will reset the machine after a timeout.
+  If this behaviour is not desired, set  realtime to yes in watchdog.conf
+  to lock the process into memory.
+
+* In ping mode watchdog tries to ping a given IP address/es (broadcast 
+  included).
+
+* An external command can be used for **USER-DEFINED TESTS** !!!
+  In case of error the system will be soft-reboot unless "repair binary" is
+  included. If the repair fails too, system will reboot.
+
+* An email can be sent to notify humans about reboots.
+
+See original man page for details on the "Check" and "repair" binaries.
+
+Executables placed in the test directory (/etc/watchdog.d/) are execute automatically.
+
+Example: 
+
+   ```
+   | /etc/watchdog.d/my-test test      <·· Returns 0 ("OK") or XX (some value)
+   | /etc/watchdog.d/my-test repair XX <·· called by watchdog if  XX!=0
+   ```
+
+* original code by Alan Cox, author of the kernel driver. 
+
+## wd_keepalive
+
+* <https://linux.die.net/man/8/wd_keepalive>
+
+simplified version of the watchdog daemon:
+
+It only opens /dev/watchdog, and keeps writing to it.
+If it "stalls" for more than one minute, the watchdog will cause a reset
+(or try to in software watchdogs)
+
+[[monitoring.*}]]
 
 [[{monitoring.latency]]
 ## DeviceKit-powerlatency control
@@ -350,10 +418,10 @@ The -S option can be used to restrict the logging to specific syscalls.
 The logs appear in /var/log/audit/audit.log on Debian, and probably on Fedora as well.
 
 
-[[{desktop.GUI_stack]]
+[[{]]
 ## A tour of the Linux Graphics Stack
 * <http://cworth.org/talks/lca_2009/html/lca-2009-001.html>
-[[desktop.GUI_stack}]]
+[[}]]
 
 
 [[{troubleshooting.sysrq]]
@@ -486,13 +554,13 @@ p.s. Here's a simple bash script for easy setup of TCP BBR:
 * <https://gist.github.com/sammdu/668070b486832f47f3b0da2200a7954f>
 [[performance.network.BBR}]]
 
-[[{peformance.101]]
+[[{performance.101]]
 ## Linux Performance Tunning 101
 Look for:
 - wrong I/O scheduler
 - wrong filesystem
 - wrong journaling
-[[peformance.101}]]
+[[performance.101}]]
 
 
 [[{PM.low_code,configuration.boot.cobbler]]
@@ -556,3 +624,4 @@ time. At much less than 1% of CPU and memory on the instance, this
 highly performant sidecar provides flow data at scale for network
 insight.
 [[scalability.logging.eBPF}]]
+[[linux}]]
