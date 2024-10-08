@@ -1,0 +1,170 @@
+[[{linux.]]
+[[{monitoring.perf,monitoring.kernel.counters,profiling.jobs,dev_stack.java]]
+[[profiling.perf,troubleshooting.locks,PM.TODO]]
+
+# perf "Performance Counters for Linux" (PCL)
+
+* perf is a performance analyzing tool introduced in linux kernel (kernel 2.6.31+, 2009)
+  and controlled by user space `perf`.
+* It is capable of statistical profiling of the entire system (both kernel and userland code)
+  "It provides a framework for all things related to performance analysis """
+  [[doc_has.keypoint]]
+
+* External Refs:
+  * <http://www.brendangregg.com/perf.html>
+  * <http://www.brendangregg.com/flamegraphs.html>
+
+* It covers hardware level (CPU/PMU, Performance Monitoring Unit)
+  features and software features (software counters, tracepoints) as well.
+
+  ```
+  | $ perf stat           <- -gather perf-counter stats. <https://linux.die.net/man/1/perf-stat>
+  |      [--event=EVENT]  ← PMU event in the form:
+  |                         - symbolic event name (perf list to list)
+  |                         - raw PMU event (eventsel+umask) with format
+  |                           rNNN where NNN is an hexadecimal event descriptor
+  |      [--no-inherit]   ← child tasks do not inherit counters
+  |      [--all-cpus]
+  |      [--pid=$pid]     ← comma separated list of existing processes
+  |      [--tid=$tid]     ← comma separated list of existing thread id
+  |      [--scale]        ← scale/normalize counter values
+  |      [--repeat=n]     ← repeat command, print average + stddev (max: 100)
+  |      [--big-num]      ← print large numbers with thousands-local-separator
+  |      [--cpu=]         ← comma separated list of cpus (All if not provided)
+  |      [--no-aggr]      ← Do not aggregate counts across all monitored CPUs
+  |                         in system-wide mode (-a). Only valid in system-wide mode.
+  |      [--null]         ← don't start any counters
+  |      [--verbose]      ← show counter open errors, etc,...
+  |      [--field-separator SEP]
+  |      [--cgroup name]  ← monitor only the container (cgroup) called "name".
+  |                         - Only available in per-cpu mode. The cgroup filesystem
+  |                         must be mounted. All threads belonging to container "name"
+  |                         are monitored when they run on the monitored CPUs.
+  |                         - Multiple cgroups can be provided. Each cgroup is applied
+  |                         to the corresponding event, i.e., first cgroup to first event,
+  |                         - It is possible to provide an empty cgroup
+  |                           (monitor all the time) using, e.g., -G foo,,bar.
+  |                         - Cgroups must have corresponding events, i.e., they always
+  |                           refer to events defined earlier on the command line.
+  |      [--output file]
+  |      [--append]
+  |      [--log-fd]      ← append to given fd instead of stderr.
+  |      (-)
+  |      <command> [<options>]
+  |      ^^^^^^^^^
+  |      Any command you can specify in a shell.
+  ```
+
+* Example:
+
+  ```
+  |                    ┌─────┬─ Command to be traced.
+  | $ perf stat  --    make -j
+  |
+  | (Output will be similar to)
+  | → Performance counter stats for 'make -j':
+  | →
+  | → 8117.370256  task clock ticks     #      11.281 CPU utilization factor
+  | →         678  context switches     #       0.000 M/sec
+  | →         133  CPU migrations       #       0.000 M/sec
+  | →      235724  pagefaults           #       0.029 M/sec (page faults)
+  | → 24821162526  CPU cycles           #    3057.784 M/sec
+  | → 18687303457  instructions         #    2302.138 M/sec
+  | →   172158895  cache references     #      21.209 M/sec
+  | →    27075259  cache misses         #       3.335 M/sec
+  | →
+  | → Wall-clock time elapsed:   719.554352 msecs
+  |
+  | example
+  | $ perf stats -r 4 --event=cycles:{k,u} -- make -j
+  |              ^^^^          ^     ^^^^^
+  |              repeat        ·  split into
+  |              4 times       · kernel/userspace
+  | ...                        ·
+  | 123,123,11  cycles:k       ·
+  |   1,123,11  cycles:u       ·
+  |                            ·
+  | 0.00013913  secs elapsed   ·
+  |                            ·
+  |                     - 'perf list' will show all predefined
+  |                       events (cycles, cache-misses, ...) organized
+  |                       by hardware/software/tracepoint
+  ```
+
+# PROFILING
+
+## CPU Profiling
+
+* <https://linux.die.net/man/1/perf-top>
+  ```
+  | $ perf top
+  |   Samples: 12K of event 'cycles:ppp', Event count (approx.): 54543453553535
+  | Overhead  Shared Object              Symbol
+  | 13.11%    libQT5Core.so.5.7.0        [.] QHashData:NextNode
+  |  5.11%    libc-2.24.so               [.] _int_malloc
+  |  2.90%    perf                       [.] symbols__insert
+  | ...
+  ```
+
+## flamegraph
+
+* <https://github.com/flamegraph-rs/flamegraph>
+
+* perf+dtrace flamegraph generator with additional support for Cargo projects! (Rust based)
+  It can be used to profile anything, not just Rust projects!
+
+*  See also notes on latencytop
+
+## Syscall Pofiling:
+  ```
+  | $ perf trace --durtion=100
+  |  340.448 (1000.122 ms): JS Watchdog/15221 futex(uaddr: 0x7f3e9cd1a434, op: WAIT_BITSET|PRIVATE_FLAG|CLOCK_REALTIME, utime: 0x7f3eae487df0, val3: MATCH_ANY) = -1 ETIMEDOUT (Connection timed out)
+  |  119.549 (1221.529 ms): tmux: server/2501 poll(ufds: 0x55edaa47c990, nfds: 11, timeout_msecs: 12189)            = 1
+  |  395.984 (1000.133 ms): tuned/19297 futex(uaddr: 0x7f37a4027130, op: WAIT_BITSET|PRIVATE_FLAG|CLOCK_REALTIME, utime: 0x7f37aad37e30, val3: MATCH_ANY) = -1 ETIMEDOUT (Connection timed out)
+  |  691.446 (1000.105 ms): JS Watchdog/15347 futex(uaddr: 0x7f6c829550b0, op: WAIT_BITSET|PRIVATE_FLAG|CLOCK_REALTIME, utime: 0x7f6c942a0df0, val3: MATCH_ANY) = -1 ETIMEDOUT (Connection timed out)
+  |  755.478 (1000.029 ms): Timer/15227 futex(uaddr: 0x7f3eb5b5cc80, op: WAIT|PRIVATE_FLAG, utime: 0x7f3e9c2c1a60) = -1 ETIMEDOUT (Connection timed out)
+  |  755.609 (1000.017 ms): Web Content/15215 poll(ufds: 0x7f3e9bd04760, nfds: 3, timeout_msecs: 4294967295)        = 1
+  |  311.581 (1527.461 ms): Gecko_IOThread/15157 epoll_wait(epfd: 8<anon_inode:[eventpoll]>, events: 0x7f3d6d1f5200, maxevents: 32, timeout: 4294967295) = 1
+  |  311.955 (1527.194 ms): firefox/15132 poll(ufds: 0x7f3d1ebd5610, nfds: 5, timeout_msecs: 4294967295)        = 1
+  |  876.905 (1000.146 ms): dockerd/32491 futex(uaddr: 0x561e1da0b920, utime: 0xc42045bed8)                     = -1 ETIMEDOUT (Connection timed out)
+  |  877.069 (1000.064 ms): dockerd/27832 futex(uaddr: 0x561e1da07950, utime: 0x7f50e7c61b90)                   = 0
+  |  877.025 (1000.145 ms): dockerd/27904 futex(uaddr: 0xc420c82548)                                            = 0
+  |  912.964 (1000.133 ms): JS Watchdog/15158 futex(uaddr: 0x7f3d57c4c0f0, op: WAIT_BITSET|PRIVATE_FLAG|CLOCK_REALTIME, utime: 0x7f3d65a41df0, val3: MATCH_ANY) = -1 ETIMEDOUT (Connection timed out)
+  |  311.586 (1607.337 ms): Chrome_~dThrea/15346 epoll_wait(epfd: 11<anon_inode:[eventpoll]>, events: 0x7f6c9b9cd080, maxevents: 32, timeout: 4294967295) = 1
+  |  937.245 (1000.102 ms): JS Watchdog/15276 futex(uaddr: 0x7feca361bbf0, op: WAIT_BITSET|PRIVATE_FLAG|CLOCK_REALTIME, utime: 0x7fecb4e27df0, val3: MATCH_ANY) = -1 ETIMEDOUT (Connection timed out)
+  |  214.944 (1927.025 ms): Timer/15164 futex(uaddr: 0x7f3d6d165be0, op: WAIT|PRIVATE_FLAG, utime: 0x7f3d542a1a60) = -1 ETIMEDOUT (Connection timed out)
+  |  215.042 (1927.063 ms): Socket Thread/15166 poll(ufds: 0x7f3d539028f0, nfds: 8, timeout_msecs: 4294967295)        = 1
+  | 1340.624 (1000.072 ms): JS Watchdog/15221 futex(uaddr: 0x7f3e9cd1a434, op: WAIT_BITSET|PRIVATE_FLAG|CLOCK_REALTIME, utime: 0x7f3eae487df0, val3: MATCH_ANY) = -1 ETIMEDOUT (Connection timed out)
+  | 1396.377 (1000.131 ms): tuned/19297 futex(uaddr: 0x7f37a4027130, op: WAIT_BITSET|PRIVATE_FLAG|CLOCK_REALTIME, utime: 0x7f37aad37e30, val3: MATCH_ANY) = -1 ETIMEDOUT (Connection timed out)
+  | 1691.606 (1000.059 ms): JS Watchdog/15347 futex(uaddr: 0x7f6c829550b0, op: WAIT_BITSET|PRIVATE_FLAG|CLOCK_REALTIME, utime: 0x7f6c942a0df0, val3: MATCH_ANY) = -1 ETIMEDOUT (Connection timed out)
+  | 1877.200 (1000.115 ms): dockerd/27844 futex(uaddr: 0x561e1da0b9a0, utime: 0xc420460ed8)                     = -1 ETIMEDOUT (Connection timed out)
+  |  876.826 (2000.665 ms): dockerd/27840 futex(uaddr: 0xc4206d7148)                                            = 0
+  | 1877.252 (1000.149 ms): dockerd/27832 futex(uaddr: 0x561e1da07950, utime: 0x7f50e7c61b90)                   = 0
+  | 1877.190 (1000.239 ms): dockerd/27904 futex(uaddr: 0xc420c82548)                                            = 0
+  | 1877.189 (1000.372 ms): dockerd/32491 futex(uaddr: 0xc420c83948)                                            = 0
+  ```
+
+* record command's profile into perf.data: <https://linux.die.net/man/1/perf-record>
+* display recorded perf.data: <https://linux.die.net/man/1/perf-report>
+* General framework for bench.suites: <https://linux.die.net/man/1/perf-bench>
+* Analyze lock events: <https://linux.die.net/man/1/perf-lock>   [[{troubleshooting.locks}]]
+
+[[{scalability.profiling]]
+## Profiling 60 Terabytes of input data with Perf at Facebook
+
+Extracted from: "Apache Spark @Scale: A  production use case"
+  <https://engineering.fb.com/core-data/apache-spark-scale-a-60-tb-production-use-case/>
+  ...  Tools we used to find performance bottleneck
+* Spark Linux Perf/Flame Graph support: Although the two tools
+  above are very handy, they do not provide an aggregated view of CPU
+  profiling for the job running across hundreds of machines at the same
+  time. On a per-job basis, **we added support for enabling Perf
+  profiling (via libperfagent for Java symbols) and can customize the
+  duration/frequency of sampling. The profiling samples are aggregated
+  and displayed as a Flame Graph across the executors using our
+  internal metrics collection framework**.
+[[scalability.profiling}]]
+
+
+[[monitoring.perf}]]
+[[linux.}]]
