@@ -1,0 +1,279 @@
+[[{monitoring.101,]]
+# Monitoring for DevOps 101
+
+## Infra vs App Monitoring [[{doc_has.comparative]]
+
+### *Infrastructure Monitoring*
+* Prometheus + Grafana (Opinionated)<br/>
+  Prometheus periodically pulls multidimensional data from different apps/components.
+  Grafana allows to visualize Prometheus data in custom dashboards.
+  (Alternatives include Monit, Datadog, Nagios, Zabbix, ...)
+
+### *Application Monitoring*
+* OpenTelemetry: replaces OpenTracing and OpenCensus.
+  Cloud Native Foundation projects.
+  It also serves as ¿front-end? for Jaeger and others.
+* Jaeger, New Relic: (Very opinionated)
+(Other alternatives include AppDynamics, Instana, ...)
+
+### *Log Management* (Opinionated)
+* Elastic Stack
+  (Alternative include Graylog, Splunk, Papertrail, ...)
+  Elastic search has evolved throught the years to become a
+  full analytical platform.
+
+* MUCH MORE DETAILED INFORMATION IS AVAILABLE AT:
+ <../../txt_world_domination/viewer.html?payload=../SoftwareArchitecture/ddbb_engines.txt>
+
+[[}]]
+
+
+# OpenTelemetry: modern replacement for OpenTracing
+
+[[{monitoring.opentelemetry,monitoring.101]]
+
+ Also known as OTel, is a vendor-neutral open source Observability framework.
+Summary from <https://lumigo.io/opentelemetry/opentelemetry-vs-opentracing-key-differences-and-how-to-migrate/>:
+
+OpenTelemetry surged from merging OpenTracing with OpenCensus, taking the best of both and adding new features...
+...  It combines aspects of distributed tracing, metrics, and logging into a single API.
+...  Like OpenTracing, OpenTelemetry provides an API for developers to add instrumentation to their applications.
+.. unlike OpenTracing, **it also provides an implementation, eliminating the need for developers to integrate a
+separate tracing system**. 
+... in addition to distributed tracing, OpenTelemetry supports metrics and logs. This comprehensive approach to
+observability means that developers can get a complete picture of system performance and behavior, without having
+to integrate multiple systems.
+
+
+* Vendors/Apps who natively support OpenTelemetry via OTLP include:<br/>
+  AWS, Azure, Google Cloud Platform, New Relic, Sentry Software, 
+  Traeffik 3+, Grafana Loki 3.0, Oracle, Splunk, 
+  Jaeger, Apache SkyWalking, Fluent Bit, 
+  OpenLIT, ClickHouse, Embrace, Grafana Labs, GreptimeDB, Highlight, 
+  HyperDX, observIQ, OneUptime, Ope, qryn, Red Hat, Sig, Tracetest, 
+  Uptrace, VictoriaMetrics, Alibaba Cloud, AppDynamics (Cisco), Aria by 
+  VMware (Wavefront), Aspecto, Axiom,  Better Stack, Bonree, 
+  Causely, Chro, Control Plane, Coralogix, Cribl, DaoCloud, Datadog, 
+  Dynatrace, Elastic, F5,  Helios, Honeycomb, 
+  Immersive Fusion, Instana, ITRS, KloudFuse, KloudMate, LogicMonitor, 
+  LogScale by Crowdstrike (Humio), Logz.io, Lumigo, Middleware, 
+  , Observe, Inc., ObserveAny, OpenText, Seq, Service, ServicePilot,
+  SolarWinds, Sumo Logic, TelemetryHub, TingYun, Traceloop, VuNet Systems,  ...
+
+
+
+
+* <https://opentelemetry.io/docs/concepts/signals/metrics/>
+  A metric is a measurement about a service, captured at 
+  runtime. ... metric event which consists not only of the measurement 
+  itself, but the time that it was captured and associated metadata.
+* <https://opentelemetry.io/docs/concepts/signals/traces/>
+  Traces give us the big picture of what happens when a request is made 
+  to anapplication ... essential to understanding the "full path" a request
+  takes in your application.
+* <https://opentelemetry.io/docs/concepts/signals/logs/>
+  log is a timestamped text record, either structured (recommended) 
+  orunstructured, with metadata. Of all telemetry signals logs, have 
+  the biggestlegacy.
+[[monitoring.opentelemetry}]]
+
+## OpenTelemetry Adopts Continuous Profiling
+
+* Elastic Donates Their Agent 
+* <https://www.infoq.com/news/2024/08/otel-continuousprofiling-elastic/>
+
+[[{dev_stack.java,dev_stack.springboot]]
+## OpenTelemetry + JAVA Micrometer
+* <https://grafana.com/blog/2022/05/04/how-to-capture-spring-boot-metrics-with-the-opentelemetry-java-instrumentation-agent/>
+
+...current version of OpenTelemetry’s Java instrumentation agent picks up Spring Boot’s Micrometer metrics automatically. 
+It is no longer necessary to manually bridge OpenTelemetry and Micrometer.
+
+BASE:  simple Hello World REST service (<https://github.com/spring-guides/gs-rest-service.git>)
+
+1. STEP 1: enable metrics and expose them directly in Prometheus format.
+   ( We will not yet use the OpenTelemetry Java instrumentation agent.)
+
+   ```
+   <dependency>
+     <!-- provides the metrics API and some out-of-the-box metrics  -->
+     <groupId>org.springframework.boot</groupId>
+     <artifactId>spring-boot-starter-actuator</artifactId>
+   </dependency>
+   <dependency>
+     <!-- allow exposing Micrometer metrics in Prometheus format -->
+     <groupId>io.micrometer</groupId>
+     <artifactId>micrometer-registry-prometheus</artifactId>
+     <scope>runtime</scope>
+   </dependency>
+   ```
+
+2. enable (http://localhost:8080)/actuator/prometheus endpoint in application.properties
+
+   ```
+   | management.endpoints.web.exposure.include=prometheus
+   ```
+   Out-of-the-box metrics it includes JVM metrics like jvm_gc_pause_seconds, metrics from
+   the logging framework (logback_events_total,...) and metrics from the REST endpoint
+   like http_server_requests.
+
+3. Add custom metrics:
+
+   They can be registered with a MeterRegistry provided by Spring Boot.
+
+   3.1 inject MeterRegistry to the GreetingController.
+
+   ```java
+   | // ...
+   | import io.micrometer.core.instrument.MeterRegistry;
+   | 
+   | @RestController
+   | public class GreetingController {
+   | 
+   |   // ...
+   |   private final MeterRegistry registry;
+   | 
+   |   // Use constructor injection to get the MeterRegistry
+   |   public GreetingController(MeterRegistry registry) { // Best pattern: Inject in constructor.
+   | 	this.registry = registry;
+   |   }
+   | 
+   |   // ...
+   | }
+   ```
+   3.2 add custom metric "Counter".
+   ```
+   | @GetMapping("/greeting")
+   | public Greeting greeting(@RequestParam(value = "name", defaultValue = "World") String name){
+   | 
+   |   // Add a counter tracking the greeting calls by name
+   |   registry.counter("greetings.total", "name", name).increment();
+   | 
+   |   // ...
+   | }
+   ```
+   3.3 Test it: Recompile/restart the application.
+   ```
+   | # make some calls to the API
+   | $ curl -X GET http://localhost:8080/greeting?name=Grafana
+   | $ curl -X GET http://localhost:8080/greeting?name=ABD
+   | $ curl -X GET http://localhost:8080/greeting?name=...
+   |  
+   | # Check metrics:
+   | $ curl -X GET http://localhost:8080/actuator/prometheus
+   |  
+   | # TYPE greetings_total counter
+   | greetings_total{name="Grafana",} 2.0    <·· Using user input as label is a poor practice, used just as example
+   | greetings_total{name="Prometheus",} 1.0
+   ```
+4. Configure OpenTelemetry collector:
+  * OpenTelemetry collector is used tro receive, process, and export telemetry data. 
+  * It usually "sits in the middle" , between the applications to be monitored and the monitoring backend.
+  * OpenTelemetry collector is configured to scrape the metrics from the Prometheus endpoint and expose 
+    them again in Prometheus format. http://collector:8889/metrics metrics should match http://application:8080/actuator/prometheus
+  4.1. Download otelcol_*.tar.gz from <https://github.com/open-telemetry/opentelemetry-collector-releases/releases>
+  4.2. Create config.yaml like:
+       ```yaml
+       | receivers:
+       |   prometheus:
+       |     config:
+       |       scrape_configs:
+       |         - job_name: "example"
+       |           scrape_interval: 5s
+       |           metrics_path: '/actuator/prometheus'
+       |           static_configs:
+       |             - targets: ["localhost:8080"]
+       | 
+       | processors:
+       |   batch:
+       | 
+       | exporters:
+       |   prometheus:
+       |     endpoint: "localhost:8889"
+       | 
+       | service:
+       |   pipelines:
+       |     metrics:
+       |       receivers: [prometheus]
+       |       processors: [batch]
+       |       exporters: [prometheus]
+       ```
+  4.3. Run it:
+       ```
+       | $ ./otelcol --config=config.yaml
+       ```
+5. Finally get rid of Prometheus endpoint:
+   5.1. re-configure the receiver side of the OpenTelemetry collector to **OpenTelemetry Line Protocol (otlp)**
+        (vs scrapping Prometheus end-point).
+       ```
+       | yaml
+       | 
+       | receivers:
+       |   otlp:
+       |     protocols:
+       |       grpc:
+       |       http:
+       | 
+       | processors:
+       |   batch:
+       | 
+       | exporters:
+       |   prometheus:
+       |     endpoint: "localhost:8889"
+       | 
+       | service:
+       |   pipelines:
+       |     metrics:
+       |       receivers: [otlp]
+       |       processors: [batch]
+       |       exporters: [prometheus]
+       ```
+  5.2. download OpenTelemetry Java JVM instrumentation agent:
+       <https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases>
+       * Metrics are disabled in the agent by default. Enable like:
+       ```
+       | $ export OTEL_METRICS_EXPORTER=otlp
+       | # RESTARUP LIKE: 
+       | $ java -javaagent:./opentelemetry-javaagent.jar \
+       |     -jar ./target/rest-service-complete-0.0.1-SNAPSHOT.jar
+       ```
+       After a minute or so, metrics are available again at <http://localhost:8889/metrics>
+       after being "shipped" directly to the collector. (Prometheus endpoint is no longer involved).
+       and can be removed in application.properties as well as the micrometer-registry-prometheus 
+       dependency)
+  5.3. metrics are **NOT** the original metrics maintained by the Spring Boot application. 
+       .... some Spring metrics are clearly missing (logback_events_total , ...),
+       custom metric greetings_total is no longer available.<br/>
+       Micrometer library API offers a flexible meter registry for vendors to expose metrics
+       for their specific monitoring backend. (Prometheus meter registry in first example).
+       Capturing Micrometer metrics with the OpenTelemetry Java instrumentation agent almost works
+       out of the box: The agent detects Micrometer and registers an OpenTelemetryMeterRegistry on the fly.
+       ...  **Unfortunately the agent registers with Micrometer’s Metrics.globalRegistry, while Spring uses
+       its own registry instance via dependency injection**. If the OpenTelemetryMeterRegistry ends up in
+       the wrong MeterRegistry instance, it is not used by Spring. ... <br/>
+       FIX: make OpenTelemetry’s OpenTelemetryMeterRegistry available as a Spring bean, so that Spring can
+            register it correctly when it sets up dependency injection. 
+
+       ```java
+       | 
+       | @SpringBootApplication
+       | public class RestServiceApplication {
+       | 
+       |   // Unregister OpenTelemetryMeterRegistry from Metrics.globalRegistry 
+       |   // and make it available as a Spring bean instead.
+       |   @Bean
+       |   @ConditionalOnClass(name = "io.opentelemetry.javaagent.OpenTelemetryAgent")
+       |   public MeterRegistry otelRegistry() {
+       | 	Optional<MeterRegistry> otelRegistry = Metrics.globalRegistry.getRegistries().stream()
+       |     	.filter(r -> r.getClass().getName().contains("OpenTelemetryMeterRegistry"))
+       |     	.findAny();
+       | 	otelRegistry.ifPresent(Metrics.globalRegistry::remove);
+       | 	return otelRegistry.orElse(null);
+       |   }
+       | 
+       |   // ...
+       | }
+       ```
+[[dev_stack.java}]]
+
+[[monitoring.101}]]

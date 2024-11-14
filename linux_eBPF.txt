@@ -1,0 +1,113 @@
+# eBPF
+
+
+* List running BFP programs
+
+  ```
+  | $ sudo bpftool prog 
+  |   2: tracing        name hid_tail_call         tag 7cc47bbf07148bfe  gpl
+  |  47: lsm            name restrict_filesystems  tag 713a545fe0530ce7  gpl
+  | 570: cgroup_skb     name sd_fw_egress          ...
+  | 572: cgroup_device  name sd_devices            ...
+  | ...
+  ```
+
+[[{]]
+## eBPFtrace
+
+* <https://www.brendangregg.com/blog/2018-10-08/dtrace-for-linux-2018.html>
+
+* built on top of eBPF, as a higher level front-end for tracing "competing" wit
+  h Solaris DTrace.
+
+* Looks to enhance over SystemTap (that basically was an IBM/RedHat internal 
+  project).
+A typical script looks like:
+
+  ```
+  | bpftrace
+  | 
+  | BEGIN { printf("Tracing... Hit Ctrl-C to end.\n"); }
+  | 
+  | // Process io start */
+  | tracepoint:block:block_rq_insert
+  | /@last[args->dev]/ {
+  |     $last = @last[args->dev];                      // calculate seek distance
+  |     $dist = (args->sector - $last) > 0 ?
+  |         args->sector - $last : $last - args->sector;
+  |     @size[pid, comm] = hist($dist);                // store details
+  | }
+  | 
+  | tracepoint:block:block_rq_insert {
+  |     @last[args->dev] = args->sector                // save last position of disk head
+  |                      + args->nr_sector;
+  | }
+  | 
+  | END {
+  |   printf("\n@[PID, COMM]:\n");
+  |   print(@size); clear(@size); clear(@last);
+  | }
+  ```
+[[monitoring.kernel.bpftrace}]]
+
+
+
+[[}]]
+
+[[{monitoring.eBPF,monitoring,storage]]
+## trace FS requests with eBPF
+<https://www.collabora.com/news-and-blog/blog/2018/11/21/gaining-ebpf-vision-tracing-linux-filesystem-disk-requests/>
+[[monitoring.eBPF}]]
+
+[[{monitoring.netflix_vector,kernel.eBPF,]]
+
+## vector-ebpf-container
+
+* <https://www.infoq.com/news/2019/03/>
+* Vector Performance Monitoring Tool Adds eBPF, Unified Host-Container Metrics Support
+
+Vector, the open source performance monitoring tool from Netflix,
+added support for eBPF based tools using a PCP daemon, a unified view
+of container and host metrics, and UI improvements.
+
+Netflix had earlier released a performance monitoring tool called
+Vector as open source. Vector can "visualize and analyze system and
+application-level metrics in near real-time". These metrics include
+CPU, memory, disk and network, and application profiling using
+flamegraphs. Vector is build on top of Performance Co-Pilot (PCP), a
+performance analysis toolkit. PCP works in a distributed fashion with
+a daemon on each monitored host, which controls and routes metric
+requests to individual agents which collect the actual metrics. There
+are agents for most popular software, and custom application metrics
+can be collected by writing one's own agent. Client applications
+connect to the daemon.
+[[monitoring.netflix_vector}]]
+
+[[{security.eBPF,kernel.eBPF,PM.low_code]]
+## Linux XDP (eXpress Data Path) eBFP
+
+* Major Applications:<https://ebpf.io/projects>
+  * bcc: Toolkit and library for efficient BPF-based kernel tracing
+  * Cilium: eBPF-based Networking, Security, and Observability, designed for Kubernetes.
+  * bpftrace: High-level tracing language for Linux eBPF. Inspired by awk and C and
+    predecessor tracers such as DTrace and SystemTap.
+  * Falco: behavioral activity monitor designed to detect anomalous activity in applications.
+    Falco audits a system at the Linux kernel layer with the help of eBPF. It enriches gathered
+    data with other input streams such as container runtime metrics and Kubernetes metrics,
+    and allows to continuously monitor and detect container, application, host, and network activity.
+  * Pixie: observability tool for Kubernetes applications. No  need for manual instrumentation.
+    Developers can use Pixie to view the high-level state of their cluster (service maps,
+    cluster resources, application traffic) and also drill down into more detailed views 
+    (pod state, flame graphs, individual full body application requests).
+  * Calico: eBPF dataplane for networking, load-balancing and in-kernel security for containers and Kubernetes.
+  * Katran: Layer 4 load balancer.  Katran leverages the XDP infrastructure from the Linux kernel
+   to provide an in-kernel facility for fast packet processing. Its performance scales linearly with
+   the number of NIC's receive queues and it uses RSS friendly encapsulation for forwarding to L7 load balancers.
+  * Parca: Continuous Profiling Platform.  Track memory, CPU, I/O bottlenecks broken down by method name,
+    class name, and line number over time. Without complex overhead, in any language or framework.
+    Parca's UI allows data to be globally explored and analyzed using various visualizations 
+  * Tetragon: eBPF-based Security Observability & Runtime Enforcement
+    Observability combined with real-time runtime enforcement without application changes
+[[security.eBPF,kernel.eBPF,PM.low_code}]]
+
+

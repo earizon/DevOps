@@ -1,10 +1,6 @@
-## Apropos:
-  Content is versioned in git.  commits, issues and pull-requests welcome!
-<https://www.github.com/earizon/DevOps>
+[[{dev_stack.shell_script]]
+# Shell Scripting 
 
-# Shell Scripting [[{dev_stack.shell_script]]
-
-  #[bash_summary]
 ## REFERENCE SCRIPT:  [[{dev_stack.shell_script.101]]
 
   ```
@@ -304,61 +300,8 @@
   |                                    # key3 : value3
   |
   ```
-  #[curl_summary]
-## Curl (network client swiss Army nkife) [[{networking.curl,troubleshooting,qa.testing]]
-* Suport for DICT, FILE, FTP, FTPS, GOPHER, HTTP GET/POST, HTTPS, HTTP2, IMAP,
-             IMAPS, LDAP, LDAPS, POP3, POP3S, RTMP, RTSP, SCP, SFTP, SMB, SMBS,
-             SMTP, SMTPS, TELNET,  TFTP, unix socket protocols.
-* Proxy support.
-* kerberos support.
-* HTTP  cookies, etags
-* file transfer resume.
-* Metalink
-* SMTP / IMAP Multi-part
-* HAProxy PROXY protocol
-* ...
 
-### Ussage Summary:
-  ```
-  | $ curl http://site.{a,b}.com
-  |  --silent                 <·· Disable progress meter
-  |  --verbose                <·· Debug
-  |  --anyauth                <·· make curl figure out auth. method
-  |                              (--basic, --digest, --ntlm, and --negotiate)
-  |                              not recommended if uploading from STDIN since
-  |                              data can be sent 2+ times
-  |                              - Used together with -u, --user.
-  |  --cacert cert_file_path  <·· Alt: Use CURL_CA_BUNDLE
-  |                                  - See also --capath dir, --cert-status,  --cert-type PEM|DER|...
-  |  --cert certificate[:pass]<·· Use cert to indentify curl client
-  |  --ciphers TLS_ciphers_list
-  |  --compressed             <·· Request compressed response. Save uncompressed
-  |  --config curl_args_list
-  |  --connect-timeout secs
-  |                               HTTP Post Data:
-  |  --data-binary    data        <·· alt 1: posts data with no extra processing whatsoever.
-  |  --data-urlencode data        <·· alt 2: URLencoded
-  |  --data           data        <·· alt 3: application/x-www-form-urlencoded (browser like forms)
-  |                   └──┴─·········· Or @path_to_file_with_data
-  |                                   Or @- to use STDIN
-  |  --header ...
-  |  --limit-rate speed
-  |  --location                   <·· follow redirects
-  |  --include                    <·· Include HTTP response headers in output
-  |  --oauth2-bearer ...          <·· (IMAP POP3 SMTP)
-  |  --fail-early                 <·· Fail as soon as possible
-  |  --continue-at -              <·· Continue a partial download
-  |  --output out_file            <·· Write output to file (Defaults to stdout)
-  |                                   Use also --create-dirs to create unexisting dirs.
-  ```
-
-### Curl: List remote contents
-  ```
-  | $ curl --list-only https://..../dir1/ ← List contents of remote dir
-  ```
-[[}]]
-
-## Kapow! Shell Script to HTTP API [[{web_hook,01_PM.low_code,git,monitoring.prometheus,dev_stack.shell_script,dev_stack.kubernetes,]]
+## Kapow! Shell Script to HTTP API [[{web_hook,PM.low_code,git,monitoring.prometheus,dev_stack.shell_script,dev_stack.kubernetes,]]
 <https://github.com/BBVA/kapow>    [[notifications.jira,InfraAsCode.ansible,git,git.github,notifications.slack]]
   (by BBVA-Labs Security team members)
   " If you can script it, you can HTTP it !!!!"
@@ -402,7 +345,7 @@ Initial Script:
  ```
 [[}]]
 
-## WebHook  [[{dev_stack.shell_script,01_PM.TODO]]
+## WebHook  [[{dev_stack.shell_script,PM.TODO]]
 * <https://github.com/adnanh/webhook>
 * lightweight incoming webhook server to run shell commands
   You can also pass data from the HTTP request (such as headers,
@@ -446,226 +389,13 @@ Initial Script:
   using shell scripts and custom commands for your daily work.
 [[}]]
 
-## Shell Script Best Practices [[{01_PM.TODO]]
+## Shell Script Best Practices [[{PM.TODO]]
 * <https://sharats.me/posts/shell-script-best-practices/>
 [[}]]
 [[dev_stack.shell_script}]]
 
-# Networking Summary for DevOps [[{networking.101,01_PM.low_code,networking.load_balancer,web_balancer]]
-
-## HTTP balanced proxy Quick Setup with HAProxy [[{]]
-
-* REF: <https://github.com/AKSarav/haproxy-nodejs-redis/blob/master/haproxy/>
-  ```
-  ┌──haproxy/haproxy.cfg ────────────  ┌ haproxy/Dockerfile ──────────────────────────
-  │ global                             │ FROM haproxy
-  │   daemon                           │ COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
-  │   maxconn 256                      └──────────────────────────────────────────────
-  │
-  │ defaults
-  │   mode http
-  │   timeout connect 5000ms
-  │   timeout client 50000ms
-  │   timeout server 50000ms
-  │
-  │ frontend http-in
-  │   bind *:80                             <·· Listen on port 80 on all interfaces
-  │   default_backend servers
-  │
-  │ backend servers                         <·· Forward to single backend "servers"
-  │   server server1 host01:8081 maxconn 32 <·· composed of (single server) "server1"
-  │                                             at host01:8081
-  └─────────────────────────────────────────
-  ```
-## Reverse Proxy  [[01_PM.TODO]]
-## Forward Proxy  [[01_PM.TODO]]
-[[}]]
-
-## CharlesProxy: Monitor TLS/HTTPS traffic [[{networking.TLS,troubleshooting,01_PM.TODO]]
-* <https://www.charlesproxy.com/>
-* HTTP proxy / HTTP monitor / Reverse Proxy enabling developers to view HTTP+SSL/HTTPS
-  traffic between loal machine and Internet, including requests, responses and HTTP headers
-  (which contain the cookies and caching information).
-[[}]]
-
-## DNS Records [[{]]
-  ```
-  ┌ DNS Records ────────────────────────────────┐
-  │ A       root domain name IP address         │
-  │         Ex: mydomain.com → 1.2.3.4          │
-  │         Not recomended for changing IPs     │
-  ├─────────────────────────────────────────────┤
-  │ CNAME   maps name2 → name1                  │
-  │         Ex: int.mydomain.com → mydomain.com │
-  ├─────────────────────────────────────────────┤
-  │ Alias   Amazon Route 53 virtual record      │
-  │         to map AWS resources like ELBs,     │
-  │         CloudFront, S3 buckets, ...         │
-  ├─────────────────────────────────────────────┤
-  │ MX      mail server name → IP address       │
-  │         Ex: smtp.mydomain.com → 1.2.3.4     │
-  ├─────────────────────────────────────────────┤
-  │ AAAA    A record for IPv6 addresses         │
-  └─────────────────────────────────────────────┘
-  ```
-[[}]]
-
-## SERVICE MESH EVOLUTION  [[{01_PM.low_code]]
-
-* Summary extracted from <https://isovalent.com/blog/post/2021-12-08-ebpf-servicemesh>
-                         <https://www.infoq.com/news/2022/01/ebpf-wasm-service-mesh/>
-
-  * Service Mesh: Takes care of (netwok)distributed concerns (visibility, security, balancing,
-    service discovery, ...)
-
-  ```
-  | 1st GENERATION. Each app     2nd Generation. A common      3rd Generation. Sidecar
-  | links against a library.     sidecar is used.              functionality moved to
-  |                                                            linux kernel usinb eBFP
-  | ┌─ App1 ────┐ ┌─ App2 ────┐  ┌─ App1 ────┐ ┌─ App2 ────┐
-  | │  ┌───────┐│ │  ┌───────┐│  │           │ │           │
-  | │  │Service││ │  │Service││  └───────────┘ └───────────┘   ┌─ App1 ────┐ ┌─ App2 ────┐
-  | │  │Mesh   ││ │  │Mesh   ││  ┌───────────┐ ┌───────────┐   │           │ │           │
-  | │  │Library││ │  │Library││  │ServiceMesh│ │ServiceMesh│   └───────────┘ └───────────┘
-  | │  └───────┘│ │  └───────┘│  │SideCar    │ │SideCar    │   ┌─ Kernel ────────────────┐
-  | └───────────┘ └───────────┘  └───────────┘ └───────────┘   │ ┌─ eBFP Service Mesh ┐  │
-  | ┌─ Kernel ────────────────┐  ┌─ Kernel ────────────────┐   │ └────────────────────┘  │
-  | │       ┌─ TCP/IP ─┐      │  │       ┌─ TCP/IP ─┐      │   │       ┌─ TCP/IP ─┐      │
-  | │       └──────────┘      │  │       └──────────┘      │   │       └──────────┘      │
-  | │       ┌─ Network─┐      │  │       ┌─ Network─┐      │   │       ┌─ Network─┐      │
-  | │       └──────────┘      │  │       └──────────┘      │   │       └──────────┘      │
-  | └─────────────────────────┘  └─────────────────────────┘   └─────────────────────────┘
-  |                                Envoy, Linkerd, Nginx,...     Cilium
-  |                                or kube-proxy
-  |
-  |  App1 ←→ Kernel TCP/IP        App1 ←→ SideCar1              App1 ←→ Kernel eBFP
-  |  Kernel TCP/IP ←→ App2        SideCar1 ←→ Kernel TCP/IP     Kernel eBFP ←→ App2
-  |                               Kernel TCP/IP ←→ Sidecar2
-  |                               Sidecar2 ←→ App2
-  ```
-   [[}]]
-
-[[networking.101}]]
-
-# Monitoring for DevOps 101 [[{monitoring.101,]]
-
-## Infra vs App Monitoring [[{02_doc_has.comparative]]
-### *Infrastructure Monitoring*
-* Prometheus + Grafana (Opinionated)<br/>
-  Prometheus periodically pulls multidimensional data from different apps/components.
-  Grafana allows to visualize Prometheus data in custom dashboards.
-  (Alternatives include Monit, Datadog, Nagios, Zabbix, ...)
-
-### *Application Monitoring*
-* OpenTelemetry: replaces OpenTracing and OpenCensus.
-  Cloud Native Foundation projects.
-  It also serves as ¿front-end? for Jaeger and others.
-* Jaeger, New Relic: (Very opinionated)
-(Other alternatives include AppDynamics, Instana, ...)
-
-### *Log Management* (Opinionated)
-* Elastic Stack
-  (Alternative include Graylog, Splunk, Papertrail, ...)
-  Elastic search has evolved throught the years to become a
-  full analytical platform.
-
-* MUCH MORE DETAILED INFORMATION IS AVAILABLE AT:
- <../../txt_world_domination/viewer.html?payload=../SoftwareArchitecture/ddbb_engines.txt>
-
-[[}]]
-[[monitoring.101}]]
-
-# Non-Classified/TODO/Backlog [[{01_PM.TODO]]
-
-## Yaml References [[{yaml.101]]
-<http://docs.ansible.com/ansible/YAMLSyntax.html>
-
-  ```
-  YAML                               JSON
-  ---                                {
-  key1: val1                             "key1": "val1",
-  key2:                                 "key2": [
-   - "thing1"                            "thing1",
-   - "thing2"                            "thing2"
-  # I am a comment                     ]
-                                   }
-  ```
-
-- Anchors allows to reuse/extends YAML code:
-  ```
-  ┌─ YAML ───────────┐···(generates)··>┌─ JSON ────────────────┐
-  │ ---              │                 │                       │
-  │ key1: &anchor    ← '&' Defines     │ {                     │
-  │  K1: "One"       │ the anchor      │   "key1": {           │
-  │  K2: "Two"       │                 │     "K1": "One",      │
-  │                  │                 │     "K2": "Two"       │
-  │                  │                 │   },                  │
-  │ key2: *anchor    ← References/     │   "key2": {           │
-  │                  │ uses the anch.  │     "K1": "One",      │
-  │                  │                 │     "K2": "Two"       │
-  │                  │                 │   }                   │
-  │ key3:            │                 │   "key3": {           │
-  │   <<: *anchor    ← Extends anch.   │     "K1": "One",      │
-  │   K2: "I Changed"│                 │     "K2": "I Changed",│
-  │                  │                 │     "K3": "Three"     │
-  │                  │                 │   }                   │
-  │   K3: "Three"    │                 │                       │
-  │                  │                 │ }                     │
-  └──────────────────┘                 └───────────────────────┘
-  ```
-  WARN!!!: Many NodeJS parsers break the 'extend' functionality.
-
-* Extend Inline:
-  - take only SOME sub-keys from key1 to inject into key2
-  ```
-  ┌─ YAML ──────     ┐···(generates)··>┌─ JSON ───────────┐
-  │ ---              │                 │ {                │
-  │ key1:            │                 │   "key1": {      │
-  │  <<: &anchor     ← Inject into     │     "K1": "One", │
-  │    K1: "One"     │ key1 and save   │     "K2": "Two"  │
-  │  K2: "Two"       │ as anchor       │   },             │
-  │                  │                 │                  │
-  │ bar:             │                 │   "bar": {       │
-  │  <<: *anchor     │                 │     "K1": "One", │
-  │  K3: "Three"     │                 │     "K3": "Three"│
-  │                  │                 │   }              │
-  │                  │                 │ }                │
-  └──────────────────┘                 └──────────────────┘
-  ```
-
-* yaml2js python Ulitity:
-  * Add next lines to ~/.bashrc (or /etc/profile or ...):
-  ```
-  + alias yaml2js="python -c 'import sys, yaml, json; \
-  +                json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)'"
-  ```
-
-  Ussage:
-  ```
-  $ cat in.yaml | yaml2js > out.json
-  ```
-
-  **WARN:** Unfortunatelly there is no way to override or
-  extends lists to append new elements to existing ones,
-  only maps/dictionaries with the '<<' operator:
-  '<<' "inserts" values of referenced map into
-  current one being defined.
-[[}]]
-
-# Source{d}: Large Scale Code Analysis with IA [[{security,qa.code_analysis,qa.testing,git,01_PM.TODO]]
-<https://www.linux.com/blog/holberton/2018/10/sourced-engine-simple-elegant-way-analyze-your-code>
-
-* source{d} offers a suite of applications that uses machine learning on code
-  to complete source code analysis and assisted code reviews. Chief among them
-  is the source{d} Engine, now in public beta; it uses a suite of open source
-  tools (such as Gitbase, Babelfish, and Enry) to enable large-scale source
-  code analysis. Some key uses of the source{d} Engine include language
-  identification, parsing code into abstract syntax trees, and performing SQL
-  Queries on your source code such as:
-    * What are the top repositories in a codebase based on number of commits?
-    * What is the most recent commit message in a given repository?
-    * Who are the most prolific contributors in a repository
-[[}]]
+# Networking Summary for DevOps [[{networking.101,PM.low_code,networking.load_balancer,web_balancer]]
 
 
-[[}]]
+
+[[dev_stack.shell_script}]]

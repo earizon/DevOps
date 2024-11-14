@@ -4,6 +4,10 @@
 * @[https://git-scm.com/book/en/v2]
 * @[https://learnxinyminutes.com/docs/git/]
 * @[https://learngitbranching.js.org/?demo]
+* History of git in Linux Kernel Mailing List
+  <https://lkml.org/lkml/2005/4/6/121>
+
+
 * Related:
   See UStore: Distributed Storage with rich semantics!!!
   @[https://arxiv.org/pdf/1702.02799.pdf]
@@ -49,7 +53,7 @@
 [[}]]
 
 
-## GIT "Full Journey" [[{git.101,02_DOC_HAS.diagram,01_PM.WiP]]
+## GIT "Full Journey" [[{git.101,DOC_HAS.diagram,PM.WiP]]
 
 Non-normative Git server setup for N projects with M teams of L users
 
@@ -82,7 +86,9 @@ Non-normative Git server setup for N projects with M teams of L users
   $ $ sudo find ${DIR01} -type f -exec chmod g+rw  {} \;     ← enable read/write      perm. for files
 
     Finally add the desired linux-users to the 'teamA' linux-group at will. More info at:
-    @[../DevOps/linux_administration_summary.html#linux_users_groups_summary] )
+    @[../DevOps/linux_ALL.payload#UserManagement] )
+
+UserManagement
    ```
 
 ## Non-normative ssh client access to Git remote repository using ssh
@@ -499,7 +505,7 @@ $ git init   ← creates an initial layout containing (Alternatively $ $git clon
   ```
 [[}]]
 
-## GPG signed commits [[{security.secret_management,security.signed_content,01_PM.TODO.now]]
+## GPG signed commits [[{security.secret_management,security.signed_content,PM.TODO.now]]
 @[https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work]
 
   ```
@@ -584,7 +590,7 @@ $ git pull  \             ←   # Verify signature at pull time
   ```
 [[}]]
 
-## Client-Side Hooks [[{01_PM.TODO.now]]
+## Client-Side Hooks [[{PM.TODO.now]]
 @[https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks]
 
 * Hook: Script execute before/after commiting.
@@ -674,7 +680,7 @@ $ git pull  \             ←   # Verify signature at pull time
       a push occurs (a non*zero exit code will abort the push).
 [[}]]
 
-## Server-Side Hooks [[{01_PM.TODO.now]]
+## Server-Side Hooks [[{PM.TODO.now]]
 
 * Only a git system administrator can setup them.
 * Useful to enforce nearly any kind of policy in repository.
@@ -994,7 +1000,7 @@ $ git pull  \             ←   # Verify signature at pull time
 <!-- } -->
 
 
-# TODO [[{01_PM.TODO]]
+# TODO [[{PM.TODO]]
 ## GitOps: Git as single source of truth
 * for declarative infrastructure and 
   applications. Every developer within a team can issue pull requests against a
@@ -1052,7 +1058,7 @@ happening, or to abort the collection if now isn’t a good time.
 cregit: Token*Level Blame Information for the Linux Kernel
 Blame tracks lines not tokens, cgregit blames on tokens (inside a line)
 
-## Gitea painless self-hosted Git) [[{01_PM.TODO,01_PM.low_code]]
+## Gitea painless self-hosted Git) [[{PM.TODO,PM.low_code]]
 ("replaced" unmaitained Gogs)
 * <https://gitea.io/>
 * Fork of gogs, since it was unmaintained.
@@ -1085,7 +1091,7 @@ Gerrit is a Git Server that provides:
   Prevents you from committing passwords and other sensitive
   information to a git repository.
 
-## Forgit: Interactive Fuzzy Finder:[[{dev_stack.forgit,qa.UX,01_PM.TODO]]
+## Forgit: Interactive Fuzzy Finder:[[{dev_stack.forgit,qa.UX,PM.TODO]]
 * <https://www.linuxuprising.com/2019/11/forgit-interactive-git-commands-with.html>
 * It takes advantage of the popular "fzf" fuzzy finder to provide
   interactive git commands, with previews. [[}]]

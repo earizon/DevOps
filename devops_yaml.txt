@@ -1,0 +1,74 @@
+## Yaml References [[{yaml.101]]
+<http://docs.ansible.com/ansible/YAMLSyntax.html>
+
+  ```
+  YAML                               JSON
+  ---                                {
+  key1: val1                             "key1": "val1",
+  key2:                                 "key2": [
+   - "thing1"                            "thing1",
+   - "thing2"                            "thing2"
+  # I am a comment                     ]
+                                   }
+  ```
+
+- Anchors allows to reuse/extends YAML code:
+  ```
+  ┌─ YAML ───────────┐···(generates)··>┌─ JSON ────────────────┐
+  │ ---              │                 │                       │
+  │ key1: &anchor    ← '&' Defines     │ {                     │
+  │  K1: "One"       │ the anchor      │   "key1": {           │
+  │  K2: "Two"       │                 │     "K1": "One",      │
+  │                  │                 │     "K2": "Two"       │
+  │                  │                 │   },                  │
+  │ key2: *anchor    ← References/     │   "key2": {           │
+  │                  │ uses the anch.  │     "K1": "One",      │
+  │                  │                 │     "K2": "Two"       │
+  │                  │                 │   }                   │
+  │ key3:            │                 │   "key3": {           │
+  │   <<: *anchor    ← Extends anch.   │     "K1": "One",      │
+  │   K2: "I Changed"│                 │     "K2": "I Changed",│
+  │                  │                 │     "K3": "Three"     │
+  │                  │                 │   }                   │
+  │   K3: "Three"    │                 │                       │
+  │                  │                 │ }                     │
+  └──────────────────┘                 └───────────────────────┘
+  ```
+  WARN!!!: Many NodeJS parsers break the 'extend' functionality.
+
+* Extend Inline:
+  - take only SOME sub-keys from key1 to inject into key2
+  ```
+  ┌─ YAML ──────     ┐···(generates)··>┌─ JSON ───────────┐
+  │ ---              │                 │ {                │
+  │ key1:            │                 │   "key1": {      │
+  │  <<: &anchor     ← Inject into     │     "K1": "One", │
+  │    K1: "One"     │ key1 and save   │     "K2": "Two"  │
+  │  K2: "Two"       │ as anchor       │   },             │
+  │                  │                 │                  │
+  │ bar:             │                 │   "bar": {       │
+  │  <<: *anchor     │                 │     "K1": "One", │
+  │  K3: "Three"     │                 │     "K3": "Three"│
+  │                  │                 │   }              │
+  │                  │                 │ }                │
+  └──────────────────┘                 └──────────────────┘
+  ```
+
+* yaml2js python Ulitity:
+  * Add next lines to ~/.bashrc (or /etc/profile or ...):
+  ```
+  + alias yaml2js="python -c 'import sys, yaml, json; \
+  +                json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)'"
+  ```
+
+  Ussage:
+  ```
+  $ cat in.yaml | yaml2js > out.json
+  ```
+
+  **WARN:** Unfortunatelly there is no way to override or
+  extends lists to append new elements to existing ones,
+  only maps/dictionaries with the '<<' operator:
+  '<<' "inserts" values of referenced map into
+  current one being defined.
+[[}]]

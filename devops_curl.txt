@@ -1,0 +1,92 @@
+# Curl (network client swiss Army nkife) [[{networking.curl,troubleshooting,qa.testing]]
+* Suport for DICT, FILE, FTP, FTPS, GOPHER, HTTP GET/POST, HTTPS, HTTP2, IMAP,
+             IMAPS, LDAP, LDAPS, POP3, POP3S, RTMP, RTSP, SCP, SFTP, SMB, SMBS,
+             SMTP, SMTPS, TELNET,  TFTP, unix socket protocols.
+* Proxy support.
+* kerberos support.
+* HTTP  cookies, etags
+* file transfer resume.
+* Metalink
+* SMTP / IMAP Multi-part
+* HAProxy PROXY protocol
+* ...
+
+## Ussage Summary:
+  ```
+  | $ curl http://site.{a,b}.com
+  |  --silent                 <·· Disable progress meter
+  |  --verbose                <·· Debug
+  |  --anyauth                <·· make curl figure out auth. method
+  |                              (--basic, --digest, --ntlm, and --negotiate)
+  |                              not recommended if uploading from STDIN since
+  |                              data can be sent 2+ times
+  |                              - Used together with -u, --user.
+  |  --cacert cert_file_path  <·· Alt: Use CURL_CA_BUNDLE
+  |                                  - See also --capath dir, --cert-status,  --cert-type PEM|DER|...
+  |  --cert certificate[:pass]<·· Use cert to indentify curl client
+  |  --ciphers TLS_ciphers_list
+  |  --compressed             <·· Request compressed response. Save uncompressed
+  |  --config curl_args_list
+  |  --connect-timeout secs
+  |                               HTTP Post Data:
+  |  --data-binary    data        <·· alt 1: posts data with no extra processing whatsoever.
+  |  --data-urlencode data        <·· alt 2: URLencoded
+  |  --data           data        <·· alt 3: application/x-www-form-urlencoded (browser like forms)
+  |                   └──┴─·········· Or @path_to_file_with_data
+  |                                   Or @- to use STDIN
+  |  --header ...
+  |  --limit-rate speed
+  |  --location                   <·· follow redirects
+  |  --include                    <·· Include HTTP response headers in output
+  |  --oauth2-bearer ...          <·· (IMAP POP3 SMTP)
+  |  --fail-early                 <·· Fail as soon as possible
+  |  --continue-at -              <·· Continue a partial download
+  |  --output out_file            <·· Write output to file (Defaults to stdout)
+  |                                   Use also --create-dirs to create unexisting dirs.
+  ```
+
+## Curl: List remote contents
+  ```
+  | $ curl --list-only https://..../dir1/ ← List contents of remote dir
+  ```
+
+# wget.java "alternative"
+
+  In containerized environments (docker, kubernetes,...) we may lack access to tooling like curl.
+Still, if we are fortunate we can have access to some sort of container SDK or VM (Java, Python, ...). 
+Then we can try to use the SDK to "emulate" a basic curl functionality, good enough to check
+if the internal container network is working properly (DNS, internal proxies to targets, ...).
+
+  Here it follow a rudimentary "curl.java" to test "GET" connections:
+  ```
+  | $ cat curl.java
+  | import java.io.BufferedReader;
+  | import java.io.IOException;
+  | import java.io.InputStreamReader;
+  | import java.net.URL;
+  | import java.net.URLConnection;
+  | 
+  | public class URLReader {
+  |     public static void main(String[] args) {
+  |         try {
+  |             URL url = new URL(args[0]);
+  |             URLConnection connection = url.openConnection();
+  |             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+  |             String line;
+  |             while ((line = reader.readLine()) != null) {
+  |                 System.out.println(line);
+  |             }
+  |             reader.close();
+  |         } catch (IOException e) {
+  |             e.printStackTrace();
+  |         }
+  |     }
+  | }
+  ```
+  Ussage:
+  ```
+  $ java curl.java http://some.url.com:8080
+  ```
+  This can be good enough to detect hostname/DNS/route problems inside the container.
+
+[[}]]

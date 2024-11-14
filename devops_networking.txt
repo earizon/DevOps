@@ -1,0 +1,71 @@
+[[{networking.101]]
+# DevOps Networking Notes
+
+[[{networking.TLS,troubleshooting,PM.TODO]]
+## CharlesProxy: Monitor TLS/HTTPS traffic
+* <https://www.charlesproxy.com/>
+* HTTP proxy / HTTP monitor / Reverse Proxy enabling developers to view HTTP+SSL/HTTPS
+  traffic between loal machine and Internet, including requests, responses and HTTP headers
+  (which contain the cookies and caching information).
+[[}]]
+
+[[{]]
+## DNS 101 
+  ```
+  ┌ DNS Records ────────────────────────────────┐
+  │ A       root domain name IP address         │
+  │         Ex: mydomain.com → 1.2.3.4          │
+  │         Not recomended for changing IPs     │
+  ├─────────────────────────────────────────────┤
+  │ CNAME   maps name2 → name1                  │
+  │         Ex: int.mydomain.com → mydomain.com │
+  ├─────────────────────────────────────────────┤
+  │ Alias   Amazon Route 53 virtual record      │
+  │         to map AWS resources like ELBs,     │
+  │         CloudFront, S3 buckets, ...         │
+  ├─────────────────────────────────────────────┤
+  │ MX      mail server name → IP address       │
+  │         Ex: smtp.mydomain.com → 1.2.3.4     │
+  ├─────────────────────────────────────────────┤
+  │ AAAA    A record for IPv6 addresses         │
+  └─────────────────────────────────────────────┘
+  ```
+[[}]]
+
+[[{PM.low_code]]
+## SERVICE MESH EVOLUTION
+
+* Summary extracted from <https://isovalent.com/blog/post/2021-12-08-ebpf-servicemesh>
+                         <https://www.infoq.com/news/2022/01/ebpf-wasm-service-mesh/>
+
+  * Service Mesh: Takes care of (netwok)distributed concerns (visibility, security, balancing,
+    service discovery, ...)
+
+  ```
+  | 1st GENERATION. Each app     2nd Generation. A common      3rd Generation. Sidecar
+  | links against a library.     sidecar is used.              functionality moved to
+  |                                                            linux kernel usinb eBPF
+  | ┌─ App1 ────┐ ┌─ App2 ────┐  ┌─ App1 ────┐ ┌─ App2 ────┐
+  | │  ┌───────┐│ │  ┌───────┐│  │           │ │           │
+  | │  │Service││ │  │Service││  └───────────┘ └───────────┘   ┌─ App1 ────┐ ┌─ App2 ────┐
+  | │  │Mesh   ││ │  │Mesh   ││  ┌───────────┐ ┌───────────┐   │           │ │           │
+  | │  │Library││ │  │Library││  │ServiceMesh│ │ServiceMesh│   └───────────┘ └───────────┘
+  | │  └───────┘│ │  └───────┘│  │SideCar    │ │SideCar    │   ┌─ Kernel ────────────────┐
+  | └───────────┘ └───────────┘  └───────────┘ └───────────┘   │ ┌─ eBPF Service Mesh ┐  │
+  | ┌─ Kernel ────────────────┐  ┌─ Kernel ────────────────┐   │ └────────────────────┘  │
+  | │       ┌─ TCP/IP ─┐      │  │       ┌─ TCP/IP ─┐      │   │       ┌─ TCP/IP ─┐      │
+  | │       └──────────┘      │  │       └──────────┘      │   │       └──────────┘      │
+  | │       ┌─ Network─┐      │  │       ┌─ Network─┐      │   │       ┌─ Network─┐      │
+  | │       └──────────┘      │  │       └──────────┘      │   │       └──────────┘      │
+  | └─────────────────────────┘  └─────────────────────────┘   └─────────────────────────┘
+  |                                Envoy, Linkerd, Nginx,...     Cilium
+  |                                or kube-proxy
+  |
+  |  App1 ←→ Kernel TCP/IP        App1 ←→ SideCar1              App1 ←→ Kernel eBPF
+  |  Kernel TCP/IP ←→ App2        SideCar1 ←→ Kernel TCP/IP     Kernel eBPF ←→ App2
+  |                               Kernel TCP/IP ←→ Sidecar2
+  |                               Sidecar2 ←→ App2
+  ```
+   [[}]]
+
+[[networking.101}]]

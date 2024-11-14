@@ -1,0 +1,141 @@
+[[{containerization.runtimes]]
+# Runtimes <!-- { $runtimes -->
+
+## Runtime Comparative Summary <!-- { -->
+  ```
+  runC        Golang, by docker and others  <·· Alt 1
+  ---------------------------------------------------
+  Crun        C-based, faster than runC     <·· Alt 2
+  ---------------------------------------------------
+  containerd  by IBM and others             <·· Alt 2
+  ---------------------------------------------------
+  CRI-O:      lightweight k8s alterantive   <·· Alt 3
+  ---------------------------------------------------
+  rklet                                     <·· Alt 3
+  ---------------------------------------------------
+  ```
+<!-- } -->
+
+## runc [[{ $runc ]]
+
+* @[https://github.com/opencontainers/runc]
+* Reference runtime and cli tool donated by Docker for spawning and
+  running containers according to the OCI specification.
+  (@[https://www.opencontainers.org/])
+* **It reads a runtime specification and configures the Linux kernel.
+  Eventually it creates and starts container processes. **
+  ```
+   Go might not have been the best programming language for this task.
+   since it does not have good support for the fork/exec model of computing
+   - Go's threading model expects programs to fork a second process and then
+     to exec immediately.
+   - However, an OCI container runtime is expected to fork off the first
+     process in the container.  It may then do some additional
+     configuration, including potentially executing hook programs, before
+     exec-ing the container process. The runc developers have added a lot
+     of clever hacks to make this work but are still constrained by Go's
+     limitations.
+   crun, C based, solved those problems.
+  ```
+[[ $runc }]]
+
+## crun [[{$crun]]
+@[https://github.com/containers/crun/issues]  
+@[https://www.redhat.com/sysadmin/introduction-crun]  
+
+* fast, low-memory footprint container runtime by Giuseppe Scrivanoby (RedHat).
+* C based: Unlike Go, C is not multi-threaded by default, and was built
+  and designed around the fork/exec model.
+  It could handle the fork/exec OCI runtime requirements in a much cleaner
+  fashion than 'runc'. C also interacts very well with the Linux kernel.
+  It is also lightweight, with much smaller sizes and memory than runc(Go):
+  compiled with -Os, 'crun' binary is ~300k (vs ~15M 'runc')
+  "" We have experimented running a container with just  *250K limit set*.""
+  *or 50 times smaller.* and up to  *twice as fast.
+* `cgroups v2` ("==" Upstream kernel, Fedora 31+) compliant from the scratch
+  while runc -Docker/K8s/...-  **gets "stuck" into cgroups v1.**
+  (experimental support in 'runc' for v2 as of v1.0.0-rc91, thanks to
+  Kolyshkin and Akihiro Suda).
+* feature-compatible with "runc" with extra experimental features.
+* Given the same Podman CLI/k8s YAML we get the same containers "almost
+  always" since  **the OCI runtime's job is to instrument the kernel to
+  control how PID 1 of the container runs. It is up to higher-level tools
+  like `conmon` or the container engine to monitor the container.**
+* Sometimes users want to limit number of PIDs in containers to just one.
+  With 'runc' PIDs limit can not be set too low, because the Go runtime
+  spawns several threads.
+  `crun`, written in C, does not have that problem.  Ex:
+  ```
+  $ RUNC="/usr/bin/runc" , CRUN="/usr/bin/crun"
+  $ podman --runtime $RUNC run --rm --pids-limit 5 fedora echo it works
+                                    └────────────┘
+  →  Error: container create failed (no logs from conmon): EOF
+  $ podman --runtime $CRUN run --rm --pids-limit 1 fedora echo it works
+                                    └────────────┘
+  →  it works
+  ```
+* OCI hooks supported, allowing the execution of specific programs at
+  different stages of the container's lifecycle.
+
+### runc/crun comparative
+
+* 'crun' is more portable: Ex: Risc-V.
+* Performance:
+  ```
+  $ CMD_RUNC="for i in {1..100}; do runc run foo < /dev/null; done"
+  $ CMD_CRUN="for i in {1..100}; do crun run foo < /dev/null; done"
+  $ time -v sh -c "$CMD_RUNC"
+  → User time (seconds): 2.16
+  → System time (seconds): 4.60
+  → Elapsed (wall clock) time (h:mm:ss or m:ss): 0:06.89
+  → Maximum resident set size (kbytes): 15120
+  → ...
+  $ time -v sh -c "$CMD_CRUN"
+  → ...
+  → User time (seconds): 0.53
+  → System time (seconds): 1.87
+  → Elapsed (wall clock) time (h:mm:ss or m:ss): 0:03.86
+  → Maximum resident set size (kbytes): 3752
+  → ...
+  ```
+
+### Experimental features
+* redirecting hooks STDOUT/STDERR via annotations.  
+  - Controlling stdout and stderr of OCI hooks
+    Debugging hooks can be quite tricky because, by default,
+    it's not possible to get the hook's stdout and stderr.  
+  - Getting the error or debug messages may require some yoga.  
+  - common trick: log to syslog to access hook-logs via journalctl.
+                   (Not always possible)  
+  - With 'crun' + 'Podman':
+  ```
+    $ podman run --annotation run.oci.hooks.stdout=/tmp/hook.stdout 
+                              └───────────────────────────────────┘
+                               executed hooks will write:
+                                STDOUT → /tmp/hook.stdout
+                                STDERR → /tmp/hook.stderr
+   (proposed fo OCI runtime spec)
+  ```
+
+* crun supports running older versions of systemd on cgroup v2 using
+  `--annotation run.oci.systemd.force_cgroup_v1`.  
+  This forces a cgroup v1 mount inside the container for the `name=systemd` hierarchy,
+  which is enough for systemd to work.
+  Useful to run older container images, such as RHEL7, on a cgroup v2-enabled system.
+  Ej:
+  ```
+  $ podman run --annotation \
+    run.oci.systemd.force_cgroup_v1=/sys/fs/cgroup \ 
+    centos:7 /usr/lib/systemd/systemd
+  ```
+* Crun as a library:  
+  "We are considering to integrate it with  *conmon, the container monitor used by
+   Podman and CRI-O, rather than executing an OCI runtime."
+* 'crun' Extensibility:  
+  """... easily to use all the kernel features, including syscalls not enabled in Go."""
+  -Ex: openat2 syscall protects against link path attacks (already supported by crun).
+[[$crun}]]
+
+<!-- $runtimes } -->
+
+[[containerization.runtimes}]]

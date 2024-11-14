@@ -1418,6 +1418,7 @@ $ sudo tcpdump \    "snif" IP traffic
   |
   | $ dig  www.amazon.com           # <· Query through (configured) DNS server
   | $ dig -x 10.10.10.10            # <· reverse query to DNS
+  | $ dig www.amazon.com @IP.DNS.1  # <· Query to a given DNS server (vs default one)
   | (check man page for more options)
   |
   | $ wget http://www.mydomain.com/myPage # <· HTTP client

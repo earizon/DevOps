@@ -1117,5 +1117,27 @@ go with the gocui library.
  | Local Volumes 46    4      6.362GB  5.977GB (93%)
  | Build Cache   854   0      9.684GB  9.684GB
  ``` 
+
+
+## Container Image Workflows at Scale with Buildpacks
+
+* Buildpacks transform source applications into images.
+* Each output image contains a full Software Bill of Materials which 
+  allows platform developers to know precisely what software is 
+  deployed. 
+* This makes them an excellent solution where a container runtime is 
+  provided to untrusted or semi-trusted development teams. 
 [[PM.TODO}]]
+
+## What Containerd 2.0 Means for You 
+
+- Samuel Karp, Google
+
+... first major new version of containerd since 1.0.0 was released in 2017.
+...new features, new extension points, and new backends for image operations and
+CRI with the goal of increased flexibility and better efficiency for certain types
+of workloads.
+
+...  it also removes some previously-deprecated features in favor of modern replacements.
+
 [[containerization}]]

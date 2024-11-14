@@ -378,7 +378,7 @@ Variable scope Overrinding rules:
       but will be the same as a host facts precedence when
       they come from the cache.
 
-- Ad-hoc command   [[{troubleshooting,ansible.debugging,01_PM.TODO]]
+- Ad-hoc command   [[{troubleshooting,ansible.debugging,PM.TODO]]
 <https://www.howtoforge.com/ansible-guide-ad-hoc-command/>
   - Ad-Hoc allows to perform tasks without creating a playbook
     first, such as rebooting servers, managing services, editing the line
@@ -688,7 +688,7 @@ To copy local facts and make the usable in current play:
           return {'surround_by_quote': surround_by_quote}
 
 
-# notify vs register [[{02_doc_has.comparative]]
+# notify vs register [[{doc_has.comparative]]
 <https://stackoverflow.com/questions/33931610/ansible-handler-notify-vs-register>
 
   some tasks ...                         |     some tasks ...
@@ -1340,7 +1340,7 @@ To copy local facts and make the usable in current play:
 [[}]]
 
 
-# TODO/Non-Classified [[{01_PM.TODO]]
+# TODO/Non-Classified [[{PM.TODO]]
 ## Dynamic Inventory  [[{cloud]]
 <https://docs.ansible.com/ansible/2.5/user_guide/intro_dynamic_inventory.html>
 (EC2, OpenStack,...) [[}]]

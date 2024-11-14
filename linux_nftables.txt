@@ -1,0 +1,9 @@
+# NFTables
+
+
+For decades, iptables has been the preferred packet filtering system in the Linux kernel.
+Used extensively across the Kubernetes networking ecosystem, iptables is now on the way out and is expected to be removed from the next generation of Linux distributions.
+
+... The successor to iptables -- nftables -- is ready to carry the torch instead, with a newly released beta kube-proxy implementation
+in v1.31 and network policy using Calico’s nftables backend.
+

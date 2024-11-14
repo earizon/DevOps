@@ -1,0 +1,19 @@
+[[{DevOps.CICD]]
+
+[[{security.IA.source_d,qa.code_analysis,qa.testing,git,PM.TODO]]
+# Source{d}: Large Scale Code Analysis with IA
+<https://www.linux.com/blog/holberton/2018/10/sourced-engine-simple-elegant-way-analyze-your-code>
+
+* source{d} offers a suite of applications that uses machine learning on code
+  to complete source code analysis and assisted code reviews. Chief among them
+  is the source{d} Engine, now in public beta; it uses a suite of open source
+  tools (such as Gitbase, Babelfish, and Enry) to enable large-scale source
+  code analysis. Some key uses of the source{d} Engine include language
+  identification, parsing code into abstract syntax trees, and performing SQL
+  Queries on your source code such as:
+    * What are the top repositories in a codebase based on number of commits?
+    * What is the most recent commit message in a given repository?
+    * Who are the most prolific contributors in a repository
+[[security.IA.source_d}]]
+
+[[DevOps.CICD}]]
