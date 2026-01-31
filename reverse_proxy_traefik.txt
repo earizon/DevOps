@@ -1,0 +1,115 @@
+[[{reverse_proxy.traefik,PM.TODO]]
+# Traefik Reverse Proxy
+
+* Cloud Native (k8s, ...) application proxy.
+
+* Automate the discovery, routing, and load balancing of microservices.
+
+* Out of the box routing, observability and Security [[security.AAA]]
+
+
+## The Traefik Labs Manifesto: The Case for a Unified Runtime Layer
+* Summary from <https://traefik.io/blog/why-choose-traefik> by Sudeep Goswami
+
+
+  ```
+  | - Application Proxy
+  | - API         Gateway
+  | - AI          Gateway
+  | - MCP         Gateway
+  | - API         Management
+  ```
+
+
+### The problem: ... two decades of rational technology choices have produced an 
+  irrational result.
+
+virtual machines, Kubernetes clusters, serverless platforms, public clouds,
+private clouds, sovereign regions, and edge locations, each with its own
+governance model, ingress pattern, networking assumptions, security policies, 
+API conventions and operational culture. ...  Each choice made sense in
+isolation. Collectively, they created chaos.
+
+... Agentic systems require stable APIs, trustworthy identity, predictable
+governance, end-to-end visibility, context-aware access, and consistency across 
+environments.
+
+The Solution: A Unified Runtime Layer for All Workloads above the execution
+environments but below the application logic.
+- It standardizes how traffic flows, how identity is enforced, how APIs are
+exposed, how workloads are protected, and how intelligence is applied. 
+
+Our Principles
+
+- Consistent governance everywhere: Policies must be defined once and applied 
+  universally across Kubernetes, VMs, and edge nodes. By enforcing standards like 
+  OAS (OpenAPI Specification) at the definition level, we transform loose 
+  integrations into strict, governable contracts.
+- Universal connectivity: VMs, containers, functions, and legacy systems must 
+  behave like a single addressable estate. Connectivity is not negotiable. It is 
+  the baseline requirement for everything that follows.
+- Intelligent (Layer 7) routing by default. Modern workloads need more than 
+  routing. They need context-aware decisions, semantic caching, and policy 
+  enforcement that understands intent rather than just packets.
+- Security as a standard, not an add-on, not a workaround, no 
+  environment-specific compromises.
+- Complete observability across all traffic. Every request, response, and
+  failure must be traceable. 
+- Sovereignty and edge readiness. 
+- Developer experience is not cosmetic. Systems must be easy to use to be 
+  adopted.
+
+
+Our product suite embodies this vision:
+
+-          Traefik Proxy: unifies ingress, routing, and traffic management across 
+  containers (Kubernetes, ECS, Swarm, Nomad, etc.), VMs, and hybrid
+  architectures.
+-    Traefik API Gateway: brings consistent identity, policy enforcement, and 
+  visibility to every environment.
+-     Traefik AI Gateway: manages AI inference traffic as a first-class workload, 
+  handling guardrails, cost controls, and semantic caching.
+-    Traefik MCP Gateway: ensures agentic AI systems interact with enterprise 
+  infrastructure safely and predictably.
+- Traefik API Management: provides comprehensive governance, from developer 
+  portals to GitOps-driven operations at scale.
+
+- Organizations can start with any Traefik Labs product and add capabilities 
+  seamlessly, in seconds, as requirements change. This makes our entire suite 
+  less a collection of tools and more a platform with a clear point of view.
+  [[PM.low_code]]
+
+## Integrations
+
+- Traefik + HashiCorp:
+- Traefik + Microsoft: Traefik and Microsoft Azure deliver an integrated, 
+  Kubernetes-native platform for unified API and AI connectivity, delivering 
+  consistent performance and security everywhere your workloads run. 
+  [[cloud.azure]]
+  - Unified AI & API Management
+    - Zero-config API routing
+    - Unified AI/API control
+    - Scales to full lifecycle
+    - Accelerates service delivery
+  - Robust Security & Governance
+    - TLS and AI content guard
+    - Centralized policy enforcement
+    - Azure AD authentication
+    - Ensures compliance at scale
+  - Streamlined Kubernetes Operations
+    - Zero-downtime upgrades
+    - GitOps-driven automation
+    - Unified multi-cloud management
+    - Enhanced observability
+  - Scalable Cloud-Native Platform
+    - Hybrid cloud scalability
+    - Native Kubernetes integration
+    - AI-optimized semantic caching
+    - Supports HTTP/3, gRPC
+
+
+- Traefik + Nutanix
+- Traefik + Oracle OCI
+- Traefik + ...
+
+[[reverse_proxy.traefik}]]

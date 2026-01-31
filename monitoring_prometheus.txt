@@ -1,0 +1,96 @@
+[[{monitoring.prometheus]]
+# https://prometheus.io/
+
+- Designed just for last "days" monitoring data. 
+  (See notes on Cortex for long term storage)
+- scalates through sharding and federation
+- monitoring metrics analyzer
+- PromQL Query language allowing to select and aggregate time-series data in real time.
+  - result can either be shown as graph, tabular data or consumed by external HTTP API.
+  - PromQL can also be used for alerting.
+  - Built-in expression browser.
+- **Highly dimensional data model**.
+- **stores all data as TIME SERIES**:
+- Time series are identified by **a metric name** and a set of key-value pairs**.
+- Multi-mode data visualization.
+- Grafana integration.
+
+## Awesome Prometheus 
+
+* Collection of Prometheus alerting rules, by Samuel Berthe
+* <https://github.com/samber/awesome-prometheus-alerts>
+
+
+[[{monitoring.prometheus,troubleshooting.storage]]
+## cortex: long term storage for prometheus.
+
+* <https://github.com/cortexproject/cortex>
+* horizontally scalable, highly available, multi-tenant.
+
+### Remote Write 2.0 Protocol: 
+
+* Prometheus Remote Write: protocol used to send metrics from
+  Prometheus (or compatible sources) to remote storage endpoints
+  such as Thanos and Cortex.
+
+* Generally used for metric long term storage, centralization, and cloud services.
+
+* Version v2.0  adds more functionality while cutting your 
+  egress costs up to 60%, and keeps the previous versions 
+  easy-to-implement stateless design! [[PM.price]]
+[[security.backups}]]
+
+[[monitoring.prometheus}]]
+
+# TODO:
+
+- Prometheus  official best practices for metrics and label naming:
+  <https://prometheus.io/docs/practices/naming/>
+  In some cases it could be needed to apply some variations so we want to define some extra rules.
+
+
+
+https://ereader.perlego.com/1/book/4399926/0
+
+* You can think, in OOP terms, of a metric as a class, and of a time-series as an instance
+  of that class with different instance attributes (labels in prometheus)
+* Many metrics are aggregations in window-time intervals (eg: counters with request/minute)
+  loosing some fine grain details (that will be present in the other two observability pilars:
+  logs and traces).
+* Samples are built on top of time series. A metric isn't much use without 1+ time series that
+  tracks it, and a time series isn't much use without samples that represent is values over time.
+  * A sample is just a tuple (timestamp /* millisecs in UNIX EPOCH */, value /*float64*/).
+```
+   node_memory_MemFree_bytes{instance="server1.a.com"} ·> (t0,v0), (t1,v1), ...
+   node_memory_MemFree_bytes{instance="server2.a.com"}
+   └─ class ───────────────┘ └─  instance attri. ───┘
+```
+
+* In the Go community, logfmt is used to provide log formating (this is also what Prometheus
+  uses when reading logs), to predictably extract key/values.
+  Log is the closer we have to "events".
+
+* Traces are the least distorted observability signal (vs metrics and logs) but also the most
+  difficult to implement, specially for distributed traces crossing decoupled services. To 
+  reduce  cost, trace sample (with 1/100 ratios in production) are commonly used.
+  * Newer versions of Prometheus provides a feature called "exemplars" allowing to integrate
+    tracing tools by attaching a trace ID to its time series data points.
+
+
+...
+
+## Alerts:
+
+* Anomaly detection inherently involves some knowledge of the 
+mathematical field of statistics, which is outside of the scope of 
+this book. However, I would recommend reviewing the excellent blog 
+post and conference talk from the team at GitLab on how to do 
+alerting based on z-scores and/or the seasonality of data, available 
+at 
+https://about.gitlab.com/blog/2019/07/23/anomaly-detection-using-prome
+theus/. They cover the topic far more thoroughly than I could hope to.
+
+
+## Prometheus linter
+
+https://github.com/cloudflare/pint

@@ -1,0 +1,674 @@
+Version control is not just for code. It’s a tool for managing change. Below some good to know git stuffs : 👉 Commit Often with Clear Messages - Make frequent commits and use concise, descriptive messages to track changes easily. 👉 Use Branches for Features - Create separate branches for each feature or bug fix to keep your main branch stable and organized. 👉 Stash Unfinished Changes - Use git stash to temporarily save changes without committing, so you can switch branches or work on something else. 👉 Interactive Rebase - Use git rebase -i to clean up commit history, combine commits, or edit messages for a more readable history. 👉 Pull with Rebase - Use git pull --rebase to keep a cleaner commit history by avoiding unnecessary merge commits. 👉 Cherry-Pick Specific Commits - Use git cherry-pick <commit> to apply specific commits from one branch to another without merging everything. 👉 Undo Mistakes with git reflog - Use git reflog to view a history of all actions, allowing you to recover accidentally deleted commits or branches. 👉 Use Aliases for Common Commands - Set up aliases (e.g., git co for git checkout) to save time on frequently used commands. 👉 Visualize Branches with git log --graph - Use git log --graph --oneline to see a visual representation of your branches and commit history. 👉 Check Changes with git diff - Use git diff to review changes before committing, and git diff --staged to see staged changes. 👉 Set Up .gitignore Early - Define a .gitignore file to avoid tracking unnecessary files, keeping your repository clean and lightweight.
+
+
+__________________________
+
+git devops
+https://github.com/tummychow/git-absorb
+
+
+You have a feature branch with a few commits. Your teammate reviewed the branch and pointed out a few bugs. You have fixes for the bugs, but you don't want to shove them all into an opaque commit that says fixes, because you believe in atomic commits. Instead of manually finding commit SHAs for git commit --fixup, or running a manual interactive rebase, do this:
+
+git add $FILES_YOU_FIXED
+git absorb --and-rebase
+
+git absorb will automatically identify which commits are safe to modify, and which staged changes belong to each of those commits. It will then write fixup! commits for each of those changes.
+
+With the --and-rebase flag, these fixup commits will be automatically integrated into the corresponding ones. Alternatively, you can check its output manually if you don't trust it, and then fold the fixups into your feature branch with git's built-in autosquash functionality:
+
+git add $FILES_YOU_FIXED
+git absorb
+git log # check the auto-generated fixup commits
+git rebase -i --autosquash master
+
+
+
+________________________________________________
+
+System Init: The Future of DevOps Automation?
+
+https://www.systeminit.com/
+
+System Initiative is an Intuitive, Powerful, and Collaborative replacement for Infrastructure as Code.
+
+_____________________________________
+
+
+Git GitLab Pages | GitLab
+https://docs.gitlab.com/ee/user/project/pages/
+
+
+______________________________
+
+git qa
+
+https://github.com/trinhminhtriet/gitcoco
+
+GitCoco: A Rust-based CLI for Conventional Commits, making commit standardization effortless and consistent for seamless project versioning and collaboration.
+
+✨ Features
+
+gitcoco gives tools to work with Conventional Commits.
+
+It provides the following commands:
+
+gitcoco changelog: Create a changelog file.
+gitcoco check: Checks if a range of commits is following the convention.
+gitcoco commit: Helps to make conventional commits.
+gitcoco version: Finds out the current or next version.
+
+
+
+____________________________
+
+## https://www.linuxlinks.com/?s=Git
+
+
+## Git 2.50 Lands: Say Goodbye to Recursive Merges Engine
+https://linuxiac.com/git-2-50-lands-say-goodbye-to-recursive-merges/
+
+linuxiac.com
+
+Git 2.50 Lands: Say Goodbye to Recursive Merges Engine
+
+Bobby Borisov
+3 - 4 minutes
+________________________________
+
+Almost three months after its previous 2.49 release, Git, a distributed version control system and cornerstone tool in software development that helps developers efficiently manage changes in their code across projects, has just released its new 2.50 version.
+
+A notable improvement is the handling of multiple cruft packs. Originally introduced in Git 2.37, cruft packs store unreachable objects in repositories. Git 2.43 introduced options to manage these packs, but usability challenges persisted, notably with confusing command-line behaviors and unexpected limitations.
+
+Git 2.50 addresses these issues with a new, clear-cut option called --combine-cruft-below-size. This tool allows users to efficiently combine smaller cruft packs, significantly improving repository hygiene over time.
+
+In another major advancement, incremental multi-pack reachability bitmaps have arrived. Following the incremental multi-pack index improvements from Git 2.47, Git 2.50 further enhances performance in large repositories by enabling incremental updates to reachability bitmaps.
+
+Perhaps the most exciting update in this release, however, is the complete transition from Git’s older merge engine, “recursive,” to the faster and more maintainable “ORT” (Ostensibly Recursive’s Twin) engine.
+
+Introduced in Git 2.33 and made the default in 2.34, ORT has now fully replaced the legacy recursive engine. This change boosts performance and introduces new functionalities, such as the ability to test mergeability without persisting new merge objects.
+
+Developers who rely on scripting repository objects will appreciate enhancements to git cat-file. Git 2.50 introduces streamlined object filtering directly into git cat-file, simplifying common tasks such as extracting specific object types. Additionally, the seldom-used --allow-unknown-type option has been deprecated, streamlining the tool’s functionality and removing outdated quirks.
+
+Moreover, maintenance tasks become more intuitive with updates to git maintenance. New tasks, including worktree-prune, rerere-gc, and reflog-expire, have been added, paralleling existing garbage collection operations and simplifying routine repository cleanup. Users also gain the ability to configure the batch size for loose object packing, providing enhanced control over maintenance behavior.
+
+New configurations for TCP keepalive behavior address networking performance and offer finer control over HTTP connections. Furthermore, Perl dependency has been substantially reduced, removing it entirely from Git’s test suite and documentation toolchain, enhancing portability and reducing external dependencies.
+
+Lastly, user interface refinements include clearer comments during interactive rebases and improved efficiency in sparse checkouts when using git add -p or git add -i.
+
+For more information, see the announcement.
+
+## Git absorb: clesn fixes on branches.
+https://github.com/tummychow/git-absorb
+
+You have a feature branch with a few commits. Your teammate reviewed the branch and pointed out a few bugs. You have fixes for the bugs, but you don't want to shove them all into an opaque commit that says fixes, because you believe in atomic commits. Instead of manually finding commit SHAs for git commit --fixup, or running a manual interactive rebase, do this:
+
+git add $FILES_YOU_FIXED
+git absorb --and-rebase
+
+
+## Jujutsu: A Git-compatible VCS that is both simple and powerful
+
+https://github.com/jj-vcs/jj
+
+A Git-compatible VCS that is both simple and powerful
+
+
+
+Jujutsu is a powerful version control system for software projects. You use it to get a copy of your code, track changes to the code, and finally publish those changes for others to see and use. It is designed from the ground up to be easy to use—whether you're new or experienced, working on brand new projects alone, or large scale software projects with large histories and teams.
+
+Jujutsu is unlike most other systems, because internally it abstracts the user interface and version control algorithms from the storage systems used to serve your content. This allows it to serve as a VCS with many possible physical backends, that may have their own data or networking models—like Mercurial or Breezy, or hybrid systems like Google's cloud-based design, Piper/CitC.
+
+Today, we use Git repositories as a storage layer to serve and track content, making it compatible with many of your favorite Git-based tools, right now! All core developers use Jujutsu to develop Jujutsu, right here on GitHub. But it should hopefully work with your favorite Git forges, too.
+
+We combine many distinct design choices and concepts from other version control systems into a single tool. Some of those sources of inspiration include:
+
+Git: We make an effort to be fast—with a snappy UX, efficient algorithms, correct data structures, and good-old-fashioned attention to detail. The default storage backend uses Git repositories for "physical storage", for wide interoperability and ease of onboarding.
+
+Mercurial & Sapling: There are many Mercurial-inspired features, such as the revset language to select commits. There is no explicit index or staging area. Branches are "anonymous" like Mercurial, so you don't need to make up a name for each small change. Primitives for rewriting history are powerful and simple. Formatting output is done with a robust template language that can be configured by the user.
+
+Darcs: Jujutsu keeps track of conflicts as first-class objects in its model; they are first-class in the same way commits are, while alternatives like Git simply think of conflicts as textual diffs. While not as rigorous as systems like Darcs (which is based on a formalized theory of patches, as opposed to snapshots), the effect is that many forms of conflict resolution can be performed and propagated automatically.
+
+And it adds several innovative, useful features of its own:
+
+Working-copy-as-a-commit: Changes to files are recorded automatically as normal commits, and amended on every subsequent change. This "snapshot" design simplifies the user-facing data model (commits are the only visible object), simplifies internal algorithms, and completely subsumes features like Git's stashes or the index/staging-area.
+
+Operation log & undo: Jujutsu records every operation that is performed on the repository, from commits, to pulls, to pushes. This makes debugging problems like "what just happened?" or "how did I end up here?" easier, especially when you're helping your coworker answer those questions about their repository! And because everything is recorded, you can undo that mistake you just made with ease. Version control has finally entered the 1960s!
+
+Automatic rebase and conflict resolution: When you modify a commit, every descendent is automatically rebased on top of the freshly-modified one. This makes "patch-based" workflows a breeze. If you resolve a conflict in a commit, the resolution of that conflict is also propagated through descendants as well. In effect, this is a completely transparent version of git rebase --update-refs combined with git rerere, supported by design.
+
+Warning
+
+The following features are available for use, but experimental; they may have bugs, backwards incompatible storage changes, and user-interface changes!
+
+Safe, concurrent replication: Have you ever wanted to store your version controlled repositories inside a Dropbox folder? Or continuously backup repositories to S3? No? Well, now you can!
+
+The fundamental problem with using filesystems like Dropbox and backup tools like rsync on your typical Git/Mercurial repositories is that they rely on local filesystem operations being atomic, serialized, and non-concurrent with respect to other reads and writes—which is not true when operating on distributed file systems, or when operations like concurrent file copies (for backup) happen while lock files are being held.
+
+Jujutsu is instead designed to be safe under concurrent scenarios; simply using rsync or Dropbox and then using that resulting repository should never result in a repository in a corrupt state. The worst that should happen is that it will expose conflicts between the local and remote state, leaving you to resolve them.
+
+The command-line tool is called jj for now because it's easy to type and easy to replace (rare in English). The project is called "Jujutsu" because it matches "jj".
+
+Jujutsu is relatively young, with lots of work to still be done. If you have any questions, or want to talk about future plans, please join us on Discord , start a GitHub Discussion, or send an IRC message to #jujutsu on Libera Chat. The developers monitor all of these channels1.
+
+News and Updates 📣
+
+December 2024: The jj Repository has moved to the jj-vcs GitHub organisation.
+November 2024: Version 0.24 is released which adds jj file annotate, which is equivalent to git blame or hg annotate.
+September 2024: Martin gave a presentation about Jujutsu at Git Merge 2024.
+Feb 2024: Version 0.14 is released, which deprecates "jj checkout" and "jj merge", as well as jj init --git, which is now just called jj git init.
+Oct 2023: Version 0.10.0 is released! Now includes a bundled merge and diff editor for all platforms, "immutable revsets" to avoid accidentally edit-ing the wrong revisions, and lots of polish.
+Jan 2023: Martin gave a presentation about Google's plans for Jujutsu at Git Merge 2022! See the slides or the recording.
+
+Related Media
+
+Mar 2024: Chris Krycho started a YouTube series about Jujutsu.
+Feb 2024: Chris Krycho published an article about Jujutsu called jj init and Steve Klabnik followed up with the Jujutsu Tutorial.
+Jan 2024: Jujutsu was featured in an LWN.net article called Jujutsu: a new, Git-compatible version control system.
+Jan 2023: Martin's Talk about Jujutsu at Git Merge 2022, video and the associated slides.
+
+The wiki also contains a more extensive list of media references.
+
+Getting started
+
+Important
+
+Jujutsu is an experimental version control system. While Git compatibility is stable, and most developers use it daily for all their needs, there may still be work-in-progress features, suboptimal UX, and workflow gaps that make it unusable for your particular use.
+
+Follow the installation instructions to obtain and configure jj.
+
+The best way to get started is probably to go through the tutorial. Also see the Git comparison, which includes a table of jj vs. git commands.
+
+As you become more familiar with Jujutsu, the following resources may be helpful:
+
+The FAQ.
+The Glossary.
+The jj help command (e.g. jj help rebase).
+The jj help -k <keyword> command (e.g. jj help -k config). Use jj help --help to see what keywords are available.
+
+If you are using a prerelease version of jj, you would want to consult the docs for the prerelease (main branch) version. You can also get there from the docs for the latest release by using the website's version switcher. The version switcher is visible in the header of the website when you scroll to the top of any page.
+
+Features
+
+Compatible with Git
+
+Jujutsu is designed so that the underlying data and storage model is abstract. Today, only the Git backend is production-ready. The Git backend uses the gitoxide Rust library.
+
+The Git backend is fully featured and maintained, and allows you to use Jujutsu with any Git remote. The commits you create will look like regular Git commits. You can fetch branches from a regular Git remote and push branches to the remote. You can always switch back to Git.
+
+Here is how you can explore a GitHub repository with jj.
+
+You can even have a "co-located" local repository where you can use both jj and git commands interchangeably.
+
+The working copy is automatically committed
+
+Jujutsu uses a real commit to represent the working copy. Checking out a commit results a new working-copy commit on top of the target commit. Almost all commands automatically amend the working-copy commit.
+
+The working-copy being a commit means that commands never fail because the working copy is dirty (no "error: Your local changes to the following files..."), and there is no need for git stash. Also, because the working copy is a commit, commands work the same way on the working-copy commit as on any other commit, so you can set the commit message before you're done with the changes.
+
+The repo is the source of truth
+
+With Jujutsu, the working copy plays a smaller role than with Git. Commands snapshot the working copy before they start, then they update the repo, and then the working copy is updated (if the working-copy commit was modified). Almost all commands (even checkout!) operate on the commits in the repo, leaving the common functionality of snapshotting and updating of the working copy to centralized code. For example, jj restore (similar to git restore) can restore from any commit and into any commit, and jj describe can set the commit message of any commit (defaults to the working-copy commit).
+
+Entire repo is under version control
+
+All operations you perform in the repo are recorded, along with a snapshot of the repo state after the operation. This means that you can easily revert to an earlier repo state, or to simply undo a particular operation (which does not necessarily have to be the most recent operation).
+
+Conflicts can be recorded in commits
+
+If an operation results in conflicts, information about those conflicts will be recorded in the commit(s). The operation will succeed. You can then resolve the conflicts later. One consequence of this design is that there's no need to continue interrupted operations. Instead, you get a single workflow for resolving conflicts, regardless of which command caused them. This design also lets Jujutsu rebase merge commits correctly (unlike both Git and Mercurial).
+
+Basic conflict resolution:
+
+Juggling conflicts:
+
+Automatic rebase
+
+Whenever you modify a commit, any descendants of the old commit will be rebased onto the new commit. Thanks to the conflict design described above, that can be done even if there are conflicts. Bookmarks pointing to rebased commits will be updated. So will the working copy if it points to a rebased commit.
+
+Comprehensive support for rewriting history
+
+Besides the usual rebase command, there's jj describe for editing the description (commit message) of an arbitrary commit. There's also jj diffedit, which lets you edit the changes in a commit without checking it out. To split a commit into two, use jj split. You can even move part of the changes in a commit to any other commit using jj squash -i --from X --into Y.
+
+Status
+
+The tool is fairly feature-complete, but some important features like support for Git submodules are not yet completed. There are also several performance bugs. It's likely that workflows and setups different from what the core developers use are not well supported, e.g. there is no native support for email-based workflows.
+
+Today, all core developers use jj to work on jj. I (Martin von Zweigbergk) have almost exclusively used jj to develop the project itself since early January 2021. I haven't had to re-clone from source (I don't think I've even had to restore from backup).
+
+There will be changes to workflows and backward-incompatible changes to the on-disk formats before version 1.0.0. Even the binary's name may change (i.e. away from jj). For any format changes, we'll try to implement transparent upgrades (as we've done with recent changes), or provide upgrade commands or scripts if requested.
+
+Related work
+
+There are several tools trying to solve similar problems as Jujutsu. See related work for details.
+
+Contributing
+
+We welcome outside contributions, and there's plenty of things to do, so don't be shy. Please ask if you want a pointer on something you can help with, and hopefully we can all figure something out.
+
+We do have a few policies and suggestions for contributors. The broad TL;DR:
+
+Bug reports are very welcome!
+Every commit that lands in the main branch is code reviewed.
+Please behave yourself, and obey the Community Guidelines.
+There is a mandatory CLA you must agree to. Importantly, it does not transfer copyright ownership to Google or anyone else; it simply gives us the right to safely redistribute and use your changes.
+
+Mandatory Google Disclaimer
+
+I (Martin von Zweigbergk, martinvonz@google.com) started Jujutsu as a hobby project in late 2019, and it has evolved into my full-time project at Google, with several other Googlers (now) assisting development in various capacities. That said, this is not a Google product.
+
+License
+
+Jujutsu is available as Open Source Software, under the Apache 2.0 license. See LICENSE for details about copyright and redistribution.
+
+The jj logo was contributed by J. Jennings and is licensed under a Creative Commons License, see docs/images/LICENSE.
+
+Footnotes
+
+To be more precise, the #jujutsu Libera IRC channel is bridged to one of the channels on jj's Discord. Some of the developers stay on Discord and use the bridge to follow IRC. ↩
+
+## git fsmonitor
+https://git-scm.com/docs/git-fsmonitor--daemon
+
+## 101 git  ssh signing
+
+- Git 2.35 includes a couple of new additions to SSH signing. [[PM.TODO]]
+
+
+[[{git.scalability,scalability.storage]]
+## Scalar (Git v2.38+) 
+* <https://git-scm.com/docs/scalar>
+* Replace previous Git LFS/VFS support for "big files and repositories with a native Git integration.
+* Scalar improves performance by configuring advanced Git settings,
+  maintaining repositories in the background, and helping to reduce
+  data sent across the network.
+* <https://github.blog/2022-10-13-the-story-of-scalar/>
+[[}]]
+
+## NostrGit [[{git.nostr]]
+* <https://github.com/NostrGit/NostrGit>
+  A truly censorship-resistant alternative to GitHub that has a chance of working
+[[}]]
+
+## 4 secrets encryption tools [[{security.secret_management}]]
+* <https://www.linuxtoday.com/security/4-secrets-management-tools-for-git-encryption-190219145031.html>
+* <https://www.atareao.es/como/cifrado-de-repositorios-git/>
+
+## Garbage Collector [[{performance}]]
+*  Git occasionally does garbage collection as part of its normal operation,
+by invoking git gc --auto. The pre-auto-gc hook is invoked just before the
+garbage collection takes place, and can be used to notify you that this is
+happening, or to abort the collection if now isn’t a good time.
+
+
+## sparse-checkout (Git v2.25+) allows to checkout just a subset [[{scalability]]
+  of a given monorepo, speeding up commands like git pull and
+  git status.
+@[https://github.blog/2020-01-17-bring-your-monorepo-down-to-size-with-sparse-checkout/] [[}]]
+
+## Advanced Git:
+* revert/rerere:
+* Submodules:
+* Subtrees:
+  * TODO: how subtrees differ from submodules
+  * how to use the subtree to create a new project from split content
+* Interactive rebase:
+  * how to rebase functionality to alter commits in various ways.
+  * how to squash multiple commits down into one.
+* Supporting files:
+  * Git attributes file and how it can be used to identify binary files,
+    specify line endings for file types, implement custom filters, and
+    have Git ignore specific file paths during merging.
+* Cregit token level blame:
+@[https://www.linux.com/blog/2018/11/cregit*token-level-blame-information-linux-kernel]
+cregit: Token*Level Blame Information for the Linux Kernel
+Blame tracks lines not tokens, cgregit blames on tokens (inside a line)
+
+## Gitea painless self-hosted Git) [[{PM.TODO,PM.low_code]]
+("replaced" unmaitained Gogs)
+* <https://gitea.io/>
+* Fork of gogs, since it was unmaintained.
+
+## Gerrit (by Google)</span>
+* <https://www.gerritcodereview.com/index.html>
+Gerrit is a Git Server that provides:
+* Code Review:
+  * One dev. writes code, another one is asked to review it.
+    (Goal is cooperation, not fauilt-finding)
+  * <https://docs.google.com/presentation/d/1C73UgQdzZDw0gzpaEqIC6SPujZJhqamyqO1XOHjH*uk/>
+  * UI for seing changes.
+  * Voting pannel.
+* Access Control on the Git Repositories.
+* Extensibility through Java plugins.
+  <https://www.gerritcodereview.com/plugins.html>
+
+* Gerrit does NOT provide:
+  * Code Browsing
+  * Code Search
+  * Project Wiki
+  * Issue Tracking
+  * Continuous Build
+  * Code Analyzers
+  * Style Checkers
+[[}]]
+
+## Git Secrets: [[{qa,security.secret_management}]]
+* <https://github.com/awslabs/git-secrets#synopsis>
+  Prevents you from committing passwords and other sensitive
+  information to a git repository.
+
+## Forgit: Interactive Fuzzy Finder:[[{dev_stack.forgit,qa.UX,PM.TODO]]
+* <https://www.linuxuprising.com/2019/11/forgit-interactive-git-commands-with.html>
+* It takes advantage of the popular "fzf" fuzzy finder to provide
+  interactive git commands, with previews. [[}]]
+
+## Isomorphic Git: 100% JS client [[{security.gpg]]
+@[https://isomorphic-git.org/] !!!
+
+* Features:
+  * clone repos
+  * init new repos
+  * list branches and tags
+  * list commit history
+  * checkout branches
+  * push branches to remotes
+  * create new commits
+  * git config
+  * read+write raw git objects
+  * PGP (GPG) signing
+  * file status
+  * merge branches
+[[}]]
+
+## Git Monorepos: [[{qa.UX,scalability}]]
+* (Big) Monorepos in Git:
+  * <https://www.infoq.com/presentations/monorepos/>
+  * <https://www.atlassian.com/git/tutorials/big-repositories>
+
+## Git: Symbolic Ref best-patterns
+* <https://stackoverflow.com/questions/4986000/whats-the-recommended-usage-of-a-git-symbolic-reference>
+
+## GitHub: Search by topic: [[{git.github}]]
+* <https://help.github.com/en/github/searching-for-information-on-github/searching-topics>
+* Ex:search by topic ex "troubleshooting" and language "java"
+  <https://github.com/topics/troubleshooting?l=java>
+
+## Gitsec: [[{security.secret_management,qa}]]
+* <https://github.com/BBVA/gitsec>
+  gitsec is an automated secret discovery service for git that helps
+  you detect sensitive data leaks.
+  gitsec doesn't directly detect sensitive data but uses already
+  available open source tools with this purpose and provides a
+  framework to run them as one.
+
+## when to avoid git-rebase [[{101.rebase]]
+https://www.javacodegeeks.com/2024/03/when-to-avoid-git-rebase.html
+[[101.rebase}]]
+
+[[{101]]
+## https://codeberg.org/ 
+
+* Andrew Kelly, presidente de la Zig Software Foundation, ha anunciado 
+finalmente la migración completa del proyecto a Codeberg, una plataforma sin 
+ánimo de lucro que en menos de un año ha duplicado su número de miembros. Ha 
+alegado que GitHub está descuidando el mantenimiento de herramientas 
+críticas, y que los sistemas de integración continua se comportan de forma 
+errática (Kelly lo llama 'vibe-scheduling', en referencia al 'vibe coding').Su 
+conclusión es que la obsesión de GitHub/Microsoft con la IA estaría restando 
+recursos y atención a labores de ingeniería esencial.
+[[}]]
+
+
+## Alternatives to git
+
+* Fossil, Plastic, Pijal  
+
+[[{git.101,troubleshooting.git]]
+## 101 Oh Shit, Git!?!
+
+* <https://ohshitgit.com/>
+
+
+fix things when screwing up with git ... Git documentation has this chicken and 
+egg problem: 
+- you can't search for how to get yourself out of a mess, unless you already
+  know the name of the thing you need to know about in order to fix your problem.
+
+```
+$ git reflog # Dump a list of every thing you've done in git, across all branches!
+             # each one has an index HEAD@{index}
+             # find the one before you broke everything
+
+$ git reset HEAD@{index}
+# magic time machine
+
+You can use this to get back stuff you accidentally deleted, or just to remove some stuff you tried that broke the repo, or to recover after a bad merge, or just to go back to a time when things actually worked. I use reflog A LOT. Mega hat tip to the many many many many many people who suggested adding it!
+
+Oh shit, I committed and immediately realized I need to make one small change!
+
+# make your change
+git add . # or add individual files
+git commit --amend --no-edit
+# now your last commit contains that change!
+# WARNING: never amend public commits
+
+This usually happens to me if I commit, then run tests/linters... and FML, I didn't put a space after an equals sign. You could also make the change as a new commit and then do rebase -i in order to squash them both together, but this is about a million times faster.
+
+Warning: You should never amend commits that have been pushed up to a public/shared branch! Only amend commits that only exist in your local copy or you're gonna have a bad time.
+
+Oh shit, I need to change the message on my last commit!
+
+git commit --amend
+# follow prompts to change the commit message
+
+Stupid commit message formatting requirements.
+
+Oh shit, I accidentally committed something to master that should have been on a brand new branch!
+
+# create a new branch from the current state of master
+git branch some-new-branch-name
+# remove the last commit from the master branch
+git reset HEAD~ --hard
+git checkout some-new-branch-name
+# your commit lives in this branch now :)
+
+Note: this doesn't work if you've already pushed the commit to a public/shared branch, and if you tried other things first, you might need to git reset HEAD@{number-of-commits-back} instead of HEAD~. Infinite sadness. Also, many many many people suggested an awesome way to make this shorter that I didn't know myself. Thank you all!
+
+Oh shit, I accidentally committed to the wrong branch!
+
+# undo the last commit, but leave the changes available
+git reset HEAD~ --soft
+git stash
+# move to the correct branch
+git checkout name-of-the-correct-branch
+git stash pop
+git add . # or add individual files
+git commit -m "your message here";
+# now your changes are on the correct branch
+
+A lot of people have suggested using cherry-pick for this situation too, so take your pick on whatever one makes the most sense to you!
+
+git checkout name-of-the-correct-branch
+# grab the last commit to master
+git cherry-pick master
+# delete it from master
+git checkout master
+git reset HEAD~ --hard
+
+Oh shit, I tried to run a diff but nothing happened?!
+
+If you know that you made changes to files, but diff is empty, you probably add-ed your files to staging and you need to use a special flag.
+
+git diff --staged
+
+File under ¯\_(ツ)_/¯ (yes, I know this is a feature, not a bug, but it's fucking baffling and non-obvious the first time it happens to you!)
+
+Oh shit, I need to undo a commit from like 5 commits ago!
+
+# find the commit you need to undo
+git log
+# use the arrow keys to scroll up and down in history
+# once you've found your commit, save the hash
+git revert [saved hash]
+# git will create a new commit that undoes that commit
+# follow prompts to edit the commit message
+# or just save and commit
+
+Turns out you don't have to track down and copy-paste the old file contents into the existing file in order to undo changes! If you committed a bug, you can undo the commit all in one go with revert.
+
+You can also revert a single file instead of a full commit! But of course, in true git fashion, it's a completely different set of fucking commands...
+
+Oh shit, I need to undo my changes to a file!
+
+# find a hash for a commit before the file was changed
+git log
+# use the arrow keys to scroll up and down in history
+# once you've found your commit, save the hash
+git checkout [saved hash] -- path/to/file
+# the old version of the file will be in your index
+git commit -m "Wow, you don't have to copy-paste to undo"
+
+When I finally figured this out it was HUGE. HUGE. H-U-G-E. But seriously though, on what fucking planet does checkout -- make sense as the best way to undo a file? :shakes-fist-at-linus-torvalds:
+
+Fuck this noise, I give up.
+
+cd ..
+sudo rm -r fucking-git-repo-dir
+git clone https://some.github.url/fucking-git-repo-dir.git
+cd fucking-git-repo-dir
+
+Thanks to Eric V. for this one. All complaints about the use of sudo in this joke can be directed to him.
+
+For real though, if your branch is sooo borked that you need to reset the state of your repo to be the same as the remote repo in a "git-approved" way, try this, but beware these are destructive and unrecoverable actions!
+
+# get the lastest state of origin
+git fetch origin
+git checkout master
+git reset --hard origin/master
+# delete untracked files and directories
+git clean -d --force
+# repeat checkout/reset/clean for each borked branch
+
+*Disclaimer: This site is not intended to be an exhaustive reference. And yes, there are other ways to do these same things with more theoretical purity or whatever, but I've come to these steps through trial and error and lots of swearing and table flipping, and I had this crazy idea to share them with a healthy dose of levity and profanity. Take it or leave it as you will!
+
+GitHub
+
+What's your Oh shit, git moment? Share it with me! @ohshitgit
+@ksylor © 2016-2025 Katie Sylor-Miller
+```
+[[}]]
+
+
+## Unbreakable Branches [[{git.bitbucket,qa,jenkins.troubleshooting]]
+* <https://github.com/AmadeusITGroup/unbreakable-branches-jenkins>
+* plugins for Bitbucket and Jenkins trying to fix next problem:
+  ```
+  | Normal Pull Request workflow:
+  | Open pull-request (PR) to merge changes in target-branch
+  |   → (build automatically triggered)
+  |     → build OK
+  |       repo.owner merges PR
+  |        → second build triggered on target-branch
+  |          →  second build randomnly fails
+  |             leading to broken targeted branch
+  |             └───────────────┬───────────────┘
+  |              Reasons include:
+  |              - Race condition: Parallel PR was merged in-between
+  |              - Environment issue (must never happens)
+  |              - lenient dependency declaration got another version
+  |                leading to a build break
+  ```
+* If the Jenkins job is eligible to unbreakable build
+  (by having environment variables such as UB_BRANCH_REF)
+  at the end of the build a notification to Bitbucket is
+  sent according to the build status.
+  (or  manually through two verbs: ubValidate|ubFail)
+* Difference stashnotifier-plugin:
+  * stashplugin reports status-on-a-commit
+  * unbreakable build a different API is dedicated on Bitbucket.
+* On the Bitbucket side:
+  * GIT HEAD@target-branch moved to  top-of-code to be validated in PR
+    (target-branch can then always have a successful build status).
+* Security restrictions added to Bitbucket:
+  (once you activate the unbreakable build on a branch for your repository)
+  * merge button replaced by merge-request-button to queue the build.
+  * The merge will happen automatically at the end of the build if the build succeeds
+  * direct push on the branch is forbidden
+  * Merge requests on different PRs will process the builds sequentially
+* Prerequisites to run the code locally:
+  * Maven (tested agains 3.5)
+  * Git should be installed
+* PRE-SETUP:
+  * Install UnbreakableBranch plugin at Bitbucket
+  * bitbucketBranch source plugin Jenkins plugin should be
+    a patched so that mandatory environment variables are
+    injected.   Note that this plugin hasn't been released yet
+
+## Git Filter Repo: 
+* <https://github.com/newren/git-filter-repo/>
+* Create new repository from old ones, keeping just the
+  history of a given subset of directories.
+
+## git-filter-branch 
+* Replace: (buggy)filter-branch <https://git-scm.com/docs/git-filter-branch>
+* Python script for rewriting history:
+  * cli for simple use cases.
+  * library for writing complex tools.
+* Presetup:
+  * git 2.22.0+  (2.24.0+ for some features)
+  * python 3.5+
+  * Example:
+  ```
+  | $ git filter-repo \
+  |      --path src/ \                         ← commits not touching src/ removed
+  |      --to-subdirectory-filter my-module \  ← rename  src/** → my-module/src/**
+  |      --tag-rename '':'my-module-'            add 'my-module-' prefix to any tags
+  |                                              (avoid any conflicts later merging
+  |                                               into something else)
+  ```
+* Design rationale behind filter-repo :
+  * None existing tools with similr features.
+  * [Starting report] Provide analysis before pruning/renaming.
+  * [Keep vs. remove] Do not just allow to remove selected paths
+                      but to keep certain ones.<br/>
+    (removing all paths except a subset can be painful.
+     We need to specify all paths that ever existed in
+     any version of the repository)
+  * [Renaming] It should be easy to rename paths:
+  * [More intelligent safety].
+  * [Auto shrink] Automatically remove old cruft and repack the
+    repository for the user after filtering (unless overridden);
+  * [Clean separation] Avoid confusing users (and prevent accidental
+    re-pushing of old stuff) due to mixing old repo and rewritten repo
+    together.
+  * [Versatility] Provide the user the ability to extend the tool
+    ... rich data structures (vs hashes, dicts, lists, and arrays
+        difficult to manage in shell)
+    ... reasonable string manipulation capabilities
+  * [Old commit references] Provide a way for users to use old commit
+    IDs with the new repository.
+  * [Commit message consistency] Rewrite commit messages pointing to other
+    commits by ID.
+  * [Become-empty pruning] empty commits should be pruned.
+  * [Speed]
+* Work on filter-repo and predecessor has driven
+  improvements to fast-export|import (and occasionally other
+  commands) in core git, based on things filter-repo needs to do its
+  work:
+* Manual Summary :
+  * <https://htmlpreview.github.io/?https://github.com/newren/git-filter-repo/blob/docs/html/git-filter-repo.html>
+* Overwrite entire repository history using user-specified filters.
+  (WARN: deletes original history)
+  * Use cases:
+    * stripping large files (or large directories or large extensions)
+    * stripping unwanted files by path (sensitive secrests) [secret]
+    * Keep just an interesting subset of paths, remove anything else.
+    * restructuring file layout. Ex:
+      * move all files subdirectory
+      * making subdirectory as new toplevel.
+      * Merging two directories with independent filenames.
+      * ...
+    * renaming tags
+    * making mailmap rewriting of user names or emails permanent
+    * making grafts or replacement refs permanent
+    * rewriting commit messages
+[[}]]

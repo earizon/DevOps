@@ -47,15 +47,14 @@ The Terraform AWS Cloud Control provider is available for download now from the 
 
 
 ## Traefik 3.0 Reverse Proxy Rolls Out With Major Enhancements
+
 https://linuxiac.com/traefik-3-0-reverse-proxy/ 
 
 Traefik 3.0, a cloud-native HTTP reverse proxy and load balancer, brings stable HTTP/3 support, OpenTelemetry & Wasm integration, and more.
 
 Yes, there are easier-to-use solutions in the world of reverse proxies, like Nginx Proxy Manager or Caddy, for example. However, when we talk about an enterprise that is tightly integrated with the needs of DevOps and Kubernetes professionals, Traefik is the name that comes out on top.
 
-
 Traefik 3.0 also extends its observability features, incorporating OpenTelemetry to provide state-of-the-art tooling for metrics and tracing, supporting a seamless transition from older systems like OpenCensus and OpenTracing.
-
 
 the new release also brings several Kubernetes-related updates, including support for cross-namespace references in Gateway API and the ability to handle middleware in filters for better traffic management. Other Kubernetes enhancements include the addition of the Gateway status address and the removal of deprecated APIs.
 
@@ -109,15 +108,6 @@ $ $PASH_TOP/pa.sh -w 2 -d 1 --log_file pash.log demo-spell.sh # 2x parallelism
 
 ## Enhancing Istio Operations with Kong Istio Gateway
 * <https://thecloudblog.net/post/enhancing-istio-operations-with-kong-istio-gateway/>
-
-
-## DevOps Grafana Loki 3.0 Released with Native OpenTelemetry Support
-* <https://linuxiac.com/grafana-loki-3-0-released-with-native-opentelemetry-support/>
-
-Grafana Loki 3.0 Released with Native OpenTelemetry Support
-
-
-OpenTelemetry, a set of tools, APIs, and SDKs used to collect, analyze, and export telemetry data from software applications and services. This improves the log ingestion and querying experience.
 
 
 
@@ -1193,3 +1183,76 @@ languages like TypeScript, Python, and Java#iac #infrastructureascode
 * 3.1 facilitates full-featured WASM plugins that can perform HTTP calls and integrate 
   various Go libraries, enhancing the flexibility and power of Traefik’s plugins.
 * better error handling and status reporting for HTTPRoutes.
+
+##  Security 101: Docker Launches Hardened Base Images
+https://www.infoq.com/news/2025/06/docker-hardened-images/ 
+
+## 101: samber/awesome-prometheus-alerts: 🚨 Collection of Prometheus alerting rules
+https://github.com/samber/awesome-prometheus-alerts?tab=readme-ov-file 
+
+
+## Gradle
+https://github.com/JakeWharton/dependency-tree-diff
+
+An intelligent diff tool for the output of Gradle's dependencies task which always shows the path to the root dependency.
+
+   ```
+   | +--- com.squareup.sqldelight:android-driver:1.4.0
+   | |    +--- com.squareup.sqldelight:runtime-jvm:1.4.0
+   |-|    |    +--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.72
+   |-|    |    |    \--- org.jetbrains.kotlin:kotlin-stdlib:1.3.72 (*)
+   |+|    |    +--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.72 -> 1.4.0
+   |+|    |    |    \--- org.jetbrains.kotlin:kotlin-stdlib:1.4.0 (*)
+   |-|    |    \--- org.jetbrains.kotlin:kotlin-stdlib-common:1.3.72
+   |+|    |    \--- org.jetbrains.kotlin:kotlin-stdlib-common:1.3.72 -> 1.4.0
+   |-|    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.72 (*)
+   |+|    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.72 -> 1.4.0 (*)
+   | \--- com.squareup.sqldelight:rxjava2-extensions:1.4.0
+   |-     \--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.72 (*)
+   |+     \--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.72 -> 1.4.0 (*)
+   ```
+
+## DevOps run github actions locally
+https://github.com/nektos/act#installation
+
+
+
+
+
+## "Wireshark for Containers": OOSS tool
+
+
+* By Y-Combinator startup Subtrace
+
+* Subtrace combines system call tracing with network packet analysis in a single interface
+  so that developers can see what applications are doing at the system level and how data
+  flows across container networks.
+* It uses eBPF to capture this information, theoretically with minimal performance impact 
+  on running containers.
+
+* It understands container concepts and can automatically correlate network traffic with 
+  container identity.
+
+* Other open-source tools have similar functionality ... Pixie offers comprehensive observability
+  or Kubernetes clusters, including network tracing capabilities capturing a broader range of
+  telemetry data beyond just network traffic, including application metrics and distributed traces.
+  However, Pixie needs more system resources and can be complex to deploy in some environments
+  ... Hubble provides network observability as part of the Cilium networking stack. 
+  ... Microsoft's Retina focuses specifically on network observability for Kubernetes clusters. 
+
+* Subtrace uses eBPF programs to capture network data directly from the kernel. 
+
+
+## How to Keep Containers Up-to-Date with What’s Up Docker (WUD)
+
+https://getwud.github.io/wud/#/
+
+https://linuxiac.com/how-to-keep-containers-up-to-date-with-whats-up-docker-wud/
+
+For years, I relied on Watchtower to handle this task (here’s our guide), and it did a 
+fantastic job. Unfortunately, it hasn’t seen any updates since November 2023.  ...
+
+When updates are identified, WUD can automatically trigger notifications through
+ various communication channels, including email, Slack, Discord, webhook integr
+ations, etc.
+

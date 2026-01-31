@@ -46,6 +46,15 @@
   |
   | readonly LOCK=$(mktemp)                 # <- Make temporal file. Assign ro constant LOCK.
   |                                         #    Use TMP_DIR=$(mktemp --directory) to create temporal dir.
+  | 
+  | timeout 5s ping -n 8.8.8.8              # <- Abort after 5 seconds. (Avoid stuck tasks)
+  | 
+  | timeout 30s bash -c '                   # <· wrapping script into a timeout.
+  | until pg_isready -h 127.0.0.1 -p 5432; do
+  |     echo "Waiting for database..."
+  |     sleep 1
+  | done
+  | '
   |
   | function funCleanUpOnExit() {
   |   rm ${LOCK}
@@ -200,6 +209,17 @@
   | read -p "PROMPT" INPUT
   | funComplexParsingAndEvaluationOver $INPUT
   ```
+
+
+## Whiptail (ncurses dialog for shell scripts)
+
+* <https://en.m.wikibooks.org/wiki/Bash_Shell_Scripting/Whiptail>
+
+  Whiptail allows shell scripts to display dialog boxes to the user for 
+  informational purposes, or to get input from the user in a friendly 
+  way. Whiptail is included by default on Debian. 
+  (ncurses like)
+
 
 ## 'test' CONDITIONAL BRANCHING [[{]]
   (man test summary from GNU coreutils for more info)
@@ -399,3 +419,6 @@ Initial Script:
 
 
 [[dev_stack.shell_script}]]
+
+
+

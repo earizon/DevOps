@@ -1,0 +1,9 @@
+[[{reverse_proxy.charles_proxy,security.TLS,networking.TLS,troubleshooting.TLS,PM.TODO]]
+## CharlesProxy: Monitor TLS/HTTPS traffic
+* <https://www.charlesproxy.com/>
+* HTTP proxy / HTTP monitor / Reverse Proxy enabling developers to view 
+  HTTP+SSL/HTTPS traffic between loal machine and Internet, including requests, 
+  responses and HTTP headers (which contain the cookies and caching information).
+[[}]] 
+
+[[reverse_proxy.charles_proxy}]]

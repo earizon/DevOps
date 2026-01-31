@@ -1027,7 +1027,6 @@ we do not have access to `nsenter`.
   running containers.
 
 ### cadvisor+prometheus+grafana
-
 * <https://blog.couchbase.com/monitoring-docker-containers-docker-stats-cadvisor-universal-control-plane/>
 * <https://dzone.com/refcardz/intro-to-docker-monitoring?chapter=6>
 * <https://github.com/google/cadvisor/blob/master/docs/running.md#standalone>
@@ -1139,5 +1138,31 @@ CRI with the goal of increased flexibility and better efficiency for certain typ
 of workloads.
 
 ...  it also removes some previously-deprecated features in favor of modern replacements.
+
+
+[[{qa.uptime]]
+## Supervisor: A Process Control System
+
+* Supervisor is a client/server system that allows its users to 
+  monitor and control a number of processes on UNIX-like operating 
+  systems.
+* Use case: Launch N related processes in parallel in a container
+  or pod, replacing hand-made shell scripts.
+  ```
+  Pod process tree:
+  -----------------
+  supervisord           <·· supervisord gets in charge or restarting a subprocess
+    + main-process                           
+    + log-process
+    + ...
+  ```
+
+* It shares some of the same goals of programs like launchd, 
+  daemontools, and runit. Unlike some of them, it is not meant 
+  to be run as a substitute for init as “process id 1”.
+* **It is meant to be used to control processes related to a project
+  or a customer**, and is meant to start like any other program at
+  boot time.
+[[qa.uptime}]]
 
 [[containerization}]]

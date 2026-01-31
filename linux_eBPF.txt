@@ -12,6 +12,62 @@
   | ...
   ```
 
+[[{PM.low_code]]
+## eBPF/XDP NAT-Based Layer 4 Load Balancer from Scratch
+
+(By Teodor Janez Podobnik)
+
+... companies like Meta (Katran) and Cisco/Isovalent (Cilium) have already turned 
+eBPF/XDP-based Layer 4 load balancers into production-grade systems.
+
+... eBPF-based Layer 7 load balancing is possible, so far I haven't seen any 
+mature production solution yet—likely because implementing L7 features is too 
+complex, outweighing the potential performance gains.
+
+.. We’ll walk through a simple XDP NAT Load Balancer implementation in roughly 200 lines of code
+...
+
+  ```
+  | lab/lb.c
+  | 
+  |   ...
+  |   // Lookup conntrack (connection tracking) information - actually eBPF map
+  |   // NO EXISTING CONNECTION: client request
+  |   // EXISTING CONNECTION: backend response
+  |   struct five_tuple_t in = {};
+  |   in.src_ip = ip->daddr;     // LB destination IP
+  |   in.dst_ip = ip->saddr;     // Client or Backend source IP
+  |   in.src_port = tcp->dest;   // LB destination port same as source port from which it redirected the request to backend
+  |   in.dst_port = tcp->source; // Client or Backend source port
+  |   in.protocol = IPPROTO_TCP; // TCP protocol
+  |   struct endpoint *out = bpf_map_lookup_elem(&conntrack, &in);
+  |   if (!out) {
+  |     bpf_printk("Packet from client because no such connection exists yet");
+  |     ...
+  |     // Store connection in the conntrack eBPF map so we can
+  |     // redirect backends response to the "correct" client
+  |     struct five_tuple_t in_loadbalancer = {};
+  |     in_loadbalancer.src_ip = ip->daddr;     // LB IP
+  |     in_loadbalancer.dst_ip = backend->ip;   // Backend IP
+  |     in_loadbalancer.src_port = tcp->source; // Client source port - equal to the LB source port since we don't modify it!
+  |     in_loadbalancer.dst_port = tcp->dest;   // LB destination port
+  |     in_loadbalancer.protocol = IPPROTO_TCP; // TCP protocol 
+  |     struct endpoint client;
+  |     client.ip = ip->saddr; // Store Client IP as value in the eBPF map
+  |     int ret = bpf_map_update_elem(&conntrack, &in_loadbalancer, &client, BPF_ANY);
+  |     ...
+  |   } else {
+  |     bpf_printk("Packet from backend because the connection exists - "
+  |                "redirecting back to client");
+  |     ...
+  |   }
+  |   ...
+  ```
+
+
+
+[[PM.low_code}]]
+
 [[{]]
 ## eBPFtrace
 

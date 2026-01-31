@@ -1,0 +1,23 @@
+[[{reverse_proxy.bore]]
+
+
+# Bore: Simple port forwarder
+
+* <https://github.com/ekzhang/bore>
+
+* about 400 lines of safe, async Rust code. Binary shared by client and servers.
+* TCP tunnel bypassing NATs by exposing local to remote post (no more, and no less)
+* Similar to localtunnel or ngrok, highly efficient, unopinionated.
+
+```
+| $ cargo install bore-cli        # Install.
+| 
+| $ bore local 8000 --to bore.pub # On your local machine
+| ...T17:36:19.282581Z  INFO bore_cli::client: connected to server remote_port=24797
+| ...T17:36:19.282631Z  INFO bore_cli::client: listening at bore.pub:24797
+|                                                           └─────┬──────┘
+|                                   WARN/PROBLEM: The assigned port is random
+|                                                 on each restart
+```
+[[reverse_proxy.bore}]]
+

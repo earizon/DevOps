@@ -1,0 +1,63 @@
+[[{reverse_proxy.pingy.io]]
+# Pingy.io: (With Free Tier!!)
+
+  ```
+  | $ ssh -p 443 -R0:localhost:3000 tok+qr@pro.pinggy.io
+  | You are authenticated as user@example.com
+  | https://myapp.a.pinggy.link
+  | GET 200 OK /index.html
+  | GET 200 OK /_next/static/css/8b418144d8f6049f.css
+  | GET 200 OK /icon.svg?d1cd45fef217606d
+  ```
+
+
+- Protocols:
+  - HTTPS tunnels with built-in Let's Encrypt certificates for web applications.
+  - TCP tunnels for other applications.
+  - UDP tunnels.
+  - TLS tunnels for end-to-end encryption.
+
+- Instant Domains:
+  - Custom persistent subdomains.
+  - Custom domain: Bring your own domains with built-in HTTPS certificates.
+  - Wildcard domains: Use *.yourdomain.com to route different subdomains to different ports.
+
+- Free tier [[PM.price.free_tier]]
+  - $ 0/month ¡for life!
+  - Single command tunneling
+  - HTTP(S), TCP, UDP, TLS tunnels
+  - Live header manipulation
+  - Request-response inspection & replays
+  - 60 minutes tunnel timeout
+  - Random subdomains
+  - Unlimited Data Transfer
+
+- Pro: $ 2.50/month (billed annually) [[PM.price.2,5€/month]]
+  - Everything in Free plan
+  - 1 Persistent tunnel
+  - 1 Custom subdomain
+  - 1 Custom domain
+  - 1 Persistent TCP/UDP port
+  - 1 Team
+  - Remote Device Management
+  - Wildcard Domain Support
+  - Unlimited Data Transfer
+  - Priority mail / Discord support
+
+- Enterprise
+  - contact@pinggy.io
+  - Dedicated Servers / On Premise
+  - Unlimited persistent tunnels
+  - Unlimited custom subdomains
+  - Unlimited custom domains
+  - Unlimited persistent TCP/UDP ports
+  - Unlimited Teams
+  - API to monitor and manage tunnels
+  - Priority Discord & Call Support
+
+- Pingy vs      NGrok: <https://pinggy.io/compare/pinggy-vs-ngrok/>
+- Pingy vs LocalXpose: <https://pinggy.io/compare/pinggy-vs-localxpose/>
+- Pingy vs LocalTunel: <https://pinggy.io/compare/pinggy-vs-localtunnel/>
+- Pingy vs  CloudFare: <https://pinggy.io/compare/pinggy-vs-cloudflare-tunnel/>
+
+[[reverse_proxy.pingy.io}]]

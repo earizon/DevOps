@@ -1,0 +1,82 @@
+[[{reverse_proxy.pangolin,security.AAA]]
+# Pangolin Self-Hosted Reverse Proxy, Built-in IAM 
+
+Ext. REFs:
+- <https://github.com/fosrl/pangolin>
+- <https://docs.pangolinproxy.com/>
+
+Features:
+-         Docker-ready:
+- Security-1st mindset:
+-       Authentication: OIDC, OAuth2, LDAP, SAML, and more [[{identity.OIDC,identity.OAuth2,identity.LDAP,identity.SAML]]
+-    Role-Based Access: Fine-grained by user, email, or group.
+-               Web UI: Configure apps and rules visually.
+-        Audit Logging: Log who accessed what and when.
+-    Policy Management: YAML-based configuration or UI-driven.
+- Multi-Tenant Support: Separate IAM policies per app or tenant
+
+
+
+* <https://blog.octabyte.io/posts/development/pangolin/pangolin-pangolin-secure-self-hosted-reverse-proxy-with-built-in-identity-and-access-control/>
+  (2025-06-19) [[year.2025]]
+- Use case: protect internal dashboards (Grafana, Prometheus, Jenkins, ...), developer tools, microservices, or SaaS applications.
+- Teams requiring SSO and audit logging.
+
+- Built-in Authentication (Google, GitHub, OIDC, SAML, LDAP, etc.)
+- Access Control Rules (per app, user, group, etc.)
+- Modern Web UI for configuration
+- Single Sign-On (SSO) support
+
+  ```
+  | graph LR
+  | A[User] --> B[Pangolin Reverse Proxy]
+  | B --> C[Authentication Provider]
+  | C --> B
+  | B --> D[Protected Internal App]
+  ```
+
+- Pangolin vs Other Reverse Proxies  
+  | ```
+  | [[doc_has.comparative,reverse_proxy.traefik,reverse_proxy.pangolin,OAuth2-Proxy,reverse_proxy.Authelia]]
+  | Feature           |Pangolin|OAuth2   |Authelia  |Traefik 
+  |                   |        |-Proxy   |          |-Forward Auth
+  |-------------------|--------|---------|----------|-------------
+  | Authen.Built-in   |Yes     | External|Yes       |External
+  | Web UI for Config |Yes     | No      |Yes       |No
+  | RBAC              |Built-in| Limited |Yes       |No
+  | Multi-Provider AAA|Yes     | Yes     |Yes       |Yes
+  | 1-Binary-Deploym. |Yes     | Yes     |Complex   |Yes
+  | Docker Support    |Official| Official|Official  |Official
+  | Complexity        |Low     | Medium  |High      |Medium
+  | ```
+
+- 
+    🔗 Pangolin GitHub
+    📚 Documentation
+    ☁️ Deploy with OctaByte
+
+📣 Final Thoughts
+
+Pangolin is an all-in-one reverse proxy and identity solution that’s easy to deploy, secure by design, and flexible for real-world teams.
+
+Whether you’re a solo dev or running an enterprise infrastructure — Pangolin provides SSO, IAM, and reverse proxy capabilities in one simple stack.
+
+    Let OctaByte deploy Pangolin for you — fast, secure, and managed.
+
+Deploy Pangolin with OctaByte
+
+    Pangolin Reverse Proxy
+    Self-Hosted Reverse Proxy
+    Secure Reverse Proxy
+    Pangolin IAM
+    Identity Access Control Reverse Proxy
+    Pangolin vs Oauth2-Proxy
+    Pangolin vs Traefik
+    Reverse Proxy With SSO
+    Self-Hosted SSO
+    Open Source IAM Proxy
+
+Presidio: Open-Source Framework for PII Detection, Redaction & Anonymization
+How to Access and Manage Your Server on OctaByte
+
+[[security.AAA}]]

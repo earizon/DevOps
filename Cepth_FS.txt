@@ -1,0 +1,74 @@
+[[{storage.file_system,distributed.storage,escalability.storage,01_PM.TODO]]
+# Ceph (Posix FS for Big Data)
+
+- UNIX POSIX compliant distributed storage solution with unified object
+  and block storage capabilities.
+
+Extracted from <https://www.usenix.org/system/files/login/articles/73508-maltzahn.pdf>
+- designed by 3 national laboratories (LLNL, LANL, and Sandia) back in 2005 to fulfill:
+- **Petabytes of data on one to thousands of hard drives**
+- TB/sec aggregate throughput on one to thousands of hard drives pumping
+  out data as fast as they can.
+- Billions of files organized in one to thousands of files per directory
+- File sizes that range from bytes to terabytes
+- Metadata access times in μsecs
+- High-performance direct access from thousands of clients to
+  - different files in different directories
+  - different files in the same directory
+  - the same file
+- Mid-performance local data access
+- Wide-area general-purpose access
+- Management of data differs fundamentally from management of
+  metadata: file data storage is trivially parallelizable, limited primarily
+  by network infrastructure.
+- Metadata management is much more complex, because hierarchical directory
+  structures impose interdependencies (e.g., POSIX access permissions depend
+  on parent directories) and the metadata server must maintain file system 
+  consistency. 
+- Metadata servers have to withstand heavy workloads: **30–80% of all FS operations
+  involve metadata**,  ... lots of transactions on lots of small metadata
+  items following a variety of usage patterns.
+- Good metadata performance is therefore critical.
+- Popular files and directories are common, and concurrent access can overwhelm
+  many schemes.
+- The three unique aspects of Ceph’s design are:
+  - distributed metadata management in separate metadata server (MDS) ...
+  - calculated pseudo-random data placement (very compact state)
+  - distributed object storage using a cluster of intelligent OSDs which
+    forms a reliable object store that can act autonomously and intelligently (RADOS)
+
+Alternatives to Cepth include:
+- GlusterFS: cluster FS exposed through NFS protocol.
+  (Cepth integrates directly with Kernel through drivers??)
+- Hadoop HDFS. According to this white-paper, Ceph scalates better:
+  <https://www.usenix.org/system/files/login/articles/73508-maltzahn.pdf>
+  It also explain how to replace Hadoop HDFS with Ceph for Hadoop tasks.
+
+## Ceph Dashboard
+
+* <https://docs.ceph.com/en/quincy/mgr/dashboard/>
+* Overseedes OpenAttic (https://openattic.org/)
+- built-in web-based Ceph management and monitoring.
+- inspired by openATTIC, actively driven by openATTIC team@SUSE.
+
+Feature Overview:
+- Multi-User, RBAC, SSO (SAML 2.0, SSL/TLS support).
+- Auditing: log all PUT, POST and DELETE API requests in Ceph audit log.
+- Embedded Grafana Dashboards.
+- Cluster logs by priority/date/keyword.
+- Performance counters: (detailed service-specific statistics)
+- Monitoring: Enable (re-)creation, edit and expiration of Prometheus silences, alerts,...
+- Configuration Editor.
+- Pools: List Ceph pools and details (applications, pg-autoscaling, placement groups,
+         replication size, EC profile, CRUSH rules, quotas etc.)
+- OSDs: List OSDs, status, usage statistics, ...
+- Device management:
+- iSCSI: List all hosts runnint the TCMU runner service,...
+- RBD: List all RBD images and their properties (size, objects, features).
+- RBD mirroring:
+- CephFS: List active file system clients and associated pools, including usage statistics.
+- Object Gateway: List all active object gateways and their performance counters.
+- NFS: Manage NFS exports of CephFS file systems and RGW S3 buckets via NFS Ganesha.
+- Raw Capacity: Displays capacity used out of total physical capacity provided by storage nodes (OSDs).
+- ...
+[[}]]

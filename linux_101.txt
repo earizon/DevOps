@@ -1459,7 +1459,22 @@ Examples:
     --human-readable \
     --log-file=rsync_dry_run.log \
     some/Local/FolderOrFile \
-     user@host:/some/Remote/FolderOrFile      <· use ssh to connect and launch remote rsync peer
+    user@host:/some/Remote/FolderOrFile      <· use ssh to connect and launch remote rsync peer
+
+  Other interesing options:
+  --archive/-a: Archive mode, preserves permissions, times, symbolic links, etc.
+                like -rlptgoD (no -A,-X,-U,-N,-H)
+                     --links    /-l 
+                   + --recursive/-l 
+                   + --perms    /-p   (preserve permissions)
+                   + --times    /-t   preserve modification times
+                   + --group    /-g   preserve group
+                   + --owner    /-o   preserve owner
+                   + --devices        preserve device files (super-user only)
+                   + --specials       preserve special files
+  --rsh=COMMAND, -e=COMMAND: Use command as SSH as the remote shell for the transfer.
+
+  --compress/-z: compress file data during the transfer
   ```
 
 [[{storage.compression,scalability.backups,performance.CPU,doc_has.comparative]]

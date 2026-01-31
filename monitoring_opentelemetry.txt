@@ -1,0 +1,141 @@
+[[{monitoring.opentelemetry]]
+# Open Telemetry observability framework ("OTel")
+
+* OTEL is the result of mergin OpenTracing and OpenCensus, both deprecated now
+  if favor of Opentracing.  [[monitoring.OpenTracing,monitoring.OpenCensus,doc_has.comparative]].
+* Different frameworks allows to add observability to app in just a few minutes
+  with nearly no code.  [[PM.low_code]]
+* the OTel Collector Agent now enables to keep a shared agent for 
+  logging, metrics and traces, simplifying the current state with 
+  3 different agents for each type of observability instrumentation 
+  (OS files, syslog, ... for logs, Jaeger Agent/... for metrics,  OpenCensus/...
+   for traces).
+* 838 supported frameworks as of 2024.
+  * <https://opentelemetry.io/ecosystem/registry/?component=instrumentation&language=java>
+  * <https://opentelemetry.io/ecosystem/registry/?component=instrumentation&language=python>
+
+* Emerging Cloud native standard, Made up from a collection of tools (ex: Traefik) , APIs, and SDKs.
+ [[qa.standards]]
+
+
+[[{monitoring.logging]]
+## Open Telemetry logging
+
+* stable API as of 2023-11.
+
+- OTel Logging consists of four core components:
+  - OTel log Protocol, describing the encoding, transport, and delivery mechanism of telemetry data between telemetry sources.
+  - Logs Bridge API:
+  - Log backend API:
+  - Logs SDK, targeting final developers of apps
+
+
+- OTel Collector Agent is backed by a specification data model to support each. [[data.opentelemetry]]
+
+- By leveraging the common collector, logs can be correlated with the rest of 
+  the observability data to enhance the interoperability of traces, metrics, and 
+  logs.<br/>
+  ...  "logs are relatively computationally expensive to capture and tends to use 
+  more CPU than people think it should, and secondly, logs tend to be formatted 
+  in wildly different ways."
+  OEl aims to address these concerns.
+ [[doc_has.keypoint]]
+- Logging supports First-Party Application Logs, "old" system logs, infra logs, 3rd-party application logs,
+  legacy first-party logs, file/stdout logs, and direct to the collector. 
+[[monitoring.logging}]]
+
+
+[[{monitoring.tracing,PM.TODO]]
+## OpenTelemetry tracing
+[[monitoring.tracing}]]
+
+[[{monitoring.metrics,PM.TODO]]
+## OpenTelemetry metrics
+[[monitoring.metrics}]]
+
+[[{PM.TODO]]
+## OpenTelemetry baggage
+[[}]]
+
+[[{cloud.aws]]
+## AWS Lambda Telemetry API
+
+* <https://aws.amazon.com/blogs/compute/introducing-the-aws-lambda-telemetry-api/>
+
+- new API that Lambda extensions can use. It enhances the
+existing Lambda Logs API functionality, adding events and traces.
+
+ The schema is semantically compatible with OpenTelemetry.
+It can use events received from the Telemetry API to build and
+report OTEL spans!
+
+Telemetry API-enabled extensions can be used now to send
+telemetry data to Coralogix, Datadog, Dynatrace, Lumigo,
+New Relic, Inc., Sumo Logic, Sedai, Sysdig, Site24x7, 
+Serverless Inc. Thundra, or custom destinations.
+[[cloud.aws,monitoring.datadog,monitoring.dynatrace}]]
+
+[[{cloud.GCP]]
+## OpenTelemetry on GCP
+
+* <https://www.infoq.com/news/2025/09/gcp-opentelemetry-adoption/>
+
+... The enhanced storage system also increases span capacity
+significantly. Span names can now contain up to 1,024 bytes rather
+than 128 bytes, and individual spans can accommodate up to 1,024
+attributes instead of the previous limit of 32. Additionally, the
+system now supports 256 events per span and 128 links per span,
+providing developers with much greater flexibility in their tracing
+implementations.
+[[cloud.GCP}]]
+
+[[{PM.Whats_New]]
+# OpenTelemetry. What's New
+
+## 2023-11. OpenTelemetry Logging Marked Stable: Morgan McLean at KubeCon NA
+
+* Source: <https://www.infoq.com/news/2023/11/otel-logging-stable/>
+Improvements over traditional logging include:
+* Sharing common agent for observability data.
+* Extending correlation via context propagation across telemetry signals:
+* Leveraging semantic conventions of commonly observed concepts, protocols, and operations.
+* Enabling the use of an OTel protocol to reduce logging computation overheard
+* Compatibility with existing logging frameworks and libraries.
+
+
+## OpenTelemetry Announces Roadmap for Metrics Specification
+
+<https://www.infoq.com/news/2021/03/opentelemetry-metrics-roadmap/>
+  The OpenTelemetry project announced its roadmap for its metrics
+  specification. The roadmap includes a stable metrics API/SDK, metrics
+  data model and protocol, and compatibility with Prometheus.
+
+## Traefik 3.0 Reverse Proxy Rolls Out With Major Enhancements
+
+* <https://linuxiac.com/traefik-3-0-reverse-proxy/>
+
+.... Traefik 3.0 also extends its observability features, incorporating 
+OpenTelemetry to provide state-of-the-art tooling for metrics and tracing, 
+supporting a seamless transition from older systems like OpenCensus and 
+OpenTracing.
+
+[[{monitoring.Grafana]]
+## DevOps Grafana Loki 3.0 Released with Native OpenTelemetry Support
+
+* <https://linuxiac.com/grafana-loki-3-0-released-with-native-opentelemetry-support/>
+[[monitoring.Grafana}]]
+
+[[{monitoring.prometheus]]
+##  Prometheus 3.0 Brings New UI, OpenTelemetry Support and More
+
+* <https://www.infoq.com/news/2024/12/prometheus-3/>
+[[monitoring.prometheus}]]
+
+
+
+
+[[PM.Whats_New}]]
+
+
+
+[[monitoring.opentelemetry}]]

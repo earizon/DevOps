@@ -1,4 +1,7 @@
-# socat Multipurpose relay (SOcket CAT).  [[{]]
+[[{devops.network.socat,devops.troubleshooting]]
+# socat Multipurpose relay (SOcket CAT) or netcat "++"  
+
+```
 - ESTABLISHES TWO BIDIRECTIONAL BYTE STREAMS
 
   src ···> dst        src ···> dst             src <··· dst
@@ -353,4 +356,5 @@ $ socat -d -d UDP4-RECVFROM:9999,so-broadcast,so-timestamp,ip-pktinfo,ip-recverr
 
        SOCAT_OPENSSL_X509V3_DNS (output)
               DNS entries from peer certificates extensions - subjectAltName field. Multiple values are separated by " // ".
+```
 [[}]]
