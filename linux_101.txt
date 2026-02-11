@@ -1337,12 +1337,12 @@ Interesting plugins include:
   only the minimum amount of data needed
 [[security.backups.bup}]]
 
-## CLP  [[{monitoring.logs.clp,security.audit,scalability.storage,PM.low_cost]]
+## CLP  [[{monitoring.logs.clp,security.audit,PM.low_code,PM.price.saving]]
 
 * <https://github.com/y-scope/clp>
 
 * C&P from <https://www.uber.com/en-DE/blog/reducing-logging-cost-by-two-orders-of-magnitude-using-clp/>
-  """CLP reduces log size by x169 ...
+  """CLP reduces log size by x169 ... [[storage.compression,scalability.storage]]
      CLP allows to search directly on the compressed logs .... With
      just Phase 1, this cost is reduced to $10,000/year for a one month
      retention period. But more importantly, it now enables us to retain

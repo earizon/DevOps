@@ -30,7 +30,7 @@
   - Logs SDK, targeting final developers of apps
 
 
-- OTel Collector Agent is backed by a specification data model to support each. [[data.opentelemetry]]
+- OTel Collector Agent is backed by a specification data model to support each.
 
 - By leveraging the common collector, logs can be correlated with the rest of 
   the observability data to enhance the interoperability of traces, metrics, and 

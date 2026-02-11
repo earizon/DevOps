@@ -32,7 +32,7 @@
   - Random subdomains
   - Unlimited Data Transfer
 
-- Pro: $ 2.50/month (billed annually) [[PM.price.2,5€/month]]
+- Pro: $ 2.50/month (billed annually) [[PM.price.2.5€/month]]
   - Everything in Free plan
   - 1 Persistent tunnel
   - 1 Custom subdomain

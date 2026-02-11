@@ -28,7 +28,8 @@
     of running analytics to mine information from thosedata.
     E.g: ELK (Elastic, Logstash, Kibana) or  EFK (Elastic, Fluentd, Kibana)
 
-[[{tracing.distributed.B3,tracing.standards.B3,monitoring.HTTP,rest,architecture.distributed,DISTRIBUTED.101,PM.low_code]]
+[[{tracing.distributed.B3,tracing.standards.B3,monitoring.HTTP,architecture.distributed,monitoring.101,PM.low_code]]
+r
 ## Zipkin B3 request-tracing Standard
 
 * identifiers used to place an operation in a TRACE TREE.
@@ -107,7 +108,7 @@ It is done by libraries/frameworks/proxies include
 <https://zipkin.io/>
 [[}]]
 
-## Autometrics!! [[{low_code,qa.UX]]
+## Autometrics!! [[{PM.low_code,qa.UX]]
 <https://github.com/autometrics-dev>
 * Why Autometrics?  Simplifying code-level observability
 * Many modern observability tools promise to make life "easy for

@@ -1,0 +1,14 @@
+# find command
+
+  ```
+  $ find ./ \
+    -maxdepth 6 \                                         <·· max recursivity
+    -name "*py" \                                         <·· only files ending with "*py"
+    -and ! \( -path "*/.venv/*" -o -path "*/.git/*" \) \  <·· exclude .venv and .git paths
+    -exec grep --with-filename "some-regex" {} \;         <·· execute command (grep ... ) on each 
+                                                              file found
+  ```
+
+
+
+
