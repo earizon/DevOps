@@ -1,0 +1,52 @@
+[[{security.sysdig,monitorization.container]]
+## SysDig Container Monit
+* <https://sysdig.com/opensource/sysdig/>
+
+* [How to monitor and troubleshoot a Linux server using sysdig](http://xmodulo.com/monitor-troubleshoot-linux-server-sysdig.html)
+
+...you need to track system calls made and received by a process?:  strace?
+... monitor raw network traffic from the command line?   tcpdump
+.... everything is a file...:  lsof.
+
+sysdig == "strace + tcpdump + lsof + awesome sauce with a little Lua cherry on top.
+
+  ```
+  | # sysdig                   # display global picture
+  | # sysdig -cl | less        # list of available chisels (scripts)
+  | # sysdig -cl [chisel_name] # display info of a given chisel
+  | # sysdig -i spy_port       # can be combined with filters (class.field structure)
+  | 
+  | ----------------------------------------------------------------------------
+  | sysdig Filter examples
+  | ----------------------------------------------------------------------------
+  | fd.cip : client IP address.
+  | evt.dir: event direction can be either '>' for enter events or '<' for exit events.
+  | 
+  | # sysdig -l                # <-- display complete filter list
+  | 
+  | # sysdig -w trace.scap     # collect trace for offline analyis
+  | # sysdig -c bottlenecks    # <·· list 10 slowest systems calls real-time!!!
+  |                            #     -r trace.scap  (for offline analysis)
+  | 
+  | # sysdig -s 4096 -z \
+  |   -w debian.scap.gz        # -s ...: bytes per event captured, -z: compress
+  | 
+  | # sysdig \                   
+  |    -r debian.scap.gz \       
+  |    -c spy_users            # See all user's activity.
+  |                            #    filter user like: "user.name=xmodulo"
+  | 
+  | $ sysdig \
+  |   -p "%user.name %proc.name %fd.name" \
+  |   "evt.type=write and fd.name contains /home/" \
+  |   -z -w writetrace.scap.gz # Monitoring File I/O
+  | 
+  | # sysdig -s 4096 \
+  |   -A -c echo_fds \
+  |   fd.cip=192.168.0.100 \
+  |   -r /debian.scap.gz  \
+  |   proc.name=apache2        # <·· Monitoring Network I/O
+  ```
+
+
+[[security.sysdig}]]

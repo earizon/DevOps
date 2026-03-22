@@ -1,0 +1,154 @@
+[[{security.101,scalability.101]]
+## Endless: SSH Tarpit (Denial-of-Service counter-attack)
+
+* <https://nullprogram.com/blog/2019/03/22/>
+
+By Chris Wellons, wellons@nullprogram.com (PGP)
+
+* Endlessh: an SSH Tarpit
+
+* tarpits: network service that intentionally inserts delays in its protocol,
+  slowing down clients by forcing them to wait. ...  When done well, a tarpit
+  imposes more cost on the attacker than the defender.
+
+* Endlessh: an SSH tarpit: 
+  This program opens a socket and pretends to be an SSH server. However, it actually 
+  just ties up SSH clients with false promises indefinitely — or at least until the 
+  client eventually gives up.
+  ```
+  | $ make
+  | $ ./endlessh &
+  | $ ssh -p2222 localhost
+  ```
+  SSH clients will hang there and wait for at least several days before finally
+giving up.
+
+  **As I write, my Internet-facing SSH tarpit currently has 27 clients trapped in it**
+A few of these have been connected for weeks. In one particular spike it had
+1,378 clients trapped at once, lasting about 20 hours.
+
+  tarpit server runs on port 22, while the real ssh server runs in other places.
+
+Endlessh exploits a little paragraph in RFC 4253, the SSH protocol specification: 
+- Immediately after the TCP connection is established, and before negotiating
+  the cryptography, both ends send an identification string:
+  ``` 
+  SSH-protoversion-softwareversion SP comments CR LF
+  ``` 
+
+- The RFC also notes: """ server MAY send other lines of data before sending the
+  version string....
+  There is no limit on the number of lines, just that these lines must not begin
+  with “SSH-“ ... Endlessh sends and endless stream of randomly-generated 
+  “other lines of data” without ever intending to send a version string. 
+  By default it waits 10 seconds between each line. This slows down the protocol,
+  but prevents it from actually timing out."""
+  
+- This means Endlessh need not know anything about cryptography or the vast majority
+  of the SSH protocol. It’s dead simple.
+   
+**Even when many clients have been trapped, Endlessh spends more than 99.999% of its time
+waiting around, doing nothing**.
+
+Implementation Details:
+
+
+  ```
+  [[{scalability.poll(2)},scalability.raw_sockets]]
+
+  fork new process ··> new thread      ··> single-thread 
+  per ssh client       per ssh client      poll(2) server
+                                           └─────┬──────┘
+                                            Endlessh!!¹ ²
+  
+  ```
+¹ Clients that are being delayed are not registered in poll(2).
+  Their only overhead is the socket object in the kernel, and
+  another 78 bytes to track them in Endlessh. Most of those
+  bytes are used only for accurate logging. Only those clients
+  that are overdue for a new line are registered for poll(2).<br/>
+  When clients are waiting, but no clients are overdue, poll(2)
+  is essentially used in place of sleep(3). Though since it 
+  still needs to manage the accept server socket, it (almost)
+  never actually waits on nothing. <br/>
+  ...  epoll (Linux) or kqueue (BSD) are more efficient than poll(2).
+  poll(2) is "good enough" and portable.
+
+² Raw sockets to tarpit TCP protocol itself could be used.
+
+[[{scalability.python.coroutines]]
+### Python asyncio and other tarpits:
+
+Since writing Endless I’ve learned about Python’s asyncio, and it’s 
+actually a near perfect fit for this problem. I should have just used 
+it in the first place. The hard part is already implemented within 
+asyncio, and the problem isn’t CPU-bound, so being written in Python 
+doesn’t matter.
+
+Here’s a simplified (no logging, no configuration, etc.) version of
+Endlessh implemented in about 20 lines of Python 3.7:
+
+  ```
+  | import asyncio
+  | import random
+  | 
+  | async def handler(_reader, writer):
+  |     try:
+  |         while True:
+  |             await asyncio.sleep(10)
+  |             writer.write(b'%x\r\n' % random.randint(0, 2**32))
+  |             await writer.drain()
+  |     except ConnectionResetError:
+  |         pass
+  | 
+  | async def main():
+  |     server = await asyncio.start_server(handler, '0.0.0.0', 2222)
+  |     async with server:
+  |         await server.serve_forever()
+  | 
+  | asyncio.run(main())
+  ```
+[[scalability.python.coroutines}]]
+
+Since Python coroutines are stackless, the per-connection memory 
+overhead is comparable to the C version. So it seems asyncio is 
+perfectly suited for writing tarpits! [[{doc_has.keypoint}]]
+
+
+ Here’s an HTTP tarpit to trip up attackers trying to exploit
+HTTP servers. It slowly sends a random, endless HTTP header:
+
+  ```
+  | import asyncio
+  | import random
+  | 
+  | async def handler(_reader, writer):
+  |   writer.write(b'HTTP/1.1 200 OK\r\n')
+  |   try:
+  |     while True:
+  |       await asyncio.sleep(5)
+  |       header = random.randint(0, 2**32)
+  |       value = random.randint(0, 2**32)
+  |       writer.write(b'X-%x: %x\r\n' % (header, value))
+  |       await writer.drain()
+  |   except ConnectionResetError:
+  |     pass
+  | 
+  | async def main():
+  |   server = await asyncio.start_server(handler, '0.0.0.0', 8080)
+  |   async with server:
+  |     await server.serve_forever()
+  | 
+  | asyncio.run(main())
+  ```
+
+... Firefox and Chrome will spin on that server for hours before giving up!!!
+
+Parting exercise for the reader: implement an SMTP tarpit using asyncio.
+
+Bonus points for using TLS connections and testing it against real spammers.
+
+    ```
+    | netsec python c posix asyncio 
+    ```
+[[security.101}]]

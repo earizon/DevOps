@@ -1,0 +1,20 @@
+[[{security.grsecurity,]]
+## Grsecurity
+* <https://grsecurity.net/>
+* Grsecurity: extensive security enhancement to the Linux kernel that defends
+  against a wide range of security threats through intelligent access control,
+  memory corruption-based exploit prevention, and a host of other system
+  hardening that generally require no configuration.
+* It has been actively developed and maintained for the past 17 years.
+  Commercial support for grsecurity is available through Open Source Security, Inc
+* <https://www.grsecurity.net/compare.php">Comparation grsecurity SELinux AppArmor KSPP</a>
+* <https://en.wikipedia.org/wiki/Grsecurity#PaX>
+   ""A major component bundled with grsecurity is PaX. Among other features,
+  the patch flags data memory, the stack, for example, as non-executable and
+  program memory as non-writable. The aim is to prevent memory from being
+  overwritten, which can help to prevent many types of security vulnerabilities,
+  such as buffer overflows. PaX also provides address space layout randomization
+  (ASLR), which randomizes important memory addresses to reduce the probability
+  of attacks that rely on easily predicted memory addresses.""
+  [[security.grsecurity.PaX]]
+[[security.grsecurity}]]

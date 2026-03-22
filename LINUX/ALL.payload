@@ -4,19 +4,15 @@ security.payload
 TODO.payload
 systemd.payload
 kernel.payload
-linux_application_tracing.txt             # ???
-linux_package_managers.txt                # ???
-linux_administration_advanced_summary.md  # ???
-linux_storage.txt                         # ???
-linux_security.txt                        # ???
-linux_encryption.txt                      # ???
-linux_perf.txt                            # ???
-linux_kernel_monitoring.txt               # ???
-linux_eBPF.txt                            # ???
-linux_kernel_alternatives.txt             # ???
-linux_desktop.txt                         # ???
-linux_mobile.txt                          # ???
-linux_SElinux.txt                         # ???
+linux_application_tracing.txt             # OK, to be completed
+linux_package_managers.txt                # OK, to be completed
+linux_administration_advanced_summary.md  # OK, to be completed/splited
+linux_storage.txt                         # OK, to be completed/splited
+# linux_perf.txt                            # OK, to be splited into profiling_perf.payload
+# linux_eBPF.txt                            # ???
+linux_kernel_alternatives.txt             # OK
+linux_desktop.txt                         # OK, to be splited into desktop.payload
+linux_mobile.txt                          # OK, to be completed.
 linux_kernel.txt                          # ???
 linux_who_is_who.txt                      # ???
 GNU_parallel.txt                          # ???
@@ -24,3 +20,4 @@ zswap_for_low_memory_systems.txt          # ???
 cockpit_web_UI.txt
 networking.payload
 
+grep wip_linux_perf.txt payload

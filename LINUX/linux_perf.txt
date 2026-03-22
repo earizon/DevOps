@@ -38,15 +38,16 @@
 
 * Event covered: <!-- { -->
   ```
+  | [[{]]
   | $ sudo perf list # list currently known-to-kernel events that
   |                  # can be gathered.  >650
   |
   | List of pre-defined events (to be used in -e): 
   |                                    event-type 
   |                                    ----------
-  |   cpu-cycles OR cycles               Hardware
+  |   cpu-cycles OR cycles               Hardware  [[profiling.CPU]]
   |   instructions                       Hardware
-  |   cache-references                   Hardware
+  |   cache-references                   Hardware  [[profiling.cache]]
   |   cache-misses                       Hardware
   |   branch-instructions OR branches    Hardware
   |   branch-misses                      Hardware
@@ -56,7 +57,7 @@
   |   ref-cycles                         Hardware
   |   cpu-clock                          Software
   |   task-clock                         Software
-  |   page-faults OR faults              Software
+  |   page-faults OR faults              Software [[profiling.page_faults]]
   |   context-switches OR cs             Software
   |   cpu-migrations OR migrations       Software
   |   minor-faults                       Software
@@ -65,7 +66,7 @@
   |   emulation-faults                   Software
   |   bpf-output                         Software
   |   dummy                              Software
-  |   L1-dcache-loads                    Hardw.cache
+  |   L1-dcache-loads                    Hardw.cache  [[profiling.cache.L1]]
   |   L1-dcache-load-misses              Hardw.cache
   |   L1-dcache-stores                   Hardw.cache
   | [...]
@@ -103,6 +104,7 @@
   | [[doc_has.keypoint}]]
   |
   | $ perf list 'sched:*'  <· Listing sched tracepoints
+  | [[}]]
   ```
 <!-- } -->
 
@@ -143,10 +145,14 @@ Start juggling with perf like:
   | 0.00013913  secs elapsed
   ```
 
-[[{profiling.jobs.IO.BLOCK]]
-### Example: tracing/profiling disk I/O:
 
   ```
+  | [[{profiling.jobs,profiling.IO.BLOCK}]]
+  |
+  | ----------------------------------------------------------------------------
+  | Example: tracing/profiling disk I/O:
+  | ----------------------------------------------------------------------------
+  |
   | $ sudo perf record \             
   |  -e block:block_rq_issue \  # <· fires when a block device I/O request is issued 
   |  -a \                       # <· trace all CPUs.

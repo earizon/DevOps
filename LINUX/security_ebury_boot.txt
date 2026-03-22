@@ -1,0 +1,33 @@
+[[{security.101]]
+## No system is secure, neither Linux
+
+Ebury botnet compromises 400,000+ Linux servers - Help Net Security
+
+* <https://www.helpnetsecurity.com/2024/05/16/ebury-botnet/ >
+
+Ebury botnet compromises 400,000 Linux, FreeBSD, and OpenBSD servers; 
+more than 100,000 were still compromised as of late 2023...
+ It is still growing and has seen hundreds of thousands of compromised 
+servers in its at least 15-year-long operation.
+
+Active since at least 2009, is an OpenSSH backdoor and credential stealer.
+
+Used to deploy additional malware to monetize the botnet (modules for web
+traffic redirection), proxy traffic for spam, perform adversary-in-the-middle 
+attacks (AitM), and host supporting malicious infrastructure. 
+In AitM attacks, ESET has observed over 200 targets across over 75 
+networks in 34 countries between February 2022 and May 2023.
+
+... Ebury operators also used zero-day vulnerabilities in 
+administrator software to compromise servers in bulk.
+
+... Kernel.org, hosting the source code of the Linux kernel, had been a victim of Ebury too.
+[[security.101}]]
+
+[[{security.101]]
+
+## Thousands of "unnatended" Linux systems infected by malware since 2021
+
+* <https://arstechnica.com/security/2024/10/persistent-stealthy-linux-malware-has-infected-thousands-since-2021/>
+[[security.101}]]
+

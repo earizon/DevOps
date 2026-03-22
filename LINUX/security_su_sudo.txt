@@ -1,0 +1,81 @@
+[[{security.101,security.su,security.sudo,doc_has.comparative]]
+
+## `su` vs `sudo su` vs `sudo -i`  vs `sudo -s`
+
+```
+| su   <·· "Old" system.
+| sudo <·· Fine grained privilege scalation (allow a given user "superuser" access 
+|          to a curated list of applications needed for a given task).
+| 
+| $ whoami
+| user01
+| $ su               # Provide "root" password to gain access to shell with
+|                    # full root permissions (discouraged).
+|                    # /root/.profile, /root/.bashrc and /etc/profile will be executed.
+| $ su user02        # Provide "user02" pass. to gain access to new sheel with
+|                    # "user02" permissions.
+| $ su -c "command"  # execute <command> as "root" user.
+| $ sudo su          # Similar to "su" but using current user (user01) password 
+|                    # (vs root password). 
+|                    # It will NOT work in general. Only when previously, user01 has
+|                    # been configured in /etc/sudo to execute "su" with root privileges.
+|                    # It is the only way to access systems when ssh has been disabled
+|                    # for "root"  (quite common in many systems).
+| $ sudo -i          # like `sudo su` but more deterministic regarding final enviromental
+|                    # variables. In practice, preferred to `sudo su`.
+| $ sudo -s          # Like `sudo -i` or `sudo su` but it does not read .profile|.bashrc|/etc/profile
+|                    # It keeps the current enviromental variables. Could be preferred when
+|                    # working with custom paths (custom python/java/javascript setups or
+|                    # virtual environements). Neither it changes the $HOME.
+```
+[[security.101}]]
+
+[[{security.run0]]
+## run0: Safer moderm alternative to sudo
+
+* Requires SystemD v.256 or newer.
+
+* <https://linuxiac.com/systemd-v256-introduces-run0/>
+
+  run0 is a reimagined systemd-run, accessible via a symlink, that mimics
+sudo without actually being an SUID binary.
+
+  It operates by requesting the service manager to execute commands 
+under the target user’s UID, creating a new PTY (pseudoterminal), and 
+transferring data between the original TTY and this PTY.
+
+  This setup ensures that the command executes in an isolated 
+environment, freshly forked off from PID 1, without inheriting any 
+problematic context from the client. [[doc_has.keypoint]]
+
+run0 eschews traditional configuration complexities by utilizing
+polkit for authorization, streamlining user interactions, and
+further securing the execution process.
+
+  The tool also adds a touch of user-friendly flair:
+when operating with elevated privileges, it modifies the 
+terminal background to a reddish hue, serving as a visual cue
+of one’s elevated status—a simple yet effective reminder to 
+manage privileges responsibly. [[qa.UX]]
+[[security.run0}]]
+
+[[{security]]
+## Bringing Memory Safety to sudo and su (by Prossimo)
+
+* <https://www.memorysafety.org/blog/sudo-and-su/ >
+
+  Today we're announcing work on another critical boundary - permissions.
+We're pleased to announce that we're reimplementing the ubiquitous 
+sudo and su utilities in Rust.
+
+  Sudo was first developed in the 1980s. ... written in C,
+experiencing many vulnerabilities related to memory safety issues.
+
+  This work is being done by a joint team from Ferrous Systems and Tweede Golf
+with generous support from Amazon Web Services. 
+
+  If you'd like to support Prossimo's work to improve memory safety, 
+please consider contributing. [[PM.needs_funding]]
+[[security}]]
+
+[[security.101}]]

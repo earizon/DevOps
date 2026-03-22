@@ -8,6 +8,7 @@ REF: <https://www.cyberciti.biz/mobile-devices/android/how-to-push-send-message-
   * Up to 7500 messages/month.
   * (More options exists for IT teams)
 
+  ```
   | PRESETUP -------------------------------------------------------------------
   | 1) Sign up for Pushover.
   | 2) download Pushover for Android/iOS.

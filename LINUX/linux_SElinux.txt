@@ -698,15 +698,13 @@ See also: Troubleshooting with restorecon
 
 ## SELINUX TROUBLESHOOTING
 
-```
-
-### Q: What an SELinux error means? <!-- { -->
-
-It can means:
-
-1.  file-system labeling is wrong
-
   ```
+  | ### Q: What an SELinux error means? <!-- { -->
+  | 
+  | It can means:
+  | 
+  | 1.  file-system labeling is wrong
+  |
   | Fix examples:
   | Ex 1:
   |   # sudo  chcon  --reference /var/www/html ..../index.html

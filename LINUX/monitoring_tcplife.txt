@@ -1,3 +1,4 @@
+```
 | [[{monitoring.network.tcplife}]]
 | --------------------------------------------------------------------
 | tcplife : summarizes TCP sessions that open and close while tracing.

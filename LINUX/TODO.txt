@@ -1,14 +1,21 @@
 ## TODO: move anything related to monitoring from linux_101 to monitoring_...
 
-[[{security.101]]
-security 
-## Thousands of "unnatended" Linux systems infected by malware since 2021
+[[{security]]
+## practical hardening guide
 
-* <https://arstechnica.com/security/2024/10/persistent-stealthy-linux-malware-has-infected-thousands-since-2021/>
-[[security.101}]]
+* <https://github.com/trimstray/the-practical-linux-hardening-guide>
+[[security}]]
+
+[[{security]]
+## Firejail 
+
+* <https://www.ostechnix.com/improve-linux-systems-security-using-firejail/>
+[[security}]]
+
+
 
 [[{security.101,security.LUKS]]
-# LUKS 101 Common Post-Installation Tasks  backups, encryption 101:
+# LUKS 101 Common Post-Installation Tasks backups, encryption 101:
 
 Backup LUKS headers
 
@@ -668,3 +675,91 @@ tunable for best performance on these workloads, and deadline very
 quickly passes all requests through to the underlying device.
 
 [[storage.block_management.IO_scheduler}]]
+
+[[{security]]
+## Analysis of ext4 for digital forensics
+* <https://www.dfrws.org/sites/default/files/session-files/paper-an_analysis_of_ext4_for_digital_forensics.pdf>
+[[security}]]
+
+
+[[{security.cryptography]]
+## kernel crypto
+* <https://www.kernel.org/doc/html/v4.12/crypto/index.html>
+[[security.cryptography}]]
+
+[[{security]]
+## How to Perform Comprehensive Kernel Module Security Testing
+
+* <https://www.apriorit.com/dev-blog/634-qa-how-to-perform-comprehensive-linux-kernel-module-security-testing>
+
+* Security testing is becoming essential for every business. Undetected bugs and security vulnerabilities can lead to expensive consequences or even losses that businesses can’t recover from.
+[[security}]]
+
+[[{security]]
+## Hunting for Persistence in Linux 
+
+(Part 1): Auditd, Sysmon, Osquery (and Webshells) 
+
+* <https://pberba.github.io/security/2021/11/22/linux-threat-hunting-for-persistence-sysmon-auditd-webshell/>
+
+
+Welcome to this blog series “Hunting for Persistence in Linux”! This 
+is a series that explores methods attackers might use to maintain 
+persistent access to a compromised linux system. To do this, we will 
+take an “offense informs defense” approach by going through 
+techniques listed in the MITRE ATT&CK Matrix for Linux. I will try to:
+
+* Give examples of how an attacker might deploy one of these backdoors
+* Show how a defender might monitor and detect these installations
+
+
+Chapters:
+
+  ```
+  | Hunting for Persistence in Linux (Part 1): Auditing, Logging and Webshells
+  |   1  - Server Software Component: Web Shell
+  | Hunting for Persistence in Linux (Part 2): Account Creation and Manipulation
+  |   2  - Create Account: Local Account
+  |   3  - Valid Accounts: Local Accounts
+  |   4  - Account Manipulation: SSH Authorized Keys
+  | Hunting for Persistence in Linux (Part 3): Systemd, Timers, and Cron
+  |   5  - Create or Modify System Process: Systemd Service
+  |   6  - Scheduled Task/Job: Systemd Timers
+  |   7  - Scheduled Task/Job: Cron
+  | Hunting for Persistence in Linux (Part 4): Initialization Scripts and Shell Configuration
+  |   8  - Boot or Logon Initialization Scripts: RC Scripts
+  |   9  - Boot or Logon Initialization Scripts: init.d
+  |   10 - Boot or Logon Initialization Scripts: motd
+  |   11 - Event Triggered Execution: Unix Shell Configuration Modification
+  | Hunting for Persistence in Linux (Part 5): Systemd Generators
+  |   12 - Boot or Logon Initialization Scripts: systemd-generators
+  | (WIP) Hunting for Persistence in Linux (Part 6): Rootkits, Compromised Software, and Others 
+  ```
+[[security}]]
+
+[[{security.101,security.selinux,security.AppArmor,security.Auditd,security.SecComp,security.Falco,doc_has.comparative]]
+## SELinux, AppArmor, Auditd, SecComp, SecComp-bpf, Falco compared
+
+* <https://www.infoq.com/news/2020/01/falco-security-cncf/>
+
+  While similar to other tools that allow for declaring security policies such as
+SELinux, AppArmor, or auditd, Falco has some differences. As Mark Stemm,
+software engineer at Sysdig, notes:
+
+  Overall, these products can be grouped into ones focused on enforcement vs
+auditing. Both groups define a policy that describes the allowed or disallowed
+behavior for a process, in terms of system calls, their arguments, and host
+resources accessed.
+
+  Tools like seccomp, seccomp-bpf, SELinux, and AppArmor fall into the
+enforcement category in that they will alter the behaviour of processes if they
+are found to violate the defined rules. Falco and other tools, such as auditd,
+fall in the auditing category as they will notify when detecting a violation.
+
+  According to Stemm, one difference between Falco and these other tools is that
+"Falco runs in user space, using a kernel module to obtain system calls, while
+the other tools perform system call filtering/monitoring at the kernel level."
+This allows Falco to have more available data to be used within its policies as
+noted previously.
+[[security.101}]]
+

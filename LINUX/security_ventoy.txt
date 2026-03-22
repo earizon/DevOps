@@ -1,0 +1,17 @@
+[[{security.rescue_disk,security.101,PM.low_code]]
+## Ventoy.net
+
+* tool to create bootable USB drive for ISO/WIM/IMG/VHD(x)/EFI files.
+* No need to format the disk over and over, just copy 
+  ISO/WIM/IMG/VHD(x)/EFI files to the USB drive and boot them directly.
+* Copy many files at a time: 
+  * ventoy will provide a boot menu to select them (screenshot).
+* Browse ISO/WIM/IMG/VHD(x)/EFI files in local disks and boot them.
+* x86 Legacy BIOS, IA32 UEFI, x86_64 UEFI, ARM64 UEFI and MIPS64EL UEFI
+  are supported in the same way.
+* Most OS supported (Windows/WinPE/Linux/ChromeOS/Unix/VMware/Xen...) 
+* MBR and GPT partition styles are supported
+* ISO files larger than 4GB supported
+* Password protect supported
+* Linux vDisk(vhd/vdi/raw...) boot solution
+[[security.rescue_disk}]]

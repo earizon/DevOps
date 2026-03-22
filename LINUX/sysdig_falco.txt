@@ -1,0 +1,10 @@
+[[{security.sysdig]]
+## SysDig Falco
+* <https://sysdig.com/blog/selinux-seccomp-falco-technical-discussion/>
+[[}]]
+
+[[{security.honeypots,security.sysdig,security.101,PM.TODO]]
+## HoneyPots with SysDig and Falco
+
+* <https://labs.mwrinfosecurity.com/blog/high-interaction-honeypots-with-sysdig-and-falco>
+[[security.honeypots}]]

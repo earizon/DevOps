@@ -1,0 +1,20 @@
+[[{security.SSSD,security.remote_access.identity]]
+## SSSD (NSS, PAM, ...)
+
+* <https://docs.pagure.org/SSSD.sssd/>
+
+* Open Source Client for Enterprise Identity Management.
+
+* Enroll your Linux machine into an Active Directory, FreeIPA or LDAP domain. 
+  Use remote identities, policies and various authentication and authorization 
+  mechanisms to access your computer. [[identity.MS_Entra,identity.FreeIPA,identity.LDAP]]
+
+* system daemon providing access to local or remote identity and
+  authentication resources through a common framework that can
+  provide caching and offline support to the system. 
+
+* It provides several interfaces, including NSS and PAM modules or
+  a D-Bus interface.
+
+* OAuth 2 access??? [[PM.TODO]]
+[[security.SSSD}]]
