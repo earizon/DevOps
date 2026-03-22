@@ -1,0 +1,32 @@
+[[{security.notifications,qa.best_patterns,monitoring.notifications,PM.WiP]]
+## alert/monitoring best-patterns
+* Simple e-mail/telegram do NOT scale:<br/>
+  You will receive many useless notification from proper behaviour
+  (correct logins, ...).
+
+* A proper monitoring system will notify only when there's a real problem:
+  * Enable messaging agent (email, telegram,...)
+  * Enable cpu/mem/net/disk login inputs and (Prometheus) output.
+  * Run a single Prometheus server that scrapes each endpoint every minute.
+  * Add Grafana for nice graphs.
+  * Add Alert Manager and set up thresholds to notify you:
+    -  via OpsGenie/PagerDuty/VictorOps/Slack.
+  * Check graphs once a week, unless you get notifications.
+
+* You can "start small" and use Monit:
+  * single binary that can be configured to watch stuff and react to problems.
+    - Start a service when stoped.
+    - Clean up when disk is full.
+
+* "Sensu": Slightly better (and more complex) than Monit, allowing to:
+  * run any script as a check.
+  * fix stuff if it's broken for X consecutive checks
+  * alert if it's still broken Y consecutive checks.
+  * Sensu can also alert to pretty much anything.
+    "I wrote handlers that alert to Slack, Jira and a pager."
+
+* Finally Prometheus and Prometheus Alarms!!!
+[[security.notifications}]]
+
+[[monitoring.notifications}]]
+

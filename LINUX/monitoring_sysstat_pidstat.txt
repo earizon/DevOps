@@ -1,0 +1,58 @@
+```
+| [[{monitoring.101,monitoring.i/o,monitoring.storage}]]
+| ===============================================================================
+| pidstat: (sysstat)  monitoring individual processes/task for CPU, memory etc.   <·· [[troubleshooting.process,profiling.101]]
+| ===============================================================================
+|
+| $ sudo pidstat -p 1234             # monitor running process with PID 1234 (-t to display individual threads)
+| $ sudo pidstat -p 1234 2 10        # monitor ... every 2 seconds 10 times.
+| $ sudo pidstat -C regex_command    # monitor running process matching command.
+| $ sudo pidstat -G regex_proc_name  # monitor running process or thread matching proccess or thread name.
+| $ sudo pidstat -e program args     # Execute and monitor program.
+| 
+| common options:
+| -t: monitor individual threads.
+| -d Report I/O statistics (kernels 2.6.20 and later only).               [[profiling.I/O]]
+| -r Report page faults (minor/major) per second and memory utilization.  [[profiling.page_fault]]
+| -s Report stack utilization.                                            [[profiling.stack]]
+| -T { TASK | CHILD | ALL }
+| -w Report task/context switching activity                               [[profiling.task_switching]]
+| 
+| Example ussage: 
+|
+| $ sudo pidstat -G firefox -t 2 100 # <·· Monitor Firefox threads (-t) every 2 seconds up to 100 times.
+| (output will be similar to)
+| Linux 6.17.0-14-generic (home03)        20/03/26        _x86_64_        (8 CPU)
+|
+|               UID      TGID       TID    %usr %system  %guest   %wait    %CPU   CPU  Command
+|
+| 18:21:19     1000    372947         -    0,00    0,50    0,00    0,00    0,50     4  firefox-bin
+| 18:21:19     1000         -    372947    0,00    0,50    0,00    0,00    0,50     4  |__firefox-bin
+| 18:21:19     1000         -    374047    0,00    0,50    0,00    0,00    0,50     6  |__Inotify~tThread
+|
+| 18:21:21     1000    372947         -    0,50    0,00    0,00    0,00    0,50     4  firefox-bin
+|
+| 18:21:23     1000    372947         -    0,50    0,00    0,00    0,00    0,50     4  firefox-bin
+| 18:21:23     1000         -    372965    0,50    0,00    0,00    0,00    0,50     1  |__IPDL Background
+|
+| 18:23:25     1000    372947         -  120,50   10,50    0,00    0,50  131,00     1  firefox-bin
+| 18:23:25     1000         -    372947   17,00    4,00    0,00    0,50   21,00     1  |__firefox-bin
+| 18:23:25     1000         -    372959    4,50    1,00    0,00    1,50    5,50     0  |__glean.dispatche
+| 18:23:25     1000         -    372961    0,50    1,00    0,00    1,00    1,50     3  |__IPC I/O Parent
+| 18:23:25     1000         -    372962    0,50    0,00    0,00    0,00    0,50     3  |__Timer
+| 18:23:25     1000         -    372964    2,50    0,50    0,00    0,00    3,00     3  |__Socket Thread
+| 18:23:25     1000         -    372965    2,00    1,00    0,00    1,00    3,00     7  |__IPDL Background
+| 18:23:25     1000         -    372997    0,50    0,00    0,00    0,50    0,50     0  |__Cache2 I/O
+| 18:23:25     1000         -    373000    0,50    0,00    0,00    0,00    0,50     1  |__TaskCon~ller #0
+| 18:23:25     1000         -    373012    0,50    0,00    0,00    0,00    0,50     3  |__Softwar~cThread
+| 18:23:25     1000         -    373013   77,00    1,00    0,00    0,00   78,00     4  |__Renderer
+| 18:23:25     1000         -    373027    1,00    0,50    0,00    0,50    1,50     0  |__Compositor
+| 18:23:25     1000         -    373070    3,50    0,00    0,00    0,00    3,50     7  |__SwComposite
+| 18:23:25     1000         -    373071    0,50    0,00    0,00    0,00    0,50     7  |__WRScene~ilder#1
+| 18:23:25     1000         -    373073    5,50    0,50    0,00    0,50    6,00     3  |__WRRende~ckend#1
+| 18:23:25     1000         -    373177    0,50    0,00    0,00    0,00    0,50     7  |__URL Classifier
+| 18:23:25     1000         -    373296    0,50    1,00    0,00    0,00    1,50     2  |__sqldb:c~lite #9
+| 18:23:25     1000         -    377744    0,50    0,50    0,00    0,00    1,00     3  |__BgIOThr~Pool #7
+| 18:23:25     1000         -    378912    0,00    0,50    0,00    0,00    0,50     3  |__Indexed~ IO #85
+| 18:23:25     1000         -    378922    1,50    0,00    0,00    0,00    1,50     4  |__DOMCacheThread
+```

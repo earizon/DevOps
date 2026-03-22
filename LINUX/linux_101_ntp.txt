@@ -1,0 +1,28 @@
+[[{101.ntp,configuration.clock,troubleshooting]]
+## Network Time Protocol 
+
+* REF:<https://www.server-world.info/en/note?os=Fedora_25&p=ntp&f=2>
+
+  ```
+  |                              #    STEP 1) Install ntp client
+  | $ sudo dnf -y install ntp    # <- Alt.1: RedHat flavours
+  | $ sudo apt install ntp       # <- Alt.2: Debian/Ubuntu flavours
+  |     
+  | $ edit /etc/ntp.conf         # <- STEP 2) Create/Modify config. file
+  |    ...
+  |  + restrict 10.0.0.0 mask 255.255.255.0 nomodify notrap
+  |  +   server 0.fedora.pool.ntp.org iburst
+  |    # server 1.fedora.pool.ntp.org iburst
+  |    # server 2.fedora.pool.ntp.org iburst
+  |    # ...
+  |    # └────────────────┬────────────────┘
+  |          Enable/disable NTP servers 
+  |              "at will"
+  | 
+  | $ sudo systemctl start ntpd  # <- STEP 3) Start daemon as (SystemD) service
+  | $ ntpq -p                    # <- STEP 4) check
+  | $ sudo systemctl enable ntpd # <- STEP 5) Enable at boot time.
+  | $ sudo timedatectl \
+  |   set-timezone Europe/London # <- STEP 5) Set timezone
+  ```
+[[}]]

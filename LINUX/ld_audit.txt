@@ -1,0 +1,23 @@
+[[{monitoring.jobs,monitoring.libc,troubleshooting,PM.TODO]]
+## latrace LD audit
+
+* man 1 latrace
+
+* LD_AUDIT 2.4+ libc frontend
+
+  ```
+  $ latrace [-ltfsbcCpADaoyIiBdvTFELVh] command [arg ... ]
+  ```
+  Run command and display its dynamic library calls using
+a LD_AUDIT libc feature (available from libc version 2.4 onward - see the
+section called "DISCUSSION" ). It is also capable to measure and display
+various statistics of dynamic calls.
+
+  If the config file is provided, latrace will display symbol's arguments with
+detailed output for structures. The config file syntax is similar to the C
+language, with several exceptions.
+
+  The `latrace` by default fully operates inside of the traced program. However
+  another pipe mode is available, to move the main work to the latrace binary
+  (see the section called "PIPE mode").
+[[}]]

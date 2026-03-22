@@ -1,0 +1,96 @@
+[[{security.remote_access.ssh,security.aaa,security.audit.user]]
+
+## ssh
+* ssh stands for "Secure shell". It is also an onomatopoeia.
+* <https://en.wikipedia.org/wiki/Secure_Shell>.
+* standard way to access Linux&Other OSes remotely.
+* A running "sshd" (ssh daemon) must be instaled and running
+  on the remote machine. Used also for tunneling TCP connections.
+
+* Quickly connect to remote machine runnin sshd:
+  (Remote machine must allow passwords login)
+
+  ```
+  | $ ssh myUser@myRemoteMachine
+  | myUser@mYRemoteMachine's password:
+  | (enter password to log-in to text terminal)
+  ```
+
+  ```
+  | Example ~/.ssh/config
+  | Host remoteHostAlias1 alias2 ...     <· allows to ssh alias2
+  |    HostName 10.230.11.10
+  |    ProxyCommand /usr/bin/corkscrew 10.10.10.10 8080 %h %p  ¹
+  |    Port 12345                        <· 22 by default
+  |    User myRemoteUser                 <· defaults to current active local user
+  |    LocalForward   5555 removeIP:3333 <· Forward any local TCP conection to port 5555
+  |                                        to port 3333 at remoteIP (as seen by sshd server)
+  |                                        (ussually remoteIP == localhost)
+  |    RemoteForward 13389 localIP:3389  <· Forward any TCP conection to port 5555 in sshd server
+  |                                        to port 3389 in localIP (as seen by ssh client)
+  |                                        (ussually localIP == localhost)
+  |    TCPKeepAlive true                 <· "sort of ping" to avoid closing connection.
+  |
+  |    ¹ Optional: "bypass firewall through HTTP proxy
+  ```
+
+### ssh Passwordless authentication:
+
+* Useful to execute remote tasks automatically.
+
+1. STEP 01: generate local private secret (key) and associated public key.
+
+  ```
+  | $ ssh-keygen
+  | (WARN: leave passphrase blank to allow for automated task, in such case
+  |  it is better to "hide" the local private key to "neighbours".
+  ```
+2. STEP 02: Copy associated public key to remote machine
+  ```
+  | $ ssh-copy-id myRemoteUser@myRemoteMachine
+  |   └──────────────────┬───────────────────┘
+  |   Will append the public key to
+  |     /home/myRemoteUser/.ssh/authorized-keys
+  ```
+
+* Now it must be possible to ssh into the remote machine with no password
+  ```
+  | $ ssh myRemoteUser@myRemoteMachine
+  ```
+
+* Troubleshooting passwordless access:
+  ```
+  | local  $ chmod go-rw ~/.ssh/*  # <· Fix file permission. ssh is paranoid about it.
+  | remote $ chmod go-rw ~/.ssh/*  # <· Fix file permission. ssh is paranoid about it.
+  ```
+
+* CONTROL SSH:
+
+  ```
+  | $ ssh ... -S ${CONTROL_SOCKET} ... host1
+  |           └────────┬─────────┘
+  |           Later on we can just
+  |           ┌────────┴─────────┐
+  | $ ssh     -S ${CONTROL_SOCKET} -O $ctr_cmd
+  |                                   ^^^^^^^^
+  |                       check   : check master process is running.
+  |                       forward : request forwardings without command execution.
+  |                       cancel  : cancel forwardings
+  |                       exit    : request master to exit
+  |                       stop    : request the master to stop accepting
+  |                                  further multiplexing requests.
+  | ...
+  | if [[ $6 == "stop" ]] ; then
+  |    TUNNEL="${TUNNEL} -O exit "
+  | fi
+  | TUNNEL="${TUNNEL} $4@$2"
+  | $TUNNEL 1>/dev/null
+  ```
+
+* ssh client and daemon have a wide range of useful options, including
+  reconnection, tunneling, HTTP-sock-proxy-establishment, ...
+  See 'man 1 ssh' and 'man 8 sshd' for details.
+
+* Related:
+  <https://www.reddit.com/r/linuxadmin/comments/b9c7lw/using_a_yubikey_as_smartcard_for_ssh_public_key/>
+[[security.remote_access.ssh}]]

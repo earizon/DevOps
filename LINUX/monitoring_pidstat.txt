@@ -1,0 +1,82 @@
+[[{monitoring.jobs,monitoring.pidstat,job_control,monitoring.i/o]]
+[[profiling.jobs.IO.block,profiling.storage,storage.profiling]]
+## pidstat: process stats 
+
+* By Sebastien Godard (http://pagesperso-orange.fr/sebastien.godard/)
+ ```
+ | -d Report I/O statistics
+ |    kB_rd/s
+ |    kB_wr/s
+ |    kB_ccwr/s:  Cancelled-writes eg. task truncates some dirty pagecache.
+ |                (IO which another task has been accounted for).
+ |    iodelay  : Block-I/O delay of task-monitored, measured in clock ticks.                    [[{profiling.jobs.]]
+ |               including  delays waiting for sync-block-I/O and swaping-block-I/O completion. [[}]]
+ |
+ | --dec= 0|1|2*  number of decimal-places to use.
+ | -e 'program' arg1 arg2 ...  Exec. program + args to be monitored.
+ | -G cmd_name_regex Filter by processes mathching regex for its command-name .
+ | -H Display timestamp-in-seconds since epoch. (1970-01-01)
+ | -h Display activities horizontally in a single line, without statistics (for batch tasks)
+ | --human
+ | -I In SMP archs, indicate to divide task CPU ussage should be divided by total num.or proccessors.
+ | -l Display command-name + all its arguments.
+ | -p $PID Filter by process $PID Select tasks (processes)
+ |         Use SELF for the pidstat process itself.
+ |         Use ALL  for all tasks.
+ | -R Report realtime-priority and scheduling-policy info, including:
+ | -r Report pagefaults and memory utilization. [[profiling.jobs.pagefaults]]
+ |   minflt/s : Total number of minor-faults per sec, (not loading from disk).
+ |   minflt-nr: Total number of minor-faults for task-and-children for time-interval.
+ |   majflt/s : Total number of major-faults per secd,
+ |   majflt-nr: Total number of major-faults for task-and-children for time-interval.
+ |   VSZ      : virtual memory usage of entire task in kilobytes.
+ |   RSS      : Resident Set Size: (non-swapped physical memory used in kilobytes).
+ |   %MEM     : Resident Set Size %
+ |   -nr      : Total number of major-faults by task-and-children for time-interval.
+ | -s     Report stack utilization.  [[profiling.jobs.memory.stack]]
+ |   StkSize  : memory in kilobytes reserved for the task as stack, (not necessarily used)
+ |   StkRef   : memory in kilobytes used as stack, referenced by the task.
+ | -T {TASK*|CHILD|ALL}
+ | -t     display statistics per-thread.
+ | -U [ username ] Display  real-user-name or filter by user-name.
+ | -u Report CPU utilization.  [[{profiling.jobs.cpu]]
+ |   %usr      : CPU used by task at user-level NOT include time spent running a Virt.CPU.
+ |    usr-ms   : Total millisecs spent by task+children at user level.
+ |   %system   : CPU used by task while executing at the system level (kernel).
+ |    system-ms: Total millisecs spent by task+children at systeml level (kernel).
+ |   %guest    : Percentage of CPU spent by the task    in virt. machine. (KVM/Qemu/...?)
+ |    guest-ms : Total millisecs spent by task+children in virt. machine. (KVM/Qemu/...?)
+ |    %wait    : Percentage of CPU spent by the task while waiting to run.
+ |    %CPU     : Total percentage of CPU time used by the task. [[}]]
+ |           Total  number  of milliseconds spent by the task and all its children in virtual
+ |           machine (running a virtual processor).
+ | -v Report some kernel tables.  [[monitoring.jobs.kernel]]
+ | -w Report task switching activity: [[profiling.jobs.kernel]]       [[{profiling.jobs.kernel]]
+ |    cswch/s  : Total number of voluntary context-switches per sec.
+ |                   voluntary == task blocks waiting for a resource.
+ |    nvcswch/s: Total number of non-voluntary context switches per sec.
+ |               non voluntary == task executes for the duration of its time slice and then
+ |               is forced to relinquish the processor. [[}]]
+ |
+ |  ENV.VARS:
+ |  S_COLORS := never|always|auto (display statistics in color)
+ ```
+
+* EXAMPLES
+ ```
+ | $ pidstat 2 5               # Dump 5-reports of CPU-statistics
+ |                             # for every active task at 2-secs intervals.
+ |
+ | $ pidstat -r -p 1643 2 5    # Display five reports of page faults
+ |                             # and mem. stats for PID 1643 at 2 secs interval.
+ |
+ | $ pidstat -C "fox|bird" -r -p ALL # Display global page faults and mem.
+ |                            # stats for all processes whose command name
+ |                            # includes the string "fox" or "bird".
+ |
+ | $ pidstat -T CHILD -r 2 5  # Display 5 reports of page faults stats at 2 secs
+ |                            # intervals  for  child processes of all tasks in
+ |                            # the system. Only child processes with non-zero statistics
+ |                            # values are displayed.
+ ```
+[[monitoring.jobs}]]

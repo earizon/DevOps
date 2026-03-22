@@ -1,0 +1,8 @@
+```
+| [[{monitoring.storage,profiling.storage,troubleshooting.storage}]]
+| ---------------------------------------------------------------------------
+| bitesize: show I/O distribution for requested block sizes, by process name.
+| ---------------------------------------------------------------------------
+|
+| * <https://github.com/iovisor/bcc/blob/master/tools/bitesize_example.txt>
+```

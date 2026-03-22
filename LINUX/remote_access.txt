@@ -1,0 +1,93 @@
+[[{]]
+# Remote access
+
+[[{security.remote_access.tmux]]
+
+## Tmux
+
+* Tmux helps to keep your session open when the ssh network connection
+  goes down.
+* It also allows to split the terminal in panes and "project trees".
+
+[[{security.audit.user,use_case.tutorials]]
+* recording/auditing tmux sessions with ASCIInema:
+  <https://github.com/asciinema/asciinema/wiki/Recording-tmux-session>
+[[security.audit.user}]]
+
+* Oh my tmux!. pretty and versatile tmux configuration
+  <https://github.com/gpakosz/.tmux>
+
+### 10 killer tmux tips
+
+* <https://www.sitepoint.com/10-killer-tmux-tips/>
+
+* tmux Plugin Manager:
+  ```
+  | - PRE-SETUP install:
+  |   $ git clone https://github.com/tmux-plugins/tpm \
+  |     ~/.tmux/plugins/tpm
+  | 
+  |   $ cat << EOF >> ~/.tmux.conf
+  |   # Init plugin manager.
+  |   run -b '~/.tmux/plugins/tpm/tpm'    ←  keep line at the
+  |   EOF                                    "very bottom"
+
+  | - Installing Plugins:
+  |   STEP 1) ~/.tmux.conf:
+  |   ...
+  |   set -g @plugin 'tmux-plugins/tmux-resurrect'
+  |   set -g @plugin 'tmux-plugins/tmux-continuum'
+  |   #               └─────┬────┘ └─────┬──────┘
+  |   #               Github user   Github pass.
+
+  |   STEP 2) "prefix" + I (capital i) to fetch the plugin.
+  |   (plugins will be cloned to ~/.tmux/plugins/ and then sourced).
+
+  | - Uninstalling Plugins:
+  |   STEP 1) Remove / comment out plugin from ~/.tmux.conf
+  |   STEP 2) Press "prefix" + alt + u (lowercase u to uninstall)
+  ```
+
+Interesting plugins include:
+
+- "Resurrecting tmux": (across system restarts!!!).
+  - To restore also vim sessions:
+    - PRE-SETUP) install Tim Pope's vim-obsession (vim pluging).
+      `cd ~/.vim/bundle`
+    - tell vim-obsession to track the session.
+  - Ussage:
+    - save    tmux session: "prefix" + Control + s
+    - restore tmux session: "prefix" + Control + r (run tmux first)
+- "tmux-continuum": continuously saves tmux sessions at regular
+  intervals, Automatically restores at restart.
+- "Zooming tmux": (tmux 1.8+) very useful to look at test failures or
+  inspect logs.
+  - Ussage:
+  - swithc on/off zoom into a pane: "prefix" + z
+- ...
+
+[[security.remote_access.tmux}]]
+
+
+## VNC Remote Desktop [[{security.remote_access.vnc,]]
+
+* The VNC protocol allows to launch a graphical system in a
+  remote system using the VNC server and access it remotely
+  using the VNC clients.
+
+* Running programs in the remote machine will "draw" to a
+  local memory buffer shared by the VNC server.
+  When a remote VNC client connects, the VNC server will
+  transmit to the client the graphic buffer and finally
+  the VNC client will show the buffer in the local display.
+* Modern VNC client←→server protocols are highly optimized
+  to save bandwith and allows for high-resolution displays
+  with around 1Megabit of bandwidth.
+
+* There is no limit to the number of remote VNC servers that
+  can run in parallel, just limited by memory access.
+  Next links offers an example of how to run many different
+  VNC servers (1 or more desktops per user) in a single VNC server:
+  <https://github.com/earizon/tigervnc_remote_desktop>
+[[security.remote_access.vnc}]]
+[[}]]

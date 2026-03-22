@@ -1,0 +1,21 @@
+[[{QA.UX,configuration.cockpit,]]
+## cockpit Web UI 
+
+* <https://cockpit-project.org/>
+* easy-to-use, integrated, "glanceable", web-based interface for servers.
+
+* <https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8-beta/html/managing_systems_using_the_cockpit_web_interface/getting-started-with-cockpit_system-management-using-cockpit>
+
+UI with wide range of administration tasks, including Managing :
+* user accounts.
+* system services.
+* network interfaces.
+* firewall.
+* virtual machines
+* kernel-dump-configuration
+* SELinux
+* software updates,
+* system subscriptions.
+* system logs tracing.
+* diagnostic reports.
+[[}]]

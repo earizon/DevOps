@@ -1,0 +1,24 @@
+# (mail, ...) Notification System
+
+
+  ```
+  | [[{monitoring.notifications.mailgun,security.notifications,PM.low_code}]]
+  | 
+  | --------------------------------------------------- 
+  | mailgun: Sending eMails with CURL (cross-platform)
+  | --------------------------------------------------- 
+  | 
+  | $ curl -sv --user 'api:key-7e55d003b...f79accd31a' \  
+  |     https://api.mailgun.net/v3/sandbox21a78f824...3eb160ebc79.mailgun.org/messages \
+  |     -F from='Excited User <developer@yourcompany.com>' \
+  |     -F to=sandbox21a78f824...3eb160ebc79.mailgun.org \
+  |     -F to=user@gmail.com \
+  |     -F subject='Hello' \
+  |     -F text='Testing some Mailgun awesomeness!' \
+  |    --form-string html='<h1>EDMdesigner Blog</h1><br /><cite>This tutorial helps me understand email sending from Linux console</cite>' \
+  |     -F attachment=@logo2yellow.jpg                    
+  |
+  | REF: <https://blog.edmdesigner.com/send-email-from-linux-command-line/>
+  ```
+
+

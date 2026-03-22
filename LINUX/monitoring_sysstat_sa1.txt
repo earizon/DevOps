@@ -1,0 +1,23 @@
+```
+| [[{monitoring.101,monitoring.i/o.wait,monitoring.storage}]]
+| ===============================================================================
+| sa1: (sysstat) Collect and store binary data in the system activity daily data file.
+| ===============================================================================
+|
+| sa1  is a shell procedure variant of the sadc command 
+| 
+| OPTIONS
+| --boot   : sadc should be called without specifying the interval and count parameters
+|         in order to insert a dummy record, marking the time when the counters restart from 0.
+| --rotate YYYY-mm-dd: This should be  done  shortly  after midnight  (on  day  DD+1)
+| --sleep  : sadc should insert a comment indicating that the system is entering or 
+|            leaving sleep mode (i.e. system suspend or hibernation).
+| 
+| crontab file examples:
+| 
+| # collect data every 10 minutes:
+| 0,10,20,30,40,50 * * * * /usr/lib/sysstat/sa1 1 1 -S DISK
+| 
+| # rotate current system activity daily data file
+| 0 0 * * * /usr/lib/sysstat/sa1 --rotate
+```

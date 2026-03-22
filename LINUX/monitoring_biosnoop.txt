@@ -1,0 +1,8 @@
+```
+| [[{monitoring.storage,profiling.storage,troubleshooting.storage}]]
+| ------------------------------------------------------------------------ 
+| biosnoop: trace block device I/O (disk I/O), and prints a line of output 
+| ------------------------------------------------------------------------ 
+| 
+| * <https://github.com/iovisor/bcc/blob/master/tools/biosnoop_example.txt>
+```

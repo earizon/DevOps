@@ -1,0 +1,9 @@
+```
+| [[{monitoring.storage,profiling.storage,troubleshooting.storage}]]
+| --------------------------------------------------------
+| dcstat: shows directory entry cache (dcache) statistics.
+| --------------------------------------------------------
+|
+| * <https://github.com/iovisor/bcc/blob/master/tools/dcstat_example.txt>
+```
+

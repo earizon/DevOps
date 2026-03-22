@@ -1,0 +1,42 @@
+  ```
+  | [[{monitoring.notifications.gmail]]}]]
+  | ----------------------------------------------
+  | sendmail + Gmail (SSMTP Package) notifications
+  | ----------------------------------------------
+  |
+  | $ sudo apt install ssmtp                             <- PRESETUP) Install "lightweight"
+  |                                                         (sendonly) ssmtp 'sendmail'
+  |
+  | $ echo "Subject: hello" | sendmail test@example.com  <- test install. It will fail with
+  |                                                         error: Cannot open mailhub:25.
+  | $ sudo editor /etc/ssmtp/ssmtp.conf
+  |   | UseSTARTTLS=YES
+  |   | UseTLS=YES
+  |   | root=<from-email-address>
+  |   | mailhub=smtp.gmail.com:587
+  |   | AuthUser=<your-account's-user-name>
+  |   | AuthPass=<USER-OR-APP-PASSWORD>
+  |              └─────────┬──────────┘
+  | ┌──────────────────────┘
+  | └>(PRE-SETUP) For Google an "App Generated Password" replaces the
+  |   normal user password. Each time User Password is changed this
+  |   app generated password must be changed too. To generate this pass:
+  |   -> https://myaccount.google.com/?nlr=1
+  |     -> Select Security.
+  |       -> Under "Signing in to Google," select "App Passwords".
+  |         The option can be disabled if:
+  |         1) 2-Step Verification is not set up for your account.
+  |         2) 2-Step Verification is only set up for security keys.
+  |         3) Your account is through work/school/...
+  |         4) You turned on Advanced Protection.
+  |         -> choose Select app (Bottom of page)
+  |           -> choose mail App -> device ->_*Generate Pass*
+  |
+  |   WARN: If ssmtp runs without error but we can NOT see the mail into the
+  |         inbox probably an incomming filter exists. To fix it:
+  |         -> Gmail Web App -> Setting -> "Filters and Blocked Addresses"
+  |           ─> Remove filter >> from:(...@gmail.com) to:(..@gmail.com)  Skip Inbox <<
+  |
+  | NOTE: smtp.gmail.com limits: 100 recipients max per message, 500 messages/day.
+  ```
+[[}]]

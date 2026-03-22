@@ -1,0 +1,201 @@
+[[{security.aaa,security.101,linux.101,]]
+## User Management
+
+  ```
+  | Main system files involved
+  | ==========================
+  | /etc/passwd      <·· User         account information
+  | /etc/shadow      <·· encrypted    account information
+  | /etc/group       <·· Group        account information
+  | /etc/gshadow     <·· Secure group account information
+  | /etc/login.defs  <·· Shadow password suite configuration
+  ```
+
+  ```
+  | ============================================================================
+  | useradd: Add new user (or service/daemon) account 
+  | ============================================================================
+  | $ useradd -D  # <·· display (D)efault values to apply when creating new uses.
+  |               #     (Default group / HOME, SHELL, ...)
+  |               #     Use next flags to update defaults:
+  |               #     --base-dir BASE_DIR  :  (default to /home) Ignored if --home-dir set
+  |               #     --expiredate EXPIRE_DATE
+  |               #     --inactive INACTIVE  :  day # after pass.expiration before disabling
+  |               #     --gid GROUP: existing group name or ID for initial group (when --no-user-group used)
+  |                                       --shell SHELL
+  |
+  | $ addgroup PROJECT01 # <· Best pattern when allowing multi-user access to the linux machine.
+  |                      #    Create a new group per project ,then assign permissions to group (vs
+  |                      #    to user). This greately simplifies permissions administration in
+  |                      #    multi-user setups.  [[qa.best_pattern]]
+  |
+  | $ useradd alice                 \   ← Create user alice.
+  |     --shell=/usr/bin/git-shell  \   ← Assign shell (restricted git-shell in this example)
+  |     --shell=/usr/bin/git-shell  \   ← upon succesful login alice will be presented with a git shell *1
+  |     --groups PROJECT01,PROJECT02\   ← Assign PROJECT01 as default group for alice.
+  |     --password ...              \   ← create an initial and strong password (or provide alice with ssh keys.
+  |     --no-user-group             \   ← Do NOT create a new group (otherwise indicated by --gid)
+  |     --no-create-home            \   ← Do not create the /home/alice directory. (Some sort of
+  |                                       /var/lib/git/PROJECT01 directories already exist with read/write permissions
+  |                                       for PROJECT01, ... groups)
+  |
+  |                                     *1 By default /bin/bash o similar is used. git-shell restricts
+  |                                        access to just git-related commands.
+  |  Other useful 'useradd' options are:
+  |  --skel SKEL_DIR :  skel. dir. to be copied in the user's home directory
+  |  --key KEY=VALUE : Overrides /etc/login.defs defaults
+  |                    (UID_MIN, UID_MAX, UMASK, PASS_MAX_DAYS and others).
+  |                    Example: -K PASS_MAX_DAYS=-1 can be used when creating
+  |                      system account to turn off password ageing, even though
+  |                      system account has no password at all.
+  |  --no-log-init   : Do not add user to lastlog and faillog databases
+  |  --non-unique    : Allow duplicate (non-unique) existing UID in --uid. Most of the times used to
+  |                    allow 'root' users with non-root name accounts.
+  |  --system        : Create system account (no aging, uid chosen in SYS_UID_MIN-SYS_UID_MAX range)
+  |  --root CHROOTDIR: Apply changes in chrooted directory.
+  |  --uid UID       : numerical value for user's ID.
+  |  --user-group    : Create group with the same name as user, and use as initial group
+  |  --selinux-user SEUSER : SELinux user for the user's login
+  |
+  | ============================================================================
+  | usermod: modify existing account 
+  | ============================================================================
+  | $ sudo usermod [options] username # <·· Modify existing accounts (created with 'useradd' or 'adduser')
+  | ┌─┬············┴───────┘
+  | -L/-U: lock/unlock account                           
+  |        - Can be integrated with cron to enable/disable for a window of time.
+  |        - A '!' will be seen in the encrypted password /etc/shadow file,
+  |          meaning that password is disabled.
+  | 
+  | -c : add comment field              for account (updates /etc/passwd file)
+  | 
+  | -e : set YYYY-mm-dd expiration time for account. Ex:
+  |             ┌───┬─······: (CH)ange User passwor expire information. (Alternative to usermod -e)
+  |             ·   · ┌┬─ -.: show account aging information
+  |      $ sudo chage -l user01 | grep expires
+  |      Account expires: never
+  |      $ sudo usermod -e $(date --date="30 days" +%Y-%m-%d) user01 # set expire in 30 days
+  |      $ sudo chage -l user01 | grep expires
+  |      Account expires: ... 2024
+  |
+  | -d : Modify (home?) directory for account
+  | -g : Change primary group     for User. Ex:
+  |      # id user01                 # <·· Check current primary group for user01
+  |      | uid=501(user01) gid=501(user01) groups=502(user01)
+  |                               ^^^^^^^^                   
+  |      # usermod -g group01 user01 # <·· Modify primary group
+  |
+  |      # id user01                 # <·· 3. Confirm changes
+  |      | uid=501(user01) gid=333(group01) groups=502(user01)
+  |                               ^^^^^^^^                   
+  | -G : Add supplementary groups for account
+  |      WARN: Use always with -a option. Otherwise old groups are removed. Ex:
+  |      # usermod -a -G wheel user01
+  |
+  | -a : Add anyone in group to secondary group
+  | -l : change login name        for account
+  | -m : moving contents from current home dir to new dir
+  | -s : Set shell for                account
+  | -u : Used to Assigned UID for the user account between 0 to 999.
+  | 
+  | ==================================================
+  | chage:  change user password expiry information
+  | ==================================================
+  | $ chage [options] accountXXX
+  | Common options include:
+  | --expiredate YYY_MM-DD : Set expiration date
+  | --expiredate YYY_MM-DD : Set expiration date
+  | --inactive NUM_OF_DAYS : After account is inactive for NUM_OF_DAYS lock the account.
+  | --mindays MIN_DAYS     : minimum number of days between password changes to MIN_DAYS.
+  | --maxdays MAX_DAYS     : maximum number of days during which a password is valid. 
+  |                          After that, user is required to change the password.
+  | --warndays WARN_DAYS   : number of days of warning before password change is required.
+  ```
+
+
+[[{security.aaa,security.su,security.101,PM.WiP]]
+## su "vs" sudo: Switch user, scalate privileges
+
+* su and sudo are mostly used to allow temporal root/superuser access
+  to standard users for administrative tasks like installing new applications,
+  re-configuring the network, ...
+* sudo is ussually considered safer than su. Ubuntu was the first
+  distribution to allow sudo-only. Others distributions are also
+  changing to sudo-only as time passes.
+* sudo offers also a plugable architecture not offered by su
+  to provide different authentication and audit mechanisms.
+  REF:
+  * https://www.sudo.ws/ (Sudo Home page)
+  * https://www.sudo.ws/plugins.html (sudo Third-party plugins)
+    https://linux.die.net/man/1/su
+    https://linux.die.net/man/8/sudo
+* Ex. ussage:
+  ```
+  | $ sudo vim /etc/passwd # edit /etc/passwd as root
+  | $ su  # Change to root user
+  ```
+[[}]]
+
+
+[[security.aaa,security.101}]]
+
+## Basic file permissions  [[{linux.101,security.aaa]]
+Standar file permissions allows to assign different access permissions to
+the owner of the file, the group owner of the file and anyone else.
+
+  ```
+  | $ ls -l myFileOfInterest.db
+  |
+  | -rw?-r-?---? john accountDepartment ....  myFileOfInterest.db
+  | └┼┘│└┼┘│└┼┘│  └┬─┘ └──────┬────────┘
+  |  │ │ │ │ │ │   │          │
+  |  │ │ │ │ │ │   │          └─ group owner
+  |  │ │ │ │ │ │   └──────────── user  owner
+  |  │ │ │ │ │ │
+  |  │ │ │ │ │ └──────────────── sticky bit (hidden if not set)
+  |  │ │ │ │ │
+  |  │ │ │ │ └────────────────── permissions allowed to others: read           access
+  |  │ │ │ │
+  |  │ │ │ └──────────────────── SUID bit   (hidden if not set)
+  |  │ │ │
+  |  │ │ └────────────────────── permissions allowed to group : read           access
+  |  │ │
+  |  │ └──────────────────────── SUID bit   (hidden if not set)
+  |  │
+  |  └────────────────────────── permissions allowed to user  : read&amp;write access
+  ```
+
+The previous command line can be read as:
+
+> Allow read and write permissions to file-owner "john",
+> read permissions to group-owner "accountDepartment"
+>  and no   permissions to anyone-else """
+
+  ```
+  |            ┌──────┬─────────────────────────────┬─────────────────────────────┐
+  |Permissions │Symbol│      FILE                   │     DIRECTORY               │
+  |┌───────────┼──────┼─────────────────────────────┼─────────────────────────────┤
+  |│       read│  r   │ Allows to read the content  │ Allows to list the files in │
+  |│           │      │ of the file                 │ and file-attributes in the  │
+  |│           │      │                             │ directory                   │
+  |├───────────┼──────┼─────────────────────────────┼─────────────────────────────┤
+  |│      write│  w   │ Allows to write, modify,    │ Allows to add and delete    │
+  |│           │      │ append or delete the file   │ files into the directory and│
+  |│           │      │ content.                    │ modify metadata (access     │
+  |│           │      │                             │ or modification time, ...)  │
+  |├───────────┼──────┼─────────────────────────────┼─────────────────────────────┤
+  |│    execute│  x   │ Allows to execute the       │ Allows to enter into the    │
+  |│           │      │ program or script           │ directory                   │
+  |├───────────┼──────┼─────────────────────────────┴─────────────────────────────┤
+  |│    sticky │  T   │ Only the person that created the file/dir. can change it, │
+  |│           │      │ even if other people have write permissions to file/dir.  │
+  |│           │      │ turn on: $ chmod +t someFileOrDir                         │
+  |│           │      │ Normal /tmp (temporary user files) is an sticky directory │
+  |├───────────┼──────┼───────────────────────────────────────────────────────────┤
+  |│       suid│  S   │ Allow SUID/SGID (switch user/group ID). When executed it  │
+  |│           │      │ it will be executed with creator/group of file, instead of│
+  |│           │      │ current user.                                             │
+  |│           │      │ turn on: $ chmod +s someFileOrDir                         │
+  |└───────────┴──────┴───────────────────────────────────────────────────────────┘
+  ```
+[[}]]

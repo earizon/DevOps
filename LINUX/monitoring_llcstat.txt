@@ -1,0 +1,12 @@
+```
+| [[{monitoring.storage,profiling.storage,troubleshooting.storage}]]
+| -----------------------------------------------------
+| llcstat: traces cache reference and cache miss events
+| -----------------------------------------------------
+|
+| * <https://github.com/iovisor/bcc/blob/master/tools/llcstat_example.txt>
+| * traces cache reference and cache miss events system-wide, and summarizes
+|   them by PID and CPU.
+```
+
+

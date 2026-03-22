@@ -1,0 +1,51 @@
+[[{monitoring.sysstat]]
+## sysstat: All-in-One System Performance and Usage Activity Monitoring Tool
+
+* As of 2025, it is on version 12.7.9
+* Different sysstat utilities can monitor a huge number of different metrics:
+  * Input/Output and transfer rate statistics (global, per device/partition/network FS/task/PID).
+  * CPU (and virt.CPU) statistics (global, per CPU/NUMA node/task/PID).
+  * Memory/Hugepages/swap space utilization statistics.
+  * Virtual memory, paging and fault statistics.
+  * Per-task (per-PID) memory and page fault statistics.
+  * Global CPU and page fault statistics for tasks and all their children.
+  * Process creation activity.
+  * Interrupt statistics (global, per CPU and per interrupt, including 
+    potential APIC interrupt sources, hardware and software interrupts).
+  * Extensive network statistics: network interface activity 
+    (packets/sec|kB/sec received/transmitted,...) including failures from 
+    network devices; network traffic statistics for IP, TCP, ICMP and UDP protocols 
+    based on SNMPv2 standards; support for IPv6-related protocols.
+  * Fibre Channel traffic statistics.
+  * Software-based network processing (softnet) statistics.
+  * NFS server and client activity.
+  * Sockets statistics.
+  * Run queue and system load statistics.
+  * Kernel internal tables utilization statistics.
+  * System and per Linux task switching activity.
+  * Swapping statistics.
+  * TTY devices activity.
+  * Power management statistics (instantaneous and average CPU clock frequency, 
+fans speed, devices temperature, voltage inputs)
+  * USB devices plugged into the system.
+  * Filesystems utilization (inodes and blocks).
+  * Tape drives statistics.
+  * Pressure-Stall Information statistics.
+  * Can generate graphs (SVG format - Scalable Vector Graphics) 
+  * Average statistics values are calculated over the sampling period.
+  * Most system statistics can be saved in a file for future inspection.
+  * Allows to configure the length of data history to keep.
+  * On the fly detection of new devices (disks, network interfaces, etc.) that are created or registered dynamically.
+  * Support for UP and SMP machines, including machines with hyperthreaded or multi-core processors.
+  * Support for hotplug CPUs (it detects automagically processors that are disabled or enabled on the fly) and tickless CPUs.
+  * Works on many different architectures, whether 32- or 64-bit.
+  * Needs very little CPU time to run (written in C).
+  * System statistics collected by sar/sadc can be exported in various 
+    different formats (CSV, XML, JSON, SVG, etc.). DTD and XML Schema documents are 
+    included in sysstat package. JSON output format is also available for mpstat 
+    and iostat commands.
+  * sar data can also be exported by sadf to PCP (Performance Co-Pilot) archive.
+  * Smart color output for easier statistics reading.
+  * iostat has support for devices managed by drivers in userspace like spdk.
+
+[[monitoring.sysstat}]]

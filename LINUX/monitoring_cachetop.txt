@@ -1,0 +1,11 @@
+```
+| [[{monitoring.storage,profiling.storage,troubleshooting.storage,profiling.101,}]]
+| ----------------------------------------
+| cachetop: cache hit/miss per process !!!
+|
+| ----------------------------------------
+| * <https://github.com/iovisor/bcc/blob/master/tools/cachetop_example.txt>
+| * show Linux page cache hit/miss statistics including read and write hit % per
+|   processes in a UI like top.
+```
+

@@ -1,0 +1,34 @@
+[[{security.notifications.pushover,security.notifications.android,security.notifications.iPhone]]
+## Pushover (iOS/Android push)
+
+REF: <https://www.cyberciti.biz/mobile-devices/android/how-to-push-send-message-to-ios-and-android-from-linux-cli/>
+
+* Pushover Service with no need for AWS/Azure/GCP accounts:
+  * $5 ONE-TIME purchase. !!!!
+  * Up to 7500 messages/month.
+  * (More options exists for IT teams)
+
+  | PRESETUP -------------------------------------------------------------------
+  | 1) Sign up for Pushover.
+  | 2) download Pushover for Android/iOS.
+  | 3) subscribe to service (7-day trial account).
+  | 4) Once logged in, register cli application.
+  |    to retrieve a  *secret API token*.
+  |
+  | Example notification script ------------------------------------------------
+  | 
+  | push_to_mobile(){       
+  |
+  |   # Ussage push_to_mobile $title $message
+  |  
+  |   local t="${1:cli-app}"
+  |   local m="$2"
+  |   [[ "$m" != "" ]] && curl -s \
+  |    *--form-string "token=${PUSHOVER_API_TOKEN}"*\
+  |     --form-string "user=${PUSHOVER_API_USER}" \
+  |     --form-string "title=$t" \
+  |     --form-string "message=$m" \
+  |     https://api.pushover.net/1/messages.json
+  | }
+  ```
+[[}]]

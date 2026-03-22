@@ -1,0 +1,129 @@
+# SYSTEM INFO 
+
+## Basic System Info
+
+  ```
+  [[{linux.101,monitoring.101}]]
+  | $ uptime  ← shows how long the computer has been "up" since last reboot.
+  |             number of users and the processor load
+  | $ date    ← current date/time
+  | $ cal     ← display calendar
+  | $ uname   ← print information on the system such as OS type, kernel version...
+  |             -a --- print all the available information
+  |             -m --- print only information related to the machine itself
+  |             -n --- print only the machine hostname
+  |             -r --- print the release number of the current kernel
+  |             -s --- print the operating system name
+  |             -p --- print the processor type
+  | 
+  | $ cat /etc/release | sort | uniq  ← Shows OS identification
+  |                                   (Distribution, major,minor,patch,flavour, ...)
+  | $ free    ← human-readable memory report (-g: Gigabytes)
+  |               total        used        free      shared  buff/cache   available
+  | Mem:        6102476      812244     4090752       13112     1199480     4984140
+  | Swap:       2097148           0     2097148
+  | 
+  | $ getconf -ag  ← Get all system config. parameters
+  | → ...
+  | → PAGESIZE                           4096
+  | → ..
+  | → ULONG_MAX                          18446744073709551615
+  | → USHRT_MAX                          65535
+  | → ...
+  | → _POSIX_...
+  | → ...
+  | → LFS_CFLAGS
+  | → LFS_LDFLAGS
+  | → LFS_LIBS
+  | → LFS_LINTFLAGS
+  | → LFS64_CFLAGS                       -D_LARGEFILE64_SOURCE
+  | → LFS64_LDFLAGS
+  | → LFS64_LIBS
+  | → LFS64_LINTFLAGS                    -D_LARGEFILE64_SOURCE
+  | → ...
+  | → GNU_LIBC_VERSION                   glibc 2.28
+  | → GNU_LIBPTHREAD_VERSION             NPTL 2.28
+  | → POSIX2_SYMLINKS                    1
+  | → LEVEL1_ICACHE_SIZE                 32768
+  | → LEVEL1_ICACHE_ASSOC                8
+  | → LEVEL2_CACHE_SIZE                  262144
+  | → LEVEL2_CACHE_ASSOC                 8
+  | → LEVEL2_CACHE_LINESIZE              64
+  | → LEVEL3_CACHE_SIZE                  3145728
+  | → LEVEL3_CACHE_ASSOC                 12
+  | → LEVEL3_CACHE_LINESIZE              64
+  | → LEVEL4_CACHE_SIZE                  0
+  | → LEVEL4_CACHE_ASSOC                 0
+  | → LEVEL4_CACHE_LINESIZE              0
+  | → ...
+  | 
+  | $ dmidecode types    <··· Decode DMI (system board)
+  |  0 BIOS
+  |  1 System
+  |  2 Baseboard
+  |  4 Processor
+  |  6 Memory Module
+  |  7 Cache
+  | 11 OEM Strings
+  | 12 System Config.Options
+  | 16 Physical Memory Array
+  | 17 Memory Device
+  | 24 Hardware Security
+  | 25 System Power Controls
+  | 32 System Boot
+  | 33 64-bit Memory Error
+  | 39 Power Supply
+  |    ...
+  | 
+  | $ sudo dmidecode -t 17  <··· Show physical mem.banks
+  | | OUPUT PHYSICAL MACHINE                      | OUPUT VIRTUAL MACHINE (Manufacturer: QUEMU,...)
+  | | # dmidecode 3.2                             | # dmidecode 3.0
+  | | Getting SMBIOS data from sysfs.             | Getting SMBIOS data from sysfs.
+  | | SMBIOS 2.7 present.                         | SMBIOS 2.8 present.
+  | |                                             |
+  | | Handle 0x0008, DMI type 17, 34 bytes        | Handle 0x1100, DMI type 17, 40 bytes
+  | | Memory Device                               | Memory Device
+  | |     Array Handle: 0x0007                    |         Array Handle: 0x1000
+  | |     Error Information Handle: Not Provided  |         Error Information Handle: Not Provided
+  | |     Total Width: 64 bits                    |         Total Width: Unknown
+  | |     Data Width: 64 bits                     |         Data Width: Unknown
+  | |     Size: 8192 MB                           |         Size: 4096 MB
+  | |     Form Factor: SODIMM                     |         Form Factor: DIMM
+  | |     Set: None                               |         Set: None
+  | |     Locator: ChannelA-DIMM0                 |         Locator: DIMM 0
+  | |     Bank Locator: BANK 0                    |         Bank Locator: Not Specified
+  | |     Type: DDR3                              |         Type: RAM
+  | |     Type Detail: Synchronous                |         Type Detail: Other
+  | |     Speed: 1333 MT/s                        |         Speed: Unknown
+  | |     Manufacturer: Samsung                   |         Manufacturer: QEMU
+  | |     Serial Number: 939BED25                 |         Serial Number: Not Specified
+  | |     Asset Tag: None                         |         Asset Tag: Not Specified
+  | |     Part Number: M471B1G73DB0-YK0           |         Part Number: Not Specified
+  | |     Rank: Unknown                           |         Rank: Unknown
+  | |     Configured Memory Speed: 1333 MT/s      |         Configured Clock Speed: Unknown
+  | |                                             |         Minimum Voltage: Unknown
+  | | Handle 0x0009, DMI type 17, 34 bytes        |         Maximum Voltage: Unknown
+  | | Memory Device                               |         Configured Voltage: Unknown
+  | |     Array Handle: 0x0007                    |
+  | |     Error Information Handle: Not Provided  |
+  | |     Total Width: 64 bits                    |
+  | |     Data Width: 64 bits                     |
+  | |    *Size: 8192 MB            *              |
+  | |    *Form Factor: SODIMM      *              |
+  | |    *Set: None                *              |
+  | |    *Locator: ChannelB-DIMM0  *              |
+  | |    *Bank Locator: BANK 2     *              |
+  | |    *Type: DDR3               *              |
+  | |    *Type Detail: Synchronous *              |
+  | |    *Speed: 1333 MT/s         *              |
+  | |    *Manufacturer: 04CB       *              |
+  | |     Serial Number: A8750300                 |
+  | |     Asset Tag: None                         |
+  | |     Part Number:                            |
+  | |     Rank: Unknown                           |
+  | |     Configured Memory Speed: 1333 MT/s      |
+  ```
+
+
+
+

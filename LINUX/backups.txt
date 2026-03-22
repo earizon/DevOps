@@ -1,0 +1,258 @@
+[[{security.backup,linux.101,storage.compression]]
+# BACKUPS  
+
+[[{security.backups.bup,security.101,]]
+## bup: Fast incremental backups with deduplication 
+
+* <https://github.com/bup/backup>
+  Very efficient backup system based on git packfile format,
+  providing fast incremental saves and global deduplication (among and
+  within files, including virtual machine images).
+
+* Data is "automagically" shared between incremental backups without 
+  having to know which backup is based on which other one - even if the 
+  backups are made from two different computers that don't even know 
+  about each other. You just tell bup to back stuff up, and it saves 
+  only the minimum amount of data needed
+[[security.backups.bup}]]
+
+## CLP  [[{monitoring.logs.clp,security.audit,PM.low_code,PM.price.saving]]
+
+* <https://github.com/y-scope/clp>
+
+* C&P from <https://www.uber.com/en-DE/blog/reducing-logging-cost-by-two-orders-of-magnitude-using-clp/>
+  """CLP reduces log size by x169 ... [[storage.compression,scalability.storage]]
+     CLP allows to search directly on the compressed logs .... With
+     just Phase 1, this cost is reduced to $10,000/year for a one month
+     retention period. But more importantly, it now enables us to retain
+     the logs as our engineers requested: we were able to restore the
+     logging level from WARN back to INFO, increase our retention period
+     by 10x, and still reduce our storage costs by 17x."""
+[[monitoring.logs.clp}]]
+
+## tar (tape-archive) 
+* man 1 tar
+* standard tool for archiving saving a (many) files and directories to a single
+  tape or disk archive.
+* Individual files can be restored from the .tar file when needed.
+
+Examples:
+
+* Create new archive file from directory
+  ```
+  | $ INPUT="/home/myUser/myProject"            # directory/ies and/or file/s to archive.
+  | $ OUTPUT="_home_myUser_myProject_01.tar.gz" # prefixing with absolute path is optional.
+  |
+  | $ tar czf ${OUTPUT} ${INPUT}
+  |       ·└─ pipe tar output as input for g(z)ip compressor.
+  |       ·   alt: (j) for bzip2 (better and slower compression)
+  |       └─· (c)oncatenate (append to tar)  files ${INPUT} 
+  ```
+
+* Restore backup from archive file:
+  ```
+  | $ cd /home/myUser
+  | $ tar xzf _home_myUser_myProject_01.tar.gz
+  |       ││└·· name of input file
+  |       │└─·· de-compress with gzip first
+  |       └──·· e(x)tract 
+  ```
+
+* List contents of archive:
+  ```
+  | $ tar tzf _home_myUser_myProject_01.tar.gz
+  |       ││└·· name of  input file
+  |       │└─·· de-compress with gzip first
+  |       └──·· list
+  ```
+
+[[{security.backup.incremental,storage.network]]
+## Remote Incremental Backup
+
+* EasyUp: KISS incremental remote backup around rsync+ssh
+  <https://github.com/earizon/easyup>
+
+* Rsnapshot: filesystem snapshot utility on top of rsync.
+  <http://rsnapshot.org/><br/>
+  """rsnapshot makes it easy to make periodic snapshots of local 
+  machines, and remote machines over ssh.  The code makes extensive use 
+  of hard links whenever possible, to greatly reduce the disk space 
+  required and rsync to save bandwidth (backup only changes)"""
+
+* Live backups with inotify + rsync + bash: Backup on "real-time changes"<br/>
+  <https://linuxhint.com/inotofy-rsync-bash-live-backups/>
+
+* <http://www.bacula.org/>
+  """Bacula is a set of Open Source, computer programs that permit to manage backup,
+     recovery, and verification of computer data across a network of computers of different
+     kinds,  offering many advanced storage management features that make it
+     easy to find and recover lost or damaged files."""
+     -<http://www.bacula.org/9.0.x-manuals/en/main/index.html>
+  * *Director Daemon* supervises all the backup, restore, verify and archive operations.
+    Sysadmin uses Director to schedule backups and to recover files..
+  * *Console service* allows the administrator or user to communicate with the Director
+    (three versions: text-based, QT-based, wxWidgets)
+  * *File Daemon* It's installed on the machine to be backed up and is responsible for
+    providing the file attributes and data when requested by the Director
+    as well as for the file system dependent part of restoring the file attributes and data
+    during a recovery operation.
+  * *Storage daemons* are software programs in charge of storage and recovery of the
+    file attributes and data to the physical backup media or volumes. In other words, it is
+    responsible for reading and writing your tapes (or other storage media, e.g. files)
+  * *Catalog Services* are responsible for maintaining the file indexes and
+    volume databases for all files backed up allowing sysadmin or user to
+    quickly locate and restore any desired file. The Catalog services sets
+    Bacula apart from simple backup programs like tar and bru, because the catalog
+    maintains a record of all Volumes used, all Jobs run, and all Files saved, permitting
+    efficient restoration and Volume management. Bacula currently supports three different
+    databases, MySQL, and PostgreSQL one of which must be chosen when building Bacula.
+  * *Monitor Service* Allows the administrator or user to watch current status of Directors,
+    File Daemons and Bacula Storage Daemons. Currently, only a GTK+ version is available.
+
+* Symple remote backups with ssh
+  ```
+  $ tar cjf - myDirToBackup \       # local
+    | ssh myUser@myRemoteMachine \  # ssh pipe
+    "cd myBackupPath && tar -xjf -" # remote
+  ```
+
+* "Real time" backup with rsync and bash
+  <https://github.com/Leo-G/backup-bash>
+
+[[}]]
+
+## rsync
+
+* Standard utility to copy files remotely by just comparing local/remote changes
+  (vs copying the data like a full).
+* It its at the core of many other backups tools.
+
+  ```
+  Example. 
+  $ cd ...
+  $ rsync --dry-run \                         <· Simulate execution, remove to really execute
+    --links \
+    --stats \
+    --itemize-changes \
+    --recursive \                             <· mandatory for directories
+    --human-readable \
+    --log-file=rsync_dry_run.log \
+    some/Local/FolderOrFile \
+    user@host:/some/Remote/FolderOrFile      <· use ssh to connect and launch remote rsync peer
+
+  Other interesing options:
+  --archive/-a: Archive mode, preserves permissions, times, symbolic links, etc.
+                like -rlptgoD (no -A,-X,-U,-N,-H)
+                     --links    /-l 
+                   + --recursive/-l 
+                   + --perms    /-p   (preserve permissions)
+                   + --times    /-t   preserve modification times
+                   + --group    /-g   preserve group
+                   + --owner    /-o   preserve owner
+                   + --devices        preserve device files (super-user only)
+                   + --specials       preserve special files
+  --rsh=COMMAND, -e=COMMAND: Use command as SSH as the remote shell for the transfer.
+
+  --compress/-z: compress file data during the transfer
+  ```
+
+[[{storage.compression,scalability.backups,performance.CPU,doc_has.comparative]]
+## multi-core compression tools 
+
+* NOTE: bzip2 offers a much better compression than gz when source
+  files have low entropy (many repeated words, white spaces,...) while
+  consuming (much) more CPU.<br/>
+  Ideal to save bandwidth while highly increasing CPU ussage.
+
+* Ex:
+  * two runs to avoid FS cache effects
+  * Input: (dir1), 430M, with 70% binary (hard to compress) data.
+  ```
+  | STANDARD UTILITY                           MULTI-CORE ALTERNATIVE
+  | NO COMPRESSION                          |
+  | ==================================      |
+  | $ sudo tar cf output.tar dir1           |
+  |                                         |
+  | real  0m0,096s                          |
+  | user  0m0,048s                          |
+  | sys   0m0,049s                          |
+  | OUTPUT SIZE: 410M                       |
+
+  | GZIP                                    |   PIGZ (DEF.OPTIONS, 4 CORES)
+  | ==================================      |   ==============================
+  | $ sudo tar cf - dir1 | \                |   $ sudo tar cf - directory1 | \
+  |    gzip  > output.tar.gz                |         pigz  > /dev/null
+  | TIME: 13,5s                             |   TIME:  5,0s
+  | OUTPUT SIZE: 337M                       |   OUTPUT SIZE: 337M
+
+  | BZIP2                                   |   PBZIP2 (DEF.OPTIONS, 4 CORES)
+  | ==============================          |   =================================
+  | $ sudo tar cf dir1 | \                  |   $ sudo tar cf - dir1 | \
+  |    bzip2 > output.tar.bz2               |    pbzip2 > output.tar.bz2
+  | TIME: 66,0s                             |   TIME: 31,8s
+  | OUTPUT SIZE: 331M                       |   OUTPUT SIZE: 332M
+
+
+  | XZ                                      |   PIXZ  (DEFAULT OPTIONS, 4 CORES)
+  | ==============================          |   =================================
+  | $ sudo tar cf dir1 | \                  |   $ sudo tar cf - dir1 | \
+  |    xz    > output.tar.bz2               |     pbzip2 > output.tar.bz2
+  | TIME: 151,7s                            |   TIME: 46,8s
+  | sys     0m2,179s                        |   sys     0m1,706s
+  | OUTPUT SIZE: 313M                       |   OUTPUT SIZE: 317M
+  ```
+
+From: <https://www.linuxlinks.com/best-linux-multi-core-compression-tools/>
+* pigz    Parallel implementation of gzip. It's a fully functional replacement for gzip
+* PBZIP2  Parallel implementation of the bzip2 block-sorting file compressor
+* PXZ     Runs LZMA compression on multiple cores and processors
+* lbzip2  Parallel bzip2 compression utility, suited for serial and parallel processing
+* plzip   Massively parallel (multi-threaded) lossless data compressor based on lzlib
+* lrzip   Compression utility that excels at compressing large files
+* pixz    Parallel indexing XZ compression, fully compatible with XZ. LZMA and LZMA2
+[[}]]
+
+
+## Zstandard, superfast compression  [[{scalability.backups.zstandard,PM.TODO,]]
+
+* <https://www.2daygeek.com/zstandard-a-super-faster-data-compression-tool-for-linux/>
+[[]]
+[[scalability.backups.zstandard}]]
+
+[[{security.android.101,storage.android]]
+## Android To Linux Backups  
+* <https://github.com/FlamingTuri/android-file-backup>
+
+Script solving common problems when transferring files/folders from/to Android.
+* transfer big folders
+* keep the files original modification date
+
+PREREQUISITES
+* On Linux:
+  * `adb` command installed. It can be downloaded from
+    <https://developer.android.com/studio/releases/platform-tools>
+    (~10MB aprox for the whole toolkit)
+  * <https://developer.android.com/studio/command-line/adb>
+
+  ```
+  $ sudo apt-get install pv  # <· Optional. Allows to view compression progress (-z option)
+  ```
+
+* On Android:
+  * enable USB debugging
+  * enable USB file transfer.
+    (accept dialog asking to trust your computer RSA fingerprint)
+
+Execution Example:
+
+  ```
+  | $ ./adb-backup.sh    ← backup "DCIM", "Download", "Pictures"
+  |    /sdcard/DCIM        from Android to Linux FS.
+  |    /sdcard/Download
+  |    /sdcard/Pictures
+  ```
+[[security.android.101}]]
+
+[[security.backup}]]
+
+

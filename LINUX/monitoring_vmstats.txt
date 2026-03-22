@@ -1,0 +1,86 @@
+```
+| [[{monitoring.vmstat,monitoring.101,monitoring.memory,monitoring.i/o]]
+| ---------------------------------------------------------------
+| vmstat: Real Time stats for CPU/procs/mem/paging/block IO/traps
+| ---------------------------------------------------------------
+| (man 8 vmstat)
+| $ vmstat [options] [delay [count]] (global stats) 
+| 
+|   The first report produced gives averages since the last reboot.
+|   Additional reports give information on a sampling period of length delay.
+|   The process and memory reports are instantaneous in either case.
+| 
+|  -a --active: Display active and inactive memory
+|               FROM: https://unix.stackexchange.com/questions/305606/linux-inactive-memory
+|               * active memory are pages which have been accessed "recently"
+|               * inactive memory are pages which have not been accessed "recently"
+|               """A high ratio of active to innactive memory can indicate
+|                  memory pressure, but that condition is usually accompanied by
+|                  pagin/swapping which is easier to understand"""
+|  -f --forks : display number of forks (fork,vfork,clone) since boot. This
+|  -m --slabs : Display slabinfo (memory assigned to kernel objects)
+|               https://en.wikipedia.org/wiki/Slab_allocation
+|  -s --stats : Displays a table of various event counters and memory statis‐
+|             tics. (without repeating)
+|  -d --disk  : Report disk statistics
+|  -D --disk-sum: Report some summary statistics about disk activity.
+|  -p --partition device: Detailed statistics about partition
+|  -S --unit  :=  1000 (k), 1024 (K), 1000000 (m), 1048576 (M) bytes.
+|             swap (si/so) and block (bi/bo) not affected
+|  -t --timestamp: Append timestamp to each line
+|  *-w --wide  : Wide output mode* (Recomended)
+| 
+| OUTPUT FIELD DESCRIPTION
+| *VM MODE*                                         | *DISK MODE(--disk)*
+| Procs                                           | Reads
+|   r: # of runnable procs(running|waiting for)   |   total  :   Total reads completed successfully
+|   b: # of processes  *in uninterruptible sleep* |   merged : grouped reads(resulting in 1 I/O)
+|                                                 |   sectors: Sectors read successfully
+| Memory ¹                                        |        ms: milliseconds spent reading
+| (inacti,cache,buff can be freed if needed)      |
+|   swpd  : virtual memory used                   |
+|   free  : idle (ready to use) memory            | Writes
+|   buff  : memory used as disk buffers           |     total:   Total writes completed successfully
+|   cache : memory used as cache                  |    merged: grouped writes (resulting in 1 I/O)
+|   inact : inactive memory (-a option)           |   sectors: Sectors written successfully
+|           (still cached for possible reuse)     |        ms: milliseconds spent writing
+|   active: memory Used by processes              |
+|                                                 | IO
+|  Swap                                           |   cur: I/O in progress
+|    si: Amount of memory swapped in from disk(/s)|     s: seconds spent for I/O
+|    so: Amount of memory swapped to disk(/s)     +--------------------------------------------------------
+| 
+| IO                                              | *DISK PARTITION MODE (--partition)*
+|   bi: Blocks received from block device         |           reads: Total # of reads issued to part.
+|   bo: Blocks     sent   to block device         |    read sectors: Total read sectors for partition
+|                                                 |          writes: Total # of writes issued to part.
+| System                                          |requested writes: Total # of write requests made for part
+|   in: interrupts per second, including the clock+---------------------------------------------------------
+|   cs:  *context switches per second*
+|                                                 | *SLAB MODE (--slabs)*
+| CPU (percentages of total CPU time)             |   cache: Cache name
+|   us: Time spent running non-kernel code(user  )|     num: # of currently active objects
+|   sy: Time spent running     kernel code(system)|   total: Total # of available objects
+|   id: Time spent idle                           |    size: Size of each object
+|   wa:  *Time spent waiting for IO*              |   pages: # of pages with at least one active object
+|   st: Time stolen from a virtual machine        +---------------------------------------------------------
+|
+| ¹ buffers vs cache
+|   <https://stackoverflow.com/questions/6345020/what-is-the-difference-between-buffer-vs-cache-memory-in-linux>
+| 
+|   - buffers are associated with a specific block device,
+|     caching filesystem metadata(dir contents, file permissions),
+|     as tracking in-flight pages (what's being written
+|     from or read to for a particular block device).
+|     The Kernel tries to cache just enough buffers for predicted
+|     "next-reads" to block devices.
+|   
+|   - cache contains real application file data (file content).
+|     The Kernel tries to cache as much as possible until there is
+|     no more free memory for apps.
+|
+| *All linux blocks are currently 1024 bytes.*
+| [[monitoring.vmstat}]]
+```
+
+

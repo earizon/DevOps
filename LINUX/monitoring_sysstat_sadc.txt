@@ -1,0 +1,13 @@
+```
+| [[{monitoring.101,monitoring.i/o.wait,monitoring.storage}]]
+| ===============================================================================
+| sadc: (sysstat) System activity data collector, used for collecting data in backend for sar.
+| ===============================================================================
+|
+| $ sudo sadc 2 10 /tmp/sadc_data.dat #  1. Collect Data 10 times at 2 secs interval.
+| $ sudo sadc -F -L -S DISK -S POWER  #  Collect data in Background (Daemon Mode)
+|        /var/log/sa/sa`date +%d`     # -F: Force creation or overwrite data file.
+|                                     # -L: Log system load averages.
+|                                     # -S ...: DISK, INT, IPV6, POWER, SNMP, XDISK,
+|                                               ALL and XALL.
+```

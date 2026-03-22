@@ -1,0 +1,13 @@
+```
+| [[{monitoring.network.TLS,security.TLS}]]
+| --------------------------------------------------------------------------
+| # sslsniff: Sniff encrypted TLS traffic 
+| --------------------------------------------------------------------------
+|
+| * Trace write/send and read/recv functions of OpenSSL, GnuTLS and NSS.
+| * Data passed to this functions is printed as plain text.
+| * Useful, for example, to sniff HTTP before encrypted with SSL.
+| 
+| * REF: <https://github.com/iovisor/bcc/blob/master/tools/sslsniff_example.txt>.
+| * See also: <https://github.com/tldr-pages/tldr/blob/master/pages/common/httpflow.md>
+```

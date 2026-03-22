@@ -1,0 +1,61 @@
+[[{monitoring.notifications.telegram]]
+## Telegram API for Notifications
+
+* REF: <https://ugeek.github.io/blog/post/2019-03-14-crea-un-bot-de-telegram-con-bash-y-una-sola-linea-de-terminal.html>
+
+  ```
+  | [[{monitoring.notifications.telegram}]]
+  | ============================================================================
+  |                 TELEGRAM notification PRE-SETUP                             
+  | ============================================================================
+  |
+  | PRE-SETUP STEP 1 -----------------------------------------------------------
+  | Go to 
+  | <https://t.me/BotFather>                      Alt 1 (mobile)
+  | <https://web.telegram.org/#/im?p=@BotFather>  Alt 2: web browser
+  |
+  | (BotFather is the "fathers of all Bots", created by Telegram to easify bot creation)
+  |
+  | PRE-SETUP STEP 2 -----------------------------------------------------------
+  | *  type  "/newbot"
+  | * We will be asked for the name of our new bot
+  |   (Name must end with bot)
+  | * Once the bot name is accepted we will receive the  *access-token to the HTTP API*
+  |   NOTE:  each Telegram user has an ID that can be retrieved starting the "@userinfobot" bot)
+  |
+  | PRE-SETUP STEP 3 (Optional) ------------------------------------------------
+  | * To add the Bot to a group or channel to send messages (or any other function), 
+  |   retrieve and write down the Group or Channel ID. Then send the message to
+  |   @ChannelIdBot from the channel/group.
+  |
+  | ============================================================================
+  |            Example 1: Notification for new ssh connections
+  | ============================================================================
+  |
+  | $ editor ~/.bashrc  # add next lines to .bashrc
+  |                                                                                                 
+  | + TELEGRAM_TOKEN="<presetup_token>" 
+  | + TELEGRAM_ID="<presetup_id>"
+  | + URL="https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage"
+  | + # We want to exec curl only if it's a real ssh login
+  | + # ps -ef | egrep "..." will execute next line only if a match exists.
+  | + # The match only exists if our parent process is sshd (real ssh access)
+  | + # Using the regex "$PPID.*[s]shd" instead of just "$PPID.*sshd" filters out the egrep command
+  | + 
+  | + ps -ef | egrep "$PPID.*[s]shd" &amp;&amp; \
+  | +   curl -s -X POST $URL \
+  | +   -d chat_id=${TELEGRAM_ID} \
+  | +   -d text="New ssh connection to $HOSTNAME from IP $SSH_CLIENT " 1>/dev/null 2>&1 &
+  |
+  |
+  | ============================================================================
+  |            Example 2: Notify server restarts.
+  | ============================================================================
+  |
+  | $ crontab -e
+  | (add next multi-line removing new lines and ending '\')
+  | @reboot ( sleep 100 ;  curl -s -X POST \
+  |   https://api.telegram.org/bot"$TELEGRAM_TOKEN"/sendMessage \
+  |   -d chat_id="${TELEGRAM_ID}" \
+  |   -d text="new ssh with IP ${SSH_CLIENT}")
+  ```

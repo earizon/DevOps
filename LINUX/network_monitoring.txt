@@ -1,0 +1,148 @@
+# Network monitoring Summary
+
+
+<!-- ##########################################################################
+     ##########################################################################
+     ########################################################################## -->
+
+ ```
+ | [[{monitoring.network.ip}]]
+ | ------------------------------------------
+ | ip: Examines ip setup (links, routes, ...)
+ | ------------------------------------------
+ |
+ | $ ip route list     <····· DISPLAY IP ROUTING TABLE
+ |   *default via 10.0.0.1 dev eth0*
+ |   10.0.0.0/24     dev eth0    proto kernel scope link src 10.0.0.5
+ |   169.254.0.0/16  dev eth0                 scope link metric 1002
+ |   172.17.0.0/16   dev docker0 proto kernel scope link src 172.17.0.1
+ |   168.63.129.16   via 10.0.0.1 dev eth0 proto static
+ |   169.254.169.254 via 10.0.0.1 dev eth0 proto static
+ |   ...
+ |
+ | $ ip link         <···· DISPLAY IP DEVICE STATUS
+ | 1: lo:     <LOOPBACK,           UP,LOWER_UP> ...  state UNKNOWN mode DEFAULT ...
+ |     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+ | 2: eth0:   <BROADCAST,MULTICAST,UP,LOWER_UP> ...  state UP      mode DEFAULT ...
+ |     link/ether    00:0d:3a:26:bb:2b brd ff:ff:ff:ff:ff:ff
+ | ...
+ ```
+<!-- ##########################################################################
+     ##########################################################################
+     ########################################################################## -->
+
+ ```
+ | [[{monitoring.network.ss}]]
+ | ------------------------------------------
+ | ss: socket Statistics (replaces 'netstat')
+ | ------------------------------------------
+ |
+ |            ┌──── -n : Do not resolve IP to DNS (much) faster.
+ |            ·┌─── -t : Show tcp (filter out UNIX, UDP, ...)
+ |            ··┌── -l : Show socket waiting for (client) connetions
+ |            ···┌─ -p : Show process PID that controls the socket.
+ | $ sudo ss -ntlp 
+ | example Output:
+ | State   Recv-Q Send-Q  Local       Peer
+ |                        Addr:Port   Addr:Port
+ | LISTEN  0      128     *:80        *:*      users:(("lighttpd",pid=23515,fd=4))
+ | LISTEN  0      128     *:22        *:*      users:(("sshd",pid=571,fd=3))
+ |
+ |            ┌─······ TCP connection only (vs UDP, ...)
+ |            ·  ┌─··· all (listening and connected) processes (vs ─l: listening)
+ |            ·  ·  ┌─ display socket and processes                
+ | $ sudo ss -t -a -p         
+ |  STATE       ... ADDRESS:PORT        PEER ADDRESS:PORT
+ |  ESTABLISHED ... 127.0.0.1:postgres  127.0.0.1:46404     users:(("postgres",pid=64032,fd=11))
+ |  ESTABLISHED ... 127.0.0.1:37200     127.0.0.1:50004     users:(("sshd",pid=61411,fd=10))
+ |  ESTABLISHED ... 127.0.0.1:postgres  127.0.0.1:45086     users:(("postgres",pid=43553,fd=11))
+ |  TIME_WAIT   ...
+ |
+ | # ── Display all established ssh connections. ────────────
+ | $ SS='( dport = :ssh or sport = :ssh )' 
+ | $ ss -o state established ${SS }  
+ |
+ | $ ss -x src /tmp/.X11-unix/*      # <·· Find all local processes connected to X server
+ |
+ |
+ | # Advanced example: List tcp sockets in state FIN-WAIT-1
+ | # for http/https@193.233.7/24 and look at their timers.
+ | $ ss -o state fin-wait-2 
+ |  '( sport = :http or sport = :https )' \
+ |  dst 193.233.7/24*
+ ```
+
+<!-- ##########################################################################
+     ##########################################################################
+     ########################################################################## -->
+
+ ```
+ | [[{monitoring.network.tcpdump}]]
+ | 
+ | --------------------------------
+ | tcpdump: capture network traffic
+ | --------------------------------
+ | 
+ | $ sudo tcpdump \ <·· Choose network interface to capture traffic
+ |      -i eth0   \
+ |      -n \      \ <·· Do not convert IPs to host-names (Avoiding slow dns reverse lookups)
+ |      port 8090 \ <·· filter in packets to/from port 8090
+ |      -A          <·· Show in text/ASCII format
+ |      -w file     <·· Alternatively (to -A) write binary file to a file with flag
+ |                      This file can then be replay again tcpdump 
+ |                      or with the more advanced Wireshark.
+ ```
+
+<!-- ##########################################################################
+     ##########################################################################
+     ########################################################################## -->
+
+ ```
+ | [[{monitoring.network.traceroute}]]
+ | 
+ | ---------------------------------------------
+ | traceroute: Examines IP routes to remote host
+ | ---------------------------------------------
+ | 
+ | $ sudo traceroute "destination_host" # <· (attempts to) show IP ("hop" path) route from
+ |                                           source to destination for an IP packet.
+ ```
+
+
+<!-- ##########################################################################
+     ##########################################################################
+     ########################################################################## -->
+
+ ```
+ | [[{monitoring.network.nmap}]]
+ | --------------------------------------------------------
+ | nmap: Examine open ports in remote (vs local) machine).
+ | --------------------------------------------------------
+ |
+ | $ sudo nmap -nt remote_machine # <·· (try to) query remote machine for open ports
+ | 
+ | 5 scripts for getting started with the Nmap Scripting Engine
+ | <https://www.redhat.com/sysadmin/nmap-scripting-engine>
+ ```
+
+<!-- ##########################################################################
+     ##########################################################################
+     ########################################################################## -->
+
+ ```
+ | [[{monitoring.network.nethogs,monitoring.jobs,troubleshooting.network}]]
+ | --------------------------------------------------------
+ | Nethogs: reports network bandwidth ussage by application
+ | --------------------------------------------------------
+ | $ sudo nethogs
+ | ...
+ |   PID USER     PROGRAM                      DEV        SENT      RECEIVED
+ | 2367  enlighten/opt/google/chrome/chrome    eth0       3.341      20.948 KB/sec
+ | 2196  enlighten/usr/lib/firefox-7.0.1/fire  eth0       0.871       0.422 KB/sec
+ | 3723  enlighten/usr/bin/pidgin              eth0       0.028       0.098 KB/sec
+ | 2206  enlighten/usr/bin/skype               eth0       0.033       0.025 KB/sec
+ | 2380  enlighten/usr/lib/chromium-browser/c  eth0       0.000       0.000 KB/sec
+ | 0     root     unknown TCP                             0.000       0.000 KB/sec
+ |
+ |   TOTAL                                                4.274      21.493 KB/sec"
+ ```

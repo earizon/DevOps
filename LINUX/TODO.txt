@@ -1,0 +1,670 @@
+## TODO: move anything related to monitoring from linux_101 to monitoring_...
+
+[[{security.101]]
+security 
+## Thousands of "unnatended" Linux systems infected by malware since 2021
+
+* <https://arstechnica.com/security/2024/10/persistent-stealthy-linux-malware-has-infected-thousands-since-2021/>
+[[security.101}]]
+
+[[{security.101,security.LUKS]]
+# LUKS 101 Common Post-Installation Tasks  backups, encryption 101:
+
+Backup LUKS headers
+
+If the sectors containing the LUKS headers are damaged - by user error or HW failure - all data in the encrypted block device is lost. Backing up the headers can help recovering data in such cases.
+
+To backup the LUKS headers, use the following command:
+
+cryptsetup luksHeaderBackup --header-backup-file <file> <device>
+
+To restore the LUKS headers, use the following command:
+
+
+The command below can destroy data, if wrong headers are applied or wrong device is selected! Be sure to backup headers from recovering device first.
+
+cryptsetup luksHeaderRestore --header-backup-file <file> <device>
+[[security.101,security.LUKS}]]
+
+[[{security.sandbox,security.landrun]]
+## Linux 101: Zouuup/landrun: Run any Linux process in a secure, unprivileged sandbox.
+
+https://github.com/Zouuup/landrun
+[[security.sandbox}]]
+
+## log every command executed by a user
+https://serverfault.com/questions/336217/how-do-i-log-every-command-executed-by-a-user
+
+##  sshguard protects hosts from brute-force attacks against SSH and other services.
+https://www.sshguard.net/
+sshguard protects hosts from brute-force attacks against SSH and other services. It aggregates system logs and blocks repeat offenders using one of several firewall backends, including iptables, ipfw, and pf.
+
+## Single Packet Authorization > Port Knocking
+https://www.cipherdyne.org/fwknop/
+ fwknop stands for the "FireWall KNock OPerator", and implements an
+authorization scheme called Single Packet Authorization (SPA). This
+method of authorization is based around a default-drop packet filter
+(fwknop supports iptables and firewalld on Linux, ipfw on FreeBSD and
+Mac OS X, and PF on OpenBSD) and libpcap. SPA is essentially next
+generation port knocking (more on this below). The design decisions
+that guide the development of fwknop can be found in the blog post
+"Single Packet Authorization: The fwknop Approach
+
+## Psacct or Acct: Monitor User Activity
+ https://www.tecmint.com/monitor-linux-user-activity-psacct-acct/ 
+ psacct or acct tools are very useful for monitoring each users
+activity on the system. Both daemons runs in the background and keeps
+a close watch on the overall activity of each user on the system and
+also what resources are being consumed by them.
+
+ These tools are very useful for system administrators to track each
+users activity like what they are doing, what commands they issued,
+how much resources are used by them, how long they are active on the
+system etc.
+
+## Linux Oauth 2factor Auth from CLI
+<https://www.cyberciti.biz/faq/use-oathtool-linux-command-line-for-2-step-verification-2fa/>
+
+## KMDR cli command explanation
+https://www.ostechnix.com/kmdr-display-cli-commands-explanation-in-terminal/
+
+## chattr: Change FS attributes [[{]]
+ (works on ext2fs and possibly others...).
+
+    Example:
+    chattr +i /sbin/lilo.conf[1]
+
+    - 'immutable':  prevent any changes (accidental or otherwise) to the  file.
+
+    A (no Access time): last access time will not be updated.
+                        - It can be useful, for example, on files or directories which
+                          are very often accessed for reading, especially since this parameter
+                          is the only one which changes on an inode when it's opened.
+
+        a (append only): (For a directory, this means that you can only add files to it, but
+                          not rename or delete any existing file)
+
+        s (secure deletion): when the file or directory is deleted, the blocks it was
+                          occupying on disk are written back with zeroes (similar to shred).
+                          Note that this does work on the ext2, and ext3 filesystems but is
+                          unlikely to work on others
+
+$ lsattr (list attributes): list if whether a file has any special attributes set by chattr
+                            -R recursive
+
+See also:
+   https://unix.stackexchange.com/questions/32256/whats-the-meaning-of-output-of-lsattr
+[[}]]
+
+## Set Date and time Zone [[{]]
+https://www.systutorials.com/1760/linux-setting-date-time-and-timezone/
+[[}]]
+
+## cron tasks:
+ sudo crontab -e:
+ 0 8  * * 1-5 /usr/bin/tuned-adm profile throughput-performance
+ 0 18 * * 1-5 /usr/bin/tuned-adm profile server-powersave
+## at
+https://www.putorius.net/at-command-linux.html
+
+## 30 yum commands
+https://www.linuxsysadmins.com/30-yum-command-for-package-management-in-linux/
+
+## Full System Dynamic Tracing with eBPF
+https://www.reddit.com/r/linuxadmin/comments/an1szj/fullsystem_dynamic_tracing_on_linux_using_ebpf/
+
+## create a secure Linux production system
+the-practical-linux-hardening-guide: This guide details the planning and the tools involved in creating a secure Linux production systems.
+https://www.reddit.com/r/linuxadmin/comments/an0bbp/perform_whoislookup_on_ips_found_in_varlogsecure/
+https://www.reddit.com/r/linux/comments/arx7st/howtosecurealinuxserver_an_evolving_howto_guide/
+
+## Ranger Console File manager
+- https://www.tecmint.com/ranger-console-file-manager-with-vi-key-bindings/#
+
+## Yum tips
+https://linuxtechlab.com/useful-yum-tips-tricks/
+
+##  Dstat performance Copilot
+https://www.redhat.com/en/blog/implementing-dstat-performance-co-pilot
+
+## Create mount points in LVM
+https://kerneltalks.com/scripts/script-to-create-mount-points-in-lvm/
+
+## ‘fsck’: Repair FS Errors
+https://www.tecmint.com/fsck-repair-file-system-errors-in-linux/
+
+## TestDisk: Recover deleted files
+https://vitux.com/how-to-recover-deleted-files-in-ubuntu-through-testdisk/
+
+##  Timed reminders and pop-up alarms
+https://dianne.skoll.ca/projects/remind/
+Sophisticated scripting language and intelligent handling of exceptions and holidays.
+
+
+## Battery optimizations
+- https://www.linuxuprising.com/2019/03/linux-battery-optimization-tool-tlp-12.html
+ Linux Laptop Battery Optimization Tool TLP 1.2 Released
+ Logix Updated on March 11, 2019 news, tlp, tweaks
+ TLP 1.2 was released today after being in development for more than
+a year, and it brings support for NVMe, and removable drives like USB
+and IEEE1394 devices, support for multi queue I/O schedulers
+(blk-mq), and other significant enhancements.
+
+## 4 cool Terminal multiplexers
+ https://fedoramagazine.org/4-cool-terminal-multiplexers/
+
+## dformoso/linux-adminj
+https://github.com/dformoso/linux-admin
+
+## Mastering User groups
+https://www.networkworld.com/article/3409781/mastering-user-groups-on-linux.html
+
+## Cgroups
+https://github.com/jooyong-park/workspace/wiki/cgroups-on-debian-ubuntu
+https://www.linuxjournal.com/content/cgroup-interactions
+# Cgroups v2 @ Fedora 31
+https://www.redhat.com/sysadmin/fedora-31-control-group-v2
+ https://www.phoronix.com/scan.php?page=news_item&px=Linux-Cgroups-GPUs-2019
+Intel & AMD Send Out New Patches For Linux Cgroup Support For GPUs
+
+## SwayWM
+https://swaywm.org/
+https://www.fossmint.com/sway-a-tiling-wayland-i3-compatible-compositor/
+
+## MFA SSH Logins
+  https://www.tecmint.com/ssh-two-factor-authentication/
+  How to Setup Two-Factor Authentication (Google Authenticator) for SSH Logins
+
+## Visualize disk ussage
+https://www.ostechnix.com/duc-a-collection-of-tools-to-inspect-and-visualize-disk-usage/
+
+## Running Android apps on Linux
+https://www.2daygeek.com/anbox-best-android-emulator-for-linux/
+
+## NetLink
+https://en.wikipedia.org/wiki/Netlink
+
+## DBus
+https://www.freedesktop.org/wiki/Software/dbus/
+
+## linux-network-performance-parameters
+https://github.com/leandromoreira/linux-network-performance-parameters
+
+## jq "sed for JSON"
+http://manpages.ubuntu.com/manpages/trusty/man1/jq.1.html
+https://www.infoq.com/news/2019/05/web-assembly-jq-cli-port
+
+* skip malformed json:
+
+  ```
+  | $ cat malformed_json | jq --raw-input 'fromjson? | .message | "\(.id) \(.cid)"' # --raw-input will skip lines with malformed json.
+  ```
+
+# drill FS Search:
+https://www.linuxuprising.com/2019/05/drill-new-desktop-file-search-utility.html
+
+## selinux vs seccomp
+https://sysdig.com/blog/selinux-seccomp-falco-technical-discussion/
+
+## Password management:
+https://www.passwordstore.org/
+https://www.gopass.pw/
+Introducing pass
+
+Password management should be simple and follow Unix philosophy. With pass,
+each password lives inside of a gpg encrypted file whose filename is the
+title of the website or resource that requires the password. These encrypted
+files may be organized into meaningful folder hierarchies, copied from
+computer to computer, and, in general, manipulated using standard command
+line file management utilities.
+
+## SystemD
+https://www.phoronix.com/scan.php?page=news_item&px=Systemd-1.2-Million
+
+## RHEL 8 Cheatsheet
+https://developers.redhat.com/cheat-sheets/red-hat-enterprise-linux-8/
+
+## clear ram, cache buffer and swap space
+https://www.tecmint.com/clear-ram-memory-cache-buffer-and-swap-space-on-linux/
+
+## Resizing LVM with Luks
+https://www.reddit.com/r/linuxadmin/comments/bxmmba/resizing_linux_lvm_with_luks/
+
+## Setting up a highly available homelab with KVM, Katello and Puppet.
+https://www.lisenet.com/2018/homelab-project-with-kvm-katello-and-puppet/
+
+##  What's new RHEL 8
+https://kerneltalks.com/linux/whats-new-in-rhel-8/
+https://kerneltalks.com/disk-management/how-to-remove-lost-physical-volume-from-volume-group/
+https://kerneltalks.com/disk-management/
+
+## Script monitoring Disk Space and sending mail
+https://www.2daygeek.com/linux-shell-script-to-monitor-disk-space-usage-and-send-email/
+
+## Mosh (SSH for unreliable and roaming connections)
+https://mosh.org/
+Remote terminal application that allows roaming, supports
+intermittent connectivity, and provides intelligent local echo and
+line editing of user keystrokes.
+
+## Ovirt:
+https://blog.desdelinux.net/ovirt-una-excelente-alternativa-a-vmware-vsphere/
+
+## strace problems
+ Accoreing to reddit comment  strace does not show VSDO calls, that are mostly time related calls.
+ https://en.m.wikipedia.org/wiki/VDSO
+
+## FS hierarchy standard
+https://www.linuxjournal.com/content/filesystem-hierarchy-standard
+
+## perf
+https://www.youtube.com/watch?v=L4NClVxqdMw
+Setup:
+- Hardware
+  - performance counters
+    - Most CPU do have them
+    - Some chips only have 2 that limits how much can we profile
+  - Working PMU
+
+```
+$  perf stat -r 5 -o baseline.txt -- ./ex_branches
+                                     ^^^^^^^^^^^^^
+                                     The command we want to
+                                     "perf" comes after the --
+```
+
+https://perf.wiki.kernel.org/index.php/Tutorial
+
+## bitlocker-encrypted-windows-partitions-on-linux
+https://www.linuxtoday.com/storage/how-to-mount-bitlocker-encrypted-windows-partitions-on-linux-190426052029.html
+
+## trim over isci nfs
+https://www.reddit.com/r/linuxadmin/comments/bg84ot/trim_over_iscsinfs_my_findings_may_help_you_xpost/
+
+## nmcli
+https://www.tecmint.com/nmcli-connect-wi-fi-from-linux-terminal/
+
+## Change LUKS Encryption Passphrase
+https://www.maketecheasier.com/change-luks-encryption-passphrase/
+
+## SAN disk and LVM
+https://www.reddit.com/r/linuxadmin/comments/bef2yw/san_disk_and_lvm/
+At work we have two scenarios and I’m trying to best understand how/why if one
+method is better than the other. I walked into the organization with the
+following configurations between similar servers.
+
+## How to control traffic by port number?
+https://www.reddit.com/r/linuxadmin/comments/c28sdl/heres_another_one_how_do_you_control_traffic_by/
+
+In a nutshell, I’d like to control the number of random IPs that
+can hit a port at given time interval.
+For example: Only 20 IPs can reach port 8080 within 20 seconds. Once
+those 20 seconds are up, allow another 20 random IPs. Repeat.
+I’m using the CT_LIMIT settings in CSR on my CentOS 7 server, but
+I’m not sure if the rule is applying to random IPs, or just to a
+connection from a single one.
+There has to be an easy way to accomplish this. I know it. Curious if
+anyone here has had and luck with this.
+
+# HA NFS
+https://www.reddit.com/r/linuxadmin/comments/bff43j/nfs_high_available_service_based_on_drbdlvmxfs/
+nfs high available service based on drbd/lvm/xfs
+
+Hey,
+
+would like to create a high available nfs service. 2 virtual machines
+will mirror multiple separated disks configured with drbd. Would like
+to have lvm pvs mirrored (one pv for each nfs export).
+
+Is it possible to add new pvs (disks) to a running drbd service ?
+
+how easy can i resize a disk (nfs export) when i use lvm on top of
+drbd? have to resize the virtual disk(vmdk), drbd has to know about
+the new size, sync the status .. after that i have to pvscan the drbd
+device, resize vg/lv. am i correct or does it not work as desired?
+
+does it make sense to use lvm on top of drbd (most approches are
+using lvm underneath drbd.)
+
+can i configure lvs to get synced by drbd or not ?
+
+btw does it work when i run 2 nfs servers on the same drbd disk one
+on server A and one on server B. server A exports 2 of 10 nfs shares
+and the other 8 nfs shares would get offered by server B ? would like
+to add a VIP for each nfs share as well so i can easily evacuate the
+nfs shares from one nfs server to the other.
+
+
+## Resources for deep diving
+https://www.reddit.com/r/linuxadmin/comments/bffpot/linux_resources_for_deep_diving/
+
+
+Besides LFS - are there any decent recommendations for books / videos on deep diving in to how a Linux system works?
+
+I'm looking for things that cover topics in a lot of detail, things like:
+- Memory management
+- Disk operations
+- Kernel (monolithic vs micro)
+
+Stuff like that.
+
+I'd like to learn how the system functions at it's basic layers and a whole lot more.
+
+Anything worth reading / watching?
+
+---
+In terms of the level I'm at - well I'm a RHCA with 12 years of
+industry experience. I'm just trying to learn more and feel like
+there's a lot that I'd benefit from a) looking over again and b)
+learning in more detail.
+
+## Guides:
+  https://linux.die.net/sag/ The Linux System Administrator's Guide
+  http://swift.siphos.be/linux_sea/
+  https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Networking_Guide/
+  https://docs.fedoraproject.org/en-US/Fedora/24/html/Networking_Guide/index.html
+
+## SysFS
+https://www.kernel.org/doc/html/v4.12/admin-guide/sysfs-rules.html">
+
+## Collectl: All-in-One Perf Monitoring Tool
+Collectl is a yet another powerful and feature rich command line
+based utility, that can be used to gather information about Linux
+system resources such as CPU usage, memory, network, inodes,
+processes, nfs, tcp, sockets and much more.
+
+## Flatpak problems
+https://ubunlog.com/flatpak-un-tipo-de-paquete-que-decepciona-tanto-o-mas-que-los-snap/
+
+## Network Manager
+https://www.redhat.com/sysadmin/becoming-friends-networkmanager
+https://wiki.debian.org/NetworkManager
+## Chkservice SystemD Units manager:
+https://www.linuxuprising.com/2019/11/chkservice-is-systemd-units-manager.html?m=1
+
+
+## GNOME Firmware Updater 
+
+* <https://www.phoronix.com/scan.php?page=news_item&px=GNOME-Firmware-Updater>
+GNOME Firmware Updater Is A New UI For Managing Firmware On Linux By Power Users
+Written by Michael Larabel in GNOME on 28 August 2019 at 06:46 AM EDT.
+
+The GNOME Firmware Updater is a more powerful GTK application for 
+viewing device firmware information on Linux built off the existing 
+Fwupd+LVFS infrastructure.
+
+https://www.redhat.com/en/blog/achieving-maximum-performance-fixed-size-ceph-object-storage-cluster
+Achieving maximum performance from a fixed size Ceph object storage cluster
+
+## Why Debian does not create wheel group by default
+https://unix.stackexchange.com/questions/4460/why-is-debian-not-creating-the-wheel-group-by-default
+
+[[{virtualization.kvm.virsh,doc_has.cheatsheet]]
+* <https://computingforgeeks.com/virsh-commands-cheatsheet/>
+
+Related:
+* Launching VMs directly from qemu
+  <https://developers.redhat.com/blog/2020/03/06/configure-and-run-a-qemu-based-vm-outside-of-libvirt/>
+[[virtualization.kvm.virsh}]]
+
+[[{monitoring.hardware.temperature]]
+## New hardware temperature monitoring in kernel 5.5
+* <https://www.phoronix.com/scan.php?page=news_item&px=Linux-5.6-HWMON-Changes>
+[[monitoring.hardware.temperature}]]
+
+
+[[{doc_has.tutorial]]
+## Enterprise Linux Lab Installer Script
+
+* <https://github.com/PoeBlu/ELLIS>
+
+* script to quickly setup a pre-configured lab environment useful
+  for studying to obtain enterprise Linux certifications.
+* The script will install and configure the following lab components 
+  on the target host:
+  * A virtualization host and two virtual networks with DHCP and name services
+  * A kerberos realm with user and server principals, and necessary server keytab files
+    [[security.kerberos]]
+  * An LDAP domain with pre-configured users [[security.LDAP]]
+  * An NFS server with home directory and generic shares
+  * A Samba server with a generic share
+  * An HTTP server with repo locations and lab resource files
+  * Kickstart files for lab VMs and automated VM build scripts
+  * An NTP server for time synchronization and lab use
+  * A Postfix SMTP host with delivery for the lab domain (for relay labs)
+[[doc_has.tutorial}]]
+
+
+
+
+[[{security.audit.user]]
+## Record/Audit sessions and containers with tlog
+* <https://www.redhat.com/sysadmin/session-recording-tlog>
+[[security.audit.user}]]
+
+[[{security.remote_access.ssh]]
+## SSH Automation
+
+* <https://www.redhat.com/sysadmin/ssh-automation-sshpass>
+
+  SSH uses direct TTY access to ensure that the password is indeed
+issued by an interactive keyboard user. sshpass runs SSH in a
+dedicated TTY, fooling SSH into thinking it is getting the password
+from an interactive user.
+
+* Example 1: SSH
+ *WARN: -p is considered the least secure choice and shouldn't be used):*
+
+  ```
+  | $ sshpass -p !4u2tryhack ssh username@host.example.com
+  ```
+
+[[security.remote_access.ssh}]]
+
+
+[[{monitoring.storage]]
+## How to measure Linux Performance Avoiding Most Typical Mistakes: Disk Storage
+
+* <https://ma.ttias.be/how-to-measure-linux-performance-avoiding-most-typical-mistakes-disk-storage/>
+[[monitoring.storage}]]
+
+[[{performance.network]]
+## Zero Copy Networking in UEK6 
+* <https://blogs.oracle.com/linux/zero-copy-networking-in-uek6 >
+[[performance.network}]]
+
+## the_silver_searcher: x30+ faster than alternatives
+
+[[{performance.text_search]]
+* <https://github.com/ggreer/the_silver_searcher>
+A code searching tool with a focus on speed.
+[[performance.text_search}]]
+
+[[{monitoring.pipes]]
+## tunning: How big is the pipe buffer? 
+
+* <https://unix.stackexchange.com/questions/11946/how-big-is-the-pipe-buffer >
+[[monitoring.pipes}]]
+
+
+
+
+[[{use_case.text_processing]]
+##  convert rows to columns with the paste command 
+* by Konstantinos Patronas | Apr, 2022
+
+* <https://lovethepenguin.com/linux-convert-rows-to-columns-with-the-paste-command-84d0dd9c0ee6>
+[[use_case.text_processing}]]
+
+[[{security.sysdig,monitoring.logs]]
+## Sysdig and Snyk runtime intelligence
+* <https://sysdig.com/blog/sysdig-snyk-partnership/>
+[[security.sysdig}]]
+
+
+[[{security.dma_attacks]]
+## protection against DMA attacks
+* https://www.linkedin.com/posts/shlomi-boutnaru-ba781811a_linux-hardware-dma-activity-7007724440046178305-4miD
+[[security.dma_attacks}]]
+
+[[{profiling.parca,QA.UX,kernel.eBPF]]
+## Parca: Infrastructure-wide continuous profiling
+* <https://www.parca.dev/>
+[[profiling.parca}]]
+
+
+## rmrfrs:  Optimize storage 
+
+* <https://github.com/trinhminhtriet/rmrfrs>
+* powerful FS cleaning tool designed to optimize storage by identifying 
+  and removing unnecessary files within known project structures.
+* rmrfrs is a powerful filesystem cleaning tool designed to optimize 
+  storage by identifying and removing unnecessary files within known 
+  project structures.
+
+
+## The Linux Kernel Macro Journey
+
+* By Shlomi Boutnaru, Ph.D. 2e CTO at Rezilion 11 h. Linux Expert 
+I'm thrilled to announce the version 1.0 of the "The Linux Kernel 
+Macro Journey". This comprehensive resource is designed to empower 
+Linux kernel developers with a deep understanding of the essential 
+macros that underpin the Linux source code.I believe that it is 
+something that anyone going over the Linux source code should know 
+about. So, if you are a Linux geek seeking a deeper, more technical 
+understanding of the building blocks of the Linux operating system 
+this ebook is for you!!!Every once in a while, I will update it with 
+more information.Let me know if you think that specific topics should 
+be included.You can also follow me on twitter - @boutnaru 
+(https://lnkd.in/dkYSgHHZ). Also, you can read my other writeups on 
+medium - https://lnkd.in/drU__sCj. All my ebooks can be found at 
+"https://lnkd.in/dCQ57Fqb".
+
+
+
+
+
+
+## New Linux Backdoor 'Plague' Uses PAM to Bypass System Login  [[{security}]]
+https://ostechnix.com/plague-pam-based-linux-backdoor/
+
+
+## Zellij: Modern Drop-in Replacement for Tmux Command on Linux
+https://linuxtldr.com/installing-zellij/
+
+## Linux desktop: xrgtn/dvdread: Read deCSSed DVD image
+https://github.com/xrgtn/dvdread
+
+## Linus Torvalds Adapts Linux User Address Masking To Use CMOV - Phoronix
+
+https://www.phoronix.com/news/Linus-Linux-CMOV-Address-Mask
+
+
+## Monitorization: Zenith "top with steroids"
+
+https://www.linuxlinks.com/zenith-turbo-charged-top-utility/2/
+
+Zenith is software that’s similar to top but displays histograms, and a wealth of other information such as CPU, GPU, network, and disk usage.
+
+
+And if the software is run with root permissions, there’s support for delay accounting. This is where tasks encounter delays in execution when they wait for some kernel resource to become available.
+
+
+## Identity: Authenticator is an Open-Source 2FA App for Linux
+
+https://linuxtldr.com/installing-authenticator-2fa-app/
+
+The authenticator offers quite a lot of features that any 2FA app should have, followed by
+
+Support for time-based, counter-based, and Steam methods.
+Support for SHA-1, SHA-256, and SHA-512 algorithms.
+QR code scanner using a camera or from a screenshot
+Lock the application with a password.
+Stunning user interface.
+Backup and restore from known applications such as FreeOTP+, Aegis (encrypted/plain-text), and Google Authenticator.
+
+## linux desktop: Hoarder: A Bookmark and Note Taking App (Install via Docker)
+https://linuxtldr.com/hoarder-bookmarking-app/ 
+
+, I don’t understand why they add the “?utm_source=pocket_saves
+
+Don’t they realize that some sites are strict about CSRF? 
+
+
+## VM: Proxmox lanza la versión 8.4 de su plataforma de virtualización con soporte para vGPU NVIDIA y mejoras clave para entornos empresariales - Administración de Sistemas
+https://administraciondesistemas.com/proxmox-8-4-plataforma-virtualizacion-soporte-vgpu/
+
+## Linux desktop: Shotcut 25.07 Video Editor Introduces Speech to Text Model Downloader - 9to5Linux
+https://9to5linux.com/shotcut-25-07-video-editor-introduces-speech-to-text-model-downloader
+
+Shotcut 25.07 release introduces a new Speech to Text model downloader, a new System Fusion theme, a Whisper.cpp (GGML) model downloader to the Speech to Text dialog,
+
+## Linux: RPM 6.0 Released with Support for Multiple OpenPGP Signatures per Package | Linux Today
+https://www.linuxtoday.com/blog/rpm-6-0-released-with-support-for-multiple-openpgp-signatures-per-package/
+
+
+## Linux 6.16: mejoras en rendimiento, seguridad y eficiencia
+
+Linux 6.16 llega también con soporte inicial para Intel TDX (Trust Domain 
+Extensions), una tecnología que cifra la memoria de máquinas virtuales para 
+protegerlas incluso frente a ataques desde el hipervisor o físicos. Un salto 
+importante para los entornos que requieren garantías de computación 
+confidencial, comparable al ya existente SEV-SNP de AMD. En cuanto a redes, se 
+completa el camino iniciado en versiones anteriores con el soporte para el 
+envío de datos TCP directamente desde búferes DMA (zero-copy), reduciendo el 
+uso de la CPU en cargas de trabajo exigentes, como streaming desde GPU o 
+aceleradores.
+
+## Monitoring the network
+
+* <https://www.binarytides.com/linux-commands-monitor-network/>
+
+
+[[{]]
+## overview-linux-kernel-security-features
+* <https://www.linux.com/learn/overview-linux-kernel-security-features> !!!
+* <https://www.linuxjournal.com/content/securing-kernel-stack>
+[[}]]
+
+[[{storage.block_management.IO_scheduler,performance.storage]]
+## Selecting a Linux I/O scheduler
+
+* <https://stackoverflow.com/questions/1009577/selecting-a-linux-i-o-scheduler/1010562#1010562>
+* <https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/block/switching-sched.rst>
+  As documented in /usr/src/linux/Documentation/block/switching-sched.txt, the I/O
+  scheduler on any particular block device can be changed at runtime.
+  There may be some latency as the previous scheduler's requests are
+  all flushed before bringing the new scheduler into use, but it can be
+  changed without problems even while the device is under heavy use.
+
+  ```
+  | # cat /sys/block/hda/queue/scheduler
+  | noop deadline [cfq]
+  | # echo anticipatory > /sys/block/hda/queue/scheduler
+  | # cat /sys/block/hda/queue/scheduler
+  | noop [deadline] cfq
+  ```
+
+Ideally, there would be a single scheduler to satisfy all needs. It
+doesn't seem to exist yet. The kernel often doesn't have enough
+knowledge to choose the best scheduler for your workload:
+
+* noop is often the best choice for memory-backed block devices
+  (e.g. ramdisks) and other non-rotational media (flash) where trying
+  to reschedule I/O is a waste of resources
+* deadline is a lightweight scheduler which tries to put a hard
+  limit on latency.
+* cfq tries to maintain system-wide fairness of I/O bandwidth
+
+ The default was anticipatory for a long time, and it received a lot
+of tuning, but was removed in 2.6.33 (early 2010). cfq became the
+default some while ago, as its performance is reasonable and fairness
+is a good goal for multi-user systems (and even single-user
+desktops). For some scenarios -- databases are often used as
+examples, as they tend to already have their own peculiar scheduling
+and access patterns, and are often the most important service (so who
+cares about fairness?) -- anticipatory has a long history of being
+tunable for best performance on these workloads, and deadline very
+quickly passes all requests through to the underlying device.
+
+[[storage.block_management.IO_scheduler}]]

@@ -1,0 +1,10 @@
+```
+| [[{monitoring.storage,profiling.storage,troubleshooting.storage}]]
+| -------------------------------------------------------------
+| filetop: show reads and writes by file, with process details.
+| -------------------------------------------------------------
+|
+| * <https://github.com/iovisor/bcc/blob/master/tools/filetop_example.txt>
+```
+
+

@@ -1,0 +1,11 @@
+```
+| [[{monitoring.storage,profiling.storage,troubleshooting.storage}]]
+| --------------------------------------------------------
+| biolatency: traces and records I/O latency  distribution
+| --------------------------------------------------------
+| 
+| * <https://github.com/iovisor/bcc/blob/master/tools/biolatency_example.txt>
+| * Prints an histogram when Ctrl-C is hit 
+```
+
+

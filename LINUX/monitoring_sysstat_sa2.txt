@@ -1,0 +1,8 @@
+```
+| [[{monitoring.101,monitoring.i/o.wait,monitoring.storage}]]
+| ===============================================================================
+| sa2: (sysstat) Create a report from the current standard system activity daily data file.
+| ===============================================================================
+|
+| shell wrapper over sar 
+```

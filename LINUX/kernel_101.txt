@@ -1,0 +1,146 @@
+[[{configuration.sysctl,kernel.tunning,configuration.network,storage.fs,troubleshooting.performance]]
+# sysctl: Kernel Tunning 
+
+* Cli app to view/modify kernel parameters affecting the runtime behavior
+  of network, file-systems, kernel logging, ...
+* Not to be confused with (SystemD) 'systemctl' used to add/remove/modify/...
+  services (applications running in background), centralized app logging,...
+* TIP: *read comments in /etc/sysctl.conf  for most widely tunned params.*
+  ```
+  | $ sysctl -a                    ← View all configured kernel params
+  |                                  Output can be filtered out easily with
+  |                                  'grep'.
+  |
+  | $ sysctl vm.min_free_kbytes    ← View a given param
+  |                                  -n: opt. Show only value (vs param name)
+  |
+  |
+  | $ sudo sysctl -w net....=0     ← Set new value for kernel param.
+  |
+  |
+  | $ sudo edit /etc/sysctl.conf   ← make changes permanent after reboot
+  |                                 edit /etc/sysctl.d/99-custom.conf for custom
+  |                                 changes.
+  |
+  |
+  | $ sudo sysctl -p               ← apply any change in /etc/sysctl.conf
+  |                                  Use -p /etc/sysctl.d/99-custom.conf for
+  |                                  alternative (non default) path
+  |
+  | /proc/sys/ OVERVIEW:
+  | ├ abi/vsyscall32
+  | ├ debug
+  | │ ├ exception-trace
+  | │ └ kprobes-optimization
+  | ├ dev
+  | │ ├ parport
+  | │ │ ├ default/...
+  | │ │ └ parport0/...
+  | │ │   ├ devices
+  | │ │   ...
+  | │ ├ raid/speed_limit_max(min)
+  | │ ├ scsi/logging_level
+  | │ ├ tty/ldisc_autoload
+  | │ ...
+  | ├ kernel    REF:  https://www.kernel.org/doc/html/v5.7/admin-guide/sysctl/kernel.html
+  | │ ├ acct
+  | │ ├ sched_*
+  | │ ├ sem
+  | │ ├ watchdog*
+  | │ ...
+  | ├ net
+  | │ ├ core/... (40 tunnable params)
+  | │ ├ ipv4/* (devices, conf, route, tcp, udp,...)
+  | │ ├ ipv6/...
+  | │ ├ netfilter ... (65 tunnable params)
+  | │ ├ nf_conntrack_max
+  | │ ├ unix
+  | │ │ └ max_dgram_qlen
+  | │ ...
+  | ├ fs
+  | │ ├ inotify/...
+  | │ ├ nfs/...
+  | │ ├ ext4/...
+  | │ ├ xfs/...
+  | │ ...
+  | ├ sunrpc ... (11 tunnable params)
+  | ├ user/... (9 tunnable params)
+  | └ vm/... (48 tunnable params)
+  ```
+  $ sysctl -a                    ← View all configured kernel params
+[[configuration.sysctl}]]
+
+
+
+[[{kernel.tunning.tuned,kernel.tunning.101,PM.TODO,qa.UX]]
+## Kernel Tunning with 'tuned'
+
+* `/proc/sys/vm/`: Kernel FS "control pannel"   
+  <https://tuned-project.org/>
+
+* About tuned:
+  * OS Tunning is done in practice through:
+    * long-profiling
+    * continuous-monitoring
+  * Tunning becomes harder if system load changes frequently.<br/>
+    Ex.: A system with a peak of load certain hours a day
+    ```
+    can be tuned for performance     those known hours
+    and    tuned for power-efficency the rest of day
+    ```
+
+* man 8 tuned: Dynamic Adaptive system tuning daemon
+  <https://linux.die.net/man/8/tuned>
+  * cron-friendly system service that lets to select a tuning profile
+    (pre-build or custom).
+  * Tuning include:
+    * sysctl settings (/proc/sys/)
+    * settings for disk-elevators
+    * power management options
+    * transparent hugepages
+    * custom-scripts
+* Install):
+  ```
+  |  $ sudo dnf -y install tuned   # <· RedHat/Fedora/CentOS package install
+  |  $ sudo systemctl enable tuned # <· enable tuned service at boot
+  |  ...
+  |  $ sudo systemctl start  tuned # <· Start  tuned service now
+  |  $ sudo systemctl status tuned # <· Check  tuned service status
+  |  $ sudo systemctl status tuned
+  |  * tuned.service - Dynamic System Tuning Daemon
+  |     Loaded: loaded (/usr/lib/systemd/system/tuned.service; disabled; vendor preset: disabled)
+  |     Active: *active (running)* since Sun 2019-01-20 16:29:05 EST; 15s ago
+  |       Docs: man:tuned(8)
+  |             man:tuned.conf(5)
+  |             man:tuned-adm(8)
+  |   Main PID: 10552 (tuned)
+  |      Tasks: 4 (limit: 4915)
+  |     Memory: 15.7M
+  |     CGroup: /system.slice/tuned.service
+  |             └─10552 /usr/bin/python3 -Es /usr/sbin/tuned -l -P
+  ```
+
+* Ussage:
+  ```
+  | $ *tuned-adm list*   #  ← List existing tunning profiles
+  | → Available profiles:
+  | → - balanced                    - General non-specialized
+  | → - desktop                     - Optimize for the desktop
+  | → - latency-performance         - deterministic performance             (increased power consumption)
+  | → - network-latency             - deterministic performance low-latency (increased power consumption)
+  | → - network-throughput          - Optimize for streaming network throughput
+  |                                   generally only necessary on older CPUs or
+  |                                   40G+ networks
+  | → - powersave                   - Optimize for low power consumption
+  | → - throughput-performance      - provides excellent performance across a
+  |                                   variety of common server workloads
+  | → - virtual-guest               - Optimize for running inside a virtual guest
+  | → - virtual-host                - Optimize for running KVM guests
+  | → Current active profile: balanced
+  |
+  | $ *sudo tuned-adm active*  #  ← query status
+  | Current active profile: balanced
+  |
+  | $ *sudo tuned-adm profile  powersave* # ←  select profile
+  ```
+[[kernel.tunning.tuned}]]

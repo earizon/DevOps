@@ -1,0 +1,88 @@
+[[{security.101,security.remote_access]]
+## Knockd ("Invisible Linux")  
+
+* <https://www.maketecheasier.com/make-linux-server-invisible-knockd/>
+
+  Knockd allows to  listen to traffic on an network interface/port
+waiting first for special sequences of port-hits.
+
+  clients (telnet, socat, ...) initiate port-hits by sending a TCP
+or packet to a port/s on the server in order (sort of password
+using port "pings")
+
+### PRE-SETUP:
+
+1. Install and Configure Iptables
+  ```
+  | $ sudo apt-get install iptables iptables-persistent
+  |                                 └────────┬────────┘
+  |                                 takes over automatic
+  |                                 loading of saved tables
+  ```
+
+2. Install Knockd:
+  ```
+  | $ sudo apt-get install knockd  # apt like
+  | $ sudo dnf     install knockd  # rpm like
+  ```
+
+### Ussage example: hide ssh service until "Knocked"
+
+
+  ```
+  | 
+  | $ iptables -A INPUT \                 STEP 1
+  |   -m conntrack \                      
+  |   --ctstate ESTABLISHED, RELATED \    ← Allow established/current
+  |   -j  ACCEPT                          ← Allow
+  | 
+  | $ iptables  -A  INPUT \               STEP 2
+  |   -p tcp  --dport  22 \               ← block incomming con. to 22 (SSH)
+  |   -j  REJECT
+  | 
+  |                                       STEP 3
+  | $ netfilter-persistent save           ← s save the firewall rules
+  | $ netfilter-persistent reload
+  |
+  |                                       STEP 4. Configure  Knockd
+  | $ sudo "vim" /etc/knockd.conf
+  | [options]
+  |   UseSyslog
+  |
+  | [openSSH]
+  |   sequence = 7000,8000,9000
+  |   seq_timeout = 5
+  |   command = /sbin/iptables -A INPUT -s %IP% -p tcp --dport 22 -j ACCEPT
+  |   tcpflags = syn
+  |
+  | [closeSSH]
+  |   sequence = 8000,9000,7000
+  |   seq_timeout = 5
+  |   command = /sbin/iptables -D INPUT -s %IP% -p tcp --dport 22 -j ACCEPT
+  |   tcpflags = syn
+  | 
+  | command will be executed once the client-sequence  is recognised.
+  | tcpflags must be set on the client "knocks"
+  | 
+  | NOTE: Adding iptables "-A" flag (appned) causes the rule to be appended
+  |       to the end of th INPUT chain, causing all remaining connections to drop.
+  |   Replace by:
+  |   command = /sbin/iptables -I INPUT 1 -s %IP% -p tcp --dport 22 -j ACCEPT
+  |   "-I" flag (insert) ensures that the new rule is added to the top of the
+  |   input chain to accept ssh connections.
+  |
+  | Modify /etc/default/knock lo look like:   <· STEP 5. Enable Knockd Service
+  | + START_KNOCKD=1
+  | $ sudo systemctl enable knockd
+  | $ sudo systemctl start knockd
+  ```
+  
+### Testing Setup:
+
+  ```
+  | $ knock -v my-server-ip  7000 8000 9000
+  | $ ssh my-server-ip
+  | ...
+  | $ knock -v my-server-ip 9000 8000 7000
+  ```
+[[security.remote_access}]]

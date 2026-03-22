@@ -1,0 +1,58 @@
+[[{monitoring.blktrace,monitoring.storage.blocks,]] 
+## blktrace (block I/O traffic) 
+(man 8 blktrace)
+
+* generate traces of the i/o traffic on (low-level) block devices vs (high-level) File Systems.
+  ```
+  | $ sudo blktrace -d /dev/sda -o - | blkparse -i -   <··· trace i/o for /dev/sda
+  |                                                         Alt. using btrace script:
+  |                                                         $ btrace /dev/sda
+
+  | $ blktrace /dev/sda /dev/sdb          <··· trace /dev/sda+/dev/sdb to current dir.
+  | $ blkparse sda sdb                    <··· View saved trace
+  ```
+
+  ```
+  | SYNOPSIS
+  |        blktrace -d dev [ -r debugfs_path ] [ -o output ] [ -w time ] [ -a action ] [ -A action_mask ] [ -v ]
+  |
+  | DESCRIPTION
+  | OPTIONS
+  |     -a/--set-mask=hex-mask :  Set filter mask to hex-mask (see below for masks)
+  |                               barrier : barrier attribute
+  |                               complete: completed by driver
+  |                               discard : discard / trim traces
+  |                               fs      : requests
+  |                               issue   : issued to driver
+  |                               pc      : packet command events
+  |                               queue   : queue operations
+  |                               read    : read traces
+  |                               requeue : requeue operations
+  |                               sync    : synchronous attribute
+  |                               write   : write traces
+  |                               notify  : trace messages
+  |                               drv_data: additional driver specific trace
+  |
+  |        --act-mask=mask     : Add mask to current filter (see below for masks)
+  |        --buffer-size=size  : Specifies (1024) buffer size for event extraction. Def 512KiB.
+  |        --dev=dev           : Adds dev as a device to trace
+  |        --input-devs=file   : Adds the devices found in file as devices to trace
+  |        --num-sub-buffers=X : number of buffers to use. Def: 4 sub buffers.
+  |        --listen            : Run in network listen/server mode.
+  |        --host=hostname     : Run in network client mode
+  |        --port=number       : Network port to use (default 8462)
+  |        --no-sendfile       : Make the network client NOT use sendfile() to transfer data
+  |        --output=basename   : Specifies base name for input files. Default is device.blktrace.cpu.
+  |                              Specifying -o - runs  in  live mode with blkparse (writing data to standard out).
+  |        --output-dir=dir    : Prepend file to output file name(s)
+  |        --relay=rel-path    : Specifies debugfs mount point
+  |        --version
+  |        -w seconds
+  |        --stopwatch=seconds
+  ```
+
+### REQUEST TYPES:
+* file system  : normal read/write op from a specific disk location at a given size.
+                 typically originating from a user process
+* SCSI commands: blktrace sends the command data block as a payload so that blkparse can decode it.
+[[monitoring.blktrace}]]

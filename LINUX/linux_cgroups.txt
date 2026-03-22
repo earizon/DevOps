@@ -1,0 +1,47 @@
+# Linux Control Group v2
+
+- Each cgroup is a set of processes that "somehow" behave as a single app,
+  (think of set of microservices composing a single app) or a single task.
+
+## TODO: 
+
+   ```
+    mount -l cgroup2 on /sys/fs/cgroup type cgroup2
+
+
+
+    - systemd-cgls: show cgroups hierarchy and its contents.
+    - systemd-cgtop: "top" of cgroups by resource ussage.
+    - cgcreate: Create new cgroup(s)
+    - cgset: set parameters of cgroup/s.
+    - cgexec: run task in given cgroup.
+    - cgclassify: move running taks/s to another cgroup.
+
+    - ls -l /sys/fs/cgroup/new-cgroup
+      
+    cgroup.controllers     ─┐  
+    cgroup.events           │  
+    cgroup.freeze           │                     
+    cgroup.max.detph        ├─ cgroup core
+    cgroup.procs            │  
+    cgroup.stat             │  
+    cgroup.subtree_control ─┘  
+    ...
+    cpu.max
+    cpu.stat      cpu    controller
+    ...
+    cpuset.cpus   cpuset controller
+    cpuset.memes
+    ...
+    io.max        io     controller
+    io.stat
+    ...
+    pids.current  pids   controller
+    pids.max
+
+      $ echo "+cpu -io" >> cgroup.subtree_control # <· List controllers avialable in child cgroups
+      $ cat cgroup.controllers # <· list controllers available in this group
+      $ cat cgroup.procs   # <· list processes added in this cgroup
+      $ echo "500000 1000000" > cpu.max # <·· Limit maximum CPU usage to 50%
+      $ echo 500M > memory.ma # <· limit max. mem. ussage.
+   ```

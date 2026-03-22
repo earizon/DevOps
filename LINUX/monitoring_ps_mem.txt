@@ -1,0 +1,28 @@
+[[{monitoring.memory.ps_mem,troubleshooting.memory]]
+## ps_mem: Accurate mem.use 
+
+* <https://github.com/pixelb/ps_mem/>
+
+  ```
+  | $ sudo pip install ps_mem  <··· PIP (P)ackage (I)nstaler for (P)ython
+  |   USSAGE:
+  |   ps_mem [-h|--help] [-p PID,...] [-s|--split-args] [-t|--total] [-w N]
+  |          [-d|--discriminate-by-pid] [-S|--swap]
+  | 
+  |   $ sudo ps_mem                        <··· Simple ussage:
+  |    Private  +   Shared  =  RAM used       Program
+  | 
+  |    34.6 MiB +   1.0 MiB =  35.7 MiB       gnome-terminal
+  |   139.8 MiB +   2.3 MiB = 142.1 MiB       firefox
+  |   291.8 MiB +   2.5 MiB = 294.3 MiB       gnome-shell
+  |   272.2 MiB +  43.9 MiB = 316.1 MiB       chrome (12)
+  |   913.9 MiB +   3.2 MiB = 917.1 MiB       thunderbird
+  |   ---------------------------------
+  |                             1.9 GiB
+  | 
+  | 
+  |   $ sudo ps_mem -p $(pgrep -d, -u $USER)  <···  Show only ps_mem for current $USER
+  |   → ...
+  ```
+[[monitoring.memory.ps_mem}]]
+

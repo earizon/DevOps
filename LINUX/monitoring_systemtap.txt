@@ -1,0 +1,20 @@
+[[{monitoring.systemtap,monitoring.jobs,troubleshooting,PM.TODO]]
+## SystemTap (stap)
+* C&P from https://lwn.net/Articles/852112/: 
+  SystemTap has been available since 2005, while bpftrace is a more
+  recent contender that, to some, may appear to have made SystemTap
+  obsolete. However, SystemTap is still the preferred tool for some
+  real-world use cases.   [[doc_has.comparative]]
+
+* <https://en.wikipedia.org/wiki/SystemTap>
+* tool to perform live analysis of running program (dynamic instrumentation).
+* It can interrupt normal control flow and execute code specified by a SystemTap script,
+  temporarily modifying the program at runtime.
+* Use-cases:
+  - extract, filter, summarize complex performance|functional diagnosys data.
+
+* Contributed by:
+  - Red Hat/IBM, Intel, Hitachi, Oracle, community.
+
+* See real example: <https://developers.redhat.com/blog/2019/07/24/probing-golang-runtime-using-systemtap/>
+[[monitoring.systemtap}]]

@@ -1,0 +1,52 @@
+[[{configuration.memory,troubleshooting.memory,storage.compression,use_case.IoT]]
+## ZSwap For low-mem systems
+
+* Increase system performance in systems with memory-preasure
+  <https://www.maketecheasier.com/use-zswap-improve-old-linux-performance/>
+
+### Debian/Ubuntu flavour Setup
+
+1. Edit `/etc/default/grub` and modify `GRUB_CMDLINE_LINUX_DEFAULT` to look like:
+  ```
+  | GRUB_CMDLINE_LINUX_DEFAULT="quiet splash zswap.enabled=1".
+  ```
+2. Update grub: 
+  ```
+  | $ sudo update-grub
+  ```
+3. STEP 3: Reboot and the zswap module will be enabled automatically.
+
+4. After reboot, check if the module is active:
+  ```
+  | $ cat /sys/module/zswap/parameters/enabled
+  ```
+
+### Fedora/RedHat flavours Setup
+  
+1. Edit /etc/default/grub:
+  ```
+  | GRUB_CMDLINE_LINUX="quiet splash zswap.enabled=1".
+  ```
+
+2. Update Grub configuration:
+  ```
+  | $ sudo grub2-mkconfig \
+  |   -o $(sudo find /boot/ -name grub.cfg)
+  |        └─────────────┬───────────────┘
+  |        Depending on whether your computer
+  |        boots from a BIOS or UEFI system
+  |        the path will change
+  ```
+3. Reboot and the zswap module will be enabled automatically.
+4. After reboot, check if the module is active:
+  ```
+  | $ cat /sys/module/zswap/parameters/enabled
+  (must display "Y,")
+  ```
+
+### TUNNING
+
+   Check adding the (grub) option "zswap.max_pool_percent=20" to see if performance increase.
+It’s recommended NOT to go above 50% since more than that can have detrimental effects
+on systems with low amounts of RAM.
+[[}]]

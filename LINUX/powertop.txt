@@ -1,0 +1,59 @@
+[[{monitoring.hardware]]
+## powertop
+
+Allows to:
+* diagnose device/CPU power consumption issues.
+* Tune/control device/CPU power management.
+
+  ```
+  | $ sudo powertop # ← Interactive mode if no other option is provided
+  | $ sudo powertop --auto-tune  # ← Callibrate non-interactively
+  |        ^^^^^^^^^^^^^^^^^^^^
+  |        To enable at system boot add next systemd Unit:
+  |        *STEP 1: Create/Edit powertop.service like:*
+  |        $ sudoedit /etc/systemd/system/powertop.service
+  |        (Add next lines)
+  |      + [Unit]
+  |      + Description=Powertop auto-tune
+  |      +
+  |      + [Service]
+  |      + ExecStart=/usr/bin/powertop --auto-tune
+  |      + RemainAfterExit=true
+  |      +
+  |      + [Install]
+  |      + WantedBy=multi-user.target
+  | 
+  |        *STEP 2: Enable the new service like:*
+  |        $ sudo systemctl daemon-reload
+  |        $ sudo systemctl enable powertop
+  |        $ sudo systemctl start powertop
+  | 
+  |        *STEP 3: Check it has run properly*
+  |        $ sudo journalctl -u powertop
+  |      → ...
+  |      → systemd[1]: Started Powertop auto-tune.
+  |      → powertop[4778]: modprobe cpufreq_stats failedLoaded 0 prior measurements
+  |      → powertop[4778]: RAPL device for cpu 0
+  |      → powertop[4778]: RAPL Using PowerCap Sysfs : Domain Mask d
+  |      → powertop[4778]: RAPL device for cpu 0
+  |      → powertop[4778]: RAPL Using PowerCap Sysfs : Domain Mask d
+  |      → powertop[4778]: Devfreq not enabled
+  |      → powertop[4778]: glob returned GLOB_ABORTED
+  |      → powertop[4778]: *Leaving PowerTOP*
+  | 
+  | OTHER PERTINENT OPTIONS:
+  | --calibrate    :  Runs  in  calibration  mode: When running on battery,
+  |                  powertop can track power consumption as well as system
+  |                  activity.
+  |                   When there are enough measurements, powertop can start
+  |                  to report  power  estimates.
+  | -csv=file      : Generate CSV report.
+  | -html=file     : Generate an HTML report.
+  | -extech=$USBDEV: Use Extech Power Analyzer for analysis
+  |                  USBDEV will be a USB adaptor similar to /dev/ttyUSB0
+  | -iteration=$Num : Number of times to run each test.
+  | -time[=seconds] : Generate report for specified number of seconds.
+  | -workload=file  : Execute workload file as a part of calibration
+  | ....
+  ```
+[[}]]

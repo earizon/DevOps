@@ -1,0 +1,50 @@
+[[{security.101.BMC,hardware.BMC]]
+# BMC: Baseboard Management Controller
+
+* <https://www.servethehome.com/explaining-the-baseboard-management-controller-or-bmc-in-servers/>
+
+  A baseboard management controller, or BMC, is a small computer that
+sits on virtually every server motherboard. Other components such as
+higher-end switches, JBODs, JBOFs, and other devices now include BMCs
+as well.
+
+  BMC are used to perform tasks that an administrator would otherwise
+need to physically visit the racked server to accomplish like
+power cycling, monitoring fan speeds/component temperatures or
+hardware failures.
+
+  The BMC is usually an Arm-based SoC with graphics and control logic
+built-in. The "current king of the market" is ASPEED and its AST2500
+series controllers that are used in servers from major OEMs to
+hyper-scale switches.
+
+  A BMC can utilize either shared or dedicated NIC for remote access.
+a give console access via serial or physical/virtual KVM,
+power cycle the servers, and log events.
+
+## OpnBMC
+
+* <https://github.com/openbmc/openbmc>
+
+  OpenBMC is a Linux distribution for management controllers used in devices such 
+as servers, top of rack switches or RAID appliances. It uses Yocto, 
+OpenEmbedded, systemd, and D-Bus to allow easy customization for your platform.
+
+
+Feature List:
+
+* Host management: Power, Cooling, LEDs, Inventory, Events, Watchdog.
+* Full IPMI 2.0 Compliance with DCMI.
+* Code Update Support for multiple BMC/BIOS images.
+* Web-based user interface.
+* REST interfaces.
+* D-Bus based interfaces.
+* SSH based SOL.
+* Remote KVM.
+* Hardware Simulation.
+* Automated Testing.
+* User management.
+* Virtual media.
+
+
+[[security.101.BMC}]]

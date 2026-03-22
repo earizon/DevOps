@@ -1,0 +1,9 @@
+```
+| [[{monitoring.storage,profiling.storage,troubleshooting.storage}]]
+| ----------------------------------------------------- 
+| fileslower: dumps reads/writes slower thant threshold 
+| ----------------------------------------------------- 
+|
+| * <https://github.com/iovisor/bcc/blob/master/tools/fileslower_example.txt>
+| * shows file-based synchronous reads and writes slower than a threshold.
+```

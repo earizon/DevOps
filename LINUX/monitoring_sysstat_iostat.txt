@@ -1,0 +1,37 @@
+```
+| [[{monitoring.101,monitoring.i/o,monitoring.storage}]]
+| ===============================================================================
+| iostat: (sysstat) Reports all statistics on CPU, and I/O stats. 
+| ===============================================================================
+| 
+| $ sudo iostat -xt 2  # -x Show extended statistics
+|                      # -t Print time
+|   Linux 6.17.0-14-generic (home03) 	20/03/26 	_x86_64_	(8 CPU)
+| 
+|             ┌───┬─········································· % CPU executing at user level with nice priority.
+|             ·   ·  ┌───┬─·································· % CPU executing at user level with nice priority.
+|             ·   ·  ·   ·  ┌─────┬─························· % CPU executing at system (kernel) level
+|             ·   ·  ·   ·  ·     ·  ┌─────┬─················ % CPU/s idle with system outstanding disk I/O request.                  [[troubleshooting.I/O]]
+|             ·   ·  ·   ·  ·     ·  ·     ·  ┌────┬─········ % time "steal" by virtual CPU/s while hypervisor served other virt.CPUs [[troubleshooting.Cloud]]
+|             ·   ·  ·   ·  ·     ·  ·     ·  ·    ·   ┌───┬· % CPU/s idle with not outstanding disk I/O request.
+|             v   v  v   v  v     v  v     v  v    v   v   v
+|   avg-cpu:  %user  %nice  %system  %iowait  %steal   %idle
+|              4,37   0,00     0,83     0,03    0,00   94,77
+| 
+|   
+|           ┌──┬······ read  requests
+|           ·  · ┌──┬· wrtie requests
+|           v  v 
+|   Device  r/s  w/s  rkB/s wkB/s rrqm/s wrqm/s %rrqm %wrqm r_await  w_await aqu-sz rareq-sz wareq-sz svctm %util
+|   sdb     0.00 0.00  0.00  0.00   0.00   0.00  0.00  0.00    0.00     0.00   0.00     0.00     0.00  0.00  0.00
+|   dm-0    0.00 3.00  0.00 12.00   0.00   0.00  0.00  0.00    0.00   123.00   0.37     0.00     4.00  0.50  0.15
+|   dm-1    0.00 0.00  0.00  0.00   0.00   0.00  0.00  0.00    0.00     0.00   0.00     0.00     0.00  0.00  0.00
+|   dm-2    0.00 7.50  0.00 30.00   0.00   0.00  0.00  0.00    0.00     0.47   0.00     0.00     4.00  0.40  0.30
+|   nvme0n1 0.00 5.50  0.00 36.00   0.00   5.00  0.00 47.62    0.00    17.55   0.09     0.00     6.55  0.82  0.45
+|                                           avg msec for read ·┴──┘   ^    ^ ^    ^                    ^  ^  ^  ^
+|                                           avg msec for writ.········┴────┘ ·    ·                    ·  ·  ·  ·
+|                              avg queue length of req issued ···············┴────┘                    ·  ·  ·  ·
+|                                       ignore. to be removed ·········································┴──┘  ·  ·
+|                    elapsed time % during which I/O req were ··············································─┴──┘
+|                                     issued BANDWIDTH USSAGE
+```

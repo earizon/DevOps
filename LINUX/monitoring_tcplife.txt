@@ -1,0 +1,19 @@
+| [[{monitoring.network.tcplife}]]
+| --------------------------------------------------------------------
+| tcplife : summarizes TCP sessions that open and close while tracing.
+| --------------------------------------------------------------------
+|
+| $ sudo ./tcplife
+| 
+| PID   COMM       LADDR           LPORT RADDR           RPORT TX_KB RX_KB MS
+| 22597 recordProg 127.0.0.1       46644 127.0.0.1       28527     0     0 0.23
+| 3277  redis-serv 127.0.0.1       28527 127.0.0.1       46644     0     0 0.28
+| 22598 curl       100.66.3.172    61620 52.205.89.26    80        0     1 91.79
+| 22604 curl       100.66.3.172    44400 52.204.43.121   80        0     1 121.38
+| 22624 recordProg 127.0.0.1       46648 127.0.0.1       28527     0     0 0.22
+| 3277  redis-serv 127.0.0.1       28527 127.0.0.1       46648     0     0 0.27
+| 22647 recordProg 127.0.0.1       46650 127.0.0.1       28527     0     0 0.21
+| 3277  redis-serv 127.0.0.1       28527 127.0.0.1       46650     0     0 0.26
+| [...]
+| REF: <https://github.com/iovisor/bcc/blob/master/tools/tcplife_example.txt>
+```

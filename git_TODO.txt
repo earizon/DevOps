@@ -1,278 +1,312 @@
-Version control is not just for code. It’s a tool for managing change. Below some good to know git stuffs : 👉 Commit Often with Clear Messages - Make frequent commits and use concise, descriptive messages to track changes easily. 👉 Use Branches for Features - Create separate branches for each feature or bug fix to keep your main branch stable and organized. 👉 Stash Unfinished Changes - Use git stash to temporarily save changes without committing, so you can switch branches or work on something else. 👉 Interactive Rebase - Use git rebase -i to clean up commit history, combine commits, or edit messages for a more readable history. 👉 Pull with Rebase - Use git pull --rebase to keep a cleaner commit history by avoiding unnecessary merge commits. 👉 Cherry-Pick Specific Commits - Use git cherry-pick <commit> to apply specific commits from one branch to another without merging everything. 👉 Undo Mistakes with git reflog - Use git reflog to view a history of all actions, allowing you to recover accidentally deleted commits or branches. 👉 Use Aliases for Common Commands - Set up aliases (e.g., git co for git checkout) to save time on frequently used commands. 👉 Visualize Branches with git log --graph - Use git log --graph --oneline to see a visual representation of your branches and commit history. 👉 Check Changes with git diff - Use git diff to review changes before committing, and git diff --staged to see staged changes. 👉 Set Up .gitignore Early - Define a .gitignore file to avoid tracking unnecessary files, keeping your repository clean and lightweight.
+[[{security.gpg]]
+## Isomorphic Git: 100% JS client
+
+* <https://isomorphic-git.org/>
+
+* Features:
+  * clone repos
+  * init new repos
+  * list branches and tags
+  * list commit history
+  * checkout branches
+  * push branches to remotes
+  * create new commits
+  * git config
+  * read+write raw git objects
+  * PGP (GPG) signing
+  * file status
+  * merge branches
+[[}]]
+
+[[{git.nostr,PM.europe]]
+## NostrGit
+* <https://github.com/NostrGit/NostrGit>
+
+*  A truly censorship-resistant alternative to GitHub that has a chance of working
+[[}]]
+
+[[{101,PM.europe]]
+## https://codeberg.org/ 
+
+* Andrew Kelly, presidente de la Zig Software Foundation, ha anunciado 
+finalmente la migración completa del proyecto a Codeberg, una plataforma sin 
+ánimo de lucro que en menos de un año ha duplicado su número de miembros. Ha 
+alegado que GitHub está descuidando el mantenimiento de herramientas 
+críticas, y que los sistemas de integración continua se comportan de forma 
+errática (Kelly lo llama 'vibe-scheduling', en referencia al 'vibe coding').Su 
+conclusión es que la obsesión de GitHub/Microsoft con la IA estaría restando 
+recursos y atención a labores de ingeniería esencial.
+[[}]]
 
 
-__________________________
-
-git devops
-https://github.com/tummychow/git-absorb
 
 
-You have a feature branch with a few commits. Your teammate reviewed the branch and pointed out a few bugs. You have fixes for the bugs, but you don't want to shove them all into an opaque commit that says fixes, because you believe in atomic commits. Instead of manually finding commit SHAs for git commit --fixup, or running a manual interactive rebase, do this:
+[[{qa.101]]
+## Version Control 101
 
-git add $FILES_YOU_FIXED
-git absorb --and-rebase
+- Version control is not just for code. It’s a tool for managing change. 
+  Below some good to know git stuffs : 
+  - Commit Often with Clear Messages 
+  - Make frequent commits and use concise, descriptive messages to track changes easily.
+  - Use Branches for Features
+  - Create separate branches for each feature or bug fix to keep your
+    main branch stable and organized. 
+  - Stash Unfinished Changes
+  - Use git stash to temporarily save changes without 
+    committing, so you can switch branches or work on something else. 
+  - Interactive Rebase
+  - Use git rebase -i to clean up commit history, combine 
+    commits, or edit messages for a more readable history.
+    - Pull with Rebase
+    - Use git pull
+    - --rebase to keep a cleaner commit history by avoiding unnecessary 
+      merge commits. 
+  - Cherry-Pick Specific Commits
+  - Use git cherry-pick <commit> 
+    to apply specific commits from one branch to another without merging 
+    everything.
+  - Undo Mistakes with git reflog
+  - Use git reflog to view a history of all actions, allowing you to
+    recover accidentally deleted commits or branches.
+  - Use Aliases for Common Commands
+  - Set up aliases (e.g., git co for git checkout) to save time on
+    frequently used commands. 👉 Visualize 
+  - Branches with git log --graph
+    - Use git log --graph --oneline to see a visual 
+    representation of your branches and commit history.
+  - Check Changes with git diff 
+  - Use git diff to review changes before committing, and git diff --staged 
+    to see staged changes.
+  - Set Up .gitignore Early to avoid tracking unnecessary files, keeping
+    your repository clean and lightweight.
+[[qa.101}]]
 
-git absorb will automatically identify which commits are safe to modify, and which staged changes belong to each of those commits. It will then write fixup! commits for each of those changes.
+[[{qa.101,qa.atommic_commits]]
+## Git absorb
 
-With the --and-rebase flag, these fixup commits will be automatically integrated into the corresponding ones. Alternatively, you can check its output manually if you don't trust it, and then fold the fixups into your feature branch with git's built-in autosquash functionality:
-
-git add $FILES_YOU_FIXED
-git absorb
-git log # check the auto-generated fixup commits
-git rebase -i --autosquash master
+* <https://github.com/tummychow/git-absorb>
 
 
+- You have a feature branch with a few commits. Your teammate reviewed the branch 
+  and pointed out a few bugs. You have fixes for the bugs, but you don't want to 
+  shove them all into an opaque commit that says fixes, because you believe in 
+  atomic commits. Instead of manually finding commit SHAs for git commit --fixup, 
+  or running a manual interactive rebase, do this:
 
-________________________________________________
+  ```
+  | git add $FILES_YOU_FIXED
+  | git absorb --and-rebase   # <·· automatically identify commits safe to modify,
+  |                           #     and which staged changes belong to each of those commits.
+  |                           #     It will then write fixup! commits for each of those changes.
+  |                           #     --and-rebase flag: these fixup commits will 
+  |                           #     be automatically integrated into the corresponding ones. Alternatively, you can 
+  |                           #     check its output manually if you don't trust it, and then fold the fixups into 
+  |                           #     your feature branch with git's built-in autosquash functionality:
+  | 
+  | git add $FILES_YOU_FIXED
+  | git absorb
+  | git log # check the auto-generated fixup commits
+  | git rebase -i --autosquash master
+  ```
 
-System Init: The Future of DevOps Automation?
 
-https://www.systeminit.com/
+
+## System Init: The Future of DevOps Automation?
+
+* <https://www.systeminit.com/>
 
 System Initiative is an Intuitive, Powerful, and Collaborative replacement for Infrastructure as Code.
 
-_____________________________________
+## GitLab Pages
+
+* <https://docs.gitlab.com/ee/user/project/pages/>
 
 
-Git GitLab Pages | GitLab
-https://docs.gitlab.com/ee/user/project/pages/
-
-
-______________________________
 
 git qa
 
 https://github.com/trinhminhtriet/gitcoco
 
-GitCoco: A Rust-based CLI for Conventional Commits, making commit standardization effortless and consistent for seamless project versioning and collaboration.
-
-✨ Features
-
-gitcoco gives tools to work with Conventional Commits.
-
-It provides the following commands:
-
-gitcoco changelog: Create a changelog file.
-gitcoco check: Checks if a range of commits is following the convention.
-gitcoco commit: Helps to make conventional commits.
-gitcoco version: Finds out the current or next version.
-
-
-
-____________________________
+- GitCoco: A Rust-based CLI for Conventional Commits, making commit 
+  standardization effortless and consistent for seamless project versioning and 
+  collaboration.
+  ```
+  | gitcoco changelog: Create a changelog file.
+  | gitcoco check: Checks if a range of commits is following the convention.
+  | gitcoco commit: Helps to make conventional commits.
+  | gitcoco version: Finds out the current or next version.
+  ```
 
 ## https://www.linuxlinks.com/?s=Git
 
 
 ## Git 2.50 Lands: Say Goodbye to Recursive Merges Engine
-https://linuxiac.com/git-2-50-lands-say-goodbye-to-recursive-merges/
 
-linuxiac.com
+* <https://linuxiac.com/git-2-50-lands-say-goodbye-to-recursive-merges/>
 
-Git 2.50 Lands: Say Goodbye to Recursive Merges Engine
+By Bobby Borisov
 
-Bobby Borisov
-3 - 4 minutes
-________________________________
+- notable improvement is the handling of multiple cruft packs. Originally 
+introduced in Git 2.37, cruft packs store unreachable objects in repositories. 
+Git 2.43 introduced options to manage these packs, but usability challenges 
+persisted, notably with confusing command-line behaviors and unexpected 
+limitations.
 
-Almost three months after its previous 2.49 release, Git, a distributed version control system and cornerstone tool in software development that helps developers efficiently manage changes in their code across projects, has just released its new 2.50 version.
+Git 2.50 addresses these issues with a new, clear-cut option called 
+--combine-cruft-below-size. This tool allows users to efficiently combine 
+smaller cruft packs, significantly improving repository hygiene over time.
 
-A notable improvement is the handling of multiple cruft packs. Originally introduced in Git 2.37, cruft packs store unreachable objects in repositories. Git 2.43 introduced options to manage these packs, but usability challenges persisted, notably with confusing command-line behaviors and unexpected limitations.
+In another major advancement, incremental multi-pack reachability bitmaps have 
+arrived. Following the incremental multi-pack index improvements from Git 2.47, 
+Git 2.50 further enhances performance in large repositories by enabling 
+incremental updates to reachability bitmaps.
 
-Git 2.50 addresses these issues with a new, clear-cut option called --combine-cruft-below-size. This tool allows users to efficiently combine smaller cruft packs, significantly improving repository hygiene over time.
+Perhaps the most exciting update in this release, however, is the complete 
+transition from Git’s older merge engine, “recursive,” to the faster and 
+more maintainable “ORT” (Ostensibly Recursive’s Twin) engine.
 
-In another major advancement, incremental multi-pack reachability bitmaps have arrived. Following the incremental multi-pack index improvements from Git 2.47, Git 2.50 further enhances performance in large repositories by enabling incremental updates to reachability bitmaps.
+Introduced in Git 2.33 and made the default in 2.34, ORT has now fully replaced 
+the legacy recursive engine. This change boosts performance and introduces new 
+functionalities, such as the ability to test mergeability without persisting 
+new merge objects.
 
-Perhaps the most exciting update in this release, however, is the complete transition from Git’s older merge engine, “recursive,” to the faster and more maintainable “ORT” (Ostensibly Recursive’s Twin) engine.
+Developers who rely on scripting repository objects will appreciate 
+enhancements to git cat-file. Git 2.50 introduces streamlined object filtering 
+directly into git cat-file, simplifying common tasks such as extracting 
+specific object types. Additionally, the seldom-used --allow-unknown-type 
+option has been deprecated, streamlining the tool’s functionality and 
+removing outdated quirks.
 
-Introduced in Git 2.33 and made the default in 2.34, ORT has now fully replaced the legacy recursive engine. This change boosts performance and introduces new functionalities, such as the ability to test mergeability without persisting new merge objects.
+Moreover, maintenance tasks become more intuitive with updates to git 
+maintenance. New tasks, including worktree-prune, rerere-gc, and reflog-expire, 
+have been added, paralleling existing garbage collection operations and 
+simplifying routine repository cleanup. Users also gain the ability to 
+configure the batch size for loose object packing, providing enhanced control 
+over maintenance behavior.
 
-Developers who rely on scripting repository objects will appreciate enhancements to git cat-file. Git 2.50 introduces streamlined object filtering directly into git cat-file, simplifying common tasks such as extracting specific object types. Additionally, the seldom-used --allow-unknown-type option has been deprecated, streamlining the tool’s functionality and removing outdated quirks.
+New configurations for TCP keepalive behavior address networking performance 
+and offer finer control over HTTP connections. Furthermore, Perl dependency has 
+been substantially reduced, removing it entirely from Git’s test suite and 
+documentation toolchain, enhancing portability and reducing external 
+dependencies.
 
-Moreover, maintenance tasks become more intuitive with updates to git maintenance. New tasks, including worktree-prune, rerere-gc, and reflog-expire, have been added, paralleling existing garbage collection operations and simplifying routine repository cleanup. Users also gain the ability to configure the batch size for loose object packing, providing enhanced control over maintenance behavior.
-
-New configurations for TCP keepalive behavior address networking performance and offer finer control over HTTP connections. Furthermore, Perl dependency has been substantially reduced, removing it entirely from Git’s test suite and documentation toolchain, enhancing portability and reducing external dependencies.
-
-Lastly, user interface refinements include clearer comments during interactive rebases and improved efficiency in sparse checkouts when using git add -p or git add -i.
+Lastly, user interface refinements include clearer comments during interactive 
+rebases and improved efficiency in sparse checkouts when using git add -p or 
+git add -i.
 
 For more information, see the announcement.
 
-## Git absorb: clesn fixes on branches.
-https://github.com/tummychow/git-absorb
-
-You have a feature branch with a few commits. Your teammate reviewed the branch and pointed out a few bugs. You have fixes for the bugs, but you don't want to shove them all into an opaque commit that says fixes, because you believe in atomic commits. Instead of manually finding commit SHAs for git commit --fixup, or running a manual interactive rebase, do this:
-
-git add $FILES_YOU_FIXED
-git absorb --and-rebase
-
-
-## Jujutsu: A Git-compatible VCS that is both simple and powerful
+## Jujutsu: Git alternative, simple and powerful
 
 https://github.com/jj-vcs/jj
 
 A Git-compatible VCS that is both simple and powerful
 
 
+Jujutsu is a powerful version control system for software projects. You use it 
+to get a copy of your code, track changes to the code, and finally publish 
+those changes for others to see and use. It is designed from the ground up to 
+be easy to use—whether you're new or experienced, working on brand new 
+projects alone, or large scale software projects with large histories and teams.
 
-Jujutsu is a powerful version control system for software projects. You use it to get a copy of your code, track changes to the code, and finally publish those changes for others to see and use. It is designed from the ground up to be easy to use—whether you're new or experienced, working on brand new projects alone, or large scale software projects with large histories and teams.
+Jujutsu is unlike most other systems, because internally it abstracts the user 
+interface and version control algorithms from the storage systems used to serve 
+your content. This allows it to serve as a VCS with many possible physical 
+backends, that may have their own data or networking models—like Mercurial or 
+Breezy, or hybrid systems like Google's cloud-based design, Piper/CitC.
 
-Jujutsu is unlike most other systems, because internally it abstracts the user interface and version control algorithms from the storage systems used to serve your content. This allows it to serve as a VCS with many possible physical backends, that may have their own data or networking models—like Mercurial or Breezy, or hybrid systems like Google's cloud-based design, Piper/CitC.
+Today, we use Git repositories as a storage layer to serve and track content, 
+making it compatible with many of your favorite Git-based tools, right now! All 
+core developers use Jujutsu to develop Jujutsu, right here on GitHub. But it 
+should hopefully work with your favorite Git forges, too.
 
-Today, we use Git repositories as a storage layer to serve and track content, making it compatible with many of your favorite Git-based tools, right now! All core developers use Jujutsu to develop Jujutsu, right here on GitHub. But it should hopefully work with your favorite Git forges, too.
+We combine many distinct design choices and concepts from other version control 
+systems into a single tool. Some of those sources of inspiration include:
 
-We combine many distinct design choices and concepts from other version control systems into a single tool. Some of those sources of inspiration include:
+Git: We make an effort to be fast—with a snappy UX, efficient algorithms, 
+correct data structures, and good-old-fashioned attention to detail. The 
+default storage backend uses Git repositories for "physical storage", for wide 
+interoperability and ease of onboarding.
 
-Git: We make an effort to be fast—with a snappy UX, efficient algorithms, correct data structures, and good-old-fashioned attention to detail. The default storage backend uses Git repositories for "physical storage", for wide interoperability and ease of onboarding.
+Mercurial & Sapling: There are many Mercurial-inspired features, such as the 
+revset language to select commits. There is no explicit index or staging area. 
+Branches are "anonymous" like Mercurial, so you don't need to make up a name 
+for each small change. Primitives for rewriting history are powerful and 
+simple. Formatting output is done with a robust template language that can be 
+configured by the user.
 
-Mercurial & Sapling: There are many Mercurial-inspired features, such as the revset language to select commits. There is no explicit index or staging area. Branches are "anonymous" like Mercurial, so you don't need to make up a name for each small change. Primitives for rewriting history are powerful and simple. Formatting output is done with a robust template language that can be configured by the user.
-
-Darcs: Jujutsu keeps track of conflicts as first-class objects in its model; they are first-class in the same way commits are, while alternatives like Git simply think of conflicts as textual diffs. While not as rigorous as systems like Darcs (which is based on a formalized theory of patches, as opposed to snapshots), the effect is that many forms of conflict resolution can be performed and propagated automatically.
+Darcs: Jujutsu keeps track of conflicts as first-class objects in its model; 
+they are first-class in the same way commits are, while alternatives like Git 
+simply think of conflicts as textual diffs. While not as rigorous as systems 
+like Darcs (which is based on a formalized theory of patches, as opposed to 
+snapshots), the effect is that many forms of conflict resolution can be 
+performed and propagated automatically.
 
 And it adds several innovative, useful features of its own:
 
-Working-copy-as-a-commit: Changes to files are recorded automatically as normal commits, and amended on every subsequent change. This "snapshot" design simplifies the user-facing data model (commits are the only visible object), simplifies internal algorithms, and completely subsumes features like Git's stashes or the index/staging-area.
+Working-copy-as-a-commit: Changes to files are recorded automatically as normal 
+commits, and amended on every subsequent change. This "snapshot" design 
+simplifies the user-facing data model (commits are the only visible object), 
+simplifies internal algorithms, and completely subsumes features like Git's 
+stashes or the index/staging-area.
 
-Operation log & undo: Jujutsu records every operation that is performed on the repository, from commits, to pulls, to pushes. This makes debugging problems like "what just happened?" or "how did I end up here?" easier, especially when you're helping your coworker answer those questions about their repository! And because everything is recorded, you can undo that mistake you just made with ease. Version control has finally entered the 1960s!
+Operation log & undo: Jujutsu records every operation that is performed on the 
+repository, from commits, to pulls, to pushes. This makes debugging problems 
+like "what just happened?" or "how did I end up here?" easier, especially when 
+you're helping your coworker answer those questions about their repository! And 
+because everything is recorded, you can undo that mistake you just made with 
+ease. Version control has finally entered the 1960s!
 
-Automatic rebase and conflict resolution: When you modify a commit, every descendent is automatically rebased on top of the freshly-modified one. This makes "patch-based" workflows a breeze. If you resolve a conflict in a commit, the resolution of that conflict is also propagated through descendants as well. In effect, this is a completely transparent version of git rebase --update-refs combined with git rerere, supported by design.
+Automatic rebase and conflict resolution: When you modify a commit, every 
+descendent is automatically rebased on top of the freshly-modified one. This 
+makes "patch-based" workflows a breeze. If you resolve a conflict in a commit, 
+the resolution of that conflict is also propagated through descendants as well. 
+In effect, this is a completely transparent version of git rebase --update-refs 
+combined with git rerere, supported by design.
 
 Warning
 
-The following features are available for use, but experimental; they may have bugs, backwards incompatible storage changes, and user-interface changes!
+The following features are available for use, but experimental; they may have 
+bugs, backwards incompatible storage changes, and user-interface changes!
 
-Safe, concurrent replication: Have you ever wanted to store your version controlled repositories inside a Dropbox folder? Or continuously backup repositories to S3? No? Well, now you can!
+Safe, concurrent replication: Have you ever wanted to store your version 
+controlled repositories inside a Dropbox folder? Or continuously backup 
+repositories to S3? No? Well, now you can!
 
-The fundamental problem with using filesystems like Dropbox and backup tools like rsync on your typical Git/Mercurial repositories is that they rely on local filesystem operations being atomic, serialized, and non-concurrent with respect to other reads and writes—which is not true when operating on distributed file systems, or when operations like concurrent file copies (for backup) happen while lock files are being held.
+The fundamental problem with using filesystems like Dropbox and backup tools 
+like rsync on your typical Git/Mercurial repositories is that they rely on 
+local filesystem operations being atomic, serialized, and non-concurrent with 
+respect to other reads and writes—which is not true when operating on 
+distributed file systems, or when operations like concurrent file copies (for 
+backup) happen while lock files are being held.
 
-Jujutsu is instead designed to be safe under concurrent scenarios; simply using rsync or Dropbox and then using that resulting repository should never result in a repository in a corrupt state. The worst that should happen is that it will expose conflicts between the local and remote state, leaving you to resolve them.
+Jujutsu is instead designed to be safe under concurrent scenarios; simply using 
+rsync or Dropbox and then using that resulting repository should never result 
+in a repository in a corrupt state. The worst that should happen is that it 
+will expose conflicts between the local and remote state, leaving you to 
+resolve them.
 
-The command-line tool is called jj for now because it's easy to type and easy to replace (rare in English). The project is called "Jujutsu" because it matches "jj".
+The command-line tool is called jj for now because it's easy to type and easy 
+to replace (rare in English). The project is called "Jujutsu" because it 
+matches "jj".
 
-Jujutsu is relatively young, with lots of work to still be done. If you have any questions, or want to talk about future plans, please join us on Discord , start a GitHub Discussion, or send an IRC message to #jujutsu on Libera Chat. The developers monitor all of these channels1.
+Jujutsu is relatively young, with lots of work to still be done. If you have 
+any questions, or want to talk about future plans, please join us on Discord , 
+start a GitHub Discussion, or send an IRC message to #jujutsu on Libera Chat. 
+The developers monitor all of these channels1.
 
-News and Updates 📣
-
-December 2024: The jj Repository has moved to the jj-vcs GitHub organisation.
-November 2024: Version 0.24 is released which adds jj file annotate, which is equivalent to git blame or hg annotate.
-September 2024: Martin gave a presentation about Jujutsu at Git Merge 2024.
-Feb 2024: Version 0.14 is released, which deprecates "jj checkout" and "jj merge", as well as jj init --git, which is now just called jj git init.
-Oct 2023: Version 0.10.0 is released! Now includes a bundled merge and diff editor for all platforms, "immutable revsets" to avoid accidentally edit-ing the wrong revisions, and lots of polish.
-Jan 2023: Martin gave a presentation about Google's plans for Jujutsu at Git Merge 2022! See the slides or the recording.
-
-Related Media
-
-Mar 2024: Chris Krycho started a YouTube series about Jujutsu.
-Feb 2024: Chris Krycho published an article about Jujutsu called jj init and Steve Klabnik followed up with the Jujutsu Tutorial.
-Jan 2024: Jujutsu was featured in an LWN.net article called Jujutsu: a new, Git-compatible version control system.
-Jan 2023: Martin's Talk about Jujutsu at Git Merge 2022, video and the associated slides.
-
-The wiki also contains a more extensive list of media references.
-
-Getting started
-
-Important
-
-Jujutsu is an experimental version control system. While Git compatibility is stable, and most developers use it daily for all their needs, there may still be work-in-progress features, suboptimal UX, and workflow gaps that make it unusable for your particular use.
-
-Follow the installation instructions to obtain and configure jj.
-
-The best way to get started is probably to go through the tutorial. Also see the Git comparison, which includes a table of jj vs. git commands.
-
-As you become more familiar with Jujutsu, the following resources may be helpful:
-
-The FAQ.
-The Glossary.
-The jj help command (e.g. jj help rebase).
-The jj help -k <keyword> command (e.g. jj help -k config). Use jj help --help to see what keywords are available.
-
-If you are using a prerelease version of jj, you would want to consult the docs for the prerelease (main branch) version. You can also get there from the docs for the latest release by using the website's version switcher. The version switcher is visible in the header of the website when you scroll to the top of any page.
-
-Features
-
-Compatible with Git
-
-Jujutsu is designed so that the underlying data and storage model is abstract. Today, only the Git backend is production-ready. The Git backend uses the gitoxide Rust library.
-
-The Git backend is fully featured and maintained, and allows you to use Jujutsu with any Git remote. The commits you create will look like regular Git commits. You can fetch branches from a regular Git remote and push branches to the remote. You can always switch back to Git.
-
-Here is how you can explore a GitHub repository with jj.
-
-You can even have a "co-located" local repository where you can use both jj and git commands interchangeably.
-
-The working copy is automatically committed
-
-Jujutsu uses a real commit to represent the working copy. Checking out a commit results a new working-copy commit on top of the target commit. Almost all commands automatically amend the working-copy commit.
-
-The working-copy being a commit means that commands never fail because the working copy is dirty (no "error: Your local changes to the following files..."), and there is no need for git stash. Also, because the working copy is a commit, commands work the same way on the working-copy commit as on any other commit, so you can set the commit message before you're done with the changes.
-
-The repo is the source of truth
-
-With Jujutsu, the working copy plays a smaller role than with Git. Commands snapshot the working copy before they start, then they update the repo, and then the working copy is updated (if the working-copy commit was modified). Almost all commands (even checkout!) operate on the commits in the repo, leaving the common functionality of snapshotting and updating of the working copy to centralized code. For example, jj restore (similar to git restore) can restore from any commit and into any commit, and jj describe can set the commit message of any commit (defaults to the working-copy commit).
-
-Entire repo is under version control
-
-All operations you perform in the repo are recorded, along with a snapshot of the repo state after the operation. This means that you can easily revert to an earlier repo state, or to simply undo a particular operation (which does not necessarily have to be the most recent operation).
-
-Conflicts can be recorded in commits
-
-If an operation results in conflicts, information about those conflicts will be recorded in the commit(s). The operation will succeed. You can then resolve the conflicts later. One consequence of this design is that there's no need to continue interrupted operations. Instead, you get a single workflow for resolving conflicts, regardless of which command caused them. This design also lets Jujutsu rebase merge commits correctly (unlike both Git and Mercurial).
-
-Basic conflict resolution:
-
-Juggling conflicts:
-
-Automatic rebase
-
-Whenever you modify a commit, any descendants of the old commit will be rebased onto the new commit. Thanks to the conflict design described above, that can be done even if there are conflicts. Bookmarks pointing to rebased commits will be updated. So will the working copy if it points to a rebased commit.
-
-Comprehensive support for rewriting history
-
-Besides the usual rebase command, there's jj describe for editing the description (commit message) of an arbitrary commit. There's also jj diffedit, which lets you edit the changes in a commit without checking it out. To split a commit into two, use jj split. You can even move part of the changes in a commit to any other commit using jj squash -i --from X --into Y.
-
-Status
-
-The tool is fairly feature-complete, but some important features like support for Git submodules are not yet completed. There are also several performance bugs. It's likely that workflows and setups different from what the core developers use are not well supported, e.g. there is no native support for email-based workflows.
-
-Today, all core developers use jj to work on jj. I (Martin von Zweigbergk) have almost exclusively used jj to develop the project itself since early January 2021. I haven't had to re-clone from source (I don't think I've even had to restore from backup).
-
-There will be changes to workflows and backward-incompatible changes to the on-disk formats before version 1.0.0. Even the binary's name may change (i.e. away from jj). For any format changes, we'll try to implement transparent upgrades (as we've done with recent changes), or provide upgrade commands or scripts if requested.
-
-Related work
-
-There are several tools trying to solve similar problems as Jujutsu. See related work for details.
-
-Contributing
-
-We welcome outside contributions, and there's plenty of things to do, so don't be shy. Please ask if you want a pointer on something you can help with, and hopefully we can all figure something out.
-
-We do have a few policies and suggestions for contributors. The broad TL;DR:
-
-Bug reports are very welcome!
-Every commit that lands in the main branch is code reviewed.
-Please behave yourself, and obey the Community Guidelines.
-There is a mandatory CLA you must agree to. Importantly, it does not transfer copyright ownership to Google or anyone else; it simply gives us the right to safely redistribute and use your changes.
-
-Mandatory Google Disclaimer
-
-I (Martin von Zweigbergk, martinvonz@google.com) started Jujutsu as a hobby project in late 2019, and it has evolved into my full-time project at Google, with several other Googlers (now) assisting development in various capacities. That said, this is not a Google product.
-
-License
-
-Jujutsu is available as Open Source Software, under the Apache 2.0 license. See LICENSE for details about copyright and redistribution.
-
-The jj logo was contributed by J. Jennings and is licensed under a Creative Commons License, see docs/images/LICENSE.
-
-Footnotes
-
-To be more precise, the #jujutsu Libera IRC channel is bridged to one of the channels on jj's Discord. Some of the developers stay on Discord and use the bridge to follow IRC. ↩
 
 ## git fsmonitor
-https://git-scm.com/docs/git-fsmonitor--daemon
 
-## 101 git  ssh signing
+* <https://git-scm.com/docs/git-fsmonitor--daemon>
+
+
+[[{security.cryptography,security.ssh.signing]]
+## 101 git ssh signing
 
 - Git 2.35 includes a couple of new additions to SSH signing. [[PM.TODO]]
 
+[[security.cryptography}]]
 
 [[{git.scalability,scalability.storage]]
 ## Scalar (Git v2.38+) 
@@ -284,28 +318,33 @@ https://git-scm.com/docs/git-fsmonitor--daemon
 * <https://github.blog/2022-10-13-the-story-of-scalar/>
 [[}]]
 
-## NostrGit [[{git.nostr]]
-* <https://github.com/NostrGit/NostrGit>
-  A truly censorship-resistant alternative to GitHub that has a chance of working
-[[}]]
-
-## 4 secrets encryption tools [[{security.secret_management}]]
+[[{security.secret_management]]
+## 4 secrets encryption tools
 * <https://www.linuxtoday.com/security/4-secrets-management-tools-for-git-encryption-190219145031.html>
 * <https://www.atareao.es/como/cifrado-de-repositorios-git/>
+[[security.secret_management}]]
 
-## Garbage Collector [[{performance}]]
-*  Git occasionally does garbage collection as part of its normal operation,
-by invoking git gc --auto. The pre-auto-gc hook is invoked just before the
-garbage collection takes place, and can be used to notify you that this is
-happening, or to abort the collection if now isn’t a good time.
+[[{scalability.garbage_collector]]
+## Garbage Collector 
+* Git occasionally does garbage collection as part of its normal operation,
+  by invoking git gc --auto. The pre-auto-gc hook is invoked just before the
+  garbage collection takes place, and can be used to notify you that this is
+  happening, or to abort the collection if now isn’t a good time.
+[[scalability.garbage_collector}]]
 
 
-## sparse-checkout (Git v2.25+) allows to checkout just a subset [[{scalability]]
+[[{scalability.sparse_checkout,qa.monorepo]]
+## sparse-checkout (Git v2.25+) allows to checkout just a subset
   of a given monorepo, speeding up commands like git pull and
   git status.
-@[https://github.blog/2020-01-17-bring-your-monorepo-down-to-size-with-sparse-checkout/] [[}]]
 
-## Advanced Git:
+* <https://github.blog/2020-01-17-bring-your-monorepo-down-to-size-with-sparse-checkout/>
+
+[[scalability.sparse_checkout}]]
+
+[[{]]
+## Advanced Git
+
 * revert/rerere:
 * Submodules:
 * Subtrees:
@@ -319,11 +358,13 @@ happening, or to abort the collection if now isn’t a good time.
     specify line endings for file types, implement custom filters, and
     have Git ignore specific file paths during merging.
 * Cregit token level blame:
-@[https://www.linux.com/blog/2018/11/cregit*token-level-blame-information-linux-kernel]
-cregit: Token*Level Blame Information for the Linux Kernel
-Blame tracks lines not tokens, cgregit blames on tokens (inside a line)
+  * <https://www.linux.com/blog/2018/11/cregit*token-level-blame-information-linux-kernel>
+  cregit: Token Level Blame Information for the Linux Kernel
+  Blame tracks lines not tokens, cgregit blames on tokens (inside a line)
+[[}]]
 
-## Gitea painless self-hosted Git) [[{PM.TODO,PM.low_code]]
+[[{PM.TODO,PM.low_code]]
+## Gitea painless self-hosted Git)
 ("replaced" unmaitained Gogs)
 * <https://gitea.io/>
 * Fork of gogs, since it was unmaintained.
@@ -349,78 +390,58 @@ Gerrit is a Git Server that provides:
   * Continuous Build
   * Code Analyzers
   * Style Checkers
-[[}]]
+[[PM.TODO}]]
 
-## Git Secrets: [[{qa,security.secret_management}]]
+[[{qa,security.secret_management]]
+## Git Secrets
 * <https://github.com/awslabs/git-secrets#synopsis>
   Prevents you from committing passwords and other sensitive
   information to a git repository.
+[[security.secret_management}]]
 
-## Forgit: Interactive Fuzzy Finder:[[{dev_stack.forgit,qa.UX,PM.TODO]]
-* <https://www.linuxuprising.com/2019/11/forgit-interactive-git-commands-with.html>
-* It takes advantage of the popular "fzf" fuzzy finder to provide
-  interactive git commands, with previews. [[}]]
 
-## Isomorphic Git: 100% JS client [[{security.gpg]]
-@[https://isomorphic-git.org/] !!!
-
-* Features:
-  * clone repos
-  * init new repos
-  * list branches and tags
-  * list commit history
-  * checkout branches
-  * push branches to remotes
-  * create new commits
-  * git config
-  * read+write raw git objects
-  * PGP (GPG) signing
-  * file status
-  * merge branches
-[[}]]
-
-## Git Monorepos: [[{qa.UX,scalability}]]
+[[{qa.UX,scalability]]
+## Git Monorepos
 * (Big) Monorepos in Git:
   * <https://www.infoq.com/presentations/monorepos/>
   * <https://www.atlassian.com/git/tutorials/big-repositories>
+[[qa.UX,scalability}]]
 
+[[{qa.best_patterns]]
 ## Git: Symbolic Ref best-patterns
-* <https://stackoverflow.com/questions/4986000/whats-the-recommended-usage-of-a-git-symbolic-reference>
 
-## GitHub: Search by topic: [[{git.github}]]
+* <https://stackoverflow.com/questions/4986000/whats-the-recommended-usage-of-a-git-symbolic-reference>
+[[qa.best_patterns}]]
+
+[[{git.github]]
+## GitHub: Search by topic
+
 * <https://help.github.com/en/github/searching-for-information-on-github/searching-topics>
 * Ex:search by topic ex "troubleshooting" and language "java"
   <https://github.com/topics/troubleshooting?l=java>
+[[git.github}]]
 
-## Gitsec: [[{security.secret_management,qa}]]
+[[{security.secret_management,qa]]
+## Gitsec
 * <https://github.com/BBVA/gitsec>
   gitsec is an automated secret discovery service for git that helps
   you detect sensitive data leaks.
   gitsec doesn't directly detect sensitive data but uses already
   available open source tools with this purpose and provides a
   framework to run them as one.
+[[security.secret_management,qa}]]
 
-## when to avoid git-rebase [[{101.rebase]]
-https://www.javacodegeeks.com/2024/03/when-to-avoid-git-rebase.html
+[[{101.rebase]]
+## when to avoid git-rebase
+
+* <https://www.javacodegeeks.com/2024/03/when-to-avoid-git-rebase.html>
 [[101.rebase}]]
 
-[[{101]]
-## https://codeberg.org/ 
-
-* Andrew Kelly, presidente de la Zig Software Foundation, ha anunciado 
-finalmente la migración completa del proyecto a Codeberg, una plataforma sin 
-ánimo de lucro que en menos de un año ha duplicado su número de miembros. Ha 
-alegado que GitHub está descuidando el mantenimiento de herramientas 
-críticas, y que los sistemas de integración continua se comportan de forma 
-errática (Kelly lo llama 'vibe-scheduling', en referencia al 'vibe coding').Su 
-conclusión es que la obsesión de GitHub/Microsoft con la IA estaría restando 
-recursos y atención a labores de ingeniería esencial.
-[[}]]
-
-
+[[{]]
 ## Alternatives to git
 
 * Fossil, Plastic, Pijal  
+[[}]]
 
 [[{git.101,troubleshooting.git]]
 ## 101 Oh Shit, Git!?!
@@ -558,7 +579,8 @@ What's your Oh shit, git moment? Share it with me! @ohshitgit
 [[}]]
 
 
-## Unbreakable Branches [[{git.bitbucket,qa,jenkins.troubleshooting]]
+[[{qa.unbreakable_branches,jenkins.troubleshooting]]
+## Unbreakable Branches
 * <https://github.com/AmadeusITGroup/unbreakable-branches-jenkins>
 * plugins for Bitbucket and Jenkins trying to fix next problem:
   ```
@@ -671,4 +693,4 @@ What's your Oh shit, git moment? Share it with me! @ohshitgit
     * making mailmap rewriting of user names or emails permanent
     * making grafts or replacement refs permanent
     * rewriting commit messages
-[[}]]
+[[qa.unbreakable_branches}]]

@@ -1,0 +1,56 @@
+```
+| [[{monitoring.101,monitoring.i/o.wait,monitoring.storage}]]
+| ===============================================================================
+| mpstat: (sysstat) Details about CPUs (individual or combined). 
+| ===============================================================================
+| 
+| Linux 6.17.0-14-generic (home03)        20/03/26        _x86_64_        (8 CPU)
+| 
+| $ sudo mpstat -T 2 10        # Display 10 reports of global statistics among all CPUs at 2 secs intervals.
+| Linux 6.17.0-14-generic (home03)        20/03/26        _x86_64_        (8 CPU)
+| 
+| 17:58:59     CPU CORE SOCK NODE    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle
+| 17:59:01     all                   0,63    0,00    0,19    0,00    0,00    0,00    0,00    0,00    0,00   99,18
+| 17:59:03     all                   0,75    0,00    0,44    0,13    0,00    0,00    0,00    0,00    0,00   98,68
+| 17:59:05     all                   3,07    0,00    0,38    0,00    0,00    0,00    0,00    0,00    0,00   96,55
+| 17:59:07     all                   0,63    0,00    0,31    0,00    0,00    0,00    0,00    0,00    0,00   99,06
+| 17:59:09     all                   0,50    0,00    0,44    0,13    0,00    0,00    0,00    0,00    0,00   98,93
+| 17:59:11     all                   0,44    0,00    0,19    0,06    0,00    0,00    0,00    0,00    0,00   99,31
+| 17:59:13     all                   0,63    0,00    0,56    0,06    0,00    0,00    0,00    0,00    0,00   98,75
+| 17:59:15     all                   0,50    0,00    0,25    0,06    0,00    0,00    0,00    0,00    0,00   99,18
+| 17:59:17     all                   0,44    0,00    0,13    0,00    0,00    0,00    0,00    0,00    0,00   99,43
+| 17:59:19     all                   0,50    0,00    0,44    0,00    0,00    0,00    0,00    0,00    0,00   99,06
+| Average:     all                   0,81    0,00    0,33    0,04    0,00    0,00    0,00    0,00    0,00   98,81
+|
+| mam mpstat option summary
+| 
+| --dec={ 0 | 1 | 2*} : number of decimal places to use
+| 
+| -I { [,...] | ALL }: Report interrupts statistics. 
+|      └────┴─  CPU: number of each individual hard.interrupt/sec by CPU (from /proc/interrupts)  [[monitor.hardware_interrupt]]
+|              SCPU: number of each individual soft.interrupt/sec by CPU (from /proc/softirqs  )  [[monitor.software_interrupt]]
+|               SUM: total number of interrupts per processor. 
+| 
+| -N 1,2,.. : set targeted NUMA node/s. (csv list or ALL)               [[monitor.CPU.NUMA]]
+| -n       Report summary CPU statistics based on NUMA node placement.  [[monitor.CPU.NUMA]] 
+| -o JSON  Report statistics in JSON 
+| -P { cpu_csv | ALL }: set targeted processor/s 
+| -T  Display topology elements in the CPU report (see option -u below). [[monitor.cpu.topology]]
+|     ─────────────────────────────────                                                          
+|     CORE   Logical core number
+|     SOCK   Logical socket number
+|     NODE   Logical NUMA node number
+|
+| -u  Report CPU utilization. The following values are displayed:
+|     CPU     Processor number. The keyword all indicates that statistics are calculated as averages among all processors.
+|     %usr    
+|     %nice   
+|     %sys    
+|     %iowait
+|     %irq    % CPU/s spent servicing hardware interrupts.
+|     %soft   % CPU/s spent serviingc software interrupts.
+|     %steal  Show the percentage of time spent in involuntary wait by the virtual CPU or CPUs while the hypervisor was servicing another virtual processor.
+|     %guest  Show the percentage of time spent by the CPU or CPUs to run a virtual processor.
+|     %gnice  Show the percentage of time spent by the CPU or CPUs to run a niced guest.
+|     %idle   Show the percentage of time that the CPU or CPUs were idle and the system did not have an outstanding disk I/O request.
+```

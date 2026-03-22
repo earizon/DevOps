@@ -1,0 +1,24 @@
+[[{monitoring.101,monitoring.memory,monitoring.I/O,]]
+[[monitoring.network,monitoring.cpu,troubleshooting,PM.TODO]]
+## Dstat (vmstat + iostat+ ifstat + mpstat)
+
+* NOTE: There is a conflict between Red Hat Dstat and the original dstat-real.
+  C&P from <https://github.com/dstat-real/dstat>:
+
+> Due to actions taken by RedHat to hijack the DSTAT name, further
+> development of this project has ceased. Development of this project
+> is taking place on the Dool fork.
+
+  Next refers to Red-Hat? version.
+
+* TODO: Compare with [dool](https://github.com/scottchiefbaker/dool)
+
+<https://linux.die.net/man/1/dstat>
+* Dstat: moderm replacement joining the info from    [[{doc_has.comparative]]
+  vmstat, iostat, ifstat an mpstat.                  [[}]]
+* Dstat overcomes some of the limitations and adds some extra features.
+* Dstat allows you to view all of your system resources instantly,
+  you can eg.:
+  * compare disk usage in combination with interrupts from disk controller.
+  * compare network bandwidth numbers directly with the disk throughput (in the same interval).
+[[}]]

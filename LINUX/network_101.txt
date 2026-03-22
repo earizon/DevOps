@@ -1,0 +1,245 @@
+[[{network.101]]
+# Network  
+
+[[{configuration.network,troubleshooting.network]]
+## NetworkManager
+* <https://www.redhat.com/sysadmin/becoming-friends-networkmanager>
+* <https://linux.die.net/man/8/networkmanager>
+* <https://linux.die.net/man/5/networkmanager.conf>
+* <https://linux.die.net/man/1/nmcli>
+* <https://linux.die.net/man/8/networkmanager_selinux>
+
+* widespread network configuration daemon
+* Managed through cli (nmcli), text-GUI (nmtui) GUI (GNOME,...)
+  files, web-console (Cockpit) or D-Bus interface.
+  APIs and a library (libnm) is also provided.
+-*NetworkManager allows users and applications to retrieve *
+ *and modify the network's configuration at the same time, *
+ *ensuring a consistent and up-to-date view of the network.*
+
+* NetworkManager philosophy:
+  "...attempts to make networking configuration and operation as
+    painless and automatic as possible..."
+  When there is partial or no configuration, NetworkManager checks
+  the available devices and tries its best to provide connectivity
+  to the host.
+
+* NetworkManager allows advanced network administrators to
+  provide their own configuration.
+
+- *NetworkManager Entities*:
+
+  ```
+  | - device     : represents a network interface ("ip link")
+  |                A NetworkManager devices tracks:
+  |              - If it is managed by NetworkManager
+  |              - The available connections for the device
+  |              - The connection active on the device (if any)
+  | - connection : represents the full configuration to
+  |                be applied on a device and is just a list of
+  |                properties.
+  |                Properties belonging to the same configuration
+  |                area are grouped into settings:
+  |                Example:
+  |              - ipv4 setting group:
+  |                - addresses
+  |                - gateway
+  |                - routes
+  | 
+  |  ^^^^^^^^^^^^^
+  |  *NETWORK SETUP == activate a connection with a device*
+  ```
+
+  ```
+  |  $ nmcli device   # ← list the devices detected by NetworkManager
+  |  (output will be similar to)
+  |> DEVICE   TYPE      STATE           CONNECTION
+  |> enp1s0   ethernet  connected       ether-enp1s0
+  |> enp7s0   ethernet  disconnected    --
+  |> lo       loopback  unmanaged  --
+  ```
+
+ ```
+ | $ nmcli device \        # ← turn off management
+ |   set enp1s0 managed no     for enp1s0 device
+ |                             (change is not persisted
+ |                              and ignored on reboot)
+ ```
+
+ ```
+ | $ nmcli   # List detailed connections for devices
+ | enp1s0: connected to enp1s0
+ |       "Red Hat Virtio"
+ |       ethernet (virtio_net), 52:54:00:XX:XX:XX, hw, mtu 1500
+ |       ip4 default
+ |       inet4 192.168.122.225/24
+ |       route4 0.0.0.0/0
+ |       route4 192.168.122.0/24
+ |       inet6 fe80::4923:6a4f:da44:6a1c/64
+ |       route6 fe80::/64
+ |       route6 ff00::/8
+ | ...
+ ```
+
+ ```
+$ nmcli connection # ← list the available connections
+→ NAME         UUID          TYPE       DEVICE
+→ ether-enp1s0 23e0d89e-...  ethernet   enp1s0
+→ ...
+ ```
+
+* To deconfigure the associated device, just instruct NetworkManager
+to put the connection down. For instance, to deactivate the
+ether-enp1s0 connection:
+
+  ```
+  | $ nmcli connection \  # ← deactivate connection
+  |     down ether-enp1s0     (deconfigure associated
+  |                           device)
+  | 
+  | $ nmcli connection \  # ← Reactivate
+  |     up ether-enp1s0
+  | 
+  | $ nmcli connection \  # ← Show connection details
+  |   show ether-enp1s0
+  | connection.id:                  *ether-enp1s0*   ← human readable name
+  | connection.uuid:                 23e0d89e-...
+  | connection.stable-id:            --
+  | connection.type:                 802-3-ethernet ← ethernet, wifi, bond!!, vpn, ...
+  | connection.interface-name:       enp1s0         ← binds(restrict) to specific device
+  | connection.autoconnect:          yes
+  | ...
+  | ipv4.method                      auto           ← one of:
+  |                                                   auto(DHCP)
+  |                                                   manual(static IP in ipv4.addresses),
+  |                                                   disabled, link local, shared
+  | ipv4.addresses                   192.168.1.201/24
+  | ipv4....
+  | dhcp4.option[1]                  broadcast_address = 192.168.1.255
+  | dhcp4....
+  | [...]
+  | (See `man nm-settigs` for full info about available parameters)
+  ```
+
+  ```
+  | $ nmcli connection \               ← Permanently change the connection
+  |     modify  *ether-enp1s0* \
+  |     ipv4.method manual
+  |     ipv4.addresses 10.10.10.1/24 \
+  |     ipv4.gateway 10.10.10.254 \
+  |     ipv4.dns 10.10.10.254
+  | $ nmcli connection up ether-enp1s0 ← New settings will only be applied
+  |                                      on connection (re)activation
+  | 
+  | $ nmcli connection \            # ← avoid activation by NetworkManager
+  |     modify ether-ens1s0 \           (you would have to activate manually)
+  |     connection.autoconnect no
+  | 
+  | $ nmcli con add \            ← Create new connection
+  |   type ethernet \              - DHCP will be used if no IPv4 config
+  |   ifname enp0s1 \                is provided.
+  |   con-name  *enp0s1_dhcp* \      (ipv4.method defaults to auto)
+  |   autoconnect no               - Run interactively with '--ask' option
+  | $ nmcli con                  ← Verify new connection
+  | →  NAME         UUID         TYPE     DEVICE
+  | →  ...
+  | → *enp0s1_dhcp* 64b499cb-... ethernet --
+  | →  ...
+  | 
+  | $ nmcli con edit   ← Interactive editor-mode with inline help will open
+  ```
+
+### nmcli TODO:
+
+* "Many features deserve separate blog posts"
+  * dispatcher scripts
+  * connectivity checkers
+  * split DNS
+  * MAC address randomization
+  * hotspot configuration
+  * automatic configuration.
+
+* Check Network status:
+  ```
+  | <https://linux.die.net/man/1/nm-online>
+  | ~:$ nm-online -q   ←     --timeout=10       (Defaults to 30secs)
+  | ~:$ echo $?              --exit             Exit immediately if nm is not running or connecting
+  | → 0                      --quiet            Don't print anything
+  |                          --wait-for-startup Wait for nm startup instead of a connection
+  ```
+
+### Troubleshooting Network Manager
+
+  ```
+  | bypass network manager by manually launching dhcp client:
+  | 
+  | $ sudo dhclient eth0 # eth0 stands for "Ethernet 0". Name can differ
+  |                        execute 'ip link' to show all network devices
+  ```
+
+
+### ERROR: "Network disconnects after a few seconds"
+
+* Try disabling ModemManager service:
+
+  ```
+  | $ sudo systemctl stop    ModemManager.service
+  | $ sudo systemctl disable ModemManager.service
+  ```
+[[configuration.network}]]
+
+[[{linux.101,configuration.network,]]
+
+## TCP/IP Utilities
+
+  ```
+  | $ host (ip_address|domain_name) # <· Performs DNS lookup of an internet address
+  |                                      (using the Domain Name System, DNS).
+  |
+  | $ dig  www.amazon.com           # <· Query through (configured) DNS server
+  | $ dig -x 10.10.10.10            # <· reverse query to DNS
+  | $ dig www.amazon.com @IP.DNS.1  # <· Query to a given DNS server (vs default one)
+  | (check man page for more options)
+  |
+  | $ wget http://www.mydomain.com/myPage # <· HTTP client
+  | Options:
+  | -m: archive/"m"irrow single web-site
+  | -nc: (no clobber) avoid overwriting local files
+  |
+  | $ wget --spider \
+  |   --force-html \
+  |   -i bookmarks.html             # <· parse bookmarks.html for links
+  | (see man page for more info)
+  |
+  | $ curl  #  Script oriented HTTP client. (See curl dedicated page)
+  | $ curl -M # <· Access the full/huge manual
+  ```
+[[}]]
+
+# Network Traffic shaping
+
+  ```
+  | [[{monitoring.network,troubleshooting.network}]]
+  | ======================================================================
+  | Wondershaper: basic network traffic shaping for the whole network link
+  | ======================================================================
+  |
+  | $ sudo ./wondershaper -a eth0 -u 4096 -d 8192 # <· limit:  upload: 4Mbps, download:8Mbs
+  |
+  | REF: <https://github.com/magnific0/wondershaper/>
+  ```
+
+  ```
+  | =========================================
+  | Firejail: Network shaping per application
+  | =========================================
+  | 
+  | $ firejail  --net=enp2s0 firefox [/bash]
+  | $ firejail --list | grep 'firefox' | awk -F: '{print$1}'
+  | $ firejail  --bandwidth=PID set interface-name down-speed up-speed
+  | 
+  | REF: <https://www.pcsuggest.com/bandwidth-traffic-shaping-in-linux-with-firejail/>
+  ```
+[[}]]
+
+[[network.101}]]

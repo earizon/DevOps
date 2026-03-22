@@ -1,0 +1,5 @@
+[[{QA.UX,PM.SLCM]]
+# Foreman: complete lifecycle management tool for physical and VMs
+
+* easily automate repetitive tasks, quickly deploy applications, and proactively manage servers, on-premise or in the cloud.
+[[QA.UX}]]

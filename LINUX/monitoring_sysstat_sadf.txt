@@ -1,0 +1,12 @@
+```
+| [[{monitoring.101,monitoring.i/o.wait,monitoring.storage,}]]
+| ===============================================================================
+| sadf: (sysstat) Display data collected by sar in multiple formats. (CSV, SVG,...)
+| ===============================================================================
+|
+| $ sudo sadf -d /var/log/sysstat/sa21 \
+|   -- -r -n DEV                           # Extract Mem & network stats in CSV format
+| $ sudo sadf -p -P 1                      # Extract CPU#1 stats (2nd processor) from
+|                                          # current daily data file in a format that
+|                                          # can easily be handled by a pattern processing
+```

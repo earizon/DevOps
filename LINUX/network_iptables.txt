@@ -1,0 +1,139 @@
+## IPTABLES 
+
+- Netfilter: Linux API offered to applications to allow manipulate network packets.
+- iptables: High level interfaces making use of Netfilter, generally to setup
+  "firewall" rules.
+
+  ```
+  | =========================================================
+  |         IPTables TABLES                                  
+  | =========================================================
+  | - built-in tables, each with its own "subchains".
+  | 
+  | +--------+-----------------------------------+-------------------------------------------------+
+  | | TABLE  | USE TO                            |            "SUB"TABLES                          |
+  | +--------+-----------------------------------+-------------------------------------------------+
+  | | mangle | ... alter IP headers in different | PREROUTING¹  POSTROUTING²                       |
+  | |        | ways.                             |                          INPUT³ FORWARD⁴ OUTPUT⁵|
+  | +----------------------------------------------------------------------------------------------+
+  | |        |                                   | PREROUTING⁶  POSTROUTING⁷                       |
+  | | nat    | ... manage address translations.  |                                          OUTPUT⁸|
+  | +--------+-----------------------------------+-------------------------------------------------+
+  | | filter | ... take decisions about whether  |                                        ¹⁰     ¹¹|
+  | |        | to allow|deny packet flow (def.)  |                          INPUT⁹ FORWARD  OUTPUT |
+  | +--------+-----------------------------------+-------------------------------------------------+
+  | ¹ All packets entering the system in any way, before routing decides whether the packet is to
+  |   be forwarded or is destined locally (INPUT chain). 
+  |   Usecase: "mark" on the packet for further processing in other table-use in PBR-NAT.
+  | ² All packets leavying the system go through this chain.
+  |   Usecase: Mangling on packets before they leave our host, but after the actual routing 
+  |            decissions.
+  | ³ All packets destined for this system go through this chain.
+  |   Usecase: at this point, the mangle INPUT chain is hit. We use this chain to mangle packets,
+  |            after they have been routed, but before they are actually sent to the process on 
+  |            the machine.
+  | ⁴ All packets merey passing throuh the system go through this chain.
+  |   Usecase: All packets created by this system go through this chain.
+  | ⁵ All packets created by this system go through this chain.
+  |   Usecase: This can be used for very specific needs, wher we wan to mangle the packets after
+  |            the intial routing decision, but before the last routing decision made just before
+  |            the packet is sent out.
+  | ⁶ Incomming packets pass through this chain before the local routing table is consulted,
+  |   primarily for DNAT.
+  |   Usecase: Change destination port and IP.
+  | ⁷ Outgoing packets pass through this chain after the routing decision has been made, primarely
+  |   for SNAT.
+  |   Usecase: This chain should first and fore most be used for SNAT.
+  | ⁸ All packets merely passing through the system (being routed) go through this chain.
+  |   Usecase: logging, ???
+  | ⁹ All packets destined for this system go through this chain.
+  |   Usecase: This is where we do filtering for all incomming traffic destined for out local
+  |            host.
+  | ¹⁰All packetes merely passing through the system (being routed) go through this chain.
+  |   Usecase: logging, ???
+  | ¹¹all packets created by this system go through this chain.
+  |   Usecase: This is where we filter packets going out from our local host.
+  |
+  | =========================================================
+  | Firewall RULE: (PACKET MATCH-FILTER, NEXT-TARGET "JUMP")
+  | =========================================================
+  | - If packet does NOT match the rule.match_filter, next rule in chain is examined.
+  | - If packet does     match the rule.match_filter, next rule == rule.next-target.
+  |   rule.next-target can also be one of: ACCEPT | DROP | QUEUE | RETURN
+  |
+  |
+  | # echo 1 > /proc/sys/net/ipv4/ip_forward   <·· Enable IP forwarding (disable by default)
+  | # iptables -F            <·· Delete all rules in all    tables
+  | # iptables -n nat    -F  <·· Delete all rules in nat    table
+  | # iptables -n mangle -F  <·· Delete all rules in mangle table
+  | # iptables -t nat $num   <·· Delete single rule in  nat table
+  | # iptables -L -v -n      <·· Show rules in iptables
+  | # ????                   <·· Save configurations
+  | 
+  | # iptables -t filter -A INPUT -i eth1 -j LOG  <·· Enables log for interface Ethernet1
+  | # iptables -t filter -A INPUT -i eth1 -j LOG \
+  |   -s 10.0.0.0/8                               <·· Enables log for interface Ethernet1
+  |                                                    with source 10.0.0.0/8
+  | # tail -f /var/log/messages                   <·· Dump logs "recorded"
+  | 
+  | =========================================================
+  | Examples
+  | =========================================================
+  |
+  | # iptables -t filter -A INPUT -p top -dport 80 -j DROP     <·· Deny Port 80
+  | # iptables -t filter -A INPUT -p tcp -dport 80 -j DROP \   <·· Deny Port 80 for eth1
+  |            ·       · -i eth1      
+  |            └───────┴─ filter is the default table. Flag can be skipped.
+  | ───────────────────────────────────────────────────────── 
+  | # echo 1 > /proc/sys/net/ipv4/ip_forward                        
+  | # iptables -t nat    -A POSTROUTING -j MASQUERADE \       <·· Allow private network 
+  | #          -o eth0                                            access to Internet
+  | #             └──┴─ eth0 must be replaced with any other 
+  | #                        interface connected to Internet
+  | #                        (wireless, ...)
+  | ───────────────────────────────────────────────────────── 
+  | # iptables -t filter -A INPUT   -p tcp -dport 22 -j DROP \ <·· Drop ssh trafic from 1.2.3.4
+  |                      -s 1.2.3.4 
+  | ───────────────────────────────────────────────────────── 
+  | # iptables -t filter -A FORWARD                  -j DROP \ <·· filter out URL "ipcafe.net"
+  |                      -m string --string "ipcafe.net" \
+  |                      --algo kmp --to 65535
+  | ───────────────────────────────────────────────────────── 
+  | # iptables -t nat    -A PREROUTING               -j DNAT \ <·· Map public IP      to
+  |                      -d $pub_IP --to-destination $priv_IP       private IP
+  |
+  | # iptables -t nat    -A PREROUTING               -j DNAT \ <·· Map public IP:port
+  |                      -d $pub_IP -dport 8000 \                   to private IP:port
+  |                      --to-destination $priv_IP:8001
+  | ───────────────────────────────────────────────────────── 
+  |                                                                Mark packet then NAT it.
+  | # iptables -t mangle -A PREROUTING -p icp \                <·· 1) Set mark for source
+  |                      -s 172.0.0.1 --icmp-type 8  -j MARK \
+  |                      --set-mark 777
+  | #  iptable -t nat    -A PREROUTING \                       <·· 2) DNAT it.
+  |                      -m mark --mark 777          -j DNAT \
+  |                      -to-destination $priv_IP
+  | ───────────────────────────────────────────────────────── 
+  | # iptables -t filter -A INPUT                    -j ACCEPT \ < Permit echo-request
+  |                      --icmp --icmp-type 8 -s 0/0 \
+  |                      -d 172.0.0.1 -m state \
+  |                      -state NEW,ESTABLISHED,RELATED 
+  | # iptables -t filter -A OUTPUT                   -j ACCEPT \ < Permit echo-replyreply
+  |                      -p icmp --icmp-type 0 \
+  |                      -s 172.0.0.1 -d 0/0 \
+  |                      -m state --state NEW,ESTABLISHED,RELATED 
+  | ───────────────────────────────────────────────────────── 
+  |
+  | =========================================================
+  | IPTable chain order
+  | =========================================================
+  | │mangle    ├··>│nat       │ ┌>│mangle ├·>│filter ├·> routing  ·>│mangle     ├·>│   nat     │
+  | │PREROUTING│   │PREROUTING│ · │FORWARD│  │FORWARD│   decission  │POSTROUTING│  │POSTROUTING│
+  |                             ·                                          ^
+  |     ┌─·····················─┘                                          ·
+  |     v                                                                  ·
+  | │Mangle├·>│Filter├·> local  ·>│Mangle ├··>│Filter ├················>│NAT   │
+  | │INPUT │  │INPUT │   process  │OUTPUT │   │OUTPUT │                 │OUTPUT│
+  ```
+
+

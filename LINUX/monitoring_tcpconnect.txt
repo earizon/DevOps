@@ -1,0 +1,18 @@
+[[{monitoring.network.tcpconnect]]
+```
+| -------------------------------------------------------------------
+| tcpconnect: trace kernel function performing active TCP connections
+| -------------------------------------------------------------------
+| 
+| $ sudo tcpconnect
+| PID    COMM         IP SADDR            DADDR            DPORT
+| 1479   telnet       4  127.0.0.1        127.0.0.1        23
+| 1469   curl         4  10.201.219.236   54.245.105.25    80
+| 1469   curl         4  10.201.219.236   54.67.101.145    80
+| 1991   telnet       6  ::1              ::1              23
+| 2015 ssh 6 fe80::2000:bff:fe82:3ac fe80::2000:bff:fe82:3ac 22
+|
+| * REF: <https://github.com/iovisor/bcc/blob/master/tools/tcpconnect_example.txt>
+|   (eg, via a connect() syscall; accept() are passive connections). 
+```
+[[monitoring.network.tcpconnect}]]

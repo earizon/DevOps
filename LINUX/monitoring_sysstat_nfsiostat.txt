@@ -1,0 +1,17 @@
+```
+| [[{monitoring.101,monitoring.i/o.wait,monitoring.storage}]]
+| ===============================================================================
+| mfsiostat: (sysstat) displays NFS client per-mount statisitics.
+| ===============================================================================
+|
+| Output columns include:
+| - op/s         : This is the number of operations per second.
+| - rpc bklog    : length of backlog queue.   [[profiling.storage.NFS]]
+| - kB/s         : number of kB written/read per second.
+| - kB/op        : number of kB written/read per each operation.
+| - retrans      : number of retransmissions.
+| - avg RTT (ms) : duration from RPC request to reply response (by kernel)
+| - avg exe (ms) : duration from RPC request to RPC completion. 
+| - avg queue(ms): duration from RPC request (by client) to request transmition
+| - errors       : number of operations completed with error status (status < 0).
+```
