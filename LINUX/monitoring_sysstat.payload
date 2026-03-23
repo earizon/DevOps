@@ -1,0 +1,10 @@
+monitoring_sysstat_introduction.txt        # OK 
+monitoring_sysstat_iostat.txt              # OK 
+monitoring_sysstat_mpstat.txt              # OK 
+monitoring_sysstat_pidstat.txt             # OK 
+monitoring_sysstat_sadc.txt                # OK 
+monitoring_sysstat_sar.txt                 # OK 
+monitoring_sysstat_sa1.txt                 # OK 
+monitoring_sysstat_sa2.txt                 # OK 
+monitoring_sysstat_sadf.txt                # OK
+monitoring_sysstat_nfsiostat.txt           # OK
