@@ -612,7 +612,8 @@ Non-normative Git server setup for N projects with M teams of L users
 - Useful to **ENFORCE NEARLY ANY KIND OF POLICY** in repository.
 - hooks (scripts) exiting with non-zero rollback/reject any push and print error messages
   back to the client. [[qa.fail_fast]]
- ` | .git/
+ ```
+ | .git/
  |  └ hook/     <············· (shell/python/...) scripts to be executed.
  |    │ 
  |    ├ Pre-receive    <······ first script to run when receiving a push:
