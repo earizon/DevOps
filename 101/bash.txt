@@ -1,0 +1,428 @@
+[[{dev_stack.shell_script]]
+# Shell Scripting 
+
+## REFERENCE SCRIPT:  [[{dev_stack.shell_script.101]]
+
+  ```
+  | #!/bin/bash
+  | 
+  | cd $(dirname $0)                         # Good practice. Change to directory where the script is placed
+  |                                          # as "ORIGIN OF (FILE-SYSTEM PATH) COORDINATE"
+  | readonly BASE_DIR=$(pwd)                 # Save directory for reuse. 
+  | # NOTE: The Bash "syntax sugar" VAR1=$("some command") executes "some command"
+  | #  and assigns execution (STDOUT) output as effective value to VAR1
+  |
+  | # SETUP STDERR/STDOUT logging to file and console {{{
+  | readonly LOG_DIR="${BASE_DIR}/LOGS.gitignore"
+  | if [ ! -d ${LOG_DIR} ] ; then
+  |    mkdir ${LOG_DIR}
+  | fi
+  | # $(whoami) will avoid collisions  among different users even if writing to the
+  | # same directory and serves as audit trail. # This happens frequently in DevOps when
+  | # executing in sudo/non-sudo contexts.
+  | readonly OUTPUT="${LOG_DIR}/$(basename $0).$(whoami).$(date +%Y%m%d_%Hh%Mm%Ss).log"
+  | ln -sf ${OUTPUT} link_last_log.$(basename $0).gitignore  # (opinionated) Improve UX, create link to latest log
+  | exec 3>&1
+  | exec 4>&2
+  | echo "Cloning STDOUT/STDERR to ${PWD}/${OUTPUT}"
+  |                                          # (Opnionated) Redirect to STDOUT and file REF:
+  | exec &> >(tee -a "$OUTPUT")              # Comment to disable (Ussually not needed in Kubernetes/AWS-EC2/...
+  |                                          # since console output is direcly saved to files/S3 by some external mechanism.
+  |                                          # https://unix.stackexchange.com/questions/145651↩
+  |                                          #   /using-exec-and-tee-to-redirect-logs-to-stdout-and-a-log-file-in-the-same-time
+  |
+  | exec 2>&1                                # (Opinionated). Mix errors (STDERR) with STDOUT.
+  |                                          # Recommended to see errors in the context of normal execution.
+  | echo "message logged to file & console"
+  | # }}}
+  |
+  |                                          # Bash syntax sugar.
+  | [[ `hostname` =~ -([0-9]+)$ ]] || exit 1 # <·· Check hostname match -[0-9] or exit.
+  | SERVER_NUMBER=${BASH_REMATCH[1]}         # <·· Otherwise asing match to var.
+  |
+  | global_exit_status=0
+  | readonly WD=$(pwd)    # Best Practice: write down current work dir are use it
+  |                       # to avoid problems when changing dir ("cd")
+  |                       # randomnly throughout the script execution
+  |
+  | readonly FILE_RESOURCE_01="${WD}/temp_data.csv"    # <- readonly: inmutable value      [[qa]]
+  |
+  |
+  | readonly LOCK=$(mktemp)                 # <- Make temporal file. Assign ro constant LOCK.
+  |                                         #    Use TMP_DIR=$(mktemp --directory) to create temporal dir.
+  | 
+  | timeout 5s ping -n 8.8.8.8              # <- Abort after 5 seconds. (Avoid stuck tasks)
+  | 
+  | timeout 30s bash -c '                   # <· wrapping script into a timeout.
+  | until pg_isready -h 127.0.0.1 -p 5432; do
+  |     echo "Waiting for database..."
+  |     sleep 1
+  | done
+  | '
+  |
+  | function funCleanUpOnExit() {
+  |   rm ${LOCK}
+  | }
+  | trap funCleanUpOnExit EXIT              # ← Clean any temporal resource (socket, file, ...) on exit
+  |
+  | function XXX(){
+  |   set +e                                # <- Disable "exit on any error" for the body of function.
+  |                                         #  REF: <https://en.wikipedia.org/wiki/Fail-fast>
+  |   readonly local -r name = ${HOME}      # local: scoped to function!!!                      [[qa]]
+  |   echo "Cleaning resource and exiting"
+  |   rm -fO ${FILE_RESOURCE_01}
+  |   set -e                                # <- Re-enable fail-fast.
+  | }
+  |
+  | ERR_MSG=""
+  | function funThrow {
+  |     if [[ $STOP_ON_ERR_MSG != false ]] ; then
+  |       echo "ERR_MSG DETECTED: Aborting now due to "
+  |       echo -e ${ERR_MSG}
+  |       if [[ $1 != "" ]]; then
+  |           global_exit_status=$1 ;
+  |       elif [[ $global_exit_status == 0 ]]; then
+  |           global_exit_status=1 ;
+  |       fi
+  |       exit $global_exit_status
+  |     else
+  |       echo "ERR_MSG DETECTED: "
+  |       echo -e ${ERR_MSG}
+  |       echo "WARN: CONTINUING WITH ERR_MSGS "
+  |
+  |       global_exit_status=1 ;
+  |     fi
+  |     ERR_MSG=""
+  | }
+  |
+  | exec 100>${LOCK}                        # Simple linux-way to use locks.
+  | flock 100                               # First script execution will hold the lock
+  | if [[ $? != 0 ]] ; then                 # Next ones will have to wait. Use -w nSecs
+  |     ERR_MSG="HOME ENV.VAR NOT DEFINED"  # to fail after timeout or -n to fail-fast
+  |     funThrow 10 ;                       # lock will automatically be liberated on
+  | fi                                      # exit. (no need to unlock manually)
+  |                                         # <a href="https://www.putorius.net/lock-files-bash-scripts.html">REF</a>
+  ```
+
+  # SIMPLE WAY TO PARSE/CONSUME ARGUMENTS WITH while-loop.
+  ```
+  | while [  $#  -gt 0 ]; do  # $#  number of arguments
+  |   case "$1" in
+  |     -l|--list)
+  |       echo "list arg"
+  |       shift 1                       # <- consume arg      ,  $# = $#-1
+  |       ;;
+  |     -p|--port)
+  |       export PORT="${2}"
+  |       shift 2                       # <- consume arg+value,  $# = $#-2
+  |       ;;
+  |     -h|--host)
+  |       export HOST="${2^^}"         # <-  ^^ suffix: Convert ${2} to upper case
+  |       shift 2                       # <-  consume arg+value, $# = $#-2
+  |       ;;
+  |     *)
+  |       echo "non-recognised option '$1'"
+  |       shift 1                       # <- consume arg       , $# = $#-1
+  |   esac
+  | done
+  |
+  | set -e                                   # At this point all variable must be defined. Exit on any error.
+  |
+  | function preChecks() {
+  |   # Check that ENV.VARs and parsed arguments are in place
+  |   if [[ ! ${HOME} ]] ; then ERR_MSG="HOME ENV.VAR NOT DEFINED" ; funThrow 41 ; fi
+  |   if [[ ! ${PORT} ]] ; then ERR_MSG="PORT ENV.VAR NOT DEFINED" ; funThrow 42 ; fi
+  |   if [[ ! ${HOST} ]] ; then ERR_MSG="HOST ENV.VAR NOT DEFINED" ; funThrow 43 ; fi
+  |   set -u # From here on, ANY UNDEFINED VARIABLE IS CONSIDERED AN ERROR.
+  | }
+  |
+  | function funSTEP1 {
+  |   echo "STEP 1: $HOME, PORT:$PORT, HOST: $HOST"
+  | }
+  | function funSTEP2 { # throw ERR_MSG
+  |   ERR_MSG="My favourite ERROR@funSTEP2"
+  |   funThrow 2
+  | }
+  |
+  | cd $WD ; preChecks
+  | cd $WD ; funSTEP1
+  | cd $WD ; funSTEP2
+  |
+  | echo "Exiting with status:$global_exit_status"
+  | exit $global_exit_status
+  ```
+
+## INIT VARS AND CONSTANTS:
+
+* complete Shell parameter expansion list available at:
+  <http://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html>
+  ```
+  | var1=$1 # init var $1 with first param
+  | var2=$# # init var $1 with number of params
+  | var3=$! # init var with PID of last executed command.
+  | var4=${parameter:-word} # == $parameter if parameter set or 'word' (expansion)
+  | var5=${parameter:=word} # == $parameter if parameter set or 'word' (expansion), then parameter=word
+  | var6=${parameter:?word} # == $parameter if parameter set or 'word' (expansion) written to STDERR, then exit.
+  | var7=${parameter:+word} # == var1       if parameter set or 'word' (expansion).
+  | var8=${var1^^}          # init var2 as var1 UPPERCASE.
+  | var9=${parameter:offset}         #  <- Substring Expansion. It expands to up to length characters of the value
+  | varA=${parameter:offset:length}  |     of parameter starting at the character specified by offset.
+  |                                  |     If parameter is '@', an indexed array subscripted by '@' or '*', or an
+  |                                  |     associative array name, the results differ.
+  | readonly const1=${varA}
+  ```
+
+## CONCURRENT PROCESS BARRIER SYNCHRONIZATION
+
+* Wait for background jobs to complete example:
+  ```
+  (
+    ( sleep 3 ; echo "job 1 ended" ) &
+    ( sleep 1 ; echo "job 2 ended" ) &
+    ( sleep 1 ; echo "job 3 ended" ) &
+    ( sleep 9 ; echo "job 4 ended" ) &
+    wait ${!}       # alt.1: Wait for all background jobs to complete
+  # wait %1 %2 %3   # alt.2: Wait for jobs 1,2,3. Do not wait for job 4
+    echo "All subjobs ended"
+  ) &
+  ```
+
+## SIMPLIFIED READ-EVALUATE-PARSE-LOOP (REPL) IN BASH
+
+* REPL stands for Read-eval-print loop: More info at:
+  <https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop>
+
+  ```
+  | while  [[ ${LANGUAGE} != "EXIT" ]] ; do # {
+  |   select LANGUAGE in BASH CSHARP JAVA PHP PYTHON EXIT
+  |   do # {
+  |     echo "Selected language is $language"
+  |   done #
+  | done # }
+  ```
+
+* More complex input can be done replacing the line:
+  ```
+  |  select INPUT in OPT1 OPT2 ...
+  |  do
+  |   ...
+  |  done
+  ```
+  by
+  ```
+  | read -p "PROMPT" INPUT
+  | funComplexParsingAndEvaluationOver $INPUT
+  ```
+
+
+## Whiptail (ncurses dialog for shell scripts)
+
+* <https://en.m.wikibooks.org/wiki/Bash_Shell_Scripting/Whiptail>
+
+  Whiptail allows shell scripts to display dialog boxes to the user for 
+  informational purposes, or to get input from the user in a friendly 
+  way. Whiptail is included by default on Debian. 
+  (ncurses like)
+
+
+## 'test' CONDITIONAL BRANCHING [[{]]
+  (man test summary from GNU coreutils for more info)
+
+  ```
+  | test   EXPRESSION  # ← EXPRESSION true/false sets the exit status.
+  | test [ EXPRESSION ]
+  |
+  | -n STRING                  # STRING length >0
+  |                            # (or just STRING)
+  | -z STRING                  #  STRING length == 0
+  | STRING1 = STRING2          # String equality
+  | STRING1 != STRING2         # String in-equality
+  |
+  |
+  | INTEGER1 -eq INTEGER2      # ==
+  | INTEGER1 -ge INTEGER2      # <=
+  | INTEGER1 -gt INTEGER2
+  | INTEGER1 -le INTEGER2
+  | INTEGER1 -lt INTEGER2
+  | INTEGER1 -ne INTEGER2
+  | ^^^^^^^^
+  |   NOTE:  INTEGER can be -l STRING (length of STRING)
+  |
+  |  FILE TEST/COMPARISION
+  |   WARN:  Except -h/-L, all FILE-related tests dereference symbolic links.
+  | -e FILE                    # FILE exists
+  | -f FILE                    # FILE exists and is a1regular file
+  | -h FILE                    # FILE exists and is   symbolic link  (same as -L)
+  | -L FILE                    #                                     (same as -h)
+  | -S FILE                    # FILE exists and is   socket
+  | -p FILE                    # FILE exists and is a named pipe
+  | -s FILE                    # FILE exists and has   size greater than zero
+  |
+  |
+  | -r FILE                    # FILE exists and read  permission is granted
+  | -w FILE                    # FILE exists and write permission is granted
+  | -x FILE                    # FILE exists and exec  permission is granted
+  |
+  | FILE1  -ef FILE2           # ← same device and inode numbers
+  | FILE1 -nt FILE2            # FILE1 is newer (modification date) than FILE2
+  | FILE1 -ot FILE2            # FILE1 is older (modification date) than FILE2
+  | -b FILE                    # FILE exists and is block special
+  | -c FILE                    # FILE exists and is character special
+  | -d FILE                    # FILE exists and is a directory
+  | -k FILE                    # FILE exists and has its sticky bit set
+  |
+  |
+  | -g FILE                    # FILE exists and is set-group-ID
+  | -G FILE                    # FILE exists and is owned by the effective group ID
+  | -O FILE                    # FILE exists and is owned by the effective user ID
+  | -t FD   file descriptor FD is opened on a terminal
+  | -u FILE FILE exists and its set-user-ID bit is set
+  ```
+### BOOLEAN ADITION:
+* WARN: inherently ambiguous.  Use
+  ```
+    EXPRESSION1 -a EXPRESSION2 # AND # 'test EXPR1 && test EXPR2' is prefered
+    EXPRESSION1 -o EXPRESSION2 # OR  # 'test EXPR1 || test EXPR2' is prefered
+  ```
+  [[}]]
+
+  WARN,WARN,WARN : your shell may have its own version of test and/or '[',
+                   which usually supersedes the version described here.
+                   Use /usr/bin/test to force non-shell ussage.
+
+  Full documentation at: <https://www.gnu.org/software/coreutils/>
+[[}]]
+
+## (KEY/VALUE) MAPS (Bash 4+)
+  (also known as associative array or hashtable)
+
+  Bash Maps can be used as "low code" key-value databases.
+  Very useful for daily config/devops/testing task.
+  Ex:
+  ```
+  | #!/bin/bash            # ← /bin/sh will fail. Bash 4+ specific
+  |
+  | declare -A map01       # ← STEP 1) declare Map
+  |
+  | map01["key1"]="value1" # ← STEP 2) Init with some elements.
+  | map01["key2"]="value2" #   Visually map01 will be a table similar to:
+  | map01["key3"]="value3" #   key  │ value
+  |                        #   ─────┼───────
+  |                        #   key1 │ value1  ← key?, value? can be any string
+  |                        #   key2 │ value2
+  |                        #   key3 │ value3
+  |
+  |   keyN="key2"          # ← STEP 3) Example Ussage
+  |   ${map01[${key_var}]} #   ← fetch value for key "key2"
+  |   ${!map01[@]}         #   ← fetch keys  . key2 key3 key1
+  |   ${map01[@]}          #   ← fetch values. (value2 value3 value1)
+  |
+  |   for keyN in "${!map01[@]}";      # ← walk over keys:
+  |   do                               # (output)
+  |     echo "$keyN : ${map01[$keyN]}" # key1 : value1
+  |   done                             # key2 : value2
+  |                                    # key3 : value3
+  |
+  ```
+
+## Kapow! Shell Script to HTTP API [[{web_hook,PM.low_code,git,monitoring.prometheus,dev_stack.shell_script,dev_stack.kubernetes,]]
+<https://github.com/BBVA/kapow>    [[notifications.jira,InfraAsCode.ansible,git,git.github,notifications.slack]]
+  (by BBVA-Labs Security team members)
+  " If you can script it, you can HTTP it !!!!"
+
+Example.
+
+
+Initial Script:
+ ```
+ | $ cat /var/log/apache2/access.log | grep 'File does not exist'
+ ```
+
+ To expose it as HTTP:
+
+ ```
+ | $ cat search-apache-errors
+ | #!/usr/bin/env sh
+ | kapow route add /apache-errors - <-'EOF'
+ |     cat /var/log/apache2/access.log | grep 'File does not exist' | kapow set /response/body
+ | EOF
+ ```
+
+ Run HTTP Service like:
+
+ ```
+ | $ kapow server search-apache-errors  ← Client can access it like
+ |                                        curl http://apache-host:8080/apache-errors
+ |                                        [Fri Feb 01 ...] [core:info] File does not exist: ../favicon.ico
+ |                                        ...
+ ```
+ We can share information without having to grant SSH access to anybody.
+
+
+ Recipe: Run script as a given user:
+ # Note that `kapow` must be available under $PATH relative to /some/path
+ ```
+ | kapow route add /chrooted\
+ |      -e 'sudo --preserve-env=KAPOW_HANDLER_ID,KAPOW_DATA_URL \
+ |          chroot --userspec=sandbox /some/path /bin/sh -c' \
+ |          -c 'ls / | kapow set /response/body'
+ ```
+[[}]]
+
+## WebHook  [[{dev_stack.shell_script,PM.TODO]]
+* <https://github.com/adnanh/webhook>
+* lightweight incoming webhook server to run shell commands
+  You can also pass data from the HTTP request (such as headers,
+  payload or query variables) to your commands. webhook also allows you
+  to specify rules which have to be satisfied in order for the hook to
+  be triggered.
+* For example, if you're using Github or Bitbucket, you can use webhook
+  to set up a hook that runs a redeploy script for your project on your
+  staging server, whenever you push changes to the master branch of
+  your project.
+* Guides featuring webhook:
+  * Webhook and JIRA by @perfecto25                                      [[jira]]
+  * Trigger Ansible AWX job runs on SCM (e.g. git) commit by @jpmens     [[ansible]]
+  * Deploy using GitHub webhooks by @awea [git][github]
+  * Setting up Automatic Deployment and Builds Using Webhooks by Will
+    Browning
+  * Auto deploy your Node.js app on push to GitHub in 3 simple steps by  [[git.github]]
+    Karolis Rusenas
+  * Automate Static Site Deployments with Salt, Git, and Webhooks by     [[git]]
+    Linode
+  * Using Prometheus to Automatically Scale WebLogic Clusters on         [[prometheus,k8s,weblogic]]
+    Kubernetes by Marina Kogan
+  * Github Pages and Jekyll - A New Platform for LACNIC Labs by Carlos
+    Martínez Cagnazzo
+  * How to Deploy React Apps Using Webhooks and Integrating Slack on     [[{notifications.slack}]]
+    Ubuntu by Arslan Ud Din Shafiq
+  * Private webhooks by Thomas
+  * Adventures in webhooks by Drake
+  * GitHub pro tips by Spencer Lyon [github]
+  * XiaoMi Vacuum + Amazon Button = Dash Cleaning by c0mmensal
+  * Set up Automated Deployments From Github With Webhook by Maxim Orlov
+    VIDEO: Gitlab CI/CD configuration using Docker and adnanh/webhook
+    to deploy on VPS - Tutorial #1 by Yes! Let's Learn Software
+[[}]]
+
+## Bash-it: community bash commands [[{]]
+* <https://www.tecmint.com/bash-it-control-shell-scripts-aliases-in-linux/>
+* bundle of community bash commands and scripts for Bash 3.2+,
+  which comes with autocompletion, aliases, custom functions, ....
+* It offers a useful framework for developing, maintaining and
+  using shell scripts and custom commands for your daily work.
+[[}]]
+
+## Shell Script Best Practices [[{PM.TODO]]
+* <https://sharats.me/posts/shell-script-best-practices/>
+[[}]]
+[[dev_stack.shell_script}]]
+
+# Networking Summary for DevOps [[{networking.101,PM.low_code,networking.load_balancer,web_balancer]]
+
+
+
+[[dev_stack.shell_script}]]
+
+
+

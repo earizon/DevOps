@@ -1,0 +1,401 @@
+[[{windows]]
+## Apropos:
+
+* misserable collection of unordered Windows Administration Notes.
+  Content is versioned in git.  commits, issues and pull-requests welcome!
+  <https://www.github.com/earizon/DevOps>
+
+
+# Install IIS web server 
+
+  ```
+  | $ Install-WindowsFeature -name Web-Server -IncludeManagementTools
+  ```
+
+[[{]]
+# Scoop Package manager
+
+* <https://scoop.sh/>
+* "apt" or chocolatey in command line 
+
+
+## Install chocolatey:
+
+* From powershell admin console:
+  ```
+  @powershell -NoProfile -ExecutionPolicy Unrestricted
+      -Command
+      "iex ((New-Object Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" &&
+  SET PATH=%PATH%;%systemdrive%\chocolatey\bin
+  ```
+[[}]]
+
+[[{troubleshooting.dtrace]]
+# DTrace on Window 10
+
+* <https://www.youtube.com/watch?v=tG8R5SQGPck&feature=youtu.be>
+[[troubleshooting.dtrace}]]
+
+[[{]]
+# local-kernel-debugging
+
+* <https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/performing-local-kernel-debugging>
+[[}]]
+
+[[{]]
+# icacls
+
+* <https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/icacls>
+[[}]]
+
+[[{101.group_policy]]
+# windows-group-policy
+
+* Windows Group Policy: What Is It and How to Use It:
+  <https://www.makeuseof.com/tag/windows-group-policy/>
+[[101.group_policy}]]
+
+[[{]]
+# PowerShell admin script collection
+
+* <https://github.com/PoeBlu/powershell-scripts>
+  ```
+  eventidscript.ps1                                                Getadcomputerbyfilter.ps1
+  90daysnologon.ps1                                                HealthCheck.ps1
+  ADExpirationDate.ps1                                             HotfixOneLinerScriptRemote.ps1
+  AWSA.ps1                                                         IPRangeaddressping.ps1
+  AddUserstoGroupsADBulk.ps1                                       IPServerInfo.ps1
+  AddmemberstoADGroupbyimportingmembersfromCSV.ps1                 ImportSysAdminsuite.ps1
+  AddAdGroupList.ps1                                               Ipconfig-Release-Renew.ps1
+  AddUserstoGroup.ps1                                              Kill-process.ps1
+  AdministratorsandPowerusersonRemoteComputerstoexcelsheet.ps1     LICENSE
+  CleanMatter.ps1                                                  README.mdUpdateREADME.md2yearsago
+  ClearMobileFielfromList.ps1                                      TracingtheSourceofAccountLockouts.ps1
+  CopyFoldersPermissionstoOtherFolder.ps1                          TrustRelationshipFix.ps1
+  CopyGroupMemberstoAnotherGroup.ps1                               Uninstall-Software.ps1
+  CopymembersfromGroupstoanothergroup.ps1                          Usermembership.ps1
+  Count_Files_Folders.ps1                                          WhoIsOwner.ps1
+  DJlastserverreboottime.ps1                                       WindowsUpdate.ps1
+  DJ.ps1                                                           _config.ymlSetthemejekyll-theme-slate2yearsago
+  Directory_Count.ps1                                              checklogicalspace.ps1
+  Disable-Bulk-AD-Users-FromCSV.ps1                                clonepermissions.ps1
+  DriveSpace.ps1                                                   copyfilestoremote.ps1
+  ExportOUnamesgroupsAD.ps1                                        copyfilestoserverlist.ps1
+  ExportOUnamesgroupsAD_EmployeeRedirection.ps1                    copyfiletoserver.ps1
+  ExportOUnamesgroupsAD_employeeredirectionmigration.ps1           currentlyloggedonuser.ps1
+  Export-PrinterInfo.ps1                                           defaultDomainPasswordPolicy.ps1
+  FindMacAddressbyiporsystem.ps1                                   dhcpreservations.ps1
+  FinduserbySID.ps1                                                disablecomputersnew.ps1
+  Findwhatcomputerauserisloggedinto.ps1                            diskhealthsmart.ps1
+  FindServerIsPendingReboot.ps1                                    domaincontrollerandgroupmemberquery.ps1
+  ForceaRemoteUserLogoff.ps1                                       findalldomaincontrollersindomainldapfilter.ps1
+  GetDisplayNamefromusername(SAMAccountName).ps1                   finddomaincontrollers.ps1
+  GetReportofMultipleServersHDDSpace+RAMUsage.ps1                  findfolderpermissionpergroup.ps1
+  GetserialnumbersforcomputersinActiveDirectory.ps1                getaduseridentity.ps1
+  Get-ADDirectReport.ps1                                           getaduser.ps1
+  Get-CPUUtilizationByServerAndProcess.ps1                         getcurrentusersloggedin.ps1
+  Get-DHCPLeases.ps1                                               getsysteminfo.ps1
+  Get-DNSandWins.ps1                                               getvmbymacaddress.ps1
+  Get-FailingDrive.ps1                                             get-inventory.ps1
+  Get-LockedOutLocation.ps1                                        get-servers.ps1
+  Get-LockedOutUser.ps1                                            get-systeminfo.ps1
+  Get-MACAddress.ps1                                               getRebootTime.ps1
+  Get-OU-From-IP.ps1                                               getadcomputer_lastlogon.ps1
+  Get-PendingReboot.ps1                                            getadlocked_csv.ps1
+  Get-ProductKey.ps1                                               getadreports.ps1
+  Get-Remote-LocalAdmin.ps1                                        getaduserpermissions.ps1
+  Get-ServersUptime.ps1                                            getlockedoutlocation.ps1
+  Get-Shares.ps1                                                   getmacbysystem.ps1
+  Get-Uptime.ps1                                                   groupadpermissions.ps1
+  Get-UserGroupMembership.ps1                                      hotfixmalware.ps1
+  GetLocalAccount.ps1                                              updatelocalmachine.ps1
+  GetProductKey.ps1                                                userloggedon.ps1
+  GetProductKeys.ps1
+  GetServers.ps1
+  GetSoftware.ps1
+  ```
+[[}]]
+
+# Android como monitor Sistema Windows 10
+
+* <https://www.genbeta.com/paso-a-paso/como-usar-viejo-movil-android-sea-tu-monitor-sistema-windows-10>
+
+
+[[{storage.sftp]]
+# Mount remote File Systems as SFTP:
+
+* <https://www.nsoftware.com/sftp/drive/>
+
+  An easy-to-use utility that mounts remote file systems as Windows
+drives via SFTP. Once connected, you can browse and work with files
+as if they were stored on your local machine.
+[[storage.sftp}]]
+
+[[{VDI]]
+
+# Virtual Desktop Optimization
+
+* <https://github.com/The-Virtual-Desktop-Team/Virtual-Desktop-Optimization-Tool>
+* <https://docs.microsoft.com/en-us/windows-server/remote/remote-desktop-services/rds-vdi-recommendations-2004>
+   Optimizing Windows 10, version 2004 for a Virtual Desktop Infrastructure (VDI) role
+
+* VDI optimization principles
+* Windows Optional Features cleanup
+* Additional information
+
+This article is intended to provide suggestions for configurations
+for Windows 10, build 2004, for optimal performance in Virtualized
+Desktop environments, including Virtual Desktop Infrastructure (VDI)
+and Windows Virtual Desktop. All settings in this guide are suggested
+optimization settings only and are in no way requirements.
+
+The information in this guide is pertinent to Windows 10, version
+2004, operating system (OS) build 19041.
+
+The guiding principles to optimize performance of Windows 10 in a
+virtual desktop environment are to minimize graphic redraws and
+effects, background activities that have no major benefit to the
+virtual desktop environment, and generally reduce running processes
+to the bare minimum. A secondary goal is to reduce disk space usage
+in the base image to the bare minimum. With virtual desktop
+implementations, the smallest possible base, or "gold" image size,
+can slightly reduce memory utilization on the host system, as well as
+a small reduction in overall network operations required to deliver
+the desktop environment to the consumer.
+[[VDI}]]
+
+[[{qa.Optimize]]
+# Optimize,Harden,Debloat W10 Deployments
+
+* Fully Optimize, Harden, and Debloat Windows 10 Deployments to 
+  Windows Best Practices and DoD STIG/SRG Requirements. The ultimate 
+  Windows 10 security and privacy script!
+  <https://github.com/simeononsecurity/Windows-Optimize-Harden-Debloat>
+[[qa.Optimize}]]
+
+[[{101.DISM]]
+# DISM: W10 maintenance Swiss Army knife
+
+* <https://www.cio.com/article/3028977/why-dism-is-the-swiss-army-knife-of-windows-10-maintenance.html>
+* <https://www.cio.com/article/3195144/how-to-use-powershell-with-dism.html>
+
+[[101.DISM}]]
+
+# Shutdown/Hibernate
+
+* <https://stackoverflow.com/questions/20713782/suspend-or-hibernate-from-powershell>
+
+  ```
+  | %windir%\System32\shutdown.exe -s                                     <··  Shutdown 
+  | %windir%\System32\shutdown.exe -r                                     <··  Reboot   
+  | %windir%\System32\shutdown.exe -l                                     <··  Logoff   
+  | %windir%\System32\rundll32.exe powrprof.dll,SetSuspendState Standby   <··  Standby  
+  | %windir%\System32\rundll32.exe powrprof.dll,SetSuspendState Hibernate <··  Hibernate
+  ```
+
+* EDIT: As pointed out in comment by @mica, the suspend (sleep)
+  actually hibernates. Apparently this happens in windows 8 and above.
+  To 'sleep', disable hibernation OR get an external Microsoft tool
+  (not built-in) "One of Microsoft's Sysinternals tool is PsShutdown
+  using the command psshutdown -d -t 0 it will correctly sleep, not
+  hibernate, a computer" Source:
+  <https://superuser.com/questions/42124/how-can-i-put-the-computer-to-sleep-from-command-prompt-run-menu>
+
+[{wsl]]
+# Windows Subsystem For Linux (WSL) Summary
+
+* PRESETUP: Windows Features -> Activate "Virtual Machine Platform"
+
+  ```
+  | wsl.exe --list --verbose -v              <·· Listing
+  | wsl.exe --list --running
+  | wsl.exe --list
+  | wsl.exe --list --online
+  | wsl.exe --install -d Ubuntu-20.04        <·· Install online
+  | 
+  | wsl.exe --terminate docker-desktop       <·· Turn off
+  | wsl.exe --terminate docker-desktop-data
+  | wsl.exe --terminate Ubuntu-20.04
+  | 
+  | REF: https://devblogs.microsoft.com/commandline/distro-installation-added-to-wsl-install-in-windows-10-insiders-preview-build-20246/
+  | 
+  | wsl.exe -l -v                            <·· show WSL versions
+  | wsl.exe --set-version DISTRNAME 1        <·· Drop wsl version 2 → 1
+  |
+  | wsl.exe --set-version Ubuntu-20.04 2     <·· Convert WSL 1 to 2
+  ```
+
+* TODO: Troubleshooting. Liberating Disk space occupied by WSL
+  - Even after removing files on Linux the space is NOT freed by Windows :
+  - Solution:
+    <https://terminaldelinux.com/terminal/wsl/liberar-espacio-disco-wsl/>
+
+## Compiling Custom Linux Kernel for WSL2:
+  
+* REF: <https://gist.github.com/d4v3y0rk/e19d346ec9836b4811d4fecc1e1d5d64>
+
+* e.g. Compiling kernel with ecrypfs module:
+
+  ```
+  | $ sudo apt install \
+  |      build-essential flex bison \
+  |      libssl-dev libelf-dev libncurses5-dev git
+  |
+  | $ git clone https://github.com/microsoft/WSL2-Linux-Kernel.git
+  |
+  | $ cd WSL2-Linux-Kernel
+  |
+  | $ cat /proc/config.gz | gunzip > .config  # Export current (running) kernel configuration
+  |
+  | $ editor .config
+  |
+  | - #CONFIG_DM_CRYPT is not set
+  | + CONFIG_DM_CRYPT=y
+  |
+  | $ sudo make
+  | $ sudo make modules_install
+  | $ cp ./arch/x86_64/boot/bzImage /mnt/c/Users/$userName
+  | $ editor /mnt/c/Users/${userName}/.wslconfig
+  | + [wsl2]
+  | +    kernel=C:\\Users\\<your user name>\\bzImage
+  | +    swap=0
+  | +    localhostForwarding=true
+  | +
+  |
+  | @ cmd console:
+  | $ C:\Users\${userName}\wsl --shutdown      <···· Exit and Restart WSL2 (In powershell)
+  |
+  | # TEST NEW KERNEL -------------------------------
+  | $ fallocate -l 1024M mysecrets.img              # Create an encrypted disk image file
+  | $ sudo cryptsetup -y luksFormat mysecrets.img   #
+  | $ sudo cryptsetup open mysecrets.img mysecrets  # Open the newly created disk image
+  | $ sudo mkfs.ext4 /dev/mapper/mysecrets          # Format using ext4.
+  |
+  | $ sudo mount -t ext4 /dev/mapper/mysecrets ~/mysecrets # finally mount
+  | ...
+  | $ sudo umount ~/mysecrets
+  | $ sudo cryptsetup close mysecrets
+  ```
+[[wsl}]]
+
+
+[[{troubleshooting.update]]
+# Windows Update from PowerShell
+
+* <https://www.parallels.com/blogs/ras/powershell-windows-update/>
+
+[[troubleshooting.update}]]
+
+[[{security.SCCM]]
+# System Center Configuration Manager
+
+* <https://es.wikipedia.org/wiki/System_Center_Configuration_Manager>
+
+  System Center Configuration Manager (conocido en sus siglas como 
+SCCM) o, desde la versión 1910, Microsoft Endpoint Configuration 
+Manager (ECM) es el nombre comercial de la línea de software de 
+Administración de Cambios y Configuraciones de computadoras, 
+servidores, dispositivos móviles y software, desarrollado por 
+Microsoft. Actualmente permite la gestión de equipos informáticos que 
+ejecuten Windows, macOS, Linux o UNIX, como también software de 
+dispositivos móviles como Windows Mobile, Symbian, iOS y Android.
+
+Características:
+* Administración de aplicaciones, Application management.
+* Acceso a los recursos de la empresa, Company resource access.
+* Configuración de cumplimiento, Compliance settings.
+* Endpoint Protection, Endpoint Protection.
+* Inventario, Inventory.
+* Administración de dispositivos móviles, Mobile device management.
+* Implementación de sistema operativo, Operating system deployment.
+* Administración de energía, Power management.
+* Perfiles de conexión remota, Remote connection profiles.
+* Elementos de configuración de perfiles y datos de usuario, User data and profiles configuration items.
+* Control remoto, Remote control.
+* Medición de software, Software metering.
+* Actualizaciones de software, Software updates.
+* Generación de informes, Reporting.
+[[security.SCCM}]]
+
+[[{troubleshooting.fs]]
+# System File Checker
+
+* <https://zcom.tech/system-file-checker.html/>
+
+* command line utility (sfc /scannow) to check for system file corruption. 
+
+*  scans the integrity of all protected operating system files and 
+  replaces incorrect, corrupted, changed, or damaged versions with the 
+  correct versions where possible.
+
+* first introduced in Windows 98 and subsequent versions of Windows XP,
+  Windows Vista, Windows 7, 8.1 and Windows 10 has this feature.
+
+* With Windows 10, Microsoft integrated System File Checker with Windows 
+  Resource Protection (WRP), which protects registry keys and folders 
+  as well as critical system files. So that If any changes are detected 
+  to a protected system file, the modified file is restored from a 
+  cached copy located in the ( %WinDir%\System32\dllcache) Windows 
+  folder itself.
+[[troubleshooting.fs}]]
+
+[[{]]
+# 11 utilidades para administrar y monitorizar nuestro sistema Windows
+
+* <https://www.genbeta.com/herramientas/11-utilidades-sysinternals-utiles-para-administrar-monitorizar-nuestro-sistema-windows >
+[[}]]
+
+[[{security.backups]]
+# Recovery Directory
+
+A bunch of folks have asked me about what is the goal of different 
+directories in a Windows filesystem hierarchy. So I have decided to 
+write a short series about that. In this writeup we are going to talk 
+about the “Recovery” directory. It could be that you have never seen 
+this directory before on your root drive (“C:\Recovery”). The reason 
+for that is that the directory is marked “hidden” - as shown in the 
+screenshot below. By the way it is not enough to display hidden items 
+in explorer to see it. In order to show it we need to unmark “Hide 
+Protected Operating system files (recommended)” 
+
+you can see the entire flow in the following link 
+<https://lnkd.in/dkuYt7kR>.
+ Overall, the directory is a leftover from a previous version of Windows
+(the version before an upgrade that was made). It is used in cases where 
+there are issues after an upgrade and the user wants to revert back. 
+Thus, after a successful upgrade you can probably delete it 
+(https://lnkd.in/d5tgrQSM). See you next time ;-) 
+[[security.backups}]]
+
+
+[[{security.backups]]
+# robocopy : Remote robust file copy.
+
+* <https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/robocopy>
+
+- Remote copies/backups with multi-threading for higher performance
+  (with the /mt parameter) and the ability to restart the transfer
+  in case it's interrupted (with the /z parameter)
+
+  ```
+  $ robocopy <source> <destination> [<file>[ ...]] [<options>]
+  ```
+[[security.backups}]]
+
+# tiny11builder  [[{]]
+* <https://github.com/ntdevlabs/tiny11builder>
+Scripts to build a trimmed-down Windows 11 image - now in PowerShell! 
+[[}]]
+
+[[{office.licence.activation]]
+## Microsoft Activation Scripts (MAS)
+
+* <https://github.com/massgravel/Microsoft-Activation-Scripts>
+* A Windows and Office activator using HWID / Ohook / KMS38 / Online 
+  KMS activation methods, with a focus on open-source code and fewer 
+  antivirus detections.
+[[office.licences.activation}]]
+
+
+[[windows}]]
+

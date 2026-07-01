@@ -1,0 +1,9 @@
+## Who-is-who
+(Forcibly incomplete but still quite pertinent list of core people and companies)
+
+* Linus Torvald: He initiated the project to fix problems
+  with distributed development of the Linux Kernel
+* Junio C. Hamano:  lead git maintainer (+8700 commits)
+  @[https://git-blame.blogspot.com/]
+
+

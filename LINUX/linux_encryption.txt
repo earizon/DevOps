@@ -319,15 +319,17 @@ LUKS encrypts full-partitions (vs files  in GnuPG, ...)
 NOTICE/WARN: LUKS will prompts for a password during boot.
              (server-autoboot will fail)
 
-1. format the partition with the "cryptsetup" command*
+1. Encrypt the partition with the "cryptsetup" command* (do just on initial setup)
   ```
   # cryptsetup luksFormat /dev/sdx1
     LUKS will warn that it's going to erase your drive:
     A prompt will ask for a passphrase: (Enter it to continue) 
   ```
 
-The partition is encrypted at this point but no filesystem is in yet:
-- In order to partition it you must un-lock it.
+The partition will be encrypted at this point (and in following reboots).
+(On first setup no filesystem is in yet present on first install).
+
+2. un-lock (luks Open) the encrypted partition. It must be done on each restart.
   ```
   | # cryptsetup luksOpen /dev/sdx1 mySafeDrive # ← Unlock before formating it.
   |                                 ^^^^^^^^^^^
@@ -337,18 +339,41 @@ The partition is encrypted at this point but no filesystem is in yet:
   |                                 to auto-generated designator
   (LUKS will ask for the passphrase to un-lock the drive)
   ```
-- Check the volume is "OK":
+
+3. Check the volume is "OK":
   ```
   # ls -ld /dev/mapper/mySafeDrive
   lrwxrwxrwx. 1 root root 7 Oct 24 03:58 /dev/mapper/mySafeDrive → ../dm-4
   ```
-2. format with standard-filesystem (ext4,...)
+
+4. (On initial setup, skip on restarts). Format the luks-open partition with
+   any suitable standard-filesystem (ext4,...).
   ```
   | # mkfs.ext4 -o Linux -L mySafeExt4Drive /dev/mapper/mySafeDrive
   ```
-3. Mount the unit
+
+3. try¹ to mount the unit like
   ```
   | # mount /dev/mapper/mySafeExt4Drive /mnt/hd
   ```
+
+¹ Note. This will ussually fail with an error similar to
+  ```
+  | ... unknown filesystem type 'LVM2_member' do the commands below
+  ```
+  This is due to the fact that in many scenarios, in particular with
+  Ubuntu/Fedora/... setups (as of 2026). LUKS partitions are also
+  "wrapped" into an LVM partition. LVMs allows an extra "degree of
+  indirection" between physical (or physically encrypted) disks and
+  logical disks. Some extra ortoghonal steps are needed:
+  ```
+  | # vgdisplay
+  | # vgrename <VG UUID> new_name     
+  | # modprobe dm-mod
+  | # vgchange -ay
+  | # lvscan
+  | # mount /dev/new_name/root /mnt/data/
+  ```
+
 [[security.encryption.luks}]]
 [[security.encryption}]]

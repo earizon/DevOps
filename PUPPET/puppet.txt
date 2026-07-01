@@ -1,0 +1,134 @@
+## Apropos:
+  Content is versioned in git.  commits, issues and pull-requests welcome!
+<https://www.github.com/earizon/DevOps>
+
+Puppet ("Ansible Alternative") [[{puppet]]
+
+# Puppet ("Ansible Alternative") 101: [[{puppet.101,01_PM.backlog]]
+REF:
+<https://blogs.sequoiainc.com/puppet-101-part-1/>
+<https://blogs.sequoiainc.com/puppet-101-part-2/>
+
+master/agent architecture:
+- Puppet*Master*: - server holding all the configuration.
+
+- Puppet*Agent *: - Installed on each "target" server,    *Agent Certificate*: ← - signed Master's CA.
+                    runs @ regular intervals:              ─────────────────     - Used for secure network
+                  - Query desired state and if needed      -*node-name*            communic between Master←→Agent
+                    (configuration drift) update state.      ^
+                                                             |
+                                                  Ex. web01.myDomain.com (wildcards allowed)
+                                                  Assigning/managing node names  *can be tricky*
+                                                  in the cloud since DNS change frequently.
+┌─────────────────────────────────────────────────────────┬────────────────────────────────────────────────────────────┐
+│ *RESOURCE*                                              │  *CLASSES*                                                 │
+│(Concrete resource that must be present in server)       │ - A Class is a group of Resources that                     │
+│   ┌─── user/file/package/...that must be present in     │   belong together conceptually,                            │
+│   │    server (or custom resource)                      │   fulfilling a given instalation-                          │
+│   v                         │  Ex:                      │   -requirement role.                                       │
+│ *TYPE*{ TITLE ← must unique │ *user*{ 'jbar':           │ - variables can be defined to customize                    │
+│      ATTRIBUTE, per Node    │   ensure  => present,     │   target environments.                                     │
+│      ATTRIBUTE,             │   home    => '/home/jbar',│   (test,acceptance,pre,pro,..)                             │
+│      ATTRIBUTE,             │   shell   => '/bin/bash', │ - inheritance is allowed to save                           │
+│      ...                    │  }                        │   duplicated definition                                    │
+│   }  ^                          ^          ^            │                                                            │
+│      |                          |          |            │                       │ Ex:                                │
+│      key => value              key       value          │ class  *CLASS_NAME* { │ class  *users* {                   │
+│                                                         │     RESOURCE          │     user { 'tomcat':               │
+│$ puppet resource  *user*                                │     RESOURCE          │         ensure   => present,       │
+│         ^^^^^^^^^^^^^^^                                 │ }                     │         home     => '/home/jbauer',│
+│         Returns all users                               │                       │         shell    => '/bin/bash',   │
+│         (not just those configured/installed by Puppet) │                       │     }                              │
+│         (same behaviour applies to any other resource)  │                       │     user { 'nginx':                │
+│                                                         │                       │         ...                        │
+│                                                         │                       │     }                              │
+│                                                         │                       │     ...                            │
+│                                                         │                       │ }                                  │
+│                                                         │                       │ include  *users*                   │
+│                                                         │                       │ ^^^^^^^^^^^^^^^^                   │
+│                                                         │                       │ *Don't forget*. Otherwise class is │
+│                                                         │                          ignored                           │
+├─────────────────────────────────────────────────────────┼────────────────────────────────────────────────────────────┤
+│ *NODE ("Server")*                                       │                                                            │
+│- bundle of: [ class1, class2, .. , resource1,  ...]     │            *NODE* 1 ←─────────→ NB*Class*                  │
+│                                                         │                  1                1                        │
+│                        must match Agent-Certificate.name│                   \              /                         │
+│     SYNTAX               │Ex:     ┌───────┴────────┐    │                    \            /                          │
+│node Q"NAME" {            │node  *"web01.myDomain.com"* {│                     N          N                           │
+│    include  *CLASS01*    │                              │                      *Resource*                            │
+│    include  *CLASS02*    │    include  *tomcat*         │                                                            │
+│    include  *...*        │    include  *users*          │                                                            │
+│    include  *RESOURCE01* │                              │  *MANIFEST*: 0+ *NODEs*, 0+ *Classes*, 0+ *Resources*      │
+│    include  *RESOURCE02* │   *file*{ '/etc/app.conf'    │                                                            │
+│    include  *...*        │        ...                   │  *MODULE*: 1+Manifests, 0+supporting artifacts             │
+│}                         │    }                         │            ^                                               │
+│                          │}                             │ ($PUPPET/environments/$ENV/"module"/manifest/init.pp )     │
+│                                                         │                                                            │
+│The special name  *"default"* will be applied to any     │  *SITE MANIFEST*: Separated Manifests forming the catalog  │
+│server (used for example to apply common security,       │                   (Read by the Puppet Agent)               │
+│packages,...)                                            │                                                            │
+└─────────────────────────────────────────────────────────┴────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┬─────────────────────────────────────────────────────────────┐
+│ *MANIFESTS*:                                            │ *MODULES*                                                   │
+│*.pp file defining  *Resources*,  *Classes* and  *Nodes* │- reusable bundle of [ 1+ Manifests , "support file list" ]  │
+│                                                         │- installed on Puppet Master                                 │
+│ ┌────────────────────────────────────────────────       │  (can also be installed from a central repository using     │
+│ │example.pp Manifest:                                   │   $ puppet module ... )                                     │
+│ │ // variable declarations, logic constructs, ...       │- referenced by name in other Modules or in Manifests.       │
+│ │                                                       │- Layout of                                                  │
+│ │                                                       │  ${PUPPET}/environments/${ENVIRONMENT}/modules/*module01*   │
+│ │ *user{ 'jbauer':*                                     │                                name must                    │
+│ │      ensure      => present,                          │ *module01*  ←───────────────── match                        │
+│ │      home        => '/home/jbauer',                   │  ├─ manifests                  vvvvvvvv                     │
+│ │      shell       => '/bin/bash',                      │  │  ├*init.pp* ←········ class*module01*{  │                │
+│ │  }                                                    │  │  │                      ...             │                │
+│ │                                                       │  │  │                    }                 │                │
+│ │ *class 'security'*{                                   │  │  │                                      │                │
+│ │      ...                                              │  │  ├ class01.pp (opt)←· class class01 {   │                │
+│ │  }                                                    │  │  │                       ...                             │
+│ │                                                       │  │  │                    }                                  │
+│ │  include security                                     │  │  └ ...                      ^                            │
+│ │                                                       │  │                       module01@init.pp   can be used as  │
+│ │ *class 'tomcat'*{                                     │  ├─ files        (opt)   include module01                   │
+│ │  }                                                    │  ├─ templates    (opt)   class01@class01.pp can be used as  │
+│ │                                                       │  ├─ lib          (opt)   include module01::class01          │
+│ │ *node*'web01.example.com' {                           │  ├─ facts.d      (opt)   Retrieve storage,CPU,...before  ←─┐│
+│ │      includeB*tomcat*                                 │  │                       exec. the catalog                 ││
+│ │      ...                                              │  │<https://puppet.com/docs/puppet/latest/core_facts.html> ││
+│ │                                                       │  ├─ examples     (opt)                                     ││
+│ │  }                                                    │  └─ spec         (opt)                                     ││
+└─────────────────────────────────────────────────────────┴────────────────────────────────────────────────────────────┼┘
+                                                                               ┌───────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────────┐  Example custom "facter":
+│ *SITE (MAIN) MANIFEST*                                                    │  $ cat ./modules/basic/facts/lib/facter/common.rb
+│- area of Puppet configuration*separated from Modules*.                    │  → Facter.add("hostnamePart01") do
+│- By default, all Manifests contained in                                   │  →   setcode do
+│    *${PUPPET}/environments/${ENVIRONMENT}/manifests*                      │  →     h = Facter.value(:hostname)
+│  (vs ${PUPPET}/environments/${ENVIRONMENT}/modules/mod1...                │  →     h_a = h.split("-")[0].tr("0-9", "").chomp
+│      ${PUPPET}/environments/${ENVIRONMENT}/modules/mod2...)               │  →   end
+│- Its content is concatenated and executed as the Site Manifest.           │  → end
+│-*starting point*for calculating the *PUPPET catalog* ,                    │  → ...
+│  i.e., the "sum total of applicable configuration" for a node.            │  →
+│- This is the information queried by the Puppet Agent instaled on each     │
+│  "satellite" server.                                                      │
+│  - any standalone Resource or Class declarations is automatically applied │
+│  - matching Nodes (Node_name vs Agent Certificate Name) are also applied  │
+└───────────────────────────────────────────────────────────────────────────┘
+
+*ADVANCED TOPICS* (TODO)
+ - controlling the Resources order  execution
+ - transient cloud servers
+ - auto-signing and node name wildcards
+ - ...
+[[puppet.101}]]
+
+# Puppet Bolt: [[{puppet.bolt,01_PM.TODO]]
+  "Agentless" version of Puppet follwing Ansible approach.
+  It can be installed on a local workstation and connects
+  directly to remote targets with SSH or WinRM, so you are
+  not required to install any agent software.
+[[}]]
+
+
+[[puppet}]]

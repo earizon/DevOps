@@ -1,0 +1,171 @@
+## JGit
+
+lightweight, pure Java library implementing the Git version control system
+* <https://wiki.eclipse.org/JGit/User_Guide>
+
+-  repository access routines
+-  network protocols
+-  core version control algorithms
+- suitable for embedding in any Java application
+
+```
+Repository = objects store + refs 
+
+  final FileRepositoryBuilder builder = new FileRepositoryBuilder();
+  final Repository repository = 
+      builder
+     .setGitDir(new File(configRepoPath01))  // <· Set root file path
+     .readEnvironment()                      // <· scan GIT_* env.vars 
+     .findGitDir()                           // <· scan up file system tree
+     .build();
+
+ 
+ -------------------------------------------------------------------------------
+ -- Plumbing API ---------------------------------------------------------------
+ -------------------------------------------------------------------------------
+ 
+ AnyObjectId/ObjectId: Represent the SHA-1 (256 in 2.29+) of tag/commit/trees/blobs
+
+ final ObjectId head = repository.resolve("HEAD");
+
+ final Ref HEAD =        // ← Ref: single object Id representing a tag/commit/tree/blob
+     repository.getRef("refs/heads/master");
+   
+ final RevWalk walk01 =                              // ← walks commit graph in order.
+     new RevWalk(repository);
+
+ final RevCommit commit =                            // get commit from Hash ID
+     walk01.parseCommit(objectIdOfCommit);
+
+ final RevTag tag =                                  // get commit for tag
+     walk01.parseTag(objectIdOfTag);
+
+ final RevTree tree =
+     walk01.parseTree(objectIdOfTree);
+
+                  
+  ------------------------------------------------------------------------------
+  --  Porcelain API (org.eclipse.jgit.api package) -----------------------------
+  ------------------------------------------------------------------------------
+
+
+  final Git git01 = new Git(db);
+  final AddCommand addCom = git01.add();  // command obj. used to add files to index.
+  addCom.addFilepattern("someDirectory").call();
+
+  final CommitCommand commitCom = git01.commit();    //  git commit
+  commitCom.setMessage("initial commit").call();
+           .setAuthor()....
+           .setCommitter()....
+           .setAll()...
+
+  RevTag tag = git01.tag().setName("tag").call();    //  git tag
+                          .setMessage()
+                          .setTagger()
+                          .setObjectId()
+                          .setForceUpdate()
+                          .setSigned()               // ← not supported yet, throws exception
+
+  final Iterable<RevCommit> log =                    // Walks commit graph (porcelain). Ops. available:
+        git01.log().call();                             add(AnyObjectId start), 
+                                                        addRange(AnyObjectId since, AnyObjectId until)
+  // TODO: MergeCommand (git-merge)
+
+ - Ex.  Finding children of a commit
+   PlotWalk revWalk = new PlotWalk(repo());
+   ObjectId rootId = (branch==null)
+                     ? repo().resolve(HEAD)
+                     : branch.getObjectId();
+   RevCommit root = revWalk.parseCommit(rootId);
+   revWalk.markStart(root);
+   PlotCommitList<PlotLane> plotCommitList = 
+                     new PlotCommitList<PlotLane>();
+   plotCommitList.source(revWalk);
+   plotCommitList.fillTo(Integer.MAX_VALUE);
+   return revWalk;
+
+
+  ------------------------------------------------------------------------------------------
+  -- Reducing memory usage with RevWalk ----------------------------------------------------
+  ------------------------------------------------------------------------------------------
+
+  RevWalk and RevCommit are designed to be light-weight, but still consume lot of memory for big repos.
+  Some tips:
+  - Restrict walked revision graph to "only needed" :
+    - Ex: looking for commits
+          in 'refs/heads/master'           ← markStart        () to refs/heads/master
+  not yet in 'refs/remotes/origin/master'  ← markUninteresting() to refs/remotes/origin/master
+                                             └────────┬────────┘
+                                            RevWalk traversal will only parse commits necessary 
+                                            avoiding to  look further back in history.
+
+      final ObjectId 
+              from = repository.resolve("refs/heads/master"         ),
+                to = repository.resolve("refs/remotes/origin/master");
+
+      walk01.markStart(walk.parseCommit(from));
+      walk01.markUninteresting(walk.parseCommit(to));
+
+  - Discard body of a commit :
+    walk01.setRetainBody(false);   ← Ignore author, committer, message, signature?, ...
+    Useful when computing just merge base between branches or 'git rev-list' like commands.
+
+    - consider also extract any needed data and call  dispose()  on RevCommit instance.
+      otherwise JGit use a compact internal byte[] UTF-8 representation (vs String UTF-16)
+
+    Ex:
+    ...
+    Set<String> authorEmails = new HashSet<String>();
+    for (RevCommit commit : walk01) {
+        authorEmails.add(
+           commit.getAuthorIdent().getEmailAddress()
+        );
+        commit.dispose();
+    }
+
+  --------------------------------------------------------------------------------------
+  -- Subclassing RevWalk/RevCommit  ----------------------------------------------------
+  --------------------------------------------------------------------------------------
+
+  - Subclassing allows to attach additional data to a commit.
+    - use RevWalk→createCommit() method to create new instance of RevCommit subclass. 
+    - Put additional data as fields in RevCommit subclass 
+      (and so avoiding the non-type safe HashMap to translate RevCommit|ObjectId ←→  additional data fields)
+    - Ej:
+      public class ReviewedRevision extends RevCommit {
+      
+          private final Date reviewDate; // ← New field
+          private ReviewedRevision(AnyObjectId id, Date reviewDate) {
+              super(id);
+              this.reviewDate = reviewDate;
+          }
+      
+          public List<String> getReviewedBy() { return getFooterLines("Reviewed-by"); }
+      
+          public Date getReviewDate() { return reviewDate; }
+      
+          public static class Walk extends RevWalk {
+      
+              public Walk(Repository repo) { super(repo); }
+      
+              @Override
+              protected RevCommit createCommit(AnyObjectId id) {
+                  return new ReviewedRevision(id, getReviewDate(id));
+              }
+      
+              private Date getReviewDate(AnyObjectId id) { ... }
+          }
+      }
+```
+
+### Clean up revision walk 
+
+- reusing an existing object map is much faster but can consume lot of memory.
+  Speed vs memory consumption must be balanced.
+- To clean up:
+  for (RevCommit commit : walk01) { ... }
+  walk01.dispose(); 
+
+## JGit CookBook Recipes
+
+- <https://github.com/centic9/jgit-cookbook>

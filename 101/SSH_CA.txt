@@ -1,0 +1,12 @@
+## online SSH Certificate Authority (CA)  [[{]]
+
+* <https://github.com/smallstep/certificates>
+
+- Delegate SSH authentication to step-ca by using SSH
+  certificates instead of public keys and authorized_keys files
+- For user certificates, connect SSH to your single sign-on
+  provider, to improve security with short-lived certificates and MFA
+  (or other security policies) via any OAuth OIDC provider.
+- For host certificates, improve security, eliminate TOFU
+  warnings, and set up automated host certificate renewal
+[[}]]

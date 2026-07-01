@@ -1,6 +1,5 @@
-git.payload                    #
-devops.payload                 #
-monitoring.payload             #
-linux_ALL.payload              #
-monitoring.payload             #
-reverse_proxy.payload          #
+GIT/ALL.payload
+DEVOPS/ALL.payload
+MONITORING/ALL.payload
+LINUX/ALL.payload
+REVERSE_PROXY/ALL.payload

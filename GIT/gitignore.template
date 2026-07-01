@@ -1,0 +1,68 @@
+### Secrets ###
+**secret**
+**/*.nogit
+**/*.pem
+
+### Build Output ###
+.gradle/
+build/
+out/
+target/
+dist/
+**/node_modules/
+**/build/**
+
+aspnetcore-server-generated/
+typescript-angular-client-generated/
+
+## VIM ##
+*/.sw?
+**/.sw?
+/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea/**
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle//target/
+!.mvn/wrapper/maven-wrapper.jar
+
+## LOGS ###
+**.log.zip
+**/*log
+
+## TRUFFLE ###
+solidityContracts/build/
+
+### OTHERS ###
+swagger-api/.swagger-codegen/
+vertx.log*
+./swagger-api/src/main/java
+.env
+# compiled output
+/dist
+/node_modules
+
+### Unit test / coverage reports ###
+*coverage
+
+
+### CACHE ###
+.cache
+**/cache/**

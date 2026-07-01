@@ -1,0 +1,67 @@
+WireWard VPN (Linux 5.6+)
+
+REF: $ man wg(8)
+
+HOST 1:
+
+## PRESETUP:
+* generate keys
+  $ umask 077
+  $ wg genkey | tee privatekey | wg pubkey > publickey
+    (pub./priv.keys are  base64-encoded)
+
+* Setup Link:
+  # ip link    add dev \    <·· add new interface (WG. link
+    wg0 type wireguard          includes automatic module loading)
+
+  # ip address add dev \    <·· Add IP (Alt 1)
+     wg0 192.168.253.1/24
+
+  # ip address add dev \    <·· Add IP (Alt 2) Preferred when
+    wg0 192.168.253.1 \
+    peer 192.168.253.2
+
+  # wg setconf wg0 myconfig.conf <·· Config. Iface (Alt 1)
+                                     [Peer]
+                                     PublicKey = xTIBA5rboUvnH4htodjb6e697QjLERt1NAB4mZqp8Dg=
+                                     Endpoint = 192.95.5.67:1234
+                                     AllowedIPs = 10.192.122.3/32, 10.192.124.1/24
+                                     ...
+                                     [Peer]
+                                     PublicKey = TrMvSoP4jYQlY6RIzBgbssQqY3vxI2Pi+y71lOWWXX0=
+                                     Endpoint = [2607:5300:60:6b0::c05f:543]:2468
+                                     AllowedIPs = 10.192.122.4/32, 192.168.0.0/16
+
+  # wg set wg0 \                 <·· Config. Iface (Alt 2)
+    listen-port 51820 \                <·· set at random if not set
+    private-key $PATH_MYPRIVKEY \      <·· set key.
+                                           Use '/dev/null' or "empty-file" to remove
+                                           currently registered key for allowed-ips
+    $PATH_PRESHARED_KEY \              <·· Optional. protects against priv/pub
+                                           bugs and ponst-quantom crypto.
+                                           ( $ wg genpsk )
+    peer $BASE64_PUBKEY   \            <·· OR $PATH_PRE_SHARED_KEY
+    allowed-ips 192.168.88.0/24 \      <·· 1+ IP/CIDR (CSV separated)
+    endpoint 209.202.254.14:8172       <·· set peer endpoints
+
+
+  # ip link set up dev wg0      <·· Activate iface.
+
+  # wg showconf
+  # wg show
+
+## man 8 wg-quick
+TODO:
+
+
+## NAT and Firewall Traversal Persistence
+* Peers behind NAT|firewall need to keep the NAT/firewall mapping valid,
+  by periodically sending keepalive packets (called "persistent keepalives").
+  PersistentKeepalive = 10  <·· (secs by default)
+  (== persistent-keepalive in command line)
+
+## Troubleshooting
+  # modprobe wireguard && \           <··· enable dynamic debug (runtime output) for module
+    echo module wireguard +p \
+    > /sys/kernel/debug/dynamic_debug/control
+  # export LOG_LEVEL=verbose          <··· When using userspace implementation.

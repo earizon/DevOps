@@ -1,0 +1,75 @@
+[[{PM.whats_new,PM.WiP]]
+## What's new
+
+Note: (mistral AI) answer:
+Q: list core features added to different releases of git. For example  Git 2.28 
+   takes advantage of 2.27 commit-graph optimizations to deliver a handful of 
+   sizeable performance improvement. Render output as raw markdown.
+
+
+- Git 2.40:
+  * <https://www.infoq.com/news/2023/04/git-releases-version-2-40/>
+- Git 2.39:
+  - Built-in support for sparse checkouts, making it easier to work with large repos
+    by only checking out needed files.
+  - Improved `git maintenance`: More robust background maintenance tasks.
+
+- Git 2.38:
+  - `git rebase --update-refs`: Safer rebase with automatic ref updates.
+  - `git diff --color-moved=dimmed-zebra`: Better visualization of moved code.
+
+- Git 2.37: (mix AI/human)
+  - <https://www.infoq.com/news/2022/06/git-2-37-released/>
+  - Built-in File Monitor, Improved Pruning, ...
+  - merge-tree: New command for 3-way merge of blobs. [[storage.blogs]]
+  - `git repack --filter=blob:none`: Exclude blobs from repacks, useful for monorepos.[[storage.blogs]]
+
+- Git 2.36:
+  - `git restore --staged --worktree`: Restore both staged and working tree files.
+  - `git branch --show-current`: Always show the current branch name.
+
+- Git 2.35: (human verified)
+  - Git 2.35 includes a couple of new additions to SSH signing. [[PM.TODO]]
+    - track which SSH keys you trust, you use the ALLOWED SIGNERS FILE
+      to store the identities and public keys of signers you trust.
+      PROBLEM: NOW suppose one commiter rotates their key.
+      * You could update their entry in the allowed signers file
+        but that would make it impossible to validate objects signed with
+        the older key.
+      * You could store both keys, but that would mean that you
+        would accept new objects signed with the old key.
+    - Git 2.35 SOLUTION: take advantage of OpenSSH’s valid-before and
+      valid-after directives.
+  - Git 2.35 also supports new key types in the user.signingKey
+     configuration when you include the key verbatim (instead of storing
+     the path of a file that contains the signing key). Previously, the
+     rule for interpreting user.signingKey was to treat its value as a
+     literal SSH key if it began with “ssh-“, and to treat it as
+     filepath otherwise. You can now specify literal SSH keys with
+     keytypes that don’t begin with “ssh-” (like ECDSA
+     keys).[source, source]
+   [[security.digital_signature]]
+
+- Git 2.27: (human verified)
+ - bloom filters added to commit-graph file format .
+   to search in history much faster by skipping commits
+   not affecting files of interest
+   (git log -- <path>, or git blame) [[git.performance]]
+
+- 2.25: (human verified)
+  Sparse checkouts are one of several approaches Git supports to improve
+  performance when working with big(huge or monolithic) repositories.
+   They are useful to keep working directory clean by specifying which
+  directories to keep. This is useful, for example, with repositories
+  containing thousands of directories.
+  [[git.scalability,git.monorepo]]
+
+
+
+- Git 2.23:
+  - `git switch` and `git restore`: New commands for branch and file operations. [[git.101]]
+  - `git stash push --pathspec-from-file`: Stash specific files from a file list.
+
+[[}]]
+
+

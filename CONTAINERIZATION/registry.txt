@@ -1,0 +1,216 @@
+[[{containerization,image.registry,PM.WiP]]
+
+# Container Registry
+
+* OCI Image: Sort of ISO image with inmutable file system BUT ... formed 
+  of different layers.
+
+* Registry daily ussage:
+
+  ```
+  $ docker images                       # <·· List local (/var/lib/docker/...) images
+  | REPOSITORY                  TAG             IMAGE ID      CREATED       SIZE
+  | gitea/gitea                 1.20.1-rootless eb341527606d  4 months ago  261MB
+  | postgres                    14.5            cefd1c9e490c  13 months ago 376MB
+  | golang_1.17_alpine3.15_gcc  latest          6093faef6d66  17 months ago 438MB
+  | ...
+  | hello-world                 latest          feb5d9fea6a5  2 years ago   13.3kB
+  ```
+
+  ```
+  | $ docker rmi ${IMG_NAME}:${IMG_VER}   # <·· remove (local) image
+  |
+  | $ docker image prune                  # <·· remove all non used images
+  |                                             [[{troubleshooting.storage}]]
+  ```
+
+## Registries vs Repositories ("Image repo") 
+
+* repository: "storage" for OCI binary images with a common http
+  network protocol to "push" and "pull" new OCI images (actually,
+  OCI "layers") and cryptographic hash protection against tampered 
+  images.
+* registry  : index of 1+ repositories (ussually its own repo), and
+  network protocol to query the index remotely.
+  * <https://docs.docker.com/registry/#what-it-is>
+  * <https://docs.docker.com/registry/introduction/>
+
+## Registry "Daily" Ussage
+
+  ```
+  | (server01) ─────────────────────────────────────────────────────────
+  | $ docker run -d \            <·· Start registry v2 at server01:5000
+  |   -p 5000:5000 \
+  |   --restart=always \
+  |   --name registry registry:2
+  ```
+
+  ```
+  |  (shell console@local-dev-laptop) ───────────────────────────────────
+  |  $ docker search ubuntu         <·· Search remote images @ Docker Hub:
+  |    NAME                 DESCRIPTION    STARS     OFFICIAL   AUTOMATED
+  | ┌> ubuntu               Ubuntu is a... 16627     [OK]
+  | ·  ubuntu/nginx         Nginx, a hi... 102
+  | ·  ubuntu/squid         Squid is a ... 70
+  | ·  ...
+  | ·  ^^^^^^^^^^^^
+  | ·  
+  | └> To see also avaiable tags: (latest by default)···········┬────┐
+  |                                                             ·    · 
+  |  $ curl -s \                                                v    v
+  |    'https://registry.hub.docker.com/v2/repositories/library/ubuntu/tags/' | \
+  |    jq '."results"[]["name"]'
+  |  | "latest"
+  |  | "rolling"
+  |  | ...
+  |  | "23.10"
+  |  | "23.04"
+  |  | ...
+  |
+  |  $ docker pull ubuntu           <·· Pull (example) image from public
+  |                                    registry to /var/lib/docker/image
+  |  
+  |  $ docker image tag ubuntu \    <·· Add new tag to the image to "point"
+  |    server01:5000/myfirstimage        to local registry
+  | 
+  |  $ docker login           \     <·· Optional. If user/pass is required
+  |       -u ${LOGIN_USER}    \         (on success a local access token will
+  |       -p ${SESSION_TOKEN} \         be created and reused in next comands)
+  |       server01:5000 
+  |
+  |  $ docker push \                <·· Push to registry@server01
+  |    server01:5000/myfirstimage
+  |
+  |  $ docker pull \                <·· final Check
+  |    server01:5000/myfirstimage
+  ```
+
+## Add Insecure HTTP registry  [[{image.registry,troubleshooting]]
+
+* strongly not recommended.
+
+* REF: <https://www.projectatomic.io/blog/2018/05/podman-tls/>
+  ```
+  cat /etc/containers/registries.conf
+  # ...
+  [registries.search]
+  registries = ['docker.io', ..., server01:5000 ]
+                                  └───────────┴─ non-TLS server
+  ```
+[[}]]
+
+
+
+## skopeo [[{image.registry,QA.UX,PM.low_code.skopeo,troubleshooting]]
+
+* <https://github.com/containers/skopeo>
+* <https://www.redhat.com/en/blog/skopeo-10-released>
+
+* command line utility to manage local/remote images in repositories. 
+  (support for registry API v2 -The Quay,Docker Hub, OpenShift, GCR, ...).
+* rootless execution (for most of its operations).
+* Current commands include:
+  ```
+  | · copy             : Copy image (manifest, FS layers, signatures).
+  | · delete           : Mark image-name for **later deletion by registry's garbage collector**.
+  | · inspect          : Return image low-level information from remote registry.
+  | · list-tags        : Return list of tags for image.
+  | · sync             : Synchronize images between registry repositories.
+  | · manifest-digest  : Compute manifest digest for manifest-file. 
+  | · standalone-sign  : Debugging tool: Sign   image locally without uploading.
+  | · standalone-verify: Debugging tool: Verify image signature from local files.
+  | · login/logout          
+  | · generate-sigstore-key : Generate a sigstore public/private key pair.
+  ```
+* compatible with OCI images (standards) and original docker v2 images.
+* Install with dnf, apt, docker, ...
+  ```
+  | registry 
+  | ├ repo01       <·· fetch list with GET .../v2/_catalog
+  | │ ├ tag1       <·· fetch list with GET .../v2/repo01/tags/list
+  | │ ├ tag2
+  | │ ├ ...
+  | │ └ tagN
+  | ├ repo02 
+  | ├ ...
+  | # STEP 1: list repositories in registry
+  | # Use optional flag: -u <user>:<pass>  for authentication
+  | $ REG="registry.fedoraproject.org"
+  | $ REPO="https://${REG}"
+  | $ curl --silent -X GET \
+  |   ${REPO}/v2/_catalog \
+  |   | jq .repositories   
+  | [ ..., "fedora", ... ]
+  |         └────┴─··················─┬────┐ 
+  | $ curl --silent -X GET ${REPO}/v2/fedora/tags/list | jq .
+  | {
+  |   "name": "fedora",
+  |   "tags": [ "latest", "34-aarch64", "34-ppc64le", ... ]
+  | }
+  | 
+  | $ skopeo login ${REG}
+  | 
+  | $ skopeo delete \                     <·· delete image. (STEP 1)
+  |   docker://${REG}/fedora:34-aarch64      
+  | 
+  | $ docker exec -it -u root registry \  <·· delete image. (STEP 2)
+  |   bin/registry garbage-collect \
+  |   --delete-untagged /etc/docker/registry/config.yml
+  |
+  | $ skopeo inspect \
+  |    docker://registry.fedoraproject.org/fedora:latest  # <· Inspect repository in registry
+  |                                                       #    fetch repository's manifest, output
+  |                                                       #    whole repository or tag
+  | > {
+  | >     "Name": "registry.fedoraproject.org/fedora",
+  | >     "Digest": "sha256:0f65bee...",                  # <· WARN: Unverified digest.
+  | >     "RepoTags": [ "34-aarch64", "34", "latest", ... ],
+  | >     ...
+  | >     "DockerVersion": "1.10.1",
+  | >     "Labels": { "license": "MIT", "name": "fedora", "vendor": "Fedora Project",... },
+  | >     "Architecture": "amd64",
+  | >     ...
+  | >     "Layers": [ "sha256:2a0fc..." ],
+  | >     "LayersData": [ { ... } ],
+  | >     "Env": [ "DISTTAG=f37container", "FGC=f37", "container=oci" |      ]
+  | > }
+  |
+  | $ skopeo inspect --config \
+  |    docker://registry.fedoraproject.org/fedora:latest | \
+  |    jq .                                               # Show container config. from fedora:latest
+  | {
+  |   ...
+  |   "config": { "Env": [ ... } ], "Cmd": [ "/bin/bash" ], ... }
+  |   "rootfs": { "type": "layers", "diff_ids": [ "sha256:a4c0fa..." ] },
+  |   "history": [ { ... } ]
+  | }
+  |
+  | $ skopeo copy \                       <·· copy image
+  |   docker://quay.io/buildah/stable  \
+  |   docker://registry.internal.company.com/buildah
+  |  
+  | $ skopeo copy \                       <·· copy image
+  |   oci:busybox_ocilayout:latest \
+  |   dir:existingemptydirectory
+  |
+  | SYNCING REGISTRIES ---------------------------------------
+  |
+  | $ skopeo sync \
+  |   --src docker \
+  |   --dest dir registry.example.com/busybox /media/usb
+  |
+  | AUTHENTICATING TO A REGISTRY
+  | 
+  | $ skopeo login \
+  |      --username <USER> \
+  |      myregistrydomain.com:5000    # skopeo logout myregistrydomain.com:5000
+  |
+  |  Alternatively --creds=user:pass can be used with no prevous login  or
+  |  docker/podman/... login
+  ```
+
+
+
+[[}]]
+
+[[containerization,image.registry}]]

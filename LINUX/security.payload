@@ -1,4 +1,5 @@
-security_ebury_boot.txt
+linux_security_101.txt       # OK
+security_ebury_boot.txt      # OK
 security_101_user_audit.txt  # OK
 security_su_sudo.txt         # OK
 security_SSSD.txt            # OK

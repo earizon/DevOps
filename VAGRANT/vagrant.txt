@@ -1,0 +1,123 @@
+# Vagrant (VMs as code):[[{vagrant,01_PM.low_code,101,troubleshooting]]
+
+- External Links:
+  - <https://www.vagrantup.com/docs/index.html>
+  - <https://www.vagrantup.com/docs/cli/>                         CLI Reference
+  - <https://www.vagrantup.com/intro/getting-started/index.html>
+  - <https://www.vagrantup.com/docs/providers/>                   Providers list
+  - <https://app.vagrantup.com/boxes/search>                     *Boxes Search*
+  - <https://www.vagrantup.com/docs/networking/>                  Networking
+
+- Vagrant Boxes: Pre-built VMs avoiding slow and tedious process.
+  - They can be used as base image to clone & customize a new imagee.
+    (Specifying the box to use for your Vagrant environment is always the first
+    step after creating a new Vagrantfile).
+
+
+  ```
+  | # SHARING ---------------------------------------------------------------------------
+  | <https://www.vagrantup.com/intro/getting-started/share.html>
+  | <https://www.vagrantup.com/docs/share>
+  | $ vagrant share   <- share a Vagrant environment with anyone in the World.
+  |
+  | 3 primary (not mutually exclusive) sharing modes -------------------------------------
+  | URL_POINTING_TO_VAGRANT_VM <· URL "consumer" does not need Vagrant.
+  |                               Useful to test webhooks, demos with clients, ...
+  |
+  | $ vagrant connect --ssh    # <· instant SSH access with local/remote client
+  |                                 (pair programming, debugging ops problems, etc....)
+  | $ vagrant connect          # <· expose tcp-port for general-sharing (local/remote)
+  ```
+
+  ```
+  | $ vagrant "COMMAND" -h   <- List help on command
+  | $ vagrant list-commands  <- Most frequently used commands
+  | ┌───────────────────────────┴───────────────────────────┘
+  | v
+  | box           manages boxes: installation, removal, etc.
+  | destroy       stops and deletes all traces of the vagrant machine
+  | global-status outputs status Vagrant environments for this user
+  | halt          stops the vagrant machine
+  | help          shows the help for a subcommand
+  | init          initializes new environment (new Vagrantfile)
+  | login         log in to HashiCorp's Vagrant Cloud
+  | package       packages a running vagrant environment into a box
+  | plugin        manages plugins: install, uninstall, update, etc.
+  | port          displays information about guest port mappings
+  | powershell    connects to machine via powershell remoting
+  | provision     provisions the vagrant machine
+  | push          deploys enviroment code → (configured) destination
+  | rdp           connects to machine via RDP
+  | reload        restart Vagrant VM, load new Vagrantfile config
+  | resume        resume a suspended vagrant machine
+  | snapshot      manages snapshots: saving, restoring, etc.
+  | ssh           connects to machine via SSH
+  | ssh-config    outputs OpenSSH connection config.
+  | status        outputs status of the vagrant machine
+  | suspend       suspends the machine
+  | up            starts and provisions the vagrant environment
+  | validate      validates the Vagrantfile
+  | version       prints current and latest Vagrant version
+  |
+  | OTHER COMMANDS
+  | cap             checks and executes capability
+  | docker-exec     attach to an already-running docker container
+  | docker-logs     outputs the logs from the Docker container
+  | docker-run      run a one-off command in the context of a container
+  | list-commands   outputs all available Vagrant subcommands, even non-primary ones
+  | provider        show provider for this environment
+  | rsync           syncs rsync synced folders to remote machine
+  | rsync-auto      syncs rsync synced folders automatically when files change
+  ```
+
+  ```
+  | # QUICK START --------------------------------------------------------------
+  | $ mkdir vagrant_getting_started
+  | $ cd vagrant_getting_started
+  | $ vagrant init                  <- create new Vagrantfile
+  ```
+
+ ```
+  | "Advanced" Vagranfile Example: 3 VM's Cluster using Virtual Box -----------
+  | 
+  | # -*- mode: ruby -*-                                                     
+  | # vi: set ft=ruby :                                                      
+  |                                                                          
+  | VAGRANTFILE_API_VERSION = "2"                                            
+  |                                                                          
+  | Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|                   
+  |    # Use the same key for each machine                                   
+  |    config.ssh.insert_key = false                                         
+  |                                                                          
+  |    config.vm.define "vagrant1" do |vagrant1|                             
+  |            vagrant1.vm.box = "ubuntu/xenial64"                           
+  |            vagrant1.vm.provider :virtualbox do |v|                       
+  |                    v.customize ["modifyvm", :id, "--memory", 1024]       
+  |            end                                                           
+  |            vagrant1.vm.network "forwarded_port", guest: 80, host: 8080   
+  |            vagrant1.vm.network "forwarded_port", guest: 443, host: 8443  
+  |            vagrant1.vm.network "private_network", ip: "192.168.0.1"      
+  |            # Provision through custom bootstrap.sh script                
+  |            config.vm.provision :shell, path: "bootstrap.sh"              
+  |    end                                                                   
+  |    config.vm.define "vagrant2" do |vagrant2|                             
+  |            vagrant2.vm.box = "ubuntu/xenial64"                           
+  |            vagrant2.vm.provider :virtualbox do |v|                       
+  |                    v.customize ["modifyvm", :id, "--memory", 2048]       
+  |            end                                                           
+  |            vagrant2.vm.network "forwarded_port", guest: 80, host: 8081   
+  |            vagrant2.vm.network "forwarded_port", guest: 443, host: 8444  
+  |            vagrant2.vm.network "private_network", ip: "192.168.0.2"      
+  |    end                                                                   
+  |    config.vm.define "vagrant3" do |vagrant3|                             
+  |            vagrant3.vm.box = "ubuntu/xenial64"                           
+  |            vagrant3.vm.provider :virtualbox do |v|                       
+  |                    v.customize ["modifyvm", :id, "--memory", 2048]       
+  |            end                                                           
+  |            vagrant3.vm.network "forwarded_port", guest: 80, host: 8082   
+  |            vagrant3.vm.network "forwarded_port", guest: 443, host: 8445  
+  |            vagrant3.vm.network "private_network", ip: "192.168.0.3"      
+  |    end                                                                   
+  | end                                                                      
+ ```
+[[vagrant}]]

@@ -73,6 +73,7 @@ using port "pings")
   |
   | Modify /etc/default/knock lo look like:   <· STEP 5. Enable Knockd Service
   | + START_KNOCKD=1
+  | $ sudo systemctl daemond-reload
   | $ sudo systemctl enable knockd
   | $ sudo systemctl start knockd
   ```

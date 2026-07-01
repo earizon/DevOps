@@ -1,0 +1,30 @@
+# HTTP balanced proxy Quick Setup with HAProxy
+
+  REF: <https://github.com/AKSarav/haproxy-nodejs-redis/blob/master/haproxy/>
+  ```
+  | haproxy/haproxy.cfg                
+  | global                             
+  |   daemon                           
+  |   maxconn 256                      
+  |
+  | defaults
+  |   mode http
+  |   timeout connect 5000ms
+  |   timeout client 50000ms
+  |   timeout server 50000ms
+  |
+  | frontend http-in
+  |   bind *:80                             <·· Listen on port 80 on all interfaces
+  |   default_backend servers
+  |
+  | backend servers                         <·· Forward to single backend "servers"
+  |   server server1 host01:8081 maxconn 32 <·· composed of (single server) "server1"
+  |                                             at host01:8081
+  |─────────────────────────────────────────
+  ```
+
+  ```
+  | haproxy/Dockerfile --------------------------
+  | FROM haproxy
+  | COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
+  ```

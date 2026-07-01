@@ -1,5 +1,0 @@
-# Let’s XCode in Linux For Real
-
-* <https://medium.com/@thomasbrillion/lets-xcode-in-linux-for-real-ae36cde4cfeb>
-
-

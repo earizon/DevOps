@@ -1,0 +1,46 @@
+Linux x11 history: Thread by @devruso on Thread Reader App – Thread
+Reader App
+https://threadreaderapp.com/thread/1457641774705434625.html 
+
+Y no saber por qué HABÍA (en pasado) un servidor de fuentes, o por
+qué había un servidor de impresión, o incluso un cargador de
+ficheros demuestra no tener ni puta idea de la historia de UNIX (no
+de Linux). Es más: precisamente fue en Xorg donde quitaron mucha de
+esas cosas innecesarias.
+
+Y bueno, eso de que XCB está peor documentado, demuestra que nunca
+ha programado con él, además de que, al contrario de lo que dice,
+NO ES OBLIGATORIO SOPORTAR XCB EN NINGUNA PARTE, pues no es más que
+una biblioteca que utiliza EXACTAMENTE EL MISMO PROTOCOLO X11. Son
+los toolkits y los programadores quienes pueden elegir cual utilizar,
+pero en absoluto "tuvieron que soportarla" en GTK o Qt... De hecho,
+Xlib se reimplementó sobre XCB precisamente para poder facilitar la
+transición de aquellos que quisiesen cambiar de una a otra. Hablando
+de lo que no sabe.
+
+Y mezcla el compositor con OpenGL y Mesa, cuando son cosas que no
+tienen absolutamente nada que ver. Pero a estas alturas ya da igual.
+Claramente ha cogido un montón de conceptos, los ha mezclado en la
+coctelera, y se ha puesto a escribir tweet tras tweet.
+
+Y bueno... la historia de ATI/AMD y nVidia, poniendo a esta última
+como si fuera la legal, cuando su protocolo EGLStreams no sólo es
+una basura y es POSTERIOR a DRI/DRM, sino que encima tuvo la
+desfachatez de enviarlo a Chronos (los gestores de OpenGL y Vulkan)
+para estandarizarlo e intentar meterlo por la garganta.
+
+Y poner a MIR como la solución, cuando, simplemente, ERA IMPOSIBLE
+QUE CANONICAL PUDIESE HACERLO... Para hacer un protocolo de ventanas
+en condiciones se necesita a gente MUY curtida, y en Wayland es donde
+está la gente que lleva años desarrollando Xorg y, por tanto, con
+experiencia en qué cosas hacen falta y cuales no, y en cómo
+hacerlas. Supongo que el que Canonical abandonase y hoy en día el
+servidor MIR implemente Wayland lo verá como un fracaso...
+
+Y bueno, ya cuando se pone a hablar de Wayland y de XWayland...
+
+Este... (me callo el adjetivo) debe ser de los que se cree que un
+sistema operativo se escribe en una tarde. Sólo así se explica que
+se crea que no hubo intentos de sustituir a X desde hace más de
+veinte años. Y si fracasaron, sería por algo.
+

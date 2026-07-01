@@ -52,4 +52,8 @@
 - Sebastien Godard (http://pagesperso-orange.fr/sebastien.godard/),
   author of the systat utilities for linux.
 - Many, many others, ...
+
+- Miguel Ojeda: <https://ojeda.dev/>
+  - "Rust for Linux"
+
 [[PM.who_is_who}]]

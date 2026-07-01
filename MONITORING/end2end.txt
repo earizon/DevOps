@@ -1,0 +1,28 @@
+[[{monitoring.101]]
+# END-TO-END MONITORING Reference Example
+
+Extracted from Adidas Reference Architecture (<https://adidas.github.io>)
+
+* The goal of monitoring is troubleshooting.
+  **all these tools have integration with Opsgenie**
+  where we have defined escalation policies for
+  alerting and notifications. [[doc_has.keypoint]]
+
+* Prometheus: alerting monitoring, completely integrated with Kubernetes.
+* ICINGA    : infrastructure monitoring:<br/>
+  """we have hundreds of custom scripts and graphite as timeseries database"""
+* Instana   : Aplication monitoring, making easy-and-fast to monitor the applications
+              and identify bottlenecks.
+* Runscope  : API testing-and-monitoring.
+* Grafana   : visualization tool.
+  * Easy integration with with Prometheus, Instana, Elasticsearch, Graphite, etc.
+* LOGGING Collection and Monitoring:
+  * ELK stack running on-premises and AWS Kubernetes.
+    custom components for processing and alerting.
+  
+## NEOLOAD: PERFORMANCE TESTING.
+
+* easy-to-use interface with powerful recording capabilities.
+* supports for dockerized load generators.
+
+[[monitoring.101}]]

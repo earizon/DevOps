@@ -1,0 +1,613 @@
+## jenkins checkout GitSCM
+
+```
+$class: 'GitSCM'
+userRemoteConfigs:(List)  tracked repo URL
+  - url: (String) 
+  - name:(remote repo id: origin, ...)
+  - repositories:(String) refspec (while-space separated list) of heads:
+    Default: "+refs/heads/*:refs/remotes/REPOSITORYNAME/*" ←  
+    Ex     : "+refs/heads/master:refs/remotes/origin/master"
+                                                     ^^^^^^
+                                             retrieve master branch only
+  - credentialsId:(String)
+branches:(List)
+  - name: by default all branches will be examined for changes and built.
+  -       Ex: refs/heads/$branchName 
+              ^^^^^
+              Safe unambiguous syntax
+              Otherwise bar will match foo/bar, bar,
+
+    variables are evaluated and the result is used as described above.
+        E.g. ${TREEISH}, refs/tags/${TAGNAME}, ...
+        <Wildcards>
+        The syntax is of the form: REPOSITORYNAME/BRANCH. In addition, 
+    BRANCH is recognized as a shorthand of */BRANCH, '*' is recognized as a 
+    wildcard, and '**' is recognized as wildcard that includes the separator '/'. 
+    Therefore, origin/branches* would match origin/branches-foo but not 
+    origin/branches/foo, while origin/branches** would match both 
+    origin/branches-foo and origin/branches/foo.
+        :<regular expression>
+        The syntax is of the form: :regexp. Regular expression syntax in 
+    branches to build will only build those branches whose names match the regular 
+    expression.
+        Examples:
+            :^(?!(origin/prefix)).*
+                matches: origin or origin/master or origin/feature
+                does not match: origin/prefix or origin/prefix_123 or 
+    origin/prefix-abc
+            :origin/release-\d{8}
+                matches: origin/release-20150101
+                does not match: origin/release-2015010 or 
+    origin/release-201501011 or origin/release-20150101-something
+            :^(?!origin/master$|origin/develop$).*
+                matches: origin/branch1 or origin/branch-2 or 
+    origin/master123 or origin/develop-123
+                does not match: origin/master or origin/develop
+
+        Type: String
+doGenerateSubmoduleConfigurations
+    Type: boolean
+submoduleCfg
+    List
+    Nested Object
+    submoduleName
+        Type: String
+    branches
+        List
+        Type: String
+browser
+    Nested Choice of Objects
+    $class: 'AssemblaWeb'
+        repoUrl
+        Specify the root URL serving this repository (such as 
+    https://www.assembla.com/code/PROJECT/git/).
+            Type: String
+    $class: 'BacklogGitRepositoryBrowser'
+        repoName
+            Type: String
+        repoUrl
+            Type: String
+    $class: 'BitbucketWeb'
+        repoUrl
+        Specify the root URL serving this repository (such as 
+    https://bitbucket.org/OWNER/REPO/).
+            Type: String
+    $class: 'CGit'
+        repoUrl
+            Type: String
+    $class: 'FisheyeGitRepositoryBrowser'
+        repoUrl
+        Specify the URL of this repository in FishEye (such as 
+    http://fisheye6.cenqua.com/browse/ant/).
+            Type: String
+    $class: 'GitBlitRepositoryBrowser'
+        repoUrl
+        Specify the root URL serving this repository.
+            Type: String
+        projectName
+        Specify the name of the project in GitBlit.
+            Type: String
+    $class: 'GitBucketBrowser'
+        url
+            Type: String
+    $class: 'GitLab'
+        repoUrl
+        Specify the root URL serving this repository (such as 
+    http://gitlabserver:port/group/REPO/).
+            Type: String
+        version (optional)
+        Specify the major and minor version of GitLab you use (such as 
+    9.1). If you don't specify a version, a modern version of GitLab (>= 8.0) is 
+    assumed.
+            Type: String
+    $class: 'GitLabBrowser'
+        projectUrl
+            Type: String
+    $class: 'GitList'
+        repoUrl
+        Specify the root URL serving this repository (such as 
+    http://gitlistserver:port/REPO/).
+            Type: String
+    $class: 'GitWeb'
+        repoUrl
+        Specify the root URL serving this repository (such as 
+    https://github.com/jenkinsci/jenkins.git).
+            Type: String
+    $class: 'GiteaBrowser'
+        repoUrl
+        Specify the HTTP URL for this repository's Gitea page. The URL 
+    needs to include the owner and repository so, for example, if the Gitea server 
+    is https://gitea.example.com then the URL for bob's skunkworks project 
+    repository might be https://gitea.example.com/bob/skunkworks
+            Type: String
+    $class: 'GithubWeb'
+        repoUrl
+        Specify the HTTP URL for this repository's GitHub page (such as 
+    https://github.com/jquery/jquery).
+            Type: String
+    $class: 'Gitiles'
+        repoUrl
+        Specify the root URL serving this repository (such as 
+    https://gwt.googlesource.com/gwt/).
+            Type: String
+    $class: 'GitoriousWeb'
+        repoUrl
+        Specify the root URL serving this repository (such as 
+    https://gitorious.org/gitorious/mainline).
+            Type: String
+    $class: 'GogsGit'
+        repoUrl
+            Type: String
+    $class: 'KilnGit'
+        repoUrl
+        Specify the root URL serving this repository (such as 
+    https://khanacademy.kilnhg.com/Code/Website/Group/webapp).
+            Type: String
+    $class: 'Phabricator'
+        repoUrl
+        Specify the phabricator instance root URL (such as 
+    http://phabricator.example.com).
+            Type: String
+        repo
+        Specify the repository name in phabricator (such as the foo part of 
+    phabricator.example.com/diffusion/foo/browse).
+            Type: String
+    $class: 'RedmineWeb'
+        repoUrl
+        Specify the root URL serving this repository (such as 
+    http://SERVER/PATH/projects/PROJECT/repository).
+            Type: String
+    $class: 'RhodeCode'
+        repoUrl
+        Specify the HTTP URL for this repository's RhodeCode page (such as 
+    http://rhodecode.mydomain.com:5000/projects/PROJECT/repos/REPO/).
+            Type: String
+    $class: 'Stash'
+        repoUrl
+        Specify the HTTP URL for this repository's Stash page (such as 
+    http://stash.mydomain.com:7990/projects/PROJECT/repos/REPO/).
+            Type: String
+    $class: 'TFS2013GitRepositoryBrowser'
+        repoUrl
+        Either the name of the remote whose URL should be used, or the URL 
+    of this module in TFS (such as 
+    http://fisheye6.cenqua.com/tfs/PROJECT/_git/REPO/). If empty (default), the URL 
+    of the "origin" repository is used.
+
+        If TFS is also used as the repository server, this can usually be 
+    left blank.
+            Type: String
+    $class: 'TracGitRepositoryBrowser'
+    $class: 'ViewGitWeb'
+        repoUrl
+        Specify the root URL serving this repository (such as 
+    http://code.fealdia.org/viewgit/).
+            Type: String
+        projectName
+        Specify the name of the project in ViewGit (e.g. scripts, scuttle 
+    etc. from http://code.fealdia.org/viewgit/).
+            Type: String
+gitTool
+    Type: String
+extensions
+    List
+    Nested Choice of Objects
+    $class: 'AuthorInChangelog'
+    The default behavior is to use the Git commit's "Committer" value in 
+    Jenkins' build changesets. If this option is selected, the Git commit's 
+    "Author" value would be used instead.
+    $class: 'BuildChooserSetting'
+    When you are interested in using a job to build multiple heads (most 
+    typically multiple branches), you can choose how Jenkins choose what branches 
+    to build in what order.
+
+    This extension point in Jenkins is used by many other plugins to 
+    control the job to build specific commits. When you activate those plugins, you 
+    may see them installing a custom strategy here.
+        buildChooser
+            Nested Choice of Objects
+            $class: 'AlternativeBuildChooser'
+            $class: 'AncestryBuildChooser'
+                maximumAgeInDays
+                    Type: int
+                ancestorCommitSha1
+                    Type: String
+            $class: 'DefaultBuildChooser'
+            $class: 'DeflakeGitBuildChooser'
+            $class: 'GerritTriggerBuildChooser'
+            $class: 'InverseBuildChooser'
+    $class: 'ChangelogToBranch'
+    This method calculates the changelog against the specified branch.
+        options
+            Nested Object
+            compareRemote
+            Name of the repository, such as origin, that contains the 
+    branch you specify below.
+                Type: String
+            compareTarget
+            The name of the branch within the named repository to compare 
+    against.
+                Type: String
+    $class: 'CheckoutOption'
+        timeout
+        Specify a timeout (in minutes) for checkout.
+        This option overrides the default timeout of 10 minutes.
+        You can change the global git timeout via the property 
+    org.jenkinsci.plugins.gitclient.Git.timeOut (see JENKINS-11286). Note that 
+    property should be set on both master and agent to have effect (see 
+    JENKINS-22547).
+            Type: int
+    $class: 'CleanBeforeCheckout'
+    Clean up the workspace before every checkout by deleting all untracked 
+    files and directories, including those which are specified in .gitignore. It 
+    also resets all tracked files to their versioned state. This ensures that the 
+    workspace is in the same state as if you cloned and checked out in a brand-new 
+    empty directory, and ensures that your build is not affected by the files 
+    generated by the previous build.
+        deleteUntrackedNestedRepositories (optional)
+        Deletes untracked submodules and any other subdirectories which 
+    contain .git directories.
+            Type: boolean
+    $class: 'CleanCheckout'
+    Clean up the workspace after every checkout by deleting all untracked 
+    files and directories, including those which are specified in .gitignore. It 
+    also resets all tracked files to their versioned state. This ensures that the 
+    workspace is in the same state as if you cloned and checked out in a brand-new 
+    empty directory, and ensures that your build is not affected by the files 
+    generated by the previous build.
+        deleteUntrackedNestedRepositories (optional)
+        Deletes untracked submodules and any other subdirectories which 
+    contain .git directories.
+            Type: boolean
+    $class: 'CloneOption'
+        shallow
+        Perform shallow clone, so that git will not download the history of 
+    the project, saving time and disk space when you just want to access the latest 
+    version of a repository.
+            Type: boolean
+        noTags
+        Deselect this to perform a clone without tags, saving time and disk 
+    space when you just want to access what is specified by the refspec.
+            Type: boolean
+        reference
+        Specify a folder containing a repository that will be used by Git 
+    as a reference during clone operations.
+        This option will be ignored if the folder is not available on the 
+    master or agent where the clone is being executed.
+            Type: String
+        timeout
+        Specify a timeout (in minutes) for clone and fetch operations.
+        This option overrides the default timeout of 10 minutes.
+        You can change the global git timeout via the property 
+    org.jenkinsci.plugins.gitclient.Git.timeOut (see JENKINS-11286). Note that 
+    property should be set on both master and agent to have effect (see 
+    JENKINS-22547).
+            Type: int
+        depth (optional)
+        Set shallow clone depth, so that git will only download recent 
+    history of the project, saving time and disk space when you just want to access 
+    the latest commits of a repository.
+            Type: int
+        honorRefspec (optional)
+        Perform initial clone using the refspec defined for the repository. 
+    This can save time, data transfer and disk space when you only need to access 
+    the references specified by the refspec.
+            Type: boolean
+    $class: 'CodeCommitURLHelper'
+        credentialId
+
+        OPTIONAL: Select the credentials to use.
+        If not specified, defaults to the 
+    DefaultAWSCredentialsProviderChain behaviour - *FROM THE JENKINS INSTANCE*
+
+        In the latter case, usage of IAM Role Profiles seems not to work, 
+    thus relying on environment variables / system properties or the 
+    ~/.aws/credentials file, thus not recommended.
+            Type: String
+        repositoryName
+            Type: String
+    $class: 'DisableRemotePoll'
+    Git plugin uses git ls-remote polling mechanism by default when 
+    configured with a single branch (no wildcards!). This compare the latest built 
+    commit SHA with the remote branch without cloning a local copy of the repo.
+
+    If you don't want to / can't use this.
+
+    If this option is selected, polling will require a workspace and might 
+    trigger unwanted builds (see JENKINS-10131).
+    $class: 'GitLFSPull'
+    $class: 'GitTagMessageExtension'
+    If the revision checked out has a git tag associated with it, the tag 
+    name will be exported during the build as GIT_TAG_NAME.
+    If a message was specified when creating the tag, then that message 
+    will be exported during the build as the GIT_TAG_MESSAGE environment variable.
+    If no tag message was specified, the commit message will be used.
+    If you ticked the Use most recent tag option, and the revision checked 
+    out has no git tag associated with it, the parent commits will be searched for 
+    a git tag, and the rules stated above will apply to the first parent commit 
+    with a git tag.
+
+    If the revision has more than one tag associated with it, only the most 
+    recent tag will be taken into account, unless the refspec contains "refs/tags/" 
+    — i.e. builds are only triggered when certain tag names or patterns are 
+    matched — in which case the exact tag name that triggered the build will be 
+    used, even if it's not the most recent tag for this commit.
+    For this reason, if you're not using a tag-specific refspec but you are 
+    using the "Create a tag for every build" behaviour, you should make sure that 
+    the build-tagging behaviour is configured to run after this "export git tag 
+    message" behaviour.
+
+    Tag and commit messages which span multiple lines are no problem, 
+    though only the first 10000 lines of a tag's message will be exported.
+        useMostRecentTag (optional)
+            Type: boolean
+    $class: 'IgnoreNotifyCommit'
+    If checked, this repository will be ignored when the notifyCommit-URL 
+    is accessed regardless of if the repository matches or not.
+    $class: 'LocalBranch'
+    If given, checkout the revision to build as HEAD on this branch.
+
+    If selected, and its value is an empty string or "**", then the branch 
+    name is computed from the remote branch without the origin. In that case, a 
+    remote branch origin/master will be checked out to a local branch named master, 
+    and a remote branch origin/develop/new-feature will be checked out to a local 
+    branch named develop/newfeature.
+
+    Please note that this has not been tested with submodules.
+        localBranch
+            Type: String
+    $class: 'MessageExclusion'
+        excludedMessage
+        If set, and Jenkins is set to poll for changes, Jenkins will ignore 
+    any revisions committed with message matched to Pattern when determining if a 
+    build needs to be triggered. This can be used to exclude commits done by the 
+    build itself from triggering another build, assuming the build server commits 
+    the change with a distinct message.
+
+        Exclusion uses Pattern matching
+
+        .*\[maven-release-plugin\].*
+
+        The example above illustrates that if only revisions with 
+    "[maven-release-plugin]" message in first comment line have been committed to 
+    the SCM a build will not occur.
+
+        You can create more complex patterns using embedded flag 
+    expressions.
+
+        (?s).*FOO.*
+
+        This example will search FOO message in all comment lines.
+            Type: String
+    $class: 'PathRestriction'
+    If set, and Jenkins is set to poll for changes, Jenkins will pay 
+    attention to included and/or excluded files and/or folders when determining if 
+    a build needs to be triggered.
+
+    Using this behaviour will preclude the faster git ls-remote polling 
+    mechanism, forcing polling to require a workspace thus sometimes triggering 
+    unwanted builds, as if you had selected the Force polling using workspace 
+    extension as well.
+        includedRegions
+        Each inclusion uses java regular expression pattern matching, and 
+    must be separated by a new line. An empty list implies that everything is 
+    included.
+
+            myapp/src/main/web/.*\.html
+            myapp/src/main/web/.*\.jpeg
+            myapp/src/main/web/.*\.gif
+          
+
+        The example above illustrates that a build will only occur, if 
+    html/jpeg/gif files have been committed to the SCM. Exclusions take precedence 
+    over inclusions, if there is an overlap between included and excluded regions.
+            Type: String
+        excludedRegions
+        Each exclusion uses java regular expression pattern matching, and 
+    must be separated by a new line.
+
+            myapp/src/main/web/.*\.html
+            myapp/src/main/web/.*\.jpeg
+            myapp/src/main/web/.*\.gif
+          
+
+        The example above illustrates that if only html/jpeg/gif files have 
+    been committed to the SCM a build will not occur.
+            Type: String
+    $class: 'PerBuildTag'
+    Create a tag in the workspace for every build to unambiguously mark the 
+    commit that was built. You can combine this with Git publisher to push the tags 
+    to the remote repository.
+    $class: 'PreBuildMerge'
+    These options allow you to perform a merge to a particular branch 
+    before building. For example, you could specify an integration branch to be 
+    built, and to merge to master. In this scenario, on every change of 
+    integration, Jenkins will perform a merge with the master branch, and try to 
+    perform a build if the merge is successful. It then may push the merge back to 
+    the remote repository if the Git Push post-build action is selected.
+        options
+            Nested Object
+            mergeTarget
+            The name of the branch within the named repository to merge to, 
+    such as master.
+                Type: String
+            fastForwardMode (optional)
+            Merge fast-forward mode selection.
+            The default, --ff, gracefully falls back to a merge commit when 
+    required.
+            For more information, see the Git Merge Documentation
+                Values: FF, FF_ONLY, NO_FF
+            mergeRemote (optional)
+            Name of the repository, such as origin, that contains the 
+    branch you specify below. If left blank, it'll default to the name of the first 
+    repository configured above.
+                Type: String
+            mergeStrategy (optional)
+            Merge strategy selection. This feature is not fully implemented 
+    in JGIT.
+                Values: DEFAULT, RESOLVE, RECURSIVE, OCTOPUS, OURS, 
+    SUBTREE, RECURSIVE_THEIRS
+    pretestedIntegration
+        gitIntegrationStrategy
+            Nested Choice of Objects
+            accumulated
+            Accumulated Commit Strategy
+            This strategy merges your commits with the --no-ff switch
+                shortCommitMessage (optional)
+                    Type: boolean
+            squash
+            Squashed Commit Strategy
+            This strategy squashes all your commit on a given branch with 
+    the --squash option
+        integrationBranch
+        What to specify
+
+        The branch name must match your integration branch name. No 
+    trailing slash.
+        Merge is performed the following way
+        Squash commit
+
+                    git checkout -B <Branch name> <Repository name>/<Branch 
+    name>
+                    git merge --squash <Branch matched by git>
+                    git commit -C <Branch matched by git>
+
+        Accumulated commit
+
+                    git checkout -B <Branch name> <Repository name>/<Branch 
+    name>
+                    git merge -m <commitMsg> <Branch matched by git> --no-ff
+
+        When changes are pushed to the integration branch?
+
+        Changes are only ever pushed when the build results is SUCCESS
+
+                    git push <Repository name> <Branch name>
+
+            Type: String
+        repoName
+        What to specify
+
+        The repository name. In git the repository is always the name of 
+    the remote. So if you have specified a repository name in your Git 
+    configuration. You need to specify the exact same name here, otherwise no 
+    integration will be performed. We do the merge based on this.
+
+        No trailing slash on repository name.
+
+        Remember to specify this when working with NAMED repositories in Git
+            Type: String
+    $class: 'PruneStaleBranch'
+    Run "git remote prune" for each remote, to prune obsolete local 
+    branches.
+    $class: 'RelativeTargetDirectory'
+        relativeTargetDir
+        Specify a local directory (relative to the workspace root) where 
+    the Git repository will be checked out. If left empty, the workspace root 
+    itself will be used.
+            Type: String
+    $class: 'ScmName'
+
+    Unique name for this SCM. Needed when using Git within the Multi SCM 
+    plugin.
+        name
+            Type: String
+    $class: 'SparseCheckoutPaths'
+
+    Specify the paths that you'd like to sparse checkout. This may be used 
+    for saving space (Think about a reference repository). Be sure to use a recent 
+    version of Git, at least above 1.7.10
+        sparseCheckoutPaths
+            List
+            Nested Object
+            path
+                Type: String
+    $class: 'SubmoduleOption'
+        disableSubmodules
+        By disabling support for submodules you can still keep using basic 
+    git plugin functionality and just have Jenkins to ignore submodules completely 
+    as if they didn't exist.
+            Type: boolean
+        recursiveSubmodules
+        Retrieve all submodules recursively (uses '--recursive' option 
+    which requires git>=1.6.5)
+            Type: boolean
+        trackingSubmodules
+        Retrieve the tip of the configured branch in .gitmodules (Uses 
+    '--remote' option which requires git>=1.8.2)
+            Type: boolean
+        reference
+        Specify a folder containing a repository that will be used by Git 
+    as a reference during clone operations.
+        This option will be ignored if the folder is not available on the 
+    master or agent where the clone is being executed.
+        To prepare a reference folder with multiple subprojects, create a 
+    bare git repository and add all the remote urls then perform a fetch:
+
+          git init --bare
+          git remote add SubProject1 https://gitrepo.com/subproject1
+          git remote add SubProject2 https://gitrepo.com/subproject2
+          git fetch --all
+          
+
+            Type: String
+        timeout
+        Specify a timeout (in minutes) for submodules operations.
+        This option overrides the default timeout of 10 minutes.
+        You can change the global git timeout via the property 
+    org.jenkinsci.plugins.gitclient.Git.timeOut (see JENKINS-11286). Note that 
+    property should be set on both master and agent to have effect (see 
+    JENKINS-22547).
+            Type: int
+        parentCredentials
+        Use credentials from the default remote of the parent project.
+            Type: boolean
+        depth (optional)
+        Set shallow clone depth, so that git will only download recent 
+    history of the project, saving time and disk space when you just want to access 
+    the latest commits of a repository.
+            Type: int
+        shallow (optional)
+        Perform shallow clone, so that git will not download the history of 
+        the project, saving time and disk space when you just want to access the latest 
+        version of a repository.
+            Type: boolean
+        threads (optional)
+            Type: int
+    $class: 'UserExclusion'
+        excludedUsers
+        If set, and Jenkins is set to poll for changes, Jenkins will ignore 
+        any revisions committed by users in this list when determining if a build needs 
+        to be triggered. This can be used to exclude commits done by the build itself 
+        from triggering another build, assuming the build server commits the change 
+        with a distinct SCM user.
+
+        Using this behaviour will preclude the faster git ls-remote polling 
+        mechanism, forcing polling to require a workspace thus sometimes triggering 
+        unwanted builds, as if you had selected the Force polling using workspace 
+        extension as well.
+
+        Each exclusion uses literal pattern matching, and must be separated 
+        by a new line.
+
+        auto_build_user
+
+        The example above illustrates that if only revisions by 
+        "auto_build_user" have been committed to the SCM a build will not occur.
+            Type: String
+    $class: 'UserIdentity'
+        name
+
+        If given, "git config user.name [this]" is called before builds. 
+        This overrides whatever is in the global settings.
+            Type: String
+        email
+
+        If given, "git config user.email [this]" is called before builds. 
+        This overrides whatever is in the global settings.
+            Type: String
+    $class: 'WipeWorkspace'
+    Delete the contents of the workspace before building, ensuring a fully 
+    fresh workspace. 
+```

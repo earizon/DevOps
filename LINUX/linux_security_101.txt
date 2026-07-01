@@ -31,7 +31,7 @@
   |
   | $ useradd alice                 \   ← Create user alice.
   |     --shell=/usr/bin/git-shell  \   ← Assign shell (restricted git-shell in this example)
-  |     --shell=/usr/bin/git-shell  \   ← upon succesful login alice will be presented with a git shell *1
+  |                                 \     upon succesful login alice will be presented with a git shell *1
   |     --groups PROJECT01,PROJECT02\   ← Assign PROJECT01 as default group for alice.
   |     --password ...              \   ← create an initial and strong password (or provide alice with ssh keys.
   |     --no-user-group             \   ← Do NOT create a new group (otherwise indicated by --gid)

@@ -1,0 +1,215 @@
+## Github actions summary
+
+
+(Mistral generated)
+
+* Here’s a conceptual Entity-Relationship (ER) Diagram for the main GitHub Actions
+  entities, focusing on core components and their relationships. Since I can’t 
+  generate visual diagrams directly, I’ll describe the entities, attributes, and
+  relationships in a structured format (you can use tools like Lucidchart, Draw.io,
+  or Mermaid.js to visualize it).
+
+  ```
+  | Entities & Attributes
+  | 
+  | (Key entities in GitHub Actions workflows)
+  | 
+  | Entity
+  | Attributes
+  | Description
+  | Workflow
+  | id, name, file_path (e.g., .github/workflows/ci.yml), trigger_events,
+  | created_at, updated_at
+  | Defines the automated process (e.g., CI/CD pipeline). Triggered by
+  | events like push, pull_request, or schedule.
+  | Job
+  | id, name, runs_on (OS/environment), steps, dependencies, status
+  | (success/failure)
+  | A set of steps executed on the same runner. Jobs can depend on other jobs.
+  | Step
+  | id, name, uses (action/reusable workflow), run (command), env
+  | (variables), if (conditional)
+  | Individual task in a job (e.g., checkout code, run tests).
+  | Action
+  | id, name, repository, version (e.g., v1), inputs, outputs
+  | Reusable unit of code (e.g., actions/checkout@v4). Can be public/private.
+  | Runner
+  | id, name, os (linux/windows/macos), labels, status (busy/idle)
+  | Machine that executes jobs (GitHub-hosted or self-hosted).
+  | Event
+  | id, type (e.g., push, pull_request), payload (commit SHA, branch)
+  | Triggers workflows (e.g., code push, issue comment).
+  | Artifact
+  | id, name, path, expiration_date, workflow_run_id
+  | Files generated during a workflow (e.g., build outputs, logs).
+  | Secret
+  | id, name, value (encrypted), repository_id, environment
+  | Sensitive data (e.g., API keys) injected into workflows.
+  | Environment
+  | id, name, protection_rules, secrets
+  | Deployment targets (e.g., production, staging) with access controls.
+  | Workflow Run
+  | id, workflow_id, status, conclusion, started_at, completed_at
+  | Instance of a workflow execution.
+  | ________________________________
+  | 
+  | Relationships
+  | 
+  | (How entities interact)
+  | 
+  | Relationship
+  | Description
+  | Cardinality
+  | Workflow has many Jobs
+  | A workflow contains one or more jobs.
+  | 1:N
+  | Job has many Steps
+  | A job consists of sequential steps.
+  | 1:N
+  | Step uses Action
+  | A step may reference an action (or run a shell command).
+  | 1:1 or 1:N (if reusable)
+  | Job runs on Runner
+  | A job is executed by a runner (GitHub-hosted or self-hosted).
+  | N:1
+  | Workflow triggered by Event
+  | Workflows start when an event occurs (e.g., push to main).
+  | N:1
+  | Workflow Run generates Artifact
+  | A run can produce zero or more artifacts.
+  | 1:N
+  | Job depends on Job
+  | Jobs can have dependencies (e.g., job2 waits for job1).
+  | N:N (via needs keyword)
+  | Workflow uses Secret
+  | Workflows/steps access secrets (e.g., ${{ secrets.API_KEY }}).
+  | N:N
+  | Job deploys to Environment
+  | Jobs can target environments (e.g., production).
+  | N:1
+  | ________________________________
+  | 
+  | Key Notes for the ER Diagram
+  | 
+  | Hierarchy: Workflow → Job → Step → (Action or Shell Command).
+  | Triggers: Events (e.g., push, pull_request) are external to workflows
+  | but critical for execution.
+  | Reusability: Actions and workflows can be shared across repositories
+  | (model as weak entities if needed).
+  | Concurrency: Workflow runs and jobs may execute in parallel (highlight
+  | with dashed lines if modeling concurrency).
+  | 
+  | ________________________________
+  | 
+  | Example Mermaid.js Code
+  | 
+  | To generate the diagram programmatically, use this template in a
+  | Mermaid-compatible tool (e.g., GitHub Markdown):
+  | 
+  |  Copiar
+  | erDiagram
+  |     WORKFLOW ||--o{ JOB : contains
+  |     JOB ||--o{ STEP : includes
+  |     STEP ||--|| ACTION : uses
+  |     JOB }|--|| RUNNER : "runs on"
+  |     WORKFLOW ||--o{ WORKFLOW_RUN : "triggers"
+  |     WORKFLOW_RUN ||--o{ ARTIFACT : generates
+  |     WORKFLOW ||--o{ SECRET : uses
+  |     JOB }|--|| ENVIRONMENT : "deploys to"
+  |     WORKFLOW ||--|| EVENT : "triggered by"
+  | 
+  |     WORKFLOW {
+  |         string id PK
+  |         string name
+  |         string file_path
+  |         string[] trigger_events
+  |     }
+  |     JOB {
+  |         string id PK
+  |         string name
+  |         string runs_on
+  |         string status
+  |     }
+  |     ACTION {
+  |         string id PK
+  |         string name
+  |         string repository
+  |     }
+  ```
+
+## Rendergit
+
+Tired of clicking around complex file hierarchies of GitHub repos? Do you just 
+want to see all of the code on a single page? Enter rendergit. Flatten any 
+GitHub repository into a single, static HTML page with syntax highlighting, 
+markdown rendering, and a clean sidebar navigation. Perfect for code review, 
+exploration, and an instant Ctrl+F experience.
+* <https://github.com/karpathy/rendergit>
+
+## GitHub Custom Bug/Feat-req templates [[{git.github]]
+
+* WARN: Non standard (Vendor lock-in) Microsoft extension.
+
+  ```
+  $ cat .github/ISSUE_TEMPLATE/bug_report.md
+  | ---
+  | name: Bug report
+  | about: Create a report to help us improve
+  | title: ''
+  | labels: ''
+  | assignees: ''
+  |
+  | ---
+  |
+  | **Describe the bug**
+  | A clear and concise description of what the bug is.
+  |
+  | **To Reproduce**
+  | Steps to reproduce the behavior:
+  | 1. Go to '...'
+  | 2. Click on '....'
+  | 3. Scroll down to '....'
+  | 4. See error
+  |
+  | **Expected behavior**
+  | A clear and concise description of what you expected to happen.
+  |
+  | ...
+  ```
+
+
+  ```
+  | $ cat .github/ISSUE_TEMPLATE/feature_request.md
+  | ---
+  | name: Feature request
+  | about: Suggest an idea for this project
+  | title: ''
+  | labels: ''
+  | assignees: ''
+  |
+  | ---
+  |
+  | **Is your feature request related to a problem? Please describe.**
+  | A clear and concise description of what the problem is....
+  |
+  | **Describe the solution you'd like**
+  | A clear and concise description of what you want to happen.
+  |
+  | **Describe alternatives you've considered**
+  | A clear and concise description of any alternative solutions or features you've considered.
+  |
+  | **Additional context**
+  | Add any other context or screenshots about the feature request here.
+  ```
+
+  ```
+  | $ cat ./.github/pull_request_template.md
+  | ...
+  ```
+
+  ```
+  | $ ./.github/workflows/*
+  | WARN : Non standard (Vendor lock-in) Microsoft extension.
+  | <https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions>
+  ```
+[[}]]

@@ -1,0 +1,16 @@
+# Octosuite: GitHub Open Source Intelligence Framework [[{]]
+
+  https://www.infoq.com/news/2023/02/octosuite-github-osint-framework/?itm_source=infoq
+
+Octosuite, an open-source intelligence (OSINT) framework, recently
+released its latest version 3.1.0. Octosuite provides a wide range of
+commands to investigate publicly-visible GitHub accounts and
+repositories through GitHub’s Public APIs.
+
+Written in Python, Octosuite provides a secure and user-friendly
+interface to easily search and explore data related to a repository,
+organization, or user. The search feature also looks for topics,
+commits, and issues to quickly locate relevant data. All the results
+of searches are exported in a comma-separated value (CSV) readable
+format.
+[[}]]

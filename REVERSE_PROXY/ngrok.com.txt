@@ -1,0 +1,57 @@
+[[{reverse_proxy.ngrok]]
+# Ngrok: "One line" reverse proxy.
+
+- No Authentication supported (reckec
+
+- ngrok exposes local networked services behinds NATs and firewalls to the
+  public internet over a secure tunnel.
+- Use-Case: Share local websites, build/test webhook consumers, self-host
+  personal services.
+- <support@ngrok.com>
+- Terms of Service: <https://ngrok.com/tos>
+
+
+  ```
+  | # A Central Server is used to tunnel (triangulate actually) ngrok
+  | # public URLs to internal services using OAuth2 ...
+  | 
+  | $ ngrok -h #  Display help
+  | 
+  | * web interface: <http://localhost:4040> <·· Inspect traffic.
+  | 
+  | 
+  | EXAMPLES:
+  | $ ngrok http 80                    # secure public URL for port 80 web server
+  | $ ngrok http --subdomain=baz 8080  # port 8080 available at <https://baz.ngrok.io>
+  | $ ngrok http foo.dev:80            # tunnel to host:port instead of localhost
+  | $ ngrok http https://localhost     # expose a local https server
+  | $ ngrok tcp 22                     # tunnel arbitrary TCP traffic to port 22
+  | $ ngrok tls --hostname=foo.com 443 # TLS traffic for foo.com to port 443
+  | $ ngrok start foo bar baz          # start tunnels from the configuration file
+  | 
+  | COMMANDS:
+  |   api                            use ngrok Agent as an api client
+  |   completion                     generates shell completion code for bash or zsh
+  |   config                         update or migrate ngrok's configuration file
+  |   credits                        prints author and licensing information
+  |   diagnose                       diagnose connection issues
+  |   help                           Help about any command
+  |   http                           start an HTTP tunnel
+  |   service                        run and control an ngrok service on a target operating system
+  |   start                          start tunnels by name from the configuration file
+  |   tcp                            start a TCP tunnel
+  |   tls                            start a TLS tunnel
+  |   tunnel                         start a tunnel for use with a tunnel-group backend
+  |   update                         update ngrok to the latest version
+  |   version                        print the version string
+  | 
+  | OPTIONS:
+  |   -h, --help      help for ngrok
+  |   -v, --version   version for ngrok
+```
+
+## OAuth/OpenID Connect Authentication with Ngrok
+
+* <https://ngrok.com/blog/authentication-with-ngrok>
+
+[[reverse_proxy.ngrok}]]

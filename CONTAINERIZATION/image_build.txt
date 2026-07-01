@@ -1,0 +1,641 @@
+[[{containerization,image.build]]
+# Container Image Build
+
+## docker Image Build/Image Management Commands 
+<!-- { -->
+* Alternatives to build docker images include: [[{doc_has.comparative]]
+  ```
+  Artifacts  ····┐
+                 v
+  Dockerfile -> |docker build| -> image                  <·· Alt 1
+  ----------------------------------------------------------------
+  buildah: Similar to docker build, it also allows to    <·· Alt 2
+  add image-layer manually from the host command line.
+  (removing the need for a Dockerfile).
+  (RedHat rootless 'podman' is based on buildah)
+  ----------------------------------------------------------------
+  Java source code → jib → OCI image                     <·· Alt 3
+  ----------------------------------------------------------------
+  Google Kaniko                                          <·· Alt 4
+  ----------------------------------------------------------------
+  ...
+  ```
+[[}]]
+
+  ```
+  $ docker image   ls current (local) images.
+  $ docker build   Build an image from a Dockerfile
+  $ docker commit  Create a new image from a container's changes
+  $ docker diff    Inspect changes to files or directories on a container's filesystem
+  $ docker history Show the history of an image
+  $ docker images  List images
+  $ docker tag     Create a tag TARGET_IMAGE that refers to SOURCE_IMAGE
+
+  export/import vs save/load:                                               [[{doc_has.comparative]]
+
+  container  ···> |docker export| ··> tar    (flattens/remove  layers)
+  tar        ···> |docker import| ··> image  (single layer)
+
+  image      ···> |docker save  | ··> tar    (keeps history of layers)
+  tar        ···> |docker load  | ··> image  (multi-layer)                [[}]]
+
+  $ docker save calc > calc.tar
+           ┌──────┬─··─┴──────┘
+  $ tar tf calc.tar
+    ├─ 41bfa732a8...   <·· busybox layer
+    │  ├─ VERSION
+    │  ├─ json
+    │  └─ layer.tar        cmd layer
+    ├─ 889226....json  <·· { ... ,
+    ├─ manifest.json         "config": { "Cmd": ["/bin/sh", "-c", ...], ...  },
+    └─ repositories        }
+
+  $ docker load < calc.tar
+    0d315111b484: Loading layer [========>]  1.441MB/1.441MB
+
+  * NOTE: docker import/export vs load/save commands.
+    docker load / save : Load/Save image from/to tar | STDIN
+    docker export / import: Export/Import (running/stopped) container file-system.
+  ```
+<!-- } -->
+
+# Building images [[{image.build.dockerfile]]
+
+## Commented Dockerfile
+  ```
+  ┌─ Dockerfile ───────────────────────────────
+  │ FROM registry.redhat.io/ubi7/ubi           <- 72.7 MB layer
+  │ # Optional but recommended Standard labels
+  │ LABEL org.label-schema.build-date=2022-02-17T05:47Z
+  │ LABEL org.label-schema.description=...
+  │ LABEL org.label-schema.name=...,
+  │ LABEL org.label-schema.schema-version=1.0,
+  │ LABEL org.label-schema.url=https://docs.myapp.mycomp.net,
+  │ LABEL org.label-schema.vcs-ref=4c42aec7,
+  │ LABEL org.label-schema.vcs-url=https://github.com/mycomp/myapp,
+  │ LABEL org.label-schema.vendor=MyComp,
+  │ LABEL org.label-schema.version=1.1.0
+  │
+  │ ARG ENV_DEBUG=LOG                         <- ARG: Available at Image build time
+  │                                              default value = LOG. Overwrite with:
+  │                                              $ docker build --build-arg ENV_DEBUG=INFO
+  │
+  │ ENV DEBUG=${ENV_DEBUG}                    <- ENV: Available at container runtime.
+  │                                              Overwrite with:
+  │                                              $ docker run -e DEBUG=INFO ...
+  │ ARG ENV_HTTP_PROXY                        <- No default value. Build will fail if
+  │                                              not provided at build time.
+  │ ARG ENV_HTTPS_PROXY                       <- No default value. Build will fail if
+  │ ENV ENV_HTTP_PROXY=${ENV_HTTP_PROXY}
+  │
+  │ RUN dnf update                             <- 30.1 MB layer
+  │ COPY target/dependencies /app/dependencies <- 10.0 MB layer
+  │ COPY target/resources    /app/resources    <-  9.0 MB layer
+  │ COPY target/classes      /app/classes      <-  0.5 MB layer
+  │                                               └──┬──┘
+  │ ENTRYPOINT java -cp \                        Put most frequently changed
+  │   /app/dependencies/*:... \                  layer down the layer "stack",
+  │   my.app.Main                                so that when building and/or
+  │                                              uploading new images only
+  │                                              them will be affected.  Probably
+  │                                              the most frequently changed layer
+  │                                              is also the smaller layer.
+  │
+  │ ENTRYPOINT java -cp \            <- Defaults to '/bin/sh -c'
+  │   /app/dependencies/*:... \         - Overwrite at "docker run"-time with --entrypoint ...
+  │                                     - similar to "init" process in Linux. (First command
+  │                                       to be executed in a Linux box).
+  │                                     - It will act, in practice, as the binary executable. Ex:
+  │                                       $ alias CAT="docker run --entrypoint /bin/cat myImage"
+  │                                       $ CAT /etc/passwd
+  │
+  │ COMMAND [ 'my.app.Main']        <- No default exist.
+  │                                     - Overwrite at "docker run"-time like:
+  │                                       $ docker run -i -t ubuntu my.app.Main2 arg1 arg2
+  └────────────────────────────────────────────
+  ```
+
+  ```
+  $ docker build \
+     --pull \                                      <·· Recomended, force look for newer
+                                                       remote image versions
+                                                       (--no-cache can also be useful)
+     --build-arg HTTP_PROXY=http://...:8080 \      <·· Arg is consumed/used at build time
+                                                       Not available at runtime.
+     --build-arg HTTPS_PROXY=https://..:8080 \
+     -t 'registry_server'/'user_name'/'image_name':'tag' .
+        ^^^^^^^^^^^^^^^^^^
+        default one if not
+        provided
+  ```
+
+## Parent-Child Build
+
+  ```
+  ┌ Dockerfile.base ───────────
+  │ FROM node:7.10-alpine
+  │
+  │ RUN mkdir /src
+  │ WORKDIR /src
+  │ COPY package.json /src      ← Modifying package.json forces rebuild
+  │                               triggering a new npm install.
+  │                               WARN: It will fail if wrongly placed after npm install.
+  │                                     Docker will not detect any change.
+  │
+  │ RUN npm install             ← slow process. Place before "moving parts"
+  │                               (but after any file affecting the install
+  │                                - package.json, package-lock.json, ...-)
+  │
+  │ ONBUILD ARG NODE_ENV        ← Modify base image adding "ONBUILD" in places that
+  │                               are executed just during build in "child" image
+  │                               extending base image
+  │
+  │ ONBUILD ENV NODE_ENV $NODE_ENV
+  │
+  │ CMD [ "npm", "start" ]
+  └────────────────────────────
+
+  ┌ Dockerfile.child ────
+  │ FROM node-base
+  │
+  │ EXPOSE 8000
+  │ COPY . /src       ← source code, images, CSS, ...  will change frequently
+  └──────────────────── during development.  Put in last position (top layer
+                        in image) so that new modification triggers just
+                        rebuild of last layer.
+
+   $ docker build -t node-base  \  <-  STEP 1) Compile base image
+     -f Dockerfile.base .
+
+  $ docker build -t node-child \   <- STEP 2: Compile child image
+    -f Dockerfile.child \
+      --build-arg NODE_ENV=... .
+
+  $ docker run -p 8000:8000 \      <- STEP 3: Test
+   -d node-child *
+  ```
+
+[[{troubleshooting.dockerize,image.build.101,PM.low_code,PM.TODO.0]]
+## Dockerize non-friendly apps
+
+* <https://github.com/jwilder/dockerize>
+* `dockerize`: Utility to simplify running applications in docker 
+  containers.
+PROBLEM:
+* Containers are designed to be used with environment variables.
+* Old non-friendly apps use custom configuration files
+  (xml, json, properties,...). <br/>
+  This forces to inject the configuration as "mounted" volumes,
+  that is quite unconfortable and error prone.
+* `dockerize` fixes this problem, acting as a generic entrypoint 
+  at container at startup and generating final configutarion files
+  from container friendly environment variables and file templates.
+  [[{doc_has.keypoint]]
+* `dockerize` also:
+  1. Tail multiple log files to stdout and/or stderr.  
+     (forward logs from harcoded files on the filesystem
+      to stdout/stderr. Example: `/var/log/nginx/access.log`,
+      `/var/log/nginx/error.log`).
+  2. Wait for other services to be available using TCP, HTTP(S),
+     unix before starting the main process.  
+  ```
+  dockerize \
+     -template template1.tmpl:file1.properties \
+     -template template2.tmpl:file2.xml        \ 
+     -wait tcp://db:5432                       \
+     -wait http://web:80                       \
+     -wait file:///tmp/generated-file
+  ```
+
+[[troubleshooting.dockerize}]]
+
+## MultiStage Go Build [[{image.build,dev_stack.golang,qa]]
+@[https://docs.docker.com/develop/develop-images/multistage-build/]
+
+  ```
+  | $ cat Dockerfile.multistage            <·· STAGE 1
+  |  FROM *golang-1.14:alpine* AS *build*  ← Base Image with compiler, utility libs, ...
+  |  ADD . /src                            │ ( Maybe "hundreds" of MBs)
+  |  RUN cd /src ; go build  *-o app*      ←  Let's Build final  *executable*
+  |                                        │
+  |                                        <·· Stage 2:
+  |  FROM *alpine:1.14*                    ← Clean minimal image (maybe just ~4MB).
+  |  WORKDIR /app                          │
+  |  COPY*--from=build*  */src/app* /app/  ← Copy  *executable* to final image
+  |  ENTRYPOINT ./app                      │
+  | ───────────────────────────────────────┘
+  |
+  | $ docker build . -f Dockerfile.multistage \ 
+  |   -t ${IMAGE_TAG}                     # <· Build image from multistage Dockerfile      
+  |
+  | $ docker run --rm -ti ${IMAGE_TAG}    # <· Finally Test it.
+ ```
+[[image.build,dev_stack.golang}]]
+
+## MultiStage NodeJS Build [[{dev_stack.nodejs,image.build,qa]]
+
+* PRESETUP:
+  * Check with `$ npm list --depth 3` duplicated or similar dependencies.  
+    Try to fix manually in package.json
+  * `npm audit` (See also online services like https://snyk.io,...)
+  * Avoid leaking dev ENV.VARs/secrets/...:
+
+  ```
+        Alt 1:                     Alt 2: (Safer)
+      ┌─ .dockerignore ────────┐   ┌─ .dockerignore ────────┐
+      │ + node_modules/        │   │ # ignore by default    │
+      │ + .npmrc         ← ** *│   │ *                      ← Now it's safe to just:
+      │ + .env                 │   │                        │ COPY . /my/workDir
+      │ + ....                 │   │ !/docker-entrypoint.sh ← Explicetely mark what we want to copy.
+      └────────────────────────┘   │ !/another/file.txt     ←
+                                   └────────────────────────┘
+  ```
+  **WARN**: Sometimes `npmrc` can contain secrets. [[{security.secret_management}]]
+  
+  ```
+                                              STAGE 1:
+  | FROM node:14.2.0-alpine3.11 AS build  <·· DONT's: Avoid non-deterministic versions (e.g: node, node:14)
+  |                                           sha256 can also be use to lock to precise version.
+  |                                           node:lts-alpine@sha256:aFc342a...
+  |                                          
+  | ADD . / appsrc/                      
+  |                                           @[https://docs.npmjs.com/cli/v7/commands/npm-ci]
+  | RUN npm ci --only=production          <·· ci: == npm install optimized for Continuous Integrations
+  |                                               Significantly faster when:
+  |                                               - There is a package-lock.json|npm-shrinkwrap.json file
+  |                                               - node_modules/ folder is missing|empty.
+  |                                           --only=production: Skip testing/dev dependencies.
+  |                                           WARN: Avoid npm install (yarn install)
+  |                                          
+  | FROM node:16.10.0-alpine3.13          <·· Use stage1 image. NOTE: In node we still need the
+  |                                           "big" image, since output artifacts are not self-executables.
+  | RUN mkdir /app                           
+  | WORKDIR /app                              We can still save some space removing un-needed sources.
+  | USER node                              <·· Avoid root
+  | COPY *--from=build* --chown=node:node \<·· Forget source, ... Keep only  *"dist/"* executable and
+  |      /appsrc/dist  /app                   (unfortunatelly) keep also the big (tens/hundreds of MBs)
+  | COPY *--from=build* --chown=node:node \   node_modules/ folder, still needed in production.
+  |      /appsrc/node_modules \
+  |      /app/node_modules                   
+  |                                          
+  | ENV NODE_ENV production                <·· Some libs enable optimization  only when PRODUCTION=true
+  |                                         
+  |                                         
+  | ENTRYPOINT ["node", "/app/dist/cli.js"] ← TODO: Check "dumb-init" alternative. *1
+
+
+  *1 NOTE: to allow nodeJS handle OS signals add some code like:
+     async function handleSigInt(signal) {
+         await fastify.close()
+         process.exit()
+     }
+     process.on('SIGINT', handleSigInt)
+     (Check alternatives in other languages)
+  ```
+[[image.build}]]
+
+
+[[image.build.dockerfile}]]
+
+[[}]]
+
+## dive: explore/shrink Images [[{image.build,troubleshooting.101,qa,]]
+* UI tool for exploring an image's layer contents, and discovering
+  ways to shrink it. 
+* REF 1: @[https://github.com/wagoodman/dive], 
+* HOW-TO:     
+  ```
+  $ alias dive="docker run -ti --rm  -v /var/run/docker.sock:/var/run/docker.sock wagoodman/dive"
+  $ dive ${image_tag} \  # <·· Analyze Docker image
+    --source docker      # <·· Opt. image "fetch" origin
+                         #     docker *      : Docker engine 
+                         #     podman        : Podman engine 
+                         #     docker-archive: tar file from disk
+
+  $ dive build \         # <·· Build image, then analyze it
+     -t ${image_tag} . 
+  ```
+* CI Integration
+  ```
+  $ export CI=true # <·· bypass UI, return pass/fail return code. 
+  $ editor .dive-ci
+  + rules:
+  +   lowestEfficiency: 0.95
+  +   highestWastedBytes: 20MB
+  +   highestUserWastedPercent: 0.20
+  ```
+* KeyBindings
+  ```
+             Description
+  Ctrl+C     Exit
+  Tab        Switch layer <··> filetree views
+  Ctrl+F     Filter files
+  PageUp/Dw  Scroll up/down a page
+  Ctrl+A     Layer view: see aggregated image modifications
+  Ctrl+L     Layer view: see current layer modifications
+             Filetree view:
+  Space      (un)collapse directory
+  Ctrl+Space (un)collapse all directories
+  Ctrl+A     show/hide      added files
+  Ctrl+R     show/hide    removed files
+  Ctrl+M     show/hide   modified files
+  Ctrl+U     show/hide unmodified files
+  Ctrl+B     show/hide attributes of file 
+  ```
+
+[[}]]
+
+## distroless  [[{image.build,security,qa]]
+@[https://github.com/googlecontainertools/distroless]
+* "distroless" images contain only application and its runtime dependencies.
+  (not package managers, shells, /tmp, /etc/passwd, ...)
+  notice: in kubernetes we can also use init containers with non-light images
+  containing all set of tools (sed, grep,...) for pre-setup, avoiding
+  any need to include in the final image.
+* C&P from: https://www.linkedin.com/posts/iximiuz_what-is-a-distroless-container-image-activity-6998607273514123264-PmHT
+  What is a Distroless Container Image? Golang is famous for its
+  statically linked binaries. Drop it into a "FROM scratch" container,
+  and call it a day. But there is a bunch of pitfalls with this approach...  
+  1. "FROM scratch" containers lack proper user management.
+  (no /etc/passwd and /etc/group, no /var/, /etc/) -unless mounted at runtime).
+   Just trying to create a tmp file will make things fail.
+  2. "FROM scratch" containers lack CA certificates or timezone databases.
+     Calling HTTPS endpoints or time conversion won't be possible.  
+  3. "FROM scratch" containers lack your language runtime for any no-Golang
+     platform, requiring tedious copying of app dependencies.
+  4. "FROM scratch" images are slim, fast, secure, but apparently but 
+     require some (maybe huge) extra work to put into production.  
+  
+  Luckily, projects like Chainguard Images and GoogleContainerTools' distroless
+  automate many of these tedious preparation steps.  
+  more about common pitfalls of scratch container images and the
+  GoogleContainerTools' distroless project in my [blog post](https://lnkd.in/eyTkTX5p).
+  ```
+  stable:                      experimental (2019-06)
+  gcr.io/distroless/static     gcr.io/distroless/python2.7
+  gcr.io/distroless/base       gcr.io/distroless/python3
+  gcr.io/distroless/java       gcr.io/distroless/nodejs
+  gcr.io/distroless/cc         gcr.io/distroless/java/jetty
+                               gcr.io/distroless/dotnet
+  ```
+[[}]]
+
+## Kaniko (rootless builds) [[{image.build,PM.TODO]
+NOTE: To build *JAVA images* see also @[/JAVA/java_map.html?query=jib]
+@[https://github.com/GoogleContainerTools/kaniko]
+
+* tool to build images inside an unprivileged container or Kubernetes cluster.
+* It does not depend on a Docker daemon and instead executes each Dockerfile
+  command in userspace and snapshots the resulting filesystem changes.
+* The majority of Dockerfile commands can be executed with kaniko, with
+  the current (201?) exception of SHELL, HEALTHCHECK, STOPSIGNAL, and ARG.
+* Multi-Stage Dockerfiles are also unsupported currently. 
+[[}]]
+
+[[{image.build.buildpacks,PM.LOW_CODE,dev_stack.*,]]
+## buildpacks.io   
+
+* Automatic source to image (no Dockerfile needed).
+* Used by Spring boot and other major projects.
+* Allow application developers to focus on writing code.
+  No need to worry about image security, optimizing 
+  container images, or container build strategy. [[{doc_has.keypoint}]]
+* With buildpacks, organizations can concentrate the knowledge of 
+  container build best practices within a specialized team, instead of 
+  having application developers across the organization individually 
+  maintain their own Dockerfiles. [[{qa.101}]]
+
+Example:
+  ```
+  | # presetup: pack and docker already installed.
+  |
+  | $ git clone https://github.com/buildpacks/samples
+  |
+  | $ cd samples/apps/java-maven # <· No Dockerfile, just mvn and java stuff
+  |
+  | $ pack build myapp \
+  |   --builder cnbs/sample-builder:jammy   # <· pack detects source code type (java)
+  |                                              and applies a customized buildpack.
+  |                                              pom.xml or build.gradle.kts vs 
+  |                                              python (requirements.txt,setup.py)
+  |                                              or NodeJS (package-lock.json) or ...
+  | $ docker run --rm ... myapp  # <· test build
+  | 
+  | $ pack rebase my-app:my-tag  # <·· quickly update reference to base 
+  |                                    runtime image. No need to build a new app.
+  |                                    runtime                   runtime  
+  |                                    app image                 app image
+  |                                    -----------               -----------
+  |                                    BP1.1-layer               BP1.2-layer
+  |                                    BP2.1-layer ··> rebase ··>BP2.2-layer 
+  |                                    BP3.1-layer               BP3.2-layer
+  |                                    app-layer                 app-layer
+  |
+  |   Use --publish flag to update rebased image to registry
+
+  ```
+
+* Typical buildpacks consist of at least three files:
+  * buildpack.toml: provides metadata about the buildpack, containing
+    information such as its name, ID, and version.
+  * bin/detect – performs detect.
+  * bin/build – performs build.
+
+* buildpacks flows consist of:
+  * detect source type (java or python or Golang ... ) 
+  * Build.
+    * Sets build/runtime enviroment variables.
+    * Download dependencies.
+    * Compile (if needed)
+    * Configure application entrypoint/starup scripts.
+
+* builder: OCI image with buildpacks and a build-time base images, a lifecycle
+  binary and a reference to a runtime base image.
+
+
+https://buildpacks.io/docs/for-app-developers/concepts/platform/
+
+https://buildpacks.io/docs/for-platform-operators/concepts/lifecycle/
+
+
+
+[[{doc_has.comparative]]
+### buildpacks compared to Kaniko:
+
+  ```
+  | Kaniko:
+  | source + Dockerfile + BuildTemplate(optional)  ···> OCI image
+  |
+  | buildpacks: (No Dockerfile needed at all)
+  | source                                         ···> OCI image
+  |
+  | (with dev stack -Java/Go/...- and dependencies autodetection )
+  ```
+* highly modular and customizable.
+* used, among others, by **Spring (spring boot 2.3+) with Gradle and 
+  Maven** support. e.g.: springboot gradle integration:
+  ```
+  bootbuildimage {
+    imagename = "${docker.username}/${project.name}:${project.version}"
+    environment = ["bp_jvm_version" : "11.*"]
+  }
+  ```
+* promotes best practices in terms of security. [[{security.buildpack,qa.best_practices}]]
+* defining CPU and memory limits for JVM containers is critical
+  because they will be used to size properly items like JVM thread pools,
+  heap memory and  non-heap memory, tunning manually is challenging,
+  fortunately, if using paketo implementation of cloud native buildpacks
+  (included for example in Spring boot), java memory calculator is included
+  automatically and the component  will configure JVM memory based on the
+  resource limits assigned to the container. otherwise, results are
+  unpredictable.
+[[doc_has.comparative}]]
+
+[[image.build.buildpacks}]]
+
+[[{image.build.appsody,dev_stack.kubernetes,qa,PM.low_code,PM.todo]]
+## appsody (prebuilt base image)
+
+* <https://appsody.dev/docs>
+- pre-configured application stacks for rapid development
+  of quality microservice-based applications.
+- Stacks include language runtimes, frameworks, additional libraries and tools
+  NEEDED FOR LOCAL DEVELOPMENT, providing consistency and best practices.
+- it consists of:
+  - base-container-image:
+    - local development.
+    - it defines the environment and specifies the stack behavior
+      during the development lifecycle of the application.
+  - project templates:
+    - starting point ('hello world')
+    - they can be customized/shared.
+
+- stack layout example, my-stack:
+  ```
+  | my-stack
+  | ├ readme.md               # describes stack and how to use it
+  | ├ stack.yaml              # different attributes and which template
+  | ├ image/                  # to use by default
+  | | ├ config/
+  | | | └ app-deploy.yaml     # deploy config using appsody operator
+  | | ├ project/
+  | | | ├ php/java/...stack artifacts
+  | | | └ dockerfile          # final   (run) image ("appsody build")
+  | │ ├ dockerfile-stack      # initial (dev) image and env.vars
+  | | └ license               # for local dev.cycle. it is independent
+  | └ templates/              # of dockerfile
+  |   ├ my-template-1/
+  |   |     └ "hello world"
+  |   └ my-template-2/
+  |         └ "complex application"
+  ```
+
+  ```
+  | GENERATED FILES:
+  | *.appsody-config.yaml  <· generated by `$ appsody init`
+  |   it specifies the stack image used and can be overridden
+  |   for testing purposes to point to a locally built stack.
+  |
+  | STABILITY LEVELS:
+  | - experimental ("proof of concept")
+  |   - support  appsody init|run|build
+  |
+  | - incubator : not production-ready.
+  |   - active contributions and reviews by maintainers
+  |   - support  appsody init|run|build|test|deploy
+  |   - limitations described in readme.md
+  |
+  | - stable : production-ready.
+  |   - support all appsody cli commands
+  |   - pass appsody stack 'validate' and 'integration' tests
+  |     on all three operating systems that are supported by appsody
+  |     without errors.
+  |     example:
+  |     - stack must not bind mount individual files as it is
+  |       not supported on windows.
+  |     - specify the minimum appsody, docker, and buildah versions
+  |       required in the stack.yaml
+  |     - support appsody build command with buildah
+  |     - prevent creation of local files that cannot be removed
+  |       (i.e. files owned by root or other users)
+  |     - specify explicit versions for all required docker images
+  |     - do not introduce any version changes to the content
+  |       provided by the parent container images
+  |       (no yum upgrade, apt-get dist-upgrade, npm audit fix).
+  |        - if package contained in the parent image is out of date,
+  |          contact its maintainers or update it individually.
+  |     - tag stack with major version (at least 1.0.0)
+  |     - follow docker best practices, including:
+  |       - minimise the size of production images
+  |       - use the official base images
+  |       - images must not have any major security vulnerabilities
+  |       - containers must be run by non-root users
+  |     - include a detailed readme.md, documenting:
+  |       - short description
+  |       - prerequisites/setup required
+  |       - how to access any endpoints provided
+  |       - how users with existing projects can migrate to
+  |         using the stack
+  |       - how users can include additional dependencies
+  |         needed by their application
+  ```
+
+- OFFICIAL APPSODY REPOSITORIES:
+  ```
+  | https://github.com/appsody/stacks/releases/latest/download/stable-index.yaml
+  | https://github.com/appsody/stacks/releases/latest/download/incubator-index.yaml
+  | https://github.com/appsody/stacks/releases/latest/download/experimental-index.yaml
+  ```
+
+- by default, appsody comes with the incubator and experimental repositories
+  ( *warn*: not stable by default). repositories can be added by running :
+  ```
+  | $ appsody repo
+  ```
+[[image.build.appsody}]]
+
+
+[[{security.containerization]]
+# Container Image Security
+
+
+## 2+Millions images with Critical Sec.Holes !!!  [[{security.101,]]
+* <https://www.infoq.com/news/2020/12/dockerhub-image-vulnerabilities/>
+[[}]]
+
+## OpenSCAP: Scanning Vulnerabilities [[{security.openscap]]
+- Scanning Containers for Vulnerabilities on RHEL 8.2 With OpenSCAP and Podman.
+
+* <https://www.youtube.com/watch?v=nQmIcK1vvYc>
+[[security.openscap}]]
+
+## Protect from Doki malware [[{security.docki,qa,PM.TODO]]
+
+* <https://containerjournal.com/topics/container-security/protecting-containers-against-doki-malware/>
+[[security.docki}]]
+
+
+## convoy (backups volume driver) [[{storage.host,security.backups,security.convoy]]
+@[https://rancher.com/introducing-convoy-a-docker-volume-driver-for-backup-and-recovery-of-persistent-data/]
+- convoy: docker storage driver for backup and recovery of volumes.
+[[security.convoy}]]
+
+## [Grype] [[{security.grype,]]
+* <https://github.com/anchore/grype>
+* A vulnerability scanner for container images and filesystems. Easily
+  install the binary to try it out. Works with Syft, the powerful SBOM
+  (software bill of materials) tool for container images and
+  filesystems.
+[[security.grype}]]
+
+## security tunning [[{security]]
+* <https://opensource.com/business/15/3/docker-security-tuning>
+[[}]]
+
+
+
+
+[[security.containerization}]]
+
+
+[[containerization,image.build}]]

@@ -1,0 +1,125 @@
+[[{containerization]]
+# Containerization: Advanced Topics
+
+
+## namespace.conf
+
+* man 5 namespace.conf
+* Linux Namespaces:
+  - https://en.wikipedia.org/wiki/Linux_namespaces
+  - http://man7.org/linux/man-pages/man1/nsenter.1.html
+* <https://lwn.net/Articles/531114/>
+
+
+## Cgroups
+
+* TODO
+
+
+
+## Docker API <!-- { -->
+* @[https://docs.docker.com/engine/api/])
+* @[https://godoc.org/github.com/docker/docker/api]
+* @[https://godoc.org/github.com/docker/docker/api/types]
+<!-- } -->
+
+
+[[{PM.TODO,containerization.networking]]
+## Container Network Iface (CNI) 
+@[https://github.com/containernetworking/cni]
+* specification and libraries for writing plugins to configure network interfaces
+  in Linux containers, along with a number of supported plugins.
+* CNI concerns itself only with network connectivity of containers
+  and removing allocated resources when the container is deleted.
+* @[https://github.com/containernetworking/cni/blob/master/SPEC.md]
+* CNI concerns itself only with network connectivity of
+  containers and removing allocated resources when container
+  are deleted.
+* specification and libraries for writing plugins
+  to configure network interfaces in Linux containers,
+  along with a number of supported plugins:
+  - libcni, a CNI runtime implementation
+  - skel, a reference plugin implementation
+    github.com/cotainernetworking/cni
+* Set of reference and example plugins:
+  - Inteface plugins:  ptp, bridge,macvlan,...
+  - "Chained" plugins: portmap, bandwithd, tuning,
+    github.com/cotainernetworking/pluginds
+
+    NOTE: Plugins are executable programs with STDIN/STDOUT
+    ```
+    |                                 ┌ Network
+    |               ┌·····>(STDIN)    │
+    | Runtime → ADD JSON    CNI ······┤
+    |  ^        ^^^         executable│
+    |  ·        ADD         plugin    └ Container(or Pod)
+    |  ·        DEL         └─┬──┘      Interface
+    |  ·        CHECK         v
+    |  ·        VERSION    (STDOUT)
+    |  ·                 └────┬──────┘
+    |  ·                      │
+    |  └···· JSON result <····┘
+    |
+    | RUNTIMES              3RD PARTY PLUGINS
+    | K8s, Mesos, podman,   Calico ,Weave, Cilium,
+    | CRI-O, AWS ECS, ...   ECS CNI, Bonding CNI,...
+    ```
+
+- The idea of CNI is to provide common interface between
+  the runtime and the CNI (executable) plugins through
+  standarised JSON messages.
+
+- Example cli Tool  executing CNI config:
+* <https://github.com/containernetworking/cni/tree/master/cnitool>
+
+  ```
+  | INPUT_JSON
+  | {
+  |   "cniVersion":"0.4.0",   ← Standard attribute
+  |   "name": *"myptp"*,
+  |   "type":"ptp",
+  |   "ipMasq":true,
+  |   "ipam": {               ← Plugin specific attribute
+  |     "type":"host-local",
+  |     "subnet":"172.16.29.0/24",
+  |     "routes":[{"dst":"0.0.0.0/0"}]
+  |   }
+  | }
+  | $ echo $INPUT_JSON | \                  ← Create network config
+  |   sudo tee /etc/cni/net.d/10-myptp.conf   it can be stored on file-system
+  |                                           or runtime artifacts (k8s etcd,...)
+  |
+  | $ sudo ip netns add testing             ← Create network namespace.
+  |
+  | $ sudo CNI_PATH=./bin \                 ← Add container to network
+  |   cnitool add  *myptp*  \
+  |   /var/run/netns/testing
+  |
+  | $ sudo CNI_PATH=./bin \                ← Check config
+  |   cnitool check myptp \
+  |   /var/run/netns/testing
+  |
+  | $ sudo ip -n testing addr               ← Test
+  | $ sudo ip netns exec testing \
+  |   ping -c 1 4.2.2.2
+  |
+  | $ sudo CNI_PATH=./bin \                 ← Clean up
+  |   cnitool del myptp \
+  |   /var/run/netns/testing
+  | $ sudo ip netns del testing
+  ```
+
+* CNI Maintainers (2020). [[{HHRR.who-is-who]]
+  - Bruce Ma (Alibaba)
+  - Bryan Boreham (Weaveworks)
+  - Casey Callendrello (IBM Red Hat)
+  - Dan Williams (IBM Red Hat)
+  - Gabe Rosenhouse (Pivotal)
+  - Matt Dupre (Tigera)
+  - Piotr Skamruk (CodiLime)
+  - "CONTRIBUTORS"
+[[HHRR.who-is-who}]]
+
+* Chat channels: <https.//slack.cncf.io>, topic #cni
+[[}]]
+[[containerization}]]
