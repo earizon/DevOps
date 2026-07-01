@@ -1,3 +1,4 @@
+[[{git]]
 # Git 101
 
 [[{git.101,DOC_HAS.diagram,PM.WiP]]
@@ -5,83 +6,89 @@
 
 Non-normative Git server setup for N projects with M teams of L users
 
-### CONTEXT:
-- ssh access has been enabled to server (e.g: $ $ sudo apt install openssh-server   )
-- Ideally ssh is protected. See for example:
-   @[../DevOps/linux_administration_summary.html#knockd_summary]
-   (Alternatives include using GitHub,GitLab,BitBucket, AWS/Scaleway/Azure/... )
+### CONTEXT
+
+- We want to setup Git on our local servers. No need to create Github / Gitlab / Gitea / ...
+  accounts or use "bloated" UIs. Just a Linux server, standard Linux users and
+  standard Linux (or MacOSX) user administration commands with the local
+  File System as our "storage" engine.
+  - Alternatives include using Gitea (also local but with front-end, easy to setup MFA, ...),
+    GitHub, GitLab, BitBucket, cloud solutions from Scaleway,AWS,GCP,Azure,...
+
+- ssh access has been enabled to server. 
+
+- Ideally ssh is protected (for example with knockd "invisible Linux")
 
 -  We want to configure linux users and groups to match a "permissions layout" similar to:
    ```
-    GIT_PROJECT1 ···→ Linux Group teamA ····→ R/W permssions to /var/lib/teamA/project01 *1
-    GIT_PROJECT2 ···→ Linux Group teamA ····→ R/W permssions to /var/lib/teamA/project02
-                      └───────┬────────┘
-                       alice, bob,...
-    GIT_PROJECT3 ···→ Linux Group teamB ····→ R/W permssions to /var/lib/teamB/project03
-    GIT_PROJECT4 ···→ Linux Group teamB ····→ R/W permssions to /var/lib/teamB/project04
-                      └───────┬────────┘
-                       franc, carl, ...
-    GIT_PROJECT5 ···→ ...
-  *1: setup /var/lib/teamA/project01 like:
-  $ $ sudo mkdir -p /var/lib/teamA/project01                 ← create directory
-  $ $ cd /var/lib/teamA/project01
-  $ $ sudo git init --bare                                   ← INIT NEW GIT BARE DIRECTORY !!!!
-                                                               (GIT OBJECT DATABASE for
-                                                                commits/trees/blogs, ...)
-  $ $ DIR01=/var/lib/teamA/project01
-  $ $ sudo find ${DIR01} -exec chown -R nobody:teamA {} \;   ← Fix owner:group_owner for dir. recursively
-  $ $ sudo find ${DIR01} -type d -exec chmod g+rwx {} \;     ← enable read/wr./access perm. for dirs.
-  $ $ sudo find ${DIR01} -type f -exec chmod g+rw  {} \;     ← enable read/write      perm. for files
-
-    Finally add the desired linux-users to the 'teamA' linux-group at will. More info at:
-    @[../DevOps/linux_ALL.payload#UserManagement] )
-
-UserManagement
+   |  GIT_PROJECT1 ···→ Linux Group teamA ····→ R/W permssions to /var/lib/teamA/project01 ¹
+   |  GIT_PROJECT2 ···→ Linux Group teamA ····→ R/W permssions to /var/lib/teamA/project02
+   |                    └───────┬────────┘
+   |                     alice, bob,...
+   |  GIT_PROJECT3 ···→ Linux Group teamB ····→ R/W permssions to /var/lib/teamB/project03
+   |  GIT_PROJECT4 ···→ Linux Group teamB ····→ R/W permssions to /var/lib/teamB/project04
+   |                    └───────┬────────┘
+   |                     franc, carl, ...
+   |  GIT_PROJECT5 ···→ ...
+   | 
+   |  ¹ setup /var/lib/teamA/project01 like:
+   |  $ sudo mkdir -p /var/lib/teamA/project01                # <·· create directory
+   |  $ cd /var/lib/teamA/project01
+   |  $ sudo git init --bare                                  # <·· INIT NEW GIT BARE DIRECTORY !!!!
+   |                                                                (GIT OBJECT DATABASE for
+   |                                                                 commits/trees/blogs, ...)
+   |  $ DIR01=/var/lib/teamA/project01
+   |  $ sudo find ${DIR01} -exec chown -R nobody:teamA {} \;   ← Fix owner:group_owner for dir. recursively
+   |  $ sudo find ${DIR01} -type d -exec chmod g+rwx {} \;     ← enable read/wr./access perm. for dirs.
+   |  $ sudo find ${DIR01} -type f -exec chmod g+rw  {} \;     ← enable read/write      perm. for files
+   | 
+   |  Finally add the desired linux-users to the 'teamA' linux-group at will. More info at:
+   |  <../DevOps/LINUX/101.payload#UserManagement> )
    ```
 
 ## Non-normative ssh client access to Git remote repository using ssh
 
-### PRE-SETUP) Edit ~/.bashrc to tune the ssh options for git ading lines similar to:
+### PRE-SETUP
+
+1. Edit ~/.bashrc to tune the ssh options for git ading lines similar to:
 
   ```
   + GIT_SSH_COMMAND=""
-  + GIT_SSH_COMMAND="${GIT_SSH_COMMAND} -oPort=1234 "                 ← connect to port 1234 (22 by default)
-  + GIT_SSH_COMMAND="${GIT_SSH_COMMAND} -i ~/.ssh/privKeyServer.pem " ← private key to use when authenticating to server
-  + GIT_SSH_COMMAND="${GIT_SSH_COMMAND} -u myUser1 "                  ← ssh user and git user are the same when using ssh.
-  + GIT_SSH_COMMAND="${GIT_SSH_COMMAND} ..."                          ← any other suitable ssh options (-4, -C, ...)
+  + GIT_SSH_COMMAND="${GIT_SSH_COMMAND} -oPort=1234 "                 # <·· connect to port 1234 (22 by default)
+  + GIT_SSH_COMMAND="${GIT_SSH_COMMAND} -i ~/.ssh/privKeyServer.pem " # <·· private key to use when authenticating to server
+  + GIT_SSH_COMMAND="${GIT_SSH_COMMAND} -u myUser1 "                  # <·· ssh user and git user are the same when using ssh.
+  + GIT_SSH_COMMAND="${GIT_SSH_COMMAND} ..."                          # <·· any other suitable ssh options (-4, -C, ...)
 
-    Optionally add your GIT URL like:
+  Optionally add your GIT URL like:
+
   $ + export GIT_URL="myRemoteSSHServer"
-  $ + export GIT_URL="${GIT_URL}/var/lib/my_git_team   ← Must match path in server (BASE_GIT_DIR)
-  $ + export GIT_URL="${GIT_URL}/ourFirstProject"      ← Must match name in server (PROJECT_NAME)
+  $ + export GIT_URL="${GIT_URL}/var/lib/my_git_team   # <·· Must match path in server (BASE_GIT_DIR)
+  $ + export GIT_URL="${GIT_URL}/ourFirstProject"      # <·· Must match name in server (PROJECT_NAME)
   ```
 
-* PRE-SETUP) Modify PS1 prompt (Editing $HOME/.bashrc) to look like:
+2. Modify PS1 prompt (Editing $HOME/.bashrc) to look like:
+
   ```
-  NOTE: Bash (bash "syntax sugar") 
-  readonly val01=$( some_bash_script )
-                 └─────────┬─────────┘
-      exec. some_bash_script as script, then
-      Assign STDOUT to val01
-           
-
-
-  PS1="\h[\$(git branch 2>/dev/null | grep ^\* | sed 's/\*/branch:/')]"               
-           └─────────────     show git branch    ───────────────────┘                 
-  export PS1="${PS1}@\$(pwd |rev| awk -F / '{print \$1,\$2}' | rev | sed s_\ _/_) \$ "
-               └────────────── show current and parent dir. only ────────┘
-
-  host1 $                           ← PROMPT BEFORE
-  host01[branch: master]@dir1/dir2  ← PROMPT AFTER
+  | PS1="\h[\$( git branch 2>/dev/null | grep ^\* | sed 's/\*/branch:/' )]" # Add branch to prompt
+  |          └──────────────     show git branch    ────────────────────┘                 
+  |                NOTE: $( ... ) is bash "syntax sugar". It tells bash to
+  |                execute the script inside ( ... ) and assign its output
+  |                (STDOUT) to the PS1 variable
+  | PS1="${PS1}@\$(pwd |rev| awk -F / '{print \$1,\$2}' | rev | sed s_\ _/_) \$ "
+  |               └────── Show only current and parent folders  ───────────┘
+  |
+  | PS1 RESULTS:       
+  | host1 $                               <·· ORIGINAL PROMPT
+  | host01[branch: master]@dir1/dir2 $    <·· NEW      PROMPT. Display working branch and path hint.
   ```
 
 * Finally clone the repo like:
   ```
-  $ git clone   myUser1 @${GIT_URL}   # <·· execution will warn about cloning empty directory.
-  $ cd ourFirstProject                # <·· move to local clone.
-  $ ...                               # <·· Continue with standards git work flows.
-  $ git add ...
-  $ git commit ...
+  | $ git clone   myUser1 @${GIT_URL}   # <·· execution will warn about cloning empty directory.
+  | $ cd ourFirstProject                # <·· move to local clone.
+  | $ ...                               # <·· Continue with standards git work flows.
+  | $ git add ...
+  | $ git commit ...
   ```
 
 ## COMMON (SIMPLE) GIT FLOWS
@@ -161,600 +168,556 @@ UserManagement
 ## Git Recipes
 
   ```
-                                            PLAYING WITH BRANCHES
-  $ git checkout    newBranch             ← swith to local branch (use -b to create if not yet created)
-  $ git branch -av                        ←  List (-a)ll existing branches
-  $ git branch -d branchToDelete          ← -d: Delete branch
-  $ git checkout --track "remote/branch"  ← Create new tracking branch (TODO)
-  $ git checkout v1.4-lw                  ← Move back to (DETACHED) commit. ('git checkout HEAD' to reattach)
- $ git remote update origin --prune       ← Update local branch to mirror remote branches in 'origin'
-
-                                            VIEW COMMIT/CHANGES HISTORY
-  $ git log -n 10                         ← -n 10. See only 10 last commits.
-  $ git log -p path_to_file               ← See log for file with line change details (-p: Patch applied)
-  $ git log --all --decorate \            ← PRETTY BRANCH PRINT Alt.1
-    --oneline --graph                       REF @[https://stackoverflow.com/questions/1057564/pretty-git-branch-graphs]
-  $ git log --graph --abbrev-commit \     ← PRETTY BRANCH PRINT  Alt.2
-     --decorate --date=relative --all
-
-
-                                            UPDATE ALL REMOTE BRANCHES TO LOCAL REPO
-  (REF: https://stackoverflow.com/questions/10312521/how-to-fetch-all-git-branches=
-  for remote in `git branch -r`;             # ← add remote branches on server NOT yet tracked locally
-     do git branch \                         #   (pull only applies to already tracked branches)
-        --track ${remote#origin/} $remote;
-  done
-
-  $ git fetch --all                            # ← == git remote update.
-                                               #    updates local copies of remote branches
-                                               #    probably unneeded?. pull already does it.
-                                               #    It is always SAFE BUT ...
-                                               #    - It will NOT update local branches (tracking remote branches)
-                                               #    - It will NOT create local branches (tracking remote branches)
-  $ git pull --all                             # ← Finally update all tracked branches.
-
-                                            TAGS:
-  $ git tag                               ← List tags
-  → v2.1.0-rc.2
-  → ...
-  $ git tag -a v1.4 -m "..." 9fceb..      ← Create annotated tag (recomended), stored as FULL OBJECTS.
-                                            It contains tag author/mail/date, tagging message (-m).
-                                            can be checksummed and optionally SIGNED/VERIFIED with GPG.
-                                            if commit ommited (9fceb..) HEAD is used)
-  $ git tag v1.4-lw                       ← Create lightweight tag ("alias" for commit-checksum)
-
-                                            SHARING/PUSHING TAGS
-                                            WARN : 'git push' does NOT push tags automatically
-  $ git push origin v1.5                  ← Share 'v1.5' tag to remote 'origin' repo
-  $ git push origin --tags                ← Share all tags
-  $ git tag -d v1.4-lw                    ← Delete local tag (remote tags will persist)
-  $ git push origin --delete v1.4-lw      ← Delete remote tag. Alt 1
-  $ git push origin :refs/tags/v1.4-lw    ← Delete remote tag. Alt 2
-                    └────────────────┴─── ← null value before the colon is being pushed to the
-                                             remote tag name, effectively deleting it.
-  $ git show-ref --tags                   ← show mapping tag ←→ commit
-  → 75509731d28d... refs/tags/v2.1.0-rc.2
-  → 8fc0a3af313d... refs/tags/v2.1.1
-  → ...
-                                            REVERTING CHANGES
- $ git reset --hard HEAD~1                ← revert to last-but-one (~1) local commit (Not yet pushed)
-                                            (effectively removing last commit from local history)
- $ git checkout path/fileN                ← revert file not yet "git-add"ed or removed from FS to last commited ver.
- $ git checkout HEAD^ -- path/...         ← revert commited file to last-but-one commit version
- $ git revert ${COMMIT_ID}                ← add new commit cancelling changes in $COMMIT_ID. Previous
-                                            commit is not removed from history. Both are kept on history.
- $ git clean -n                           ← Discard new "git-added" files. -n == -dry-run, -f to force
- $ git reset path/fileA                   ← Remove from index file "git-added" by mistake (with 'git add .')
-                                            (probably must be added to .gitignore)
-
- $ git checkout N -- path1                ← Recover file at commit N (or tag N)
- $ git checkout branch1 -- path1          ← Recover file from branch1
-                                            origin/branch1 to recover from upstream -vs local- branch.
-
-
-                                            CLONING REMOTES
-  $ git clone --depth=1  \                ← Quick/fast-clone (--depth=1) with history truncated to last N commits.
-                                            Very useful in CI/CD tasks.
-        --single-branch \                 ← Clone only history leading to tip-of-branch (vs cloning all branches)
-                                            (implicit by previous --depth=... option)
-        --branch '1.3' \                  ← branch to clone (defaults to HEAD)
-        ${GIT_URL}                        To clone submodules shallowly, use also --shallow-submodules.
+  |  PLAYING WITH BRANCHES ────────────────────────────────────────────────────
+  |  $ git checkout    newBranch             # <·· swith to local branch (use -b to create if not yet created)
+  |  $ git branch -av                        # <·· List (-a)ll existing branches
+  |  $ git branch -d branchToDelete          # <·· -d: Delete branch
+  |  $ git checkout --track "remote/branch"  # <·· Create new tracking branch
+  |  $ git checkout v1.4-lw                  # <·· Move back to (DETACHED) commit. ('git checkout HEAD' to reattach)
+  |  $ git remote update origin --prune      # <·· Update local branch to mirror remote branches in 'origin'
+  |
+  |  VIEW COMMIT/CHANGES HISTORY ───────────────────────────────────────────────
+  |  $ git log -n 10                         # <·· -n 10. See only 10 last commits.
+  |  $ git log -p path_to_file               # <·· See log for file with line change details (-p: Patch applied)
+  |  $ git log --all --decorate \            # <·· PRETTY BRANCH PRINT Alt.1
+  |    --oneline --graph                     #     REF <https://stackoverflow.com/questions/1057564/pretty-git-branch-graphs>
+  |  $ git log --graph --abbrev-commit \     # <·· PRETTY BRANCH PRINT  Alt.2
+  |     --decorate --date=relative --all
+  |
+  |
+  |  UPDATE ALL REMOTE BRANCHES TO LOCAL REPO ──────────────────────────────────
+  |  (REF: https://stackoverflow.com/questions/10312521/how-to-fetch-all-git-branches=
+  |  for remote in `git branch -r`;          # <·· add remote branches on server NOT yet tracked locally
+  |     do git branch \                      #   (pull only applies to already tracked branches)
+  |        --track ${remote#origin/} $remote;
+  |  done
+  |
+  |  $ git fetch --all                       # ← == git remote update.
+  |                                          #    updates local copies of remote branches
+  |                                          #    probably unneeded?. pull already does it.
+  |                                          #    It is always SAFE BUT ...
+  |                                          #    - It will NOT update local branches (tracking remote branches)
+  |                                          #    - It will NOT create local branches (tracking remote branches)
+  |  $ git pull --all                        # ← Finally update all tracked branches.
+  |
+  |  TAGS ──────────────────────────────────────────────────────────────────────
+  |  $ git tag                               # <·· List tags
+  |  → v2.1.0-rc.2
+  |  → ...
+  |  $ git tag -a v1.4 -m "..." 9fceb..      # <·· Create annotated tag (recomended), stored as FULL OBJECTS.
+  |                                                It contains tag author/mail/date, tagging message (-m).
+  |                                                can be checksummed and optionally SIGNED/VERIFIED with GPG.
+  |                                                if commit ommited (9fceb..) HEAD is used)
+  |  $ git tag v1.4-lw                       # <·· Create lightweight tag ("alias" for commit-checksum)
+  |
+  |  SHARING/PUSHING TAGS ──────────────────────────────────────────────────────
+  |                                            WARN : 'git push' does NOT push tags automatically
+  |  $ git push origin v1.5                  # <·· Share 'v1.5' tag to remote 'origin' repo
+  |  $ git push origin --tags                # <·· Share all tags
+  |  $ git tag -d v1.4-lw                    # <·· Delete local tag (remote tags will persist)
+  |  $ git push origin --delete v1.4-lw      # <·· Delete remote tag. Alt 1
+  |  $ git push origin :refs/tags/v1.4-lw    # <·· Delete remote tag. Alt 2
+  |                    └────────────────┴─── # <·· null value before the colon is being pushed to the
+  |                                                remote tag name, effectively deleting it.
+  |  $ git show-ref --tags                   # <·· show mapping tag ←→ commit
+  |  → 75509731d28d... refs/tags/v2.1.0-rc.2
+  |  → 8fc0a3af313d... refs/tags/v2.1.1
+  |  → ...
+  | 
+  |  REVERTING CHANGES ─────────────────────────────────────────────────────────
+  |  $ git reset --hard HEAD~1              # <·· revert to last-but-one (~1) local commit (Not yet pushed)
+  |                                           (effectively removing last commit from local history)
+  |  $ git checkout path/fileN              # <·· revert file not yet "git-add"ed or removed from FS to last commited ver.
+  |  $ git checkout HEAD^ -- path/...       # <·· revert commited file to last-but-one commit version
+  |  $ git revert ${COMMIT_ID}              # <·· add new commit cancelling changes in $COMMIT_ID. Previous
+  |                                           commit is not removed from history. Both are kept on history.
+  |  $ git clean -n                         # <·· Discard new "git-added" files. -n == -dry-run, -f to force
+  |  $ git reset path/fileA                 # <·· Remove from index file "git-added" by mistake (with 'git add .')
+  |                                           (probably must be added to .gitignore)
+  |  
+  |  $ git checkout N -- path1              # <·· Recover file at commit N (or tag N)
+  |  $ git checkout branch1 -- path1        # <·· Recover file from branch1
+  |                                           origin/branch1 to recover from upstream -vs local- branch.
+  |  
+  |  CLONING REMOTES ───────────────────────────────────────────────────────────
+  |   $ git clone --depth=1  \              # <·· Quick/fast-clone (--depth=1) with history truncated to last N commits.
+  |                                               Very useful in CI/CD tasks.
+  |         --single-branch \               # <·· Clone only history leading to tip-of-branch (vs cloning all branches)
+  |                                               (implicit by previous --depth=... option)
+  |         --branch '1.3' \                # <·· branch to clone (defaults to HEAD)
+  |         ${GIT_URL}                            To clone submodules shallowly, use also --shallow-submodules.
   ```
 
-## Track code changes
+## TRACK CODE CHANGES
 
-REF: @[https://git-scm.com/book/en/v2/Appendix-C:-Git-Commands-Debugging]
-
-Methods to track who changed and/or when a change(bug) was introduced include:
-
-### git bisect : find first commit introducing a change(bug, problem, ...) through automatic binary search .
-@[https://git-scm.com/book/en/v2/Git-Tools-Debugging-with-Git#_binary_search]
-* git-blame helps to find recently introduced bugs.
-* git-bisect helps find bugs digged many commits down in history.
-* Ussage example:
-  ```
-                               MANUAL BISECT SEARCH
-    $ git bisect start       ← start investigating issue.
-    (run tests)
-    $ git bisect bad         ← tell git that current commit is broken
-    (run tests)
-    $ git bisect good v1.0   ← tell git that current commit is OK
-    Bisecting: 6 revisions↲  ← Git counts about 12 commits between
-    left to test after this    "good" and "bad" and checks out middle one
-    (run tests)
-    ...
-    b04... is 1st bad commit ← repeat git bisect good/bad until reaching
-                               1st bad commit.
-    $ git bisect reset       ← DON'T FORGET: reset after finding commit.
-
-                               AUTOMATING BISECT SEARCH
-  $ git bisect start HEAD v1.0
-  $ git bisect run test.sh   ← test.sh must return 0 for "OK" results
-                               non-zero otherwise.
-  ```
-
-### git blame : annotates lines-of-files with:
-@[https://git-scm.com/book/en/v2/Git-Tools-Debugging-with-Git#_file_annotation]
+- REF: <https://git-scm.com/book/en/v2/Appendix-C:-Git-Commands-Debugging>
 
   ```
-  $ git blame -L 69,82 -C path2file  ← display last commit+committer for a given line
-                                       -C: try to figure out where snippets of code
-                                           came from (copied/file moved)
-  b8b0618cf6fab (commit_author1 2009-05-26 ... 69) ifeq
-  b8b0618cf6fab (commit_author1 2009-05-26 ... 70)
-  ^1da177e4c3f4 (commit_author2 2005-04-16 ... 71) endif
-  ^                                            ^^
-  prefix '^' marks initial commit for line    line
+  | ────────────────────────────────────────────────────────────────────────────
+  | git bisect: Find when a bug was introduced quickly using using binary search
+  | <https://git-scm.com/book/en/v2/Git-Tools-Debugging-with-Git#_binary_search>
+  | ────────────────────────────────────────────────────────────────────────────
+  |   $ git bisect start       ← start investigating issue.
+  |   (run tests)
+  |   $ git bisect bad         ← tell git that current commit is broken
+  |   (run tests)
+  |   $ git bisect good v1.0   ← tell git that current commit is OK
+  |   Bisecting: 6 revisions↲  ← Git counts about 12 commits between
+  |   left to test after this    "good" and "bad" and checks out middle one
+  |   (run tests)
+  |   ...
+  |   b04... is 1st bad commit ← repeat git bisect good/bad until reaching
+  |                              1st bad commit.
+  |   $ git bisect reset       ← DON'T FORGET: reset after finding commit.
+  |
+  |                              AUTOMATING BISECT SEARCH
+  | $ git bisect start HEAD v1.0
+  | $ git bisect run test.sh   ← test.sh must return 0 for "OK" results
+  |                              non-zero otherwise.
+  |
+  | git blame: Who changed what and when it was changed ────────────────────────
+  | <https://git-scm.com/book/en/v2/Git-Tools-Debugging-with-Git#_file_annotation>
+  |
+  | $ git blame -L 69,82 -C path2file  ← display last commit+committer for a given line
+  |                                      -C: try to figure out where snippets of code
+  |                                          came from (copied/file moved)
+  | b8b0618cf6fab (commit_author1 2009-05-26 ... 69) ifeq
+  | b8b0618cf6fab (commit_author1 2009-05-26 ... 70)
+  | ^1da177e4c3f4 (commit_author2 2005-04-16 ... 71) endif
+  | ^                                            ^^
+  | prefix '^' marks initial commit for line    line
+  |
+  | ────────────────────────────────────────────────────────────────────────────
+  | git grep : find any string/regex in any file in any commit, work.directory
+  |            (default) or index.
+  | <https://git-scm.com/book/en/v2/Git-Tools-Searching#_git_grep>
+  | TIP: Much faster than standard 'grep' UNIX command!!!
+  | - See also ripgrep, claiming to be faster than `git grep`
+  |   (<https://github.com/BurntSushi/ripgrep>)
+  | ────────────────────────────────────────────────────────────────────────────
+  | $ git grep -n      regex01  ← display file:line   matching regex01 in working dir.
+  |                               -n/--line-number: display line number
+  |                               Use -p / --show-functions to display enclosing function
+  |                               (Quick way to check where something is being called from)
+  | $ git grep --count regex01  ← Summarize file:match_count matching regex01 in working dir.
+  |
+  | $ git grep                  ← display file:line matching
+  |     -n -e '#define' --and \ ← '#define' and
+  |      \( -e ABC -e DEF \)      ( ABC or DEF )
+  |     --break --heading \     ← split up output into more readable format
+  |     "v1.8.0"                      ← search only in commit with tag "v1.8.0"
+  |
+  | ────────────────────────────────────────────────────────────────────────────
+  | LOG SEARCHING 
+  | ────────────────────────────────────────────────────────────────────────────
+  |
+  | $ git log -S ABC --oneline # <· log only commits changing the number-of-occurrences of "ABC"
+  |                            #    Replace -S by -G for REGEX seearch (vs string).
+  | ef49a7a commit msg ...
+  | 9affa18 commit msg ...
+  | ...
+  |
+  | -- Line history Search -----------------------------------------------------
+  | 
+  | $ git log -L :funABC:file.c ← git will try to figure out what the bounds of
+  |                               function funABC are, then look through history and
+  |                               display every change made.
+  |                               If programming lang. is not supported, regex can be
+  |                               used like {: -L '/int funABC/',/^[}]/:file.c
+  |                               range-of-lines or single-line-number can be used to
+  |                               filter out non interesting results.
   ```
 
-### git grep : find any string/regex in any file in any commit, working directory (default) or index.
-@[https://git-scm.com/book/en/v2/Git-Tools-Searching#_git_grep]
-* Much faster than standard 'grep' UNIX command!!!
+## GIT PLUMBINGS: "Low level API" directly managing the Object storag
+
+  Summary extracted from:
+
+- <https://alexwlchan.net/a-plumbers-guide-to-git/1-the-git-object-store/>
+- <https://alexwlchan.net/a-plumbers-guide-to-git/2-blobs-and-trees/>
+- <https://alexwlchan.net/a-plumbers-guide-to-git/3-context-from-commits/>
+- <https://alexwlchan.net/a-plumbers-guide-to-git/4-refs-and-branches/>
+
   ```
-  $ git grep -n      regex01  ← display file:line   matching regex01 in working dir.
-                                -n/--line-number: display line number
-                                Use -p / --show-functions to display enclosing function
-                                (Quick way to check where something is being called from)
-  $ git grep --count regex01  ← Summarize file:match_count matching regex01 in working dir.
-
-  $ git grep                  ← display file:line matching
-      -n -e '#define' --and \ ← '#define' and
-       \( -e ABC -e DEF \)      ( ABC or DEF )
-      --break --heading \     ← split up output into more readable format
-      "v1.8.0"                      ← search only in commit with tag "v1.8.0"
-  ```
-
-* See also ripgrep, claiming to be faster than `git grep`
-  `https://github.com/BurntSushi/ripgrep`
-
-
-### Git Log Searching:
-
-  ```sh
-  $ git log -S ABC --oneline ← log only commits changing the number-of-occurrences of "ABC"
-  e01503b commit msg ...       Replace -S by -G for REGEX (vs string).
-  ef49a7a commit msg ...
-  ```
-
-### Line history Search:
-  ```
-  $ git log -L :funABC:file.c ← git will try to figure out what the bounds of
-                                function funABC are, then look through history and
-                                display every change made.
-                                If programming lang. is not supported, regex can be
-                                used like {: -L '/int funABC/',/^[}]/:file.c
-                                range-of-lines or single-line-number can be used to
-                                filter out non interesting results.
-  ```
-
-## Git Plumbings
-
-* Summary extracted from:
-  ```
-  @[https://alexwlchan.net/a-plumbers-guide-to-git/1-the-git-object-store/]
-  @[https://alexwlchan.net/a-plumbers-guide-to-git/2-blobs-and-trees/]
-  @[https://alexwlchan.net/a-plumbers-guide-to-git/3-context-from-commits/]
-  @[https://alexwlchan.net/a-plumbers-guide-to-git/4-refs-and-branches/]
-
-$ git init   ← creates an initial layout containing (Alternatively $ $git clone ... ª from existing remote repo )
-  ✓.git/objects/, ✓ .git/refs/heads/master, ✓ .git/HEAD (pointing to heads/master initially)
-  ✓.git/description (used by UIs), ✓.git/info/exclude (local/non-commited .gitignore),
-  ✓.git/config, ✓.git/hooks/
-
-   ~/.git/index  ←············  binary file with staging area data (files 'git-added' but not yet commited)
-                                Use (porcelain) $ $ git ls-files   to see indexes files (git blobs)
-        ┌─.git/objects/  (  GIT OBJECT STORE  ) ─────────┐      $ $ echo "..." > file1.txt
-        │                                                │      $ $ git hash─object ─w file1.txt
-┌········→ • /af/3??? •···→ •/a1/12???                   │          └───────────┬────────────────┘
-·       │  │(2nd commit)                      ┌············ save to Object Store┘content─addressable File System.
-·       │  v                                  v          │  WARN : Original file name lost. We need to add a mapping
-· ┌··┬···→ • /5g/8... •···→ • /32/1... •┬··→• /a3/7... • │   (file_name,file_attr) ←→ hash to index like:
-· ·  ·  │   (1st commit)    ┌··········┘├··→• /23/4... • │   $ $ git update-index --add file1.txt (git Plumbing)
-· ·  ·  │                   ·           └···┐            │┌· Finally an snapshot of the index is created like a tree:
-· ·  ·  │                   ·               ·            │·$ $ git write-tree                 .git/index snapshot to tree
-· ·  ·  │                   ├─····························┘  ( /af/9???... tree object will be added to Obj.Store)
-· ·  ·  │                   ·               ·            │ $ $ git cat-file -p ${tree_hash}
-· ·  ·  │                   ·               ·            │     100644 blob b133......  file1.txt  ← Pointer+file_name to blob
-· ·  ·  │                   ·               ·            │     040000 tree 8972......  subdir...  ← Pointer+"dirname" to (sub)tree
-· ·  ·  │                   ·               ·            │     ...
-· ·  ·  │                   ·               ·            │     ^^^^^^ ^^^^ ^^^^^^^^^^  ^^^^^^^^^^^^
-· ·  ·  │                   ·               ·            │     file   type content     Name of file
-· ·  ·  │                   ·               ·            │     permis.     address.ID
-· ·  ·  │                   ·               ·            │ ☞KEY-POINT:☜
-· ·  ·  │                   v               v            │  Starting at a tree, we can rebuild everything it points to
-· ·  ·  │                   • /af/9... •┬··→• /12/d... • │  All that rest is mapping trees to some "context" in history.
-· ·  ·  │                               └··→• /34/2... • │
-· ·  ·  │  ^^^^^^^^^^^^     ^^^^^^^^^^^^    ^^^^^^^^^^^^ │  Plumbing "workflow" summary:
-· ·  ·  │    commits          Trees           Blobs      │← Add 1+ Blobs → Update Index → Snapshot to Tree
-· ·  ·  └────────────────────────────────────────────────┘  → create commit pointing to tree of "historical importance"
-· ·  └·······················─┬──────────────────────┐        → create friendly refs to commits
-· · $ $ echo "initial commit" | git commit-tree 321.....   ← create commit pointing to tree of "historical importance"
-· ·     af3...                                               Use also flag '-p $previous_commit' to BUILD A LINEAR ORDERED
-· ·                                                          HISTORY OF COMMITS !!!
-· ·
-· · $ $ git cat-file -p af3....                            -p: show parent of given commit
-· ·   tree 3212f923d36175b185cfa9dcc34ea068dc2a363c   ← Pointer to tree of interest
-· ·   author    Alex Chan ... 1520806168 +0000        ← Context with author/commiter/
-· ·   committer Alex Chan ... 1520806168 +0000          creation time/ ...
-· ·   ...
-· · "DEBUGGING" TIP: Use 'git cat-file -p 12d...' for pretty print ('-t' to display/debug object type)
-· ·
-· └ ~/.git/refs/heads/dev     ←  ~/.git/HEAD (pointer to active ref)
-└·· ~/.git/refs/heads/master af3...  ← Create friendly "master" alias to a commit like:
-                      ^^^^^^         $ $ git update-ref refs/heads/master   ← With plumbing each new commit requires a new
-    refs in heads/ folder are        $ $ cat  .git/refs/heads/master          git update-ref.
-    COMMONLY CALLED BRANCHS            af3... (pointer to commit)
-                                       Now $ $ git cat-file -p master   "==" $ $ git cat-file -p af3...
-
-                                     $ $ git rev-parse master               ← check value of ref
-                                       af3...
-
-                                     $ $ git update-ref refs/heads/dev     ← Create second branch (ref in heads/ folder)
-                                     $ $ git branch
-                                       dev
-                                     * master ←·························  current branch is determined by (contents of)
-                                     $ $ cat .git/HEAD                     ~/.git/HEAD. Using plumbing we can change it like
-                                     ref: refs/heads/master                $ git symbolic-ref HEAD refs/heads/dev
+  | $ git init
+  | └────┬───┘
+  | Creates initial layout similat to: (or just `git clone ...` existing repo)
+  | .git/
+  |  index      <············  binary file with staging area data (files 'git-added' but not yet commited)
+  |  |                         Use (porcelain) $ $ git ls-files   to see indexes files (git blobs)
+  |  ├─ objects/
+  |  ├─ refs/heads/master
+  |  ├─ HEAD (pointing to heads/master initially)
+  |  ├─ description (used by UIs)
+  |  ├─ info/exclude (local/non─commited .gitignore),
+  |  ├─ config/
+  |  └─ hooks/
+  | 
+  |         ┌─.git/objects/  (  GIT OBJECT STORE  ) ─────────┐      $ $ echo "..." > file1.txt
+  |         │                                                │      $ $ git hash-object -w file1.txt
+  | ┌········→ • /af/3??? •···→ •/a1/12???                   │          └───────────┬────────────────┘
+  | ·       │  │(2nd commit)                      ┌············ save to Object Store content-addressable File System.
+  | ·       │  v                                  v          │  WARN : Original file name lost. We need to add a mapping
+  | · ┌··┬···→ • /5g/8... •···→ • /32/1... •┬··→• /a3/7... • │   (file_name,file_attr) ←→ hash to index like:
+  | · ·  ·  │   (1st commit)    ┌··········┘├··→• /23/4... • │   $ $ git update-index --add file1.txt (git Plumbing)
+  | · ·  ·  │                   ·           └···┐            │┌· Finally an snapshot of the index is created like a tree:
+  | · ·  ·  │                   ·               ·            │·$ $ git write-tree                 .git/index snapshot to tree
+  | · ·  ·  │                   ├─····························┘  ( /af/9???... tree object will be added to Obj.Store)
+  | · ·  ·  │                   ·               ·            │ $ $ git cat-file -p ${tree_hash}
+  | · ·  ·  │                   ·               ·            │     100644 blob b133......  file1.txt  ← Pointer+file_name to blob
+  | · ·  ·  │                   ·               ·            │     040000 tree 8972......  subdir...  ← Pointer+"dirname" to (sub)tree
+  | · ·  ·  │                   ·               ·            │     ...
+  | · ·  ·  │                   ·               ·            │     ^^^^^^ ^^^^ ^^^^^^^^^^  ^^^^^^^^^^^^
+  | · ·  ·  │                   ·               ·            │     file   type content     Name of file
+  | · ·  ·  │                   ·               ·            │     permis.     address.ID
+  | · ·  ·  │                   ·               ·            │ ☞KEY-POINT:☜
+  | · ·  ·  │                   v               v            │  Starting at a tree, we can rebuild everything it points to
+  | · ·  ·  │                   • /af/9... •┬··→• /12/d... • │  All that rest is mapping trees to some "context" in history.
+  | · ·  ·  │                               └··→• /34/2... • │
+  | · ·  ·  │  ^^^^^^^^^^^^     ^^^^^^^^^^^^    ^^^^^^^^^^^^ │  Plumbing "workflow" summary:
+  | · ·  ·  │    commits          Trees           Blobs      │← Add 1+ Blobs → Update Index → Snapshot to Tree
+  | · ·  ·  └────────────────────────────────────────────────┘  → create commit pointing to tree of "historical importance"
+  | · ·  └·······················─┬──────────────────────┐        → create friendly refs to commits
+  | · · $ $ echo "initial commit" | git commit-tree 321.....   ← create commit pointing to tree of "historical importance"
+  | · ·     af3...                                               Use also flag '-p $previous_commit' to BUILD A LINEAR ORDERED
+  | · ·                                                          HISTORY OF COMMITS !!!
+  | · ·
+  | · · $ $ git cat-file -p af3....                            -p: show parent of given commit
+  | · ·   tree 3212f923d36175b185cfa9dcc34ea068dc2a363c   ← Pointer to tree of interest
+  | · ·   author    Alex Chan ... 1520806168 +0000        ← Context with author/commiter/
+  | · ·   committer Alex Chan ... 1520806168 +0000          creation time/ ...
+  | · ·   ...
+  | · · "DEBUGGING" TIP: Use 'git cat-file -p 12d...' for pretty print ('-t' to display/debug object type)
+  | · ·
+  | · └ ~/.git/refs/heads/dev     ←  ~/.git/HEAD (pointer to active ref)
+  | └·· ~/.git/refs/heads/master af3...  ← Create friendly "master" alias to a commit like:
+  |                       ^^^^^^           $ git update-ref refs/heads/master   ← With plumbing each new commit requires a new
+  |     refs in heads/ folder are          $ cat  .git/refs/heads/master          git update-ref.
+  |     COMMONLY CALLED BRANCHS            af3... (pointer to commit)
+  |                                        Now $ $ git cat-file -p master   "==" $ $ git cat-file -p af3...
+  | 
+  |                                        $ git rev-parse master               ← check value of ref
+  |                                        af3...
+  | 
+  |                                        $ git update-ref refs/heads/dev     ← Create second branch (ref in heads/ folder)
+  |                                        $ git branch
+  |                                        dev
+  |                                      * master ←·························  current branch is determined by (contents of)
+  |                                        $ cat .git/HEAD                     ~/.git/HEAD. Using plumbing we can change it like
+  |                                      ref: refs/heads/master                $ git symbolic-ref HEAD refs/heads/dev
   ```
 
-## merge/rebase/cherry-pick
+## merge vs rebase vs cherry-pick commits
 
-* REF: @[https://stackoverflow.com/questions/9339429/what-does-cherry-picking-a-commit-with-git-mean],
-  @[https://git-scm.com/docs/git-cherry-pick]
+* REF: 
+  - <https://stackoverflow.com/questions/9339429/what-does-cherry-picking-a-commit-with-git-mean>
+  - <https://git-scm.com/docs/git-cherry-pick>
+
   ```
- ┌ INITIAL STATE ──────────────────────────────────────────────────────────
- │ • → • → • → • →H1          ← refs/heads/branch01
- │         │
- │         └─→ •x1→ •x2→ •H2  ← refs/heads/branch02
- └────────────────────────────────────────────────────────────────────────
- ┌ MERGE @[https://git-scm.com/docs/git-merge]────────────────────────────
- │ add changes for other branch as single "M"erge commit
- │ $ $ git checkout branch01 && git merge branch02
- │ • → • → • → • → •H1 → •M  : M = changes of ( x1+x2+H2 )
- │         │             ↑
- │         └─→ •x1→ •x2→ •H2
- └────────────────────────────────────────────────────────────────────────
- ┌ REBASE @[https://git-scm.com/docs/git-rebase]──────────────────────────
- │ "replay" full list of commits to head of branch
- │ $ $ git checkout branch01 && git rebase branch02
- │ • → • → • → • →H1 •x1→ •x2→ •H2
- │         │
- │         └─→ •x1→ •x2→ •H2
- └────────────────────────────────────────────────────────────────────────
- ┌ Squash N last commit into single one  (rebase interactively) ──────────
- │
- │ • → • → • → • →H1      ← refs/heads/branch01
- │         │
- │         └─→ • H2' (x1 + x2)
- │
- │ $ $ git rebase --interactive HEAD~2
-
- │   pick 64d03e last-but-2 commit comment ← Different interesing actions are available
- │   pick 87718a last-but-1 commit comment   Replace "pick" by "s"(quash) to mark commit
- │   pick 83118f HEAD       commit comment   to be squashed into single commit.
- │                                            ·
- │   s 64d03e last-but-2 commit comment     ←·┘
- │   s 87718a last-but-1 commit comment     (Save and close editor. Git will combine all
- │   s 83118f HEAD       commit comment     commits into first in list)
- │                                          The editor will "pop up" again asking to enter
- │                                          a commit message.
- └────────────────────────────────────────────────────────────────────────
-
- ┌ CHERRY-PICK @[https://git-scm.com/docs/git-cherry-pick]────────────────
- │ "Pick" unique-commits from branch and apply to another branch
- │ $ $ git checkout branch02 && git cherry-pick  -x branch02
- │ ··· • → • →H1 → ...                          └┬┘
- │     │                  • Useful if "source" branch is public, generating
- │     └─→ • → • →H2 →      standardized commit message allowing co-workers
- │                          to still keep track of commit origin.
- │                        • Notes attached to the commit do NOT follow the
- │                          cherry-pick. Use $ $ git notes copy "from" "to"
- └────────────────────────────────────────────────────────────────────────
+ | ┌ INITIAL STATE ──────────────────────────────────────────────────────────
+ | │ • → • → • → • →H1          ← refs/heads/branch01
+ | │         │
+ | │         └─→ •x1→ •x2→ •H2  ← refs/heads/branch02
+ | └────────────────────────────────────────────────────────────────────────
+ | ┌ MERGE <https://git-scm.com/docs/git-merge> ────────────────────────────
+ | │ add changes for other branch as single "M"erge commit
+ | │ $ $ git checkout branch01 && git merge branch02
+ | │ • → • → • → • → •H1 → •M  : M = changes of ( x1+x2+H2 )
+ | │         │             ↑
+ | │         └─→ •x1→ •x2→ •H2
+ | └────────────────────────────────────────────────────────────────────────
+ | ┌ REBASE <https://git-scm.com/docs/git-rebase> ──────────────────────────
+ | │ "replay" full list of commits to head of branch
+ | │ $ $ git checkout branch01 && git rebase branch02
+ | │ • → • → • → • →H1 •x1→ •x2→ •H2
+ | │         │
+ | │         └─→ •x1→ •x2→ •H2
+ | └────────────────────────────────────────────────────────────────────────
+ | ┌ Squash N last commit into single one  (rebase interactively) ──────────
+ | │
+ | │ • → • → • → • →H1      ← refs/heads/branch01
+ | │         │
+ | │         └─→ • H2' (x1 + x2)
+ | │
+ | │ $ $ git rebase --interactive HEAD~2
+ |
+ | │   pick 64d03e last-but-2 commit comment ← Different interesing actions are available
+ | │   pick 87718a last-but-1 commit comment   Replace "pick" by "s"(quash) to mark commit
+ | │   pick 83118f HEAD       commit comment   to be squashed into single commit.
+ | │                                            ·
+ | │   s 64d03e last-but-2 commit comment     ←·┘
+ | │   s 87718a last-but-1 commit comment     (Save and close editor. Git will combine all
+ | │   s 83118f HEAD       commit comment     commits into first in list)
+ | │                                          The editor will "pop up" again asking to enter
+ | │                                          a commit message.
+ | └────────────────────────────────────────────────────────────────────────
+ |
+ | ┌ CHERRY-PICK <https://git-scm.com/docs/git-cherry-pick> ────────────────
+ | │ "Pick" unique-commits from branch and apply to another branch
+ | │ $ $ git checkout branch02 && git cherry-pick  -x branch02
+ | │ ··· • → • →H1 → ...                          └┬┘
+ | │     │                  • Useful if "source" branch is public, generating
+ | │     └─→ • → • →H2 →      standardized commit message allowing co-workers
+ | │                          to still keep track of commit origin.
+ | │                        • Notes attached to the commit do NOT follow the
+ | │                          cherry-pick. Use $ $ git notes copy "from" "to"
+ | └────────────────────────────────────────────────────────────────────────
   ```
 [[}]]
 
 
+[[{security.signed_content]]
+## GPG signed commits 
+
+- <https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work>
+
+  ```
+  | PRESETUP: 
+  | - GPG and GPG signing keys initialized on local machine.
+  |
+  | $ git config --global \
+  |       user.signingkey 0A46826A            #  <·· STEP 1: Set default key for tags+commits sign.
+  |
+  | $ git tag -s v1.  -m 'my signed 1.5 tag'  # <·· Signing tags (follow instructions to sign)
+  |           └────┴─·······························-s v1.   replaces --anotate
+  |
+  | $ git show v1.5
+  | tag v1.5
+  | ...
+  |
+  | my signed 1.5 tag
+  | -----BEGIN PGP SIGNATURE-----
+  | Version: GnuPG v1
+  |
+  | iQEcBAABAgAGBQJTZbQlAAoJEF0+sviABDDrZbQH/09PfE51KPVPlanr6q1v4/Ut
+  | ...
+  | =EFTF
+  | -----END PGP SIGNATURE-----
+  |
+  | ...
+  |
+  | $ git tag -v v1.4.2.1  # 
+  |           └─────────┴─ ·· Verify signature. TIP: signer’s pub.key must be in local keyring
+  | ...
+  | gpg: Signature made Wed Sep 13 02:08:25 2006 PDT using DSA key ID
+  | F3119B9A
+  | gpg: Good signature from "Junio C Hamano <junkio@cox.net>"
+  | gpg:                 aka "[jpeg image of size 1513]"
+  | Primary key fingerprint: 3565 2A26 2040 E066 C9A7  4A7D C0C6 D9A4
+  | F311 9B9A
+  | └──────────────────────────┬────────────────────────────────────┘
+  |  Or error similar to next one will be displayed:
+  |    gpg: Can't check signature: public key not found
+  |  error: could not verify the tag 'v1.4.2.1'
+  |
+  | $ git commit -S $keyId -m '...'  # <·· Sign Commit (git 1.7.9+)
+  |
+  | $ git log --show-signature -1    # <·· Verify Signatures
+  | commit 5c3386cf54bba0a33a32da706aa52bc0155503c2
+  | gpg: Signature made Wed Jun  4 19:49:17 2014 PDT using RSA key ID
+  | 0A46826A
+  | gpg: Good signature from "1stName 2ndName (Git signing key)
+  | <user01@gmail.com>"
+  | ...
+  | 
+  | $ git log --pretty="format:%h %G? %aN  %s"
+  |                               ^^^
+  |                               check and list found signatures
+  |        Ex. Output:
+  |   5c3386cG   1stName 2ndName  Signed commit
+  |   ca82a6dR   1stName 2ndName  Change the version number
+  |   085bb3bR   1stName 2ndName  Remove unnecessary test code
+  |   a11bef0R   1stName 2ndName  Initial commit
+  | 
+  | 
+  | $ git merge \
+  |   --verify-signatures -S \
+  |   signed-branch-to-merge  # Verify that every commit in branches to be
+  |                           # merged are properly signed and also signs
+  |                           # the resulting merge commit (-S)
+  | 
+  | $ git pull --verify-signatures # Verify signature at pull time [[qa.fail_fast]]
+  ```
+[[}]]
 
 [[{]]
-## GitOps: Git as single source of truth
-
-* for declarative infrastructure and applications. Every developer within a 
-  team can issue pull requests against a Git repository, and when merged, a "diff 
-  and sync" tool detects a difference between the intended and actual state of 
-  the system. Tooling can then be triggered to update and synchronise the 
-  infrastructure to the intended state.  
-  <https://www.weave.works/blog/gitops-operations-by-pull-request>
-
-[[}]]
-
-
-[[{security.secret_management,security.signed_content,PM.TODO.now]]
-## GPG signed commits 
-@[https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work]
-
-  ```
-  GPG PRESETUP
-
-  See @[General/cryptography_map.html?id=pgp_summary] for a summary on
-  how to generate and manage pgp keys.
-
-  GIT PRESETUP
-  $ git config --global \
-        user.signingkey 0A46826A  ← STEP 1: Set default key for tags+commits sign.
-
-  $ git tag -s v1.  -m 'my signed 1.5 tag'  ←   Signing tags
-            └──┬──┘                           (follow instructions to sign)
-          replaces -a/--anotate
-
-  $ git show v1.5
-  tag v1.5
-  Tagger: ...
-  Date:   ...
-
-  my signed 1.5 tag
-  -----BEGIN PGP SIGNATURE-----
-  Version: GnuPG v1
-
-  iQEcBAABAgAGBQJTZbQlAAoJEF0+sviABDDrZbQH/09PfE51KPVPlanr6q1v4/Ut
-  ...
-  =EFTF
-  -----END PGP SIGNATURE-----
-
-  commit ...
-
-  $ git tag -  v1.4.2.1  ←   Verify tag
-            └┘             Note: signer’s pub.key must be in local keyring
-  object 883653babd8ee7ea23e6a5c392bb739348b1eb61
-  type commit
-  ...
-  gpg: Signature made Wed Sep 13 02:08:25 2006 PDT using DSA key ID
-  F3119B9A
-  gpg: Good signature from "Junio C Hamano <junkio@cox.net>"
-  gpg:                 aka "[jpeg image of size 1513]"
-  Primary key fingerprint: 3565 2A26 2040 E066 C9A7  4A7D C0C6 D9A4
-  F311 9B9A
-  └──────────────────────────┬────────────────────────────────────┘
-   Or error similar to next one will be displayed:
-     gpg: Can't check signature: public key not found
-   error: could not verify the tag 'v1.4.2.1'
-
-  $ git commit -  -  -m 'Signed commit'  ←   Signing Commits (git 1.7.9+)
-
-  $ git log --show-signature -1          ←   Verify Signatures
-  commit 5c3386cf54bba0a33a32da706aa52bc0155503c2
-  gpg: Signature made Wed Jun  4 19:49:17 2014 PDT using RSA key ID
-  0A46826A
-  gpg: Good signature from "1stName 2ndName (Git signing key)
-  <user01@gmail.com>"
-  Author: ...
-  ...
-$ $ git log --pretty="format:%h %G? %aN  %s"
-                                ^^^
-                                check and list found signatures
-         Ex. Output:
-    5c3386cG   1stName 2ndName  Signed commit
-    ca82a6dR   1stName 2ndName  Change the version number
-    085bb3bR   1stName 2ndName  Remove unnecessary test code
-    a11bef0R   1stName 2ndName  Initial commit
-
-
-You can also use the -S option with the git merge command to sign the
-resulting merge commit itself. The following example both verifies
-that every commit in the branch to be merged is signed and
-furthermore signs the resulting merge commit.
-
-
-$ git merge \             ←   # Verify signature at merge time
-  --verify-signatures \
-  -S \                    ← Sign merge itself.
-  signed-branch-to-merge  ← Commit must have been signed.
-
-$ git pull  \             ←   # Verify signature at pull time
-  --verify-signatures
-  ```
-[[}]]
-
-[[{PM.TODO.now]]
 ## Client-Side Hooks
-@[https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks]
 
-* Hook: Script execute before/after commiting.
-* Client-Hook: hooks executed in every client to force some global policy.
-* pre-commit hook:
-  * First script to be executed.
-  * used to inspect the snapshot that's about to be committed.
-    * Check you’ve NOT forgotten something
-    * make sure tests run
-    * Exiting non-zero from this hook aborts the commit
-  (can be bypassed with git commit *-no-verify flag)
-* prepare-commit-msg hook:
-  * Params:
-    * commit_message_path (template for final commit message)
-    * type of commit
-    * commit SHA-1 (if this is an amended commit)
-  * run before the commit message editor is fired up
-    but after the default message is created.
-  * It lets you edit the default message before the
-    commit author sees it.
-  * Used for non-normal-commits with auto-generated messages
-    * templated commit messages
-    * merge commits
-    * squashed commits
-    * amended commits
-* commit-msg hook:
-    * commit_message_path (written by the developer)
-* post-commit hook:
-  * (you can easily get the last commit by running git log -1 HEAD)
-  * Generally, this script is used for notification or something similar.
-* email-workflow  hooks:
-  * invoked by
-    ```
-    $ git am  # <·· Apply a series of (git-formated) serieds of patches 
-                    Sending patches by mail and then patching manually
-                    was the way to work before the existence of source
-                    control management systems (git, subversions, ...)
-    ```
-* applypatch-msg :
-  * Params:
-    * temp_file_path containing the proposed commit message.
-* pre-applypatch :
-  * confusingly, it is run after the patch is
-    applied but before a commit is made.
-  * can be used it to inspect the snapshot before making the commit,
-    run tests,  inspect the working tree with this script.
-* post-applypatch :
-  * runs after the commit is made.
-  * Useful to notify a group or the author of the patch
-    you pulled in that you’ve done so.
-* Others:
-  * pre-rebase hook:
-    * runs before you rebase anything
-    * Can be used to disallow rebasing any commits
-      that have already been pushed.
-  * post-rewrite hook:
-    * Params:
-      * command_that_triggered_the_rewrite:
-        * It receives a list of rewrites on stdin.
-    * run by commands that replace commits
-      such as 'git commit *-amend' and 'git rebase'
-      (though not by git filter*branch).
-    * This hook has many of the same uses as the
-      post*checkout and post-merge hooks.
-  * post-checkout hook:
-    * Runs after successful checkout
-    * you can use it to set up your working directory
-      properly for your project environment.
-      This may mean moving in large binary files that
-      you don't want source controlled, auto*generating
-      documentation, or something along those lines.
-  * post-merge hook:
-    * runs after a successful merge command.
-    * You can use it to restore data in the working tree
-      that Git can't track, such as permissions data.
-      It can likewise validate the presence of files
-      external to Git control that you may want copied
-      in when the working tree changes.
-  * pre-push hook:
-    * runs during git push, after the remote refs
-      have been updated but before any objects have
-      been transferred.
-    * It receives the name and location of the remote
-      as parameters, and a list of to*be-updated refs
-      through stdin.
-    * You can use it to validate a set of ref updates before
-      a push occurs (a non*zero exit code will abort the push).
+- <https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks>
+
+- Hook: Script execute BEFORE/AFTER commiting (either on git "remote server" o local machine).
+- Client-Hook: hooks executed in every client to force some global policy.
+
+ ```
+ | ${GIT_LOCAL_REPO_ROOT}/
+ | ....
+ | .git/
+ |  └ hook/     <············· (shell/python/...) scripts to be executed.
+ |    │                        File name for scripts are hardcoded.
+ |    ├ pre-commit  <········· First hook to be executed  Non-zero exit => abort commit
+ |    ·                        It is the most important/useful hook
+ |    ·                        used to fail-fast if something is wrong [[qa.fail_fast]]
+ |    ·                        Use cases:
+ |    ·                        - make sure tests pass OK (or fail-fast)
+ |    ·                        - nothing is missing (or fail-fast)
+ |    ·                        - linting is OK (or fail-fast)
+ |    ·                        - ...
+ |    ·                        (bypass hook with `-no-verify` flag, discouraged
+ |    ·                         but useful when the hook itself is not stable)
+ |    ├ pre-push        <······ runs during git push, after the remote refs
+ |    │                         have been updated but before any objects have
+ |    │                         been transferred.
+ |    │                         - It receives the name and location of the remote
+ |    │                           as parameters, and a list of to*be-updated refs
+ |    │                           through stdin.
+ |    │                         - You can use it to validate a set of ref updates before
+ |    │                           a push occurs (a non*zero exit code will abort the push).
+ |    │                         Can be used to complement pre-commit, executing 
+ |    │                         checks that we don't want to execute on each local commit
+ |    │                         but that we want to make sure that validate stuff
+ |    │                         before pushing to remote (AND SO AVOIDING TO BREAK SOMEONE
+ |    │                         ELSE WORK). Non-zero exit => abort push.
+ |    │
+ |    ├ prepare-commit-msg  <· Input Params (cli arguments)
+ |    ·                        - commit_message_path (template for final commit message)
+ |    ·                        - type of commit
+ |    ·                        - commit SHA-1 (if this is an amended commit)
+ |    ·                        - run before commit message editor "fires up"
+ |    ·                          (but after the default message is created).
+ |    ·                          to allow autocustomization of the message.
+ |    ·                          (The commit author can still see and modify it)
+ |    ·                        Use cases:
+ |    ·                        - templated commit messages
+ |    ·                        - merge/squashed/amended commits
+ |    ├ commit-msg      <······ Args: commit_message_path (written by the developer)
+ |    ├ post-commit hook <····· Random use-cases (send email, ...)
+ |    │
+ |    ├ email-workflow   <····· For "old" workflows using code changes (patches) sent 
+ |    ├ applypatch-msg          by e-mail  (git am ...)
+ |    ├ pre-applypatch
+ |    ├ post-applypatch
+ |    │
+ |    ├ pre-rebase      <······ Ex use-case: disallow rebasing for commits already pushed
+ |    ├ post-rewrite    <······ run by commands replacing commits (commit *-amend, rebase)
+ |    ├ post-checkout   <······ Runs after checkout OK. Use it to setup working dir, ...
+ |    │                         bootstrap artifacts not to be versioned, ...
+ |    ├ post-merge      <······ runs after merge was OK. Use case: restor data in
+ |    │                         working tree, permissions, ...
+ ```
 [[}]]
 
-[[{PM.TODO.now]]
+[[{]]
 ## Server-Side Hooks
 
-* Only a git system administrator can setup them.
-* Useful to enforce nearly any kind of policy in repository.
-* exit non-zero to rollback/reject any push and print error messages
-  back to the client.
-* Pre-receive hook:
-  * first script to run
-  * INPUT: STDIN reference list
-  * Rollback all references on non-zero exit
-  * Ex. Ussage: Ensure none of the updated references are non-fast-forwards.
-    do access control for all the refs and files being modifying by the push.
-* update hook : similar to pre-receive hook.but  run once for each branch the
-  push is trying to update  (ussually just one branch is updated).
-  * INPUT arguments:
-    * reference name (for branch),
-    * SHA-1
-    * SHA-1
-      ```
-      | refname= ARGV[0] ← ref.name for current branch
-      | oldrev = ARGV[1] ←  (SHA*1)  original (current-in-server)      ref. *1
-      | newrev = ARGV[2] ←  (SHA*1)  new      (intention to)      push ref. *1
-      | user   = $USER   ← "Injected" by git when using ssh.
-      | ¹: We can run over all commit from $oldrev to $newrev like
-      |    git rev*list \                        ← display a (sha1)commit per line to STDOUT
-      |        oldrev..$newrev \                 ← from $oldrev to $newrev
-      |        while read SHA_COMMIT ; do
-      |       git cat*file commit $SHA_COMMIT \  ← *1
-      |       | sed '1,/^$/d'                    ← Delete from line 1 to first match of
-      |                                            empty*line (^$).
-      |
-      | ¹ output format is similar to:
-      | tree      ...
-      | parent    ...
-      | committer ...
-      | 
-      | My commit Message
-      | tree      ...
-      ```
-   * user-name (if accesing through ssh) based on ssh public-key.
-   * Exit  0: Update
-     Exit !0: Rollback reference, continue with next one.
-* Post-receive hook:
-  * can be used to update other services or notify users.
-  * INPUT: STDIN reference list.
-  * Useful for:
-    * emailing a list.
-    * trigger CI/CD.
-    * update ticket system (commit messages can be parsed
-      for "open/closed/...")
-  * WARN : can't stop the push process. Client will block until completion.
+- Only git system administrators can setup them.
+- Useful to **ENFORCE NEARLY ANY KIND OF POLICY** in repository.
+- hooks (scripts) exiting with non-zero rollback/reject any push and print error messages
+  back to the client. [[qa.fail_fast]]
+ ` | .git/
+ |  └ hook/     <············· (shell/python/...) scripts to be executed.
+ |    │ 
+ |    ├ Pre-receive    <······ first script to run when receiving a push:
+ |    ·                        - INPUT: STDIN reference list
+ |    ·                        - Rollback all references on non-zero exit
+ |    ·                        Use Cases:
+ |    ·                        - Ensure are fast-forwards.
+ |    ·                        - add access control for all the refs and files
+ |    ·                         being modifying by the push.
+ |    ├ update         <······ similar to pre-receive hook, but it runs once 
+ |    ·                        for each branch the push is trying to update  
+ |    ·                        (ussually just one branch is updated).
+ |    ·                        - INPUT arguments:
+ |    ·                          ARGV[0]: ref.name for current branch
+ |    ·                          ARGV[1]: (SHA) original (current-in-server) ref. ¹
+ |    ·                          ARGV[2]: (SHA) new      (intention to push) ref. ¹
+ |    ·                          ${USER}: "Injected" by git when using ssh (based on ssh public-key)
+ |    ·                          ¹: We can run over all commit from old rev to 
+ |    ·                            new rev like
+ |    ·                             git rev list \            <·· display (sha1)commit per line to STDOUT
+ |    ·                               $OLDREV..$NEWREV | \    <·· from..to
+ |    ·                               while read SHA_COMMIT ; do
+ |    ·                               git cat FILE COMMIT $SHA_COMMIT \
+ |    ·                               | sed '1,/^$/d'         <·· replace from line 1 to 1st match of
+ |    ·                                                           empty*line (^$).
+ |    ·                             output format will be similar to:
+ |    ·                             tree      ...
+ |    ·                             parent    ...
+ |    ·                             committer ...
+ |    ·                             
+ |    ·                             My commit Message
+ |    ·                             tree      ...
+ |    ·                        - If exit == 0 =>  Update
+ |    ·                        - If exit != 0 => Rollback reference, continue with next one.
+ |    └ post-receive   <······ - INPUT: STDIN reference list.
+ |                               Use cases:
+ |                               - emailing a list.
+ |                               - trigger CI/CD.
+ |                               - update ticketing system 
+ |                               - ...
+ |                               WARN : this hook can NOT stop the push process.
+ |                                      Client will block until completion.
+ ```
 [[}]]
 
 [[{]]
 ## GIT Commit Standard Emojis 
+
 ```
-@[https://gist.github.com/parmentf/035de27d6ed1dce0b36a]
- Commit type               Emoji                    Graph
- Initial commit           :tada:                      🎉
- Version tag              :bookmark:                  🔖
- New feature              :sparkles:                  ✨
- Bugfix                   :bug:                       🐛
- Metadata                 :card_index:                📇
- Documentation            :books:                     📚
- Documenting src          :bulb:                      💡
- Performance              :racehorse:                 🐎
- Cosmetic                 :lipstick:                  💄
- Tests                    :rotating_light:            🚨
- Adding a test            :white_check_mark:          ✅
- Make a test pass        :heavy_check_mark:           ✔️
- General update           :zap:                       ⚡️
- Improve format           :art:                       🎨
- /structure
- Refactor code            :hammer:                    🔨
- Removing stuff           :fire:                      🔥
- CI                       :green_heart:               💚
- Security                 :lock:                      🔒
- Upgrading deps.         :arrow_up:                   ⬆️
- Downgrad. deps.         :arrow_down:                 ⬇️
- Lint                     :shirt:                     👕
- Translation              :alien:                     👽
- Text                     :pencil:                    📝
- Critical hotfix          :ambulance:                 🚑
- Deploying stuff          :rocket:                    🚀
- Work in progress         :construction:              🚧
- Adding CI build system   :construction_worker:       👷
- Analytics|tracking code  :chart_with_upwards_trend:  📈
- Removing a dependency    :heavy_minus_sign:          ➖
- Adding a dependency      :heavy_plus_sign:           ➕
- Docker                   :whale:                     🐳
- Configuration files      :wrench:                    🔧
- Package.json in JS       :package:                   📦
- Merging branches         :twisted_rightwards_arrows: 🔀
- Bad code / need improv.  :hankey:                    💩
- Reverting changes        :rewind:                    ⏪
- Breaking changes         :boom:                      💥
- Code review changes      :ok_hand:                   👌
- Accessibility            :wheelchair:                ♿️
- Move/rename repository  :truck:                      🚚
+ | <https://gist.github.com/parmentf/035de27d6ed1dce0b36a>
+ | Commit type              Emoji                     Graph
+ | Initial commit           :tada:                      🎉
+ | Version tag              :bookmark:                  🔖
+ | New feature              :sparkles:                  ✨
+ | Bugfix                   :bug:                       🐛
+ | Metadata                 :card_index:                📇
+ | Documentation            :books:                     📚
+ | Documenting src          :bulb:                      💡
+ | Performance              :racehorse:                 🐎
+ | Cosmetic                 :lipstick:                  💄
+ | Tests                    :rotating_light:            🚨
+ | Adding a test            :white_check_mark:          ✅
+ | Make a test pass        :heavy_check_mark:           ✔️
+ | General update           :zap:                       ⚡️
+ | Improve format           :art:                       🎨
+ | /structure
+ | Refactor code            :hammer:                    🔨
+ | Removing stuff           :fire:                      🔥
+ | CI                       :green_heart:               💚
+ | Security                 :lock:                      🔒
+ | Upgrading deps.         :arrow_up:                   ⬆️
+ | Downgrad. deps.         :arrow_down:                 ⬇️
+ | Lint                     :shirt:                     👕
+ | Translation              :alien:                     👽
+ | Text                     :pencil:                    📝
+ | Critical hotfix          :ambulance:                 🚑
+ | Deploying stuff          :rocket:                    🚀
+ | Work in progress         :construction:              🚧
+ | Adding CI build system   :construction_worker:       👷
+ | Analytics|tracking code  :chart_with_upwards_trend:  📈
+ | Removing a dependency    :heavy_minus_sign:          ➖
+ | Adding a dependency      :heavy_plus_sign:           ➕
+ | Docker                   :whale:                     🐳
+ | Configuration files      :wrench:                    🔧
+ | Package.json in JS       :package:                   📦
+ | Merging branches         :twisted_rightwards_arrows: 🔀
+ | Bad code / need improv.  :hankey:                    💩
+ | Reverting changes        :rewind:                    ⏪
+ | Breaking changes         :boom:                      💥
+ | Code review changes      :ok_hand:                   👌
+ | Accessibility            :wheelchair:                ♿️
+ | Move/rename repository   :truck:                     🚚
 ```
 [[}]]
 
+[[{]]
 ## External Links
 
 * <https://git-scm.com/book/en/v2>
 * <https://learnxinyminutes.com/docs/git/>
 * <https://learngitbranching.js.org/?demo>
 * History of git in Linux Kernel Mailing List
-  <https://lkml.org/lkml/2005/4/6/121>
+  <https://lkml.org/lkml/2005/4/6/121> [[doc_has.history]]
 * (Related) See UStore: Distributed Storage with rich semantics!!!
   <https://arxiv.org/pdf/1702.02799.pdf>
+[[}]]
 
+[[git}]]
